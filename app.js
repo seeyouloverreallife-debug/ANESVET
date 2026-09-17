@@ -3,9 +3,9 @@
 
 const $ = id => document.getElementById(id);
 const $$ = sel => [...document.querySelectorAll(sel)];
-const CURRENT_KEY = 'anesvet_v6_current';
-const ARCHIVE_KEY = 'anesvet_v6_archive';
-const TAB_KEY = 'anesvet_v6_tab';
+const CURRENT_KEY = 'anesvet_v6_1_current';
+const ARCHIVE_KEY = 'anesvet_v6_1_archive';
+const TAB_KEY = 'anesvet_v6_1_tab';
 
 const numericFields = ['weight','hr','rr','sap','map','dap','spo2','etco2','temp','vaporizer','o2flow','fluidRateInput','fluidTotal','recRR','recSpO2','recTemp'];
 const dataFields = [
@@ -106,9 +106,13 @@ function load(){
   try{
     let raw=JSON.parse(localStorage.getItem(CURRENT_KEY)||'null');
     if(!raw){
+      const v6=JSON.parse(localStorage.getItem('anesvet_v6_current')||'null');
       const v5=JSON.parse(localStorage.getItem('anesvet_v5_current')||'null');
       const v4=JSON.parse(localStorage.getItem('anesvet_v4_current')||'null');
-      if(v5){
+      if(v6){
+        raw=v6;
+        localStorage.setItem(CURRENT_KEY,JSON.stringify(raw));
+      }else if(v5){
         raw=v5;
         if(!('breed' in raw)) raw.breed='';
         if(!('bcs' in raw)) raw.bcs='5';
@@ -735,9 +739,12 @@ function getArchive(){
   try{
     let a=JSON.parse(localStorage.getItem(ARCHIVE_KEY)||'null');
     if(!Array.isArray(a)){
+      const v6=JSON.parse(localStorage.getItem('anesvet_v6_archive')||'null');
       const v5=JSON.parse(localStorage.getItem('anesvet_v5_archive')||'null');
       const v4=JSON.parse(localStorage.getItem('anesvet_v4_archive')||'null');
-      if(Array.isArray(v5)){
+      if(Array.isArray(v6)){
+        a=v6;
+      }else if(Array.isArray(v5)){
         a=v5;
       }else if(Array.isArray(v4)){
         a=v4;
@@ -770,13 +777,30 @@ function loadArchive(i){
   state=JSON.parse(JSON.stringify(c));
   state.timer={running:false,startedEpoch:null,elapsedMs:state.timer?.elapsedMs||0};
   localStorage.setItem(CURRENT_KEY,JSON.stringify(state));
-  location.reload();
+  restartAtAppRoot();
 }
 function deleteArchive(i){
   const list=getArchive();if(!confirm('Delete archived case นี้?'))return;
   list.splice(i,1);localStorage.setItem(ARCHIVE_KEY,JSON.stringify(list));renderArchives();
 }
 $('archiveCaseBtn').addEventListener('click',archiveSnapshot);
+
+function appRootUrl(){
+  // Resolve the current GitHub Pages directory safely whether the app is
+  // opened as /ANESVET/, /ANESVET/index.html, or from the installed PWA.
+  const here=new URL(window.location.href);
+  let path=here.pathname;
+  if(!path.endsWith('/')) path=path.replace(/\/[^/]*$/,'/');
+  const url=new URL(path, here.origin);
+  url.searchParams.set('v','6.1');
+  return url.href;
+}
+function restartAtAppRoot(){
+  // Use replace instead of reload so GitHub Pages never tries to reload
+  // an accidental nested/404 path.
+  window.location.replace(appRootUrl());
+}
+
 function freshState(){
   return {
     caseId:crypto.randomUUID?crypto.randomUUID():String(Date.now()),
@@ -786,7 +810,7 @@ function freshState(){
   };
 }
 function resetCurrent(){
-  state=freshState();localStorage.setItem(CURRENT_KEY,JSON.stringify(state));localStorage.setItem(TAB_KEY,'patient');location.reload();
+  state=freshState();localStorage.setItem(CURRENT_KEY,JSON.stringify(state));localStorage.setItem(TAB_KEY,'patient');restartAtAppRoot();
 }
 $('newCaseBtn').addEventListener('click',()=>{if(confirm('เริ่มเคสใหม่? Current case ที่ยังไม่ได้ Archive จะถูกล้าง'))resetCurrent()});
 $('resetCurrentBtn').addEventListener('click',()=>{if(confirm('ล้าง current case ทั้งหมด?'))resetCurrent()});

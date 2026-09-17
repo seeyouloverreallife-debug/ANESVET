@@ -1,8 +1,8 @@
 {
-  "name": "ANESVET V6 — Patient First Anesthesia Record",
+  "name": "ANESVET V6.1 — Patient First Anesthesia Record",
   "short_name": "ANESVET",
   "description": "Patient-first veterinary anesthesia record with ASA guide, trends, drug calculator and printable PDF report",
-  "start_url": "./",
+  "start_url": "./?v=6.1",
   "scope": "./",
   "display": "standalone",
   "background_color": "#f3f7f8",
