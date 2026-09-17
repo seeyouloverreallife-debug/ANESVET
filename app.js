@@ -3,10 +3,10 @@
 
 const $ = id => document.getElementById(id);
 const $$ = sel => [...document.querySelectorAll(sel)];
-const CURRENT_KEY = 'anesvet_v8_current';
-const ARCHIVE_KEY = 'anesvet_v8_archive';
-const TAB_KEY = 'anesvet_v8_tab';
-const SETTINGS_KEY='anesvet_v8_settings';
+const CURRENT_KEY = 'anesvet_v9_current';
+const ARCHIVE_KEY = 'anesvet_v9_archive';
+const TAB_KEY = 'anesvet_v9_tab';
+const SETTINGS_KEY='anesvet_v9_settings';
 
 const numericFields = ['weight','hr','rr','sap','map','dap','spo2','etco2','temp','vaporizer','o2flow','fluidRateInput','fluidTotal','recRR','recSpO2','recTemp'];
 const dataFields = [
@@ -96,6 +96,7 @@ function startTimerLoop(){
   timerHandle=setInterval(()=>{
     $('caseClock').textContent=formatElapsed(currentElapsed());
     renderTimerState();
+    if($('orlive')?.classList.contains('active')) renderOrLive();
     updateDue();
   },500);
 }
@@ -110,8 +111,6 @@ function pauseTimer(){
   save();
 }
 function save(){
-  $('emergency').addEventListener('change',()=>{syncAsaCards();state.patientSaved=false;updatePatientSaveStatus();save()});
-
 dataFields.forEach(id=>{
     const el=$(id);if(!el)return;
     state[id]=el.type==='checkbox'?el.checked:el.value;
@@ -134,12 +133,15 @@ function load(){
   try{
     let raw=JSON.parse(localStorage.getItem(CURRENT_KEY)||'null');
     if(!raw){
+      const v8=JSON.parse(localStorage.getItem('anesvet_v8_current')||'null');
       const v7=JSON.parse(localStorage.getItem('anesvet_v7_current')||'null');
       const v61=JSON.parse(localStorage.getItem('anesvet_v6_1_current')||'null');
       const v6=JSON.parse(localStorage.getItem('anesvet_v6_current')||'null');
       const v5=JSON.parse(localStorage.getItem('anesvet_v5_current')||'null');
       const v4=JSON.parse(localStorage.getItem('anesvet_v4_current')||'null');
-      if(v7){
+      if(v8){
+        raw=v8;if(!Array.isArray(raw.responses))raw.responses=[];localStorage.setItem(CURRENT_KEY,JSON.stringify(raw));
+      }else if(v7){
         raw=v7;if(!Array.isArray(raw.responses))raw.responses=[];localStorage.setItem(CURRENT_KEY,JSON.stringify(raw));
       }else if(v61){
         raw=v61;
@@ -232,12 +234,31 @@ $$('.preop-check').forEach(el=>el.addEventListener('change',renderPreop));
 $('goDashboardBtn')?.addEventListener('click',()=>setTab('dashboard'));
 $('openPreopBtn')?.addEventListener('click',()=>setTab('preop'));
 
+
+const OR_SYNC={orHr:'hr',orRr:'rr',orSap:'sap',orMap:'map',orDap:'dap',orSpo2:'spo2',orEtco2:'etco2',orTemp:'temp',orVaporizer:'vaporizer',orO2:'o2flow',orFluidRate:'fluidRateInput',orDepth:'depth',orVentilation:'ventilation'};
+let wakeLock=null;
+function syncOrFromMain(){Object.entries(OR_SYNC).forEach(([aId,bId])=>{const a=$(aId),b=$(bId);if(a&&b&&document.activeElement!==a)a.value=b.value})}
+function syncMainFromOr(orId){const mainId=OR_SYNC[orId],a=$(orId),b=$(mainId);if(!a||!b)return;b.value=a.value;b.dispatchEvent(new Event(b.tagName==='SELECT'?'change':'input',{bubbles:true}))}
+Object.keys(OR_SYNC).forEach(id=>{const el=$(id);if(el)el.addEventListener(el.tagName==='SELECT'?'change':'input',()=>syncMainFromOr(id))});
+function orStatusText(level,good,warn,danger){return level==='danger'?danger:level==='warn'?warn:good}
+function sparkSvg(values,minHint=null,maxHint=null){const vals=values.map(Number).filter(Number.isFinite);if(vals.length<2)return '<div class="or-spark-empty">Need ≥2 records</div>';let min=Math.min(...vals),max=Math.max(...vals);if(Number.isFinite(minHint))min=Math.min(min,minHint);if(Number.isFinite(maxHint))max=Math.max(max,maxHint);if(max===min){max+=1;min-=1}const w=220,h=70,p=7;const coords=vals.map((v,i)=>{const x=p+(i/(vals.length-1))*(w-p*2),y=h-p-((v-min)/(max-min))*(h-p*2);return [x.toFixed(1),y.toFixed(1)]});const pts=coords.map(x=>x.join(',')).join(' '),last=coords[coords.length-1],lastVal=vals[vals.length-1];return `<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" aria-hidden="true"><polyline points="${pts}" fill="none" stroke="#14758c" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="${last[0]}" cy="${last[1]}" r="3.5" fill="#0d5265"/><text x="${w-p}" y="${p+7}" text-anchor="end" font-size="10" fill="#54656f">${escapeHtml(lastVal)}</text></svg>`}
+function renderOrMiniTrends(){const r=(state.records||[]).slice(-6),m={orSparkMap:['map',55,80],orSparkSpo2:['spo2',90,100],orSparkEtco2:['etco2',30,60],orSparkTemp:['temp',98,100]};Object.entries(m).forEach(([id,[key,min,max]])=>{if($(id))$(id).innerHTML=sparkSvg(r.map(x=>x[key]),min,max)})}
+function renderOrRecent(){const items=[...(state.records||[]).slice(-5).map(r=>({epoch:r.epoch,elapsedMs:r.elapsedMs,kind:'Record',desc:`HR ${r.hr} • MAP ${r.map} • SpO₂ ${r.spo2} • ETCO₂ ${r.etco2} • Temp ${r.temp}°F`})),...(state.events||[]).slice(-5).map(e=>({epoch:e.epoch,elapsedMs:e.elapsedMs,kind:e.category,desc:`${e.name}${e.dose?' • '+e.dose:''}`}))].sort((a,b)=>b.epoch-a.epoch).slice(0,7);const box=$('orRecentActivity');if(!box)return;if(!items.length){box.className='or-recent-list empty-state compact';box.textContent='ยังไม่มีข้อมูล';return}box.className='or-recent-list';box.innerHTML=items.map(i=>`<div class="or-recent-item"><span class="t">${escapeHtml(formatShortElapsed(i.elapsedMs))}</span><span class="kind">${escapeHtml(i.kind)}</span><span class="desc">${escapeHtml(i.desc)}</span></div>`).join('')}
+function renderOrTimerState(){if(!$('orTimerState'))return;if(state.timer.running){$('orTimerState').className='timer-state running';$('orTimerState').textContent='● RUNNING';$('orStartBtn').textContent='Running';$('orStartBtn').disabled=true;$('orPauseBtn').disabled=false;$('orPauseBtn').textContent='Pause case'}else if((state.timer.elapsedMs||0)>0){$('orTimerState').className='timer-state paused';$('orTimerState').textContent='PAUSED';$('orStartBtn').textContent='▶ Resume';$('orStartBtn').disabled=false;$('orPauseBtn').disabled=true;$('orPauseBtn').textContent='Paused'}else{$('orTimerState').className='timer-state ready';$('orTimerState').textContent='READY';$('orStartBtn').textContent='▶ Start case';$('orStartBtn').disabled=false;$('orPauseBtn').disabled=true;$('orPauseBtn').textContent='Pause'}$('orCaseClock').textContent=formatElapsed(currentElapsed())}
+function renderOrLive(){if(!$('orlive'))return;syncOrFromMain();const st=thresholds(),species=$('species').value,name=$('patientName').value.trim()||'Unnamed patient',breed=$('breed').value.trim(),weight=getVal('weight',0);$('orPatientName').textContent=name;$('orPatientMeta').textContent=`${species==='cat'?'Cat':'Dog'}${breed?' • '+breed:''} • ${weight||'—'} kg`;$('orAsaBadge').textContent=`ASA ${$('asa').value}${$('emergency').checked?'-E':''}`;$('orProcedureLine').textContent=`Procedure: ${$('procedure').value.trim()||'—'}`;const overall=$('globalStatus').textContent;$('orGlobalStatus').textContent=overall;$('orGlobalStatus').className=overall==='INTERVENE'?'or-status-danger':overall==='REASSESS'?'or-status-warn':'or-status-good';const latest=latestRecord();$('orLastRecord').textContent=latest?`${latest.clock} • ${formatShortElapsed(latest.elapsedMs)}`:'—';if(latest){const due=latest.epoch+Number($('recordInterval').value||5)*60000,delta=due-Date.now();$('orNextDue').textContent=delta<=0?`DUE +${Math.floor(Math.abs(delta)/60000)}m`:formatClock(due);$('orRecordNowBtn').classList.toggle('due',delta<=0)}else{$('orNextDue').textContent='After first record';$('orRecordNowBtn').classList.remove('due')}const hints={hr:orStatusText(st.hr,species==='cat'?'100–180 screening':'60–150 screening','Reassess HR','Critical HR alert'),rr:orStatusText(st.rr,species==='cat'?'10–28 screening':'8–20 screening','Reassess RR','Critical RR / apnea risk'),map:orStatusText(st.map,'MAP acceptable','MAP 60–69','MAP <60'),spo2:orStatusText(st.spo2,'≥95%','SpO₂ <95%','SpO₂ <90%'),etco2:orStatusText(st.etco2,'40–55','Outside usual range','Critical ETCO₂ range'),temp:orStatusText(st.temp,'Temp acceptable','Warming indicated','<98°F')};const cap={hr:'Hr',rr:'Rr',map:'Map',spo2:'Spo2',etco2:'Etco2',temp:'Temp'};['hr','rr','map','spo2','etco2','temp'].forEach(k=>{const card=document.querySelector(`.or-vital-card[data-vital="${k}"]`);if(card){card.classList.remove('good','warn','danger');card.classList.add(st[k])}const h=$('or'+cap[k]+'Hint');if(h)h.textContent=hints[k]});const active=[];if(st.hr!=='good')active.push({level:st.hr,title:'HR alert',text:hints.hr});if(st.rr!=='good')active.push({level:st.rr,title:'RR alert',text:hints.rr});if(st.map!=='good')active.push({level:st.map,title:'Blood pressure',text:hints.map});if(st.spo2!=='good')active.push({level:st.spo2,title:'Oxygenation',text:hints.spo2});if(st.etco2!=='good')active.push({level:st.etco2,title:'Ventilation',text:hints.etco2});if(st.temp!=='good')active.push({level:st.temp,title:'Temperature',text:hints.temp});const trendBox=$('smartAlerts');if(trendBox)trendBox.querySelectorAll('.smart-alert-item').forEach(x=>active.push({level:x.classList.contains('danger')?'danger':'warn',title:x.querySelector('b')?.textContent||'Trend alert',text:x.querySelector('span')?.textContent||''}));$('orAlertCount').textContent=`${active.length} ALERT${active.length===1?'':'S'}`;$('orAlertCount').className=`status-pill ${active.some(a=>a.level==='danger')?'danger':active.length?'warn':'good'}`;$('orAlertList').innerHTML=active.length?active.slice(0,6).map(a=>`<div class="or-alert-item ${a.level}"><b>${escapeHtml(a.title)}</b><span>${escapeHtml(a.text)}</span></div>`).join(''):'<div class="empty-state compact">No active alerts</div>';renderOrMiniTrends();renderOrRecent();renderOrTimerState()}
+function startCaseFromOr(){if(state.timer.running)return true;const preopTotal=$$('.preop-check').length,preopDone=$$('.preop-check').filter(x=>x.checked).length;if(preopDone<preopTotal&&!confirm(`Pre-op checklist ยังไม่ครบ (${preopDone}/${preopTotal}) — ต้องการเริ่มเคสต่อหรือไม่?`))return false;const firstStart=(state.timer.elapsedMs||0)===0&&!state.caseStartedAt;state.timer.running=true;state.timer.startedEpoch=Date.now();if(firstStart)state.caseStartedAt=state.timer.startedEpoch;startTimerLoop();renderTimerState();renderOrTimerState();save();if(firstStart)addEvent({category:'Case',name:'Case started',note:'Anesthesia case timer started'});toast(firstStart?'Case timer started':'Case timer resumed');return true}
+$('orStartBtn')?.addEventListener('click',startCaseFromOr);$('orPauseBtn')?.addEventListener('click',()=>{pauseTimer();renderOrLive()});$('orRecordNowBtn')?.addEventListener('click',()=>{if(!state.timer.running&&(state.timer.elapsedMs||0)===0){if(!startCaseFromOr())return}addRecord('');renderOrLive()});$('openOrLiveBtn')?.addEventListener('click',()=>setTab('orlive'));$('orOpenDrugBtn')?.addEventListener('click',()=>setTab('drugs'));$('orOpenTrendsBtn')?.addEventListener('click',()=>setTab('trends'));$('orOpenTimelineBtn')?.addEventListener('click',()=>setTab('timeline'));
+$$('.or-milestone').forEach(btn=>btn.addEventListener('click',()=>{addEvent({category:btn.dataset.cat,name:btn.dataset.label,note:'Procedure milestone'});btn.classList.add('done');renderOrLive()}));$$('.or-event').forEach(btn=>btn.addEventListener('click',()=>{addEvent({category:btn.dataset.cat,name:btn.dataset.label});renderOrLive()}));
+$('orFullscreenBtn')?.addEventListener('click',async()=>{try{if(!document.fullscreenElement){if(document.documentElement.requestFullscreen)await document.documentElement.requestFullscreen();document.body.classList.add('or-fullscreen');$('orFullscreenBtn').textContent='Exit full screen'}else{if(document.exitFullscreen)await document.exitFullscreen();document.body.classList.remove('or-fullscreen');$('orFullscreenBtn').textContent='⛶ Full screen'}}catch(e){document.body.classList.toggle('or-fullscreen')}});document.addEventListener('fullscreenchange',()=>{if(!document.fullscreenElement){document.body.classList.remove('or-fullscreen');if($('orFullscreenBtn'))$('orFullscreenBtn').textContent='⛶ Full screen'}});
+$('orWakeBtn')?.addEventListener('click',async()=>{if(!('wakeLock' in navigator)){toast('Wake Lock ไม่รองรับใน browser นี้');return}try{if(wakeLock){await wakeLock.release();wakeLock=null;$('orWakeBtn').textContent='☀ Keep awake';toast('Screen wake lock off')}else{wakeLock=await navigator.wakeLock.request('screen');$('orWakeBtn').textContent='☀ Awake ON';wakeLock.addEventListener('release',()=>{wakeLock=null;if($('orWakeBtn'))$('orWakeBtn').textContent='☀ Keep awake'});toast('Screen will stay awake')}}catch(e){toast('ไม่สามารถเปิด screen wake lock ได้')}});
+
 function setTab(id){
   $$('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===id));
   $$('.tabpage').forEach(p=>p.classList.toggle('active',p.id===id));
   localStorage.setItem(TAB_KEY,id);
   if(id==='trends') renderTrends();
   if(id==='cases') renderArchives();
+  if(id==='orlive') renderOrLive();
 }
 $$('.tab').forEach(b=>b.addEventListener('click',()=>setTab(b.dataset.tab)));
 
@@ -347,6 +368,7 @@ function updateDashboard(){
   updatePlanCalc();
   updateBalance();
   renderSmartAlerts();
+  if($('orlive')?.classList.contains('active')) renderOrLive();
   save();
 }
 function renderInterpretation(){
@@ -378,7 +400,7 @@ function addRecord(note=''){
   state.records.push(currentSnapshot(note));
   state.records.sort((a,b)=>a.epoch-b.epoch);
   $('recordNote').value='';
-  save();renderRecords();renderTrends();renderProcedureTimeline();renderSmartAlerts();updateDue();
+  save();renderRecords();renderTrends();renderProcedureTimeline();renderSmartAlerts();renderOrLive();updateDue();
   toast('Record saved • '+state.records[state.records.length-1].clock);
 }
 $('recordFromDashboardBtn').addEventListener('click',()=>addRecord(''));
@@ -406,7 +428,7 @@ function renderRecords(){
   });
   $$('#recordBody .delete-btn').forEach(b=>b.addEventListener('click',()=>{
     state.records=state.records.filter(r=>String(r.id)!==String(b.dataset.id));
-    save();renderRecords();renderTrends();renderProcedureTimeline();renderSmartAlerts();updateDue();
+    save();renderRecords();renderTrends();renderProcedureTimeline();renderSmartAlerts();renderOrLive();updateDue();
   }));
 }
 function latestRecord(){return state.records?.length?state.records[state.records.length-1]:null}
@@ -475,7 +497,7 @@ function addEvent({category,name,dose='',route='',note=''}){
     category,name,dose,route,note
   };
   state.events.push(ev);state.events.sort((a,b)=>a.epoch-b.epoch);
-  save();renderEvents();renderTrends();renderProcedureTimeline();renderProcedureTimeline();toast(`${name} • ${ev.clock}`);
+  save();renderEvents();renderTrends();renderProcedureTimeline();renderProcedureTimeline();renderOrLive();toast(`${name} • ${ev.clock}`);
 }
 
 $$('.administered-btn').forEach(btn=>btn.addEventListener('click',()=>{const inp=$(btn.dataset.input),ml=Number(inp?.value||0);if(!(ml>0)){toast('กรุณาใส่ actual administered volume');return}addEvent({category:'Drug',name:btn.dataset.drug,dose:`Actual administered ${fmtVol(ml)} mL`,route:'',note:'Actual dose administration'})}));
@@ -861,12 +883,13 @@ function getArchive(){
   try{
     let a=JSON.parse(localStorage.getItem(ARCHIVE_KEY)||'null');
     if(!Array.isArray(a)){
+      const v8=JSON.parse(localStorage.getItem('anesvet_v8_archive')||'null');
       const v7=JSON.parse(localStorage.getItem('anesvet_v7_archive')||'null');
       const v61=JSON.parse(localStorage.getItem('anesvet_v6_1_archive')||'null');
       const v6=JSON.parse(localStorage.getItem('anesvet_v6_archive')||'null');
       const v5=JSON.parse(localStorage.getItem('anesvet_v5_archive')||'null');
       const v4=JSON.parse(localStorage.getItem('anesvet_v4_archive')||'null');
-      if(Array.isArray(v7)){a=v7;}else if(Array.isArray(v61)){
+      if(Array.isArray(v8)){a=v8;}else if(Array.isArray(v7)){a=v7;}else if(Array.isArray(v61)){
         a=v61;
       }else if(Array.isArray(v6)){
         a=v6;
@@ -918,7 +941,7 @@ function appRootUrl(){
   let path=here.pathname;
   if(!path.endsWith('/')) path=path.replace(/\/[^/]*$/,'/');
   const url=new URL(path, here.origin);
-  url.searchParams.set('v','8');
+  url.searchParams.set('v','9');
   return url.href;
 }
 function restartAtAppRoot(){
@@ -928,7 +951,7 @@ function restartAtAppRoot(){
 }
 
 function defaultSettings(){return{interval:'5',diazepamConc:'5',propofolConc:'10',tramadolConc:'50',rimadylConc:'50',metacamConc:'5',atropineConc:'0.6'}}
-function loadSettings(){let s;try{s=JSON.parse(localStorage.getItem(SETTINGS_KEY)||'null')}catch(e){}s={...defaultSettings(),...(s||{})};if($('settingInterval'))$('settingInterval').value=s.interval;if($('settingDiazepamConc'))$('settingDiazepamConc').value=s.diazepamConc;if($('settingPropofolConc'))$('settingPropofolConc').value=s.propofolConc;if($('settingTramadolConc'))$('settingTramadolConc').value=s.tramadolConc;if($('settingRimadylConc'))$('settingRimadylConc').value=s.rimadylConc;if($('settingMetacamConc'))$('settingMetacamConc').value=s.metacamConc;if($('settingAtropineConc'))$('settingAtropineConc').value=s.atropineConc}
+function loadSettings(){let s;try{s=JSON.parse(localStorage.getItem(SETTINGS_KEY)||'null')||JSON.parse(localStorage.getItem('anesvet_v8_settings')||'null')}catch(e){}s={...defaultSettings(),...(s||{})};if($('settingInterval'))$('settingInterval').value=s.interval;if($('settingDiazepamConc'))$('settingDiazepamConc').value=s.diazepamConc;if($('settingPropofolConc'))$('settingPropofolConc').value=s.propofolConc;if($('settingTramadolConc'))$('settingTramadolConc').value=s.tramadolConc;if($('settingRimadylConc'))$('settingRimadylConc').value=s.rimadylConc;if($('settingMetacamConc'))$('settingMetacamConc').value=s.metacamConc;if($('settingAtropineConc'))$('settingAtropineConc').value=s.atropineConc}
 $('saveSettingsBtn')?.addEventListener('click',()=>{const s={interval:$('settingInterval').value,diazepamConc:$('settingDiazepamConc').value,propofolConc:$('settingPropofolConc').value,tramadolConc:$('settingTramadolConc').value,rimadylConc:$('settingRimadylConc').value,metacamConc:$('settingMetacamConc').value,atropineConc:$('settingAtropineConc').value};localStorage.setItem(SETTINGS_KEY,JSON.stringify(s));$('recordInterval').value=s.interval;$('diazepamConc').value=s.diazepamConc;$('propofolConc').value=s.propofolConc;$('tramadolConc').value=s.tramadolConc;$('rimadylConc').value=s.rimadylConc;$('metacamConc').value=s.metacamConc;$('atropineConc').value=s.atropineConc;updateDashboard();toast('Hospital settings saved')});
 function freshState(){
   return {
@@ -937,7 +960,7 @@ function freshState(){
     records:[],events:[],recoveryChecks:[false,false,false,false,false,false],
     patientSaved:false,
   preopChecks:{},
-  caseStartedAt:null,bcs:'5',breed:''
+  caseStartedAt:null,responses:[],bcs:'5',breed:''
   };
 }
 function resetCurrent(){
@@ -957,9 +980,10 @@ $('startCaseBtn').addEventListener('click',()=>{
   if(firstStart) state.caseStartedAt=state.timer.startedEpoch;
   startTimerLoop();renderTimerState();save();
   if(firstStart) addEvent({category:'Case',name:'Case started',note:'Anesthesia case timer started'});
+  setTab('orlive');
   toast(firstStart?'Case timer started':'Case timer resumed');
 });
-$('pauseCaseBtn').addEventListener('click',pauseTimer);
+$('pauseCaseBtn').addEventListener('click',()=>{pauseTimer();renderOrLive()});
 
 dataFields.forEach(id=>{
   const el=$(id);if(!el)return;
@@ -974,8 +998,8 @@ if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serv
 
 load();
 syncAsaCards();updatePatientSaveStatus();
-const initialTab=state.patientSaved?(localStorage.getItem(TAB_KEY)||'dashboard'):'patient';
+const initialTab=state.patientSaved?((state.timer.running||(state.timer.elapsedMs||0)>0)?'orlive':(localStorage.getItem(TAB_KEY)||'dashboard')):'patient';
 setTab(initialTab);
-updateDashboard();renderPreop();renderRecords();renderEvents();renderTrends();renderProcedureTimeline();renderRecovery();renderArchives();updateDue();renderTimerState();
+updateDashboard();renderPreop();renderRecords();renderEvents();renderTrends();renderProcedureTimeline();renderRecovery();renderArchives();updateDue();renderTimerState();renderOrLive();
 if(state.timer.running && state.timer.startedEpoch) startTimerLoop();
 })();
