@@ -1,8 +1,8 @@
 {
-  "name": "ANESVET V6.1 — Patient First Anesthesia Record",
+  "name": "ANESVET V7 — Surgical Anesthesia Workflow",
   "short_name": "ANESVET",
-  "description": "Patient-first veterinary anesthesia record with ASA guide, trends, drug calculator and printable PDF report",
-  "start_url": "./?v=6.1",
+  "description": "Patient-first veterinary anesthesia workflow with pre-op checklist, timer states, procedure timeline, drug calculator, trends, recovery and PDF medical record",
+  "start_url": "./?v=7",
   "scope": "./",
   "display": "standalone",
   "background_color": "#f3f7f8",

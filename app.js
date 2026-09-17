@@ -3,9 +3,9 @@
 
 const $ = id => document.getElementById(id);
 const $$ = sel => [...document.querySelectorAll(sel)];
-const CURRENT_KEY = 'anesvet_v6_1_current';
-const ARCHIVE_KEY = 'anesvet_v6_1_archive';
-const TAB_KEY = 'anesvet_v6_1_tab';
+const CURRENT_KEY = 'anesvet_v7_current';
+const ARCHIVE_KEY = 'anesvet_v7_archive';
+const TAB_KEY = 'anesvet_v7_tab';
 
 const numericFields = ['weight','hr','rr','sap','map','dap','spo2','etco2','temp','vaporizer','o2flow','fluidRateInput','fluidTotal','recRR','recSpO2','recTemp'];
 const dataFields = [
@@ -22,7 +22,9 @@ let state = {
   records: [],
   events: [],
   recoveryChecks: [false,false,false,false,false,false],
-  patientSaved:false
+  patientSaved:false,
+  preopChecks:{},
+  caseStartedAt:null
 };
 let timerHandle = null;
 let dueReminderToken = null;
@@ -58,18 +60,40 @@ function currentElapsed(){
   if(state.timer.running && state.timer.startedEpoch){
     return state.timer.elapsedMs + (Date.now()-state.timer.startedEpoch);
   }
+
+function renderTimerState(){
+  const badge=$('timerStateBadge'),startBtn=$('startCaseBtn'),pauseBtn=$('pauseCaseBtn');
+  if(!badge||!startBtn||!pauseBtn)return;
+  if(state.timer.running){
+    badge.className='timer-state running';badge.textContent='● RUNNING';
+    startBtn.textContent='Running';startBtn.disabled=true;
+    pauseBtn.disabled=false;pauseBtn.textContent='Pause case';
+  }else if((state.timer.elapsedMs||0)>0){
+    badge.className='timer-state paused';badge.textContent='PAUSED';
+    startBtn.textContent='▶ Resume case';startBtn.disabled=false;
+    pauseBtn.disabled=true;pauseBtn.textContent='Paused';
+  }else{
+    badge.className='timer-state ready';badge.textContent='READY';
+    startBtn.textContent='▶ Start case';startBtn.disabled=false;
+    pauseBtn.disabled=true;pauseBtn.textContent='Pause';
+  }
+  if($('timelineElapsed')) $('timelineElapsed').textContent=formatElapsed(currentElapsed());
+  if($('timelineStartClock')) $('timelineStartClock').textContent=state.caseStartedAt?formatClock(state.caseStartedAt):'—';
+}
   return state.timer.elapsedMs || 0;
 }
 function ensureTimerStarted(){
   if(state.timer.running || state.timer.elapsedMs>0) return;
   state.timer.running=true;
   state.timer.startedEpoch=Date.now();
-  startTimerLoop();
+  if(!state.caseStartedAt) state.caseStartedAt=state.timer.startedEpoch;
+  startTimerLoop();renderTimerState();
 }
 function startTimerLoop(){
   clearInterval(timerHandle);
   timerHandle=setInterval(()=>{
     $('caseClock').textContent=formatElapsed(currentElapsed());
+    renderTimerState();
     updateDue();
   },500);
 }
@@ -80,6 +104,7 @@ function pauseTimer(){
   state.timer.startedEpoch=null;
   clearInterval(timerHandle);timerHandle=null;
   $('caseClock').textContent=formatElapsed(state.timer.elapsedMs);
+  renderTimerState();
   save();
 }
 function save(){
@@ -90,6 +115,7 @@ dataFields.forEach(id=>{
     state[id]=el.type==='checkbox'?el.checked:el.value;
   });
   state.recoveryChecks=$$('.recovery-check').map(x=>x.checked);
+  state.preopChecks={};$$('.preop-check').forEach(x=>state.preopChecks[x.dataset.key]=x.checked);
   localStorage.setItem(CURRENT_KEY, JSON.stringify(state));
 }
 function cToF(c){return (Number(c)*9/5)+32}
@@ -106,10 +132,16 @@ function load(){
   try{
     let raw=JSON.parse(localStorage.getItem(CURRENT_KEY)||'null');
     if(!raw){
+      const v61=JSON.parse(localStorage.getItem('anesvet_v6_1_current')||'null');
       const v6=JSON.parse(localStorage.getItem('anesvet_v6_current')||'null');
       const v5=JSON.parse(localStorage.getItem('anesvet_v5_current')||'null');
       const v4=JSON.parse(localStorage.getItem('anesvet_v4_current')||'null');
-      if(v6){
+      if(v61){
+        raw=v61;
+        if(!raw.preopChecks) raw.preopChecks={};
+        if(!('caseStartedAt' in raw)) raw.caseStartedAt=null;
+        localStorage.setItem(CURRENT_KEY,JSON.stringify(raw));
+      }else if(v6){
         raw=v6;
         localStorage.setItem(CURRENT_KEY,JSON.stringify(raw));
       }else if(v5){
@@ -139,6 +171,7 @@ function load(){
     if(el.type==='checkbox') el.checked=!!state[id]; else el.value=state[id] ?? '';
   });
   $$('.recovery-check').forEach((el,i)=>el.checked=!!(state.recoveryChecks||[])[i]);
+  $$('.preop-check').forEach(el=>el.checked=!!(state.preopChecks||{})[el.dataset.key]);
   if(state.timer.running && state.timer.startedEpoch) startTimerLoop();
   $('caseClock').textContent=formatElapsed(currentElapsed());
 }
@@ -167,7 +200,7 @@ $('savePatientBtn').addEventListener('click',()=>{
   if(!Number.isFinite(weight)||weight<=0){toast('กรุณาใส่น้ำหนักที่ถูกต้อง');$('weight').focus();return}
   state.patientSaved=true;save();syncAsaCards();updatePatientSaveStatus();
   toast('บันทึกข้อมูลผู้ป่วยแล้ว');
-  setTab('dashboard');
+  setTab('preop');
 });
 $('editPatientBtn').addEventListener('click',()=>setTab('patient'));
 ['patientName','hospitalId','species','breed','age','weight','bcs','emergency'].forEach(id=>{
@@ -176,6 +209,23 @@ $('editPatientBtn').addEventListener('click',()=>setTab('patient'));
     state.patientSaved=false;updatePatientSaveStatus();
   });
 });
+
+
+function renderPreop(){
+  const checks=$$('.preop-check'),done=checks.filter(x=>x.checked).length,total=checks.length;
+  if($('preopProgress')){
+    $('preopProgress').textContent=`${done}/${total} COMPLETE`;
+    $('preopProgress').className=`status-pill ${done===total?'good':'warn'}`;
+  }
+  if($('preopWarning')){
+    $('preopWarning').textContent=done===total?'Pre-anesthetic checklist complete':'Checklist ยังไม่ครบ — ทบทวนรายการที่ยังไม่ได้ยืนยัน';
+    $('preopWarning').className=done===total?'info-line':'info-line';
+  }
+  save();
+}
+$$('.preop-check').forEach(el=>el.addEventListener('change',renderPreop));
+$('goDashboardBtn')?.addEventListener('click',()=>setTab('dashboard'));
+$('openPreopBtn')?.addEventListener('click',()=>setTab('preop'));
 
 function setTab(id){
   $$('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===id));
@@ -320,7 +370,7 @@ function addRecord(note=''){
   state.records.push(currentSnapshot(note));
   state.records.sort((a,b)=>a.epoch-b.epoch);
   $('recordNote').value='';
-  save();renderRecords();renderTrends();updateDue();
+  save();renderRecords();renderTrends();renderProcedureTimeline();updateDue();
   toast('Record saved • '+state.records[state.records.length-1].clock);
 }
 $('recordFromDashboardBtn').addEventListener('click',()=>addRecord(''));
@@ -348,7 +398,7 @@ function renderRecords(){
   });
   $$('#recordBody .delete-btn').forEach(b=>b.addEventListener('click',()=>{
     state.records=state.records.filter(r=>String(r.id)!==String(b.dataset.id));
-    save();renderRecords();renderTrends();updateDue();
+    save();renderRecords();renderTrends();renderProcedureTimeline();updateDue();
   }));
 }
 function latestRecord(){return state.records?.length?state.records[state.records.length-1]:null}
@@ -378,6 +428,37 @@ function updateDue(){
 }
 setInterval(updateDue,1000);
 
+
+function markMilestone(btn){
+  const label=btn.dataset.label,cat=btn.dataset.cat;
+  addEvent({category:cat,name:label,note:'Procedure milestone'});
+  btn.classList.add('done');
+}
+$$('.milestone-btn').forEach(btn=>btn.addEventListener('click',()=>markMilestone(btn)));
+function renderProcedureTimeline(){
+  const items=[
+    ...(state.events||[]).map(e=>({elapsedMs:e.elapsedMs,clock:e.clock,cat:e.category,text:`${e.name}${e.dose?' • '+e.dose:''}${e.route?' • '+e.route:''}${e.note?' • '+e.note:''}`})),
+    ...(state.records||[]).filter(r=>r.note).map(r=>({elapsedMs:r.elapsedMs,clock:r.clock,cat:'Record',text:r.note,isRecord:true}))
+  ].sort((a,b)=>a.elapsedMs-b.elapsedMs);
+  const el=$('procedureTimeline');
+  if(!el)return;
+  if(!items.length){el.className='procedure-timeline empty-state';el.textContent='ยังไม่มี Timeline';}
+  else{
+    el.className='procedure-timeline';
+    el.innerHTML=items.map(i=>`<div class="procedure-item ${i.isRecord?'record':''} ${i.cat==='Complication'?'complication':''}">
+      <div class="ptime">${formatShortElapsed(i.elapsedMs)}<br><small>${escapeHtml(i.clock||'')}</small></div>
+      <div class="pcat">${escapeHtml(i.cat)}</div>
+      <div class="ptext">${escapeHtml(i.text)}</div>
+    </div>`).join('');
+  }
+  if($('timelineRecordCount')) $('timelineRecordCount').textContent=(state.records||[]).length;
+  if($('timelineEventCount')) $('timelineEventCount').textContent=(state.events||[]).length;
+  if($('timelineStartClock')) $('timelineStartClock').textContent=state.caseStartedAt?formatClock(state.caseStartedAt):'—';
+  if($('timelineElapsed')) $('timelineElapsed').textContent=formatElapsed(currentElapsed());
+}
+$('timelineRecordBtn')?.addEventListener('click',()=>addRecord(''));
+$('timelineEventBtn')?.addEventListener('click',()=>setTab('events'));
+
 function addEvent({category,name,dose='',route='',note=''}){
   ensureTimerStarted();
   const ev={
@@ -386,7 +467,7 @@ function addEvent({category,name,dose='',route='',note=''}){
     category,name,dose,route,note
   };
   state.events.push(ev);state.events.sort((a,b)=>a.epoch-b.epoch);
-  save();renderEvents();renderTrends();toast(`${name} • ${ev.clock}`);
+  save();renderEvents();renderTrends();renderProcedureTimeline();renderProcedureTimeline();toast(`${name} • ${ev.clock}`);
 }
 
 $$('.drug-event-btn').forEach(btn=>btn.addEventListener('click',()=>{
@@ -421,11 +502,11 @@ function renderEvents(){
     <button class="delete-btn event-delete" data-id="${escapeHtml(e.id)}">✕</button>
   </div>`).join('');
   $$('.event-delete').forEach(b=>b.addEventListener('click',()=>{
-    state.events=state.events.filter(e=>String(e.id)!==String(b.dataset.id));save();renderEvents();renderTrends();
+    state.events=state.events.filter(e=>String(e.id)!==String(b.dataset.id));save();renderEvents();renderTrends();renderProcedureTimeline();
   }));
 }
 $('clearEventsBtn').addEventListener('click',()=>{
-  if(!confirm('ล้าง Event log ทั้งหมด?'))return;state.events=[];save();renderEvents();renderTrends();
+  if(!confirm('ล้าง Event log ทั้งหมด?'))return;state.events=[];save();renderEvents();renderTrends();renderProcedureTimeline();
 });
 
 function metricValues(key){return (state.records||[]).map(r=>Number(r[key])).filter(Number.isFinite)}
@@ -632,6 +713,16 @@ function buildPdfReport(){
     reportInfoItem('ASA',`${asa} — ${asaDescription($('asa').value)}`)
   ].join('');
 
+  
+  const preopLabels={
+    consent:'Consent / owner discussion',fasting:'Fasting / aspiration risk reviewed',exam:'Pre-anesthetic physical exam',
+    labs:'Lab / imaging reviewed',iv:'IV catheter patent',oxygen:'O₂ source + backup checked',
+    machine:'Anesthesia machine leak check',vaporizer:'Vaporizer / agent checked',absorber:'CO₂ absorbent checked',
+    airway:'Airway equipment ready',suction:'Suction available',monitor:'Monitor attached / functional',
+    warming:'Active warming ready',emergency:'Emergency drugs / crash plan ready'
+  };
+  $('reportPreop').innerHTML=`<div class="report-preop-grid">${Object.entries(preopLabels).map(([k,label])=>`<div class="report-preop-item"><span class="mark">${(state.preopChecks||{})[k]?'☑':'☐'}</span><span>${escapeHtml(label)}</span></div>`).join('')}</div>`;
+
   $('reportCaseGrid').innerHTML=[
     reportInfoItem('Procedure',$('procedure').value||'—'),
     reportInfoItem('Surgeon',$('surgeon').value||'—'),
@@ -683,6 +774,9 @@ function buildPdfReport(){
     <div><b>Checklist</b><br>${checks.filter(Boolean).length}/${checks.length}</div>
   </div>
   <div style="margin-top:8px;font-size:9px"><b>Recovery note:</b> ${escapeHtml($('recPain').value||'—')}</div>`;
+  $('reportSignAnesthetist').textContent=$('anesthetist').value||'—';
+  $('reportSignSurgeon').textContent=$('surgeon').value||'—';
+  $('reportCompleted').textContent=`${formatDate(Date.now())} ${formatClock()}`;
 }
 function exportPdfReport(){
   buildPdfReport();
@@ -739,10 +833,13 @@ function getArchive(){
   try{
     let a=JSON.parse(localStorage.getItem(ARCHIVE_KEY)||'null');
     if(!Array.isArray(a)){
+      const v61=JSON.parse(localStorage.getItem('anesvet_v6_1_archive')||'null');
       const v6=JSON.parse(localStorage.getItem('anesvet_v6_archive')||'null');
       const v5=JSON.parse(localStorage.getItem('anesvet_v5_archive')||'null');
       const v4=JSON.parse(localStorage.getItem('anesvet_v4_archive')||'null');
-      if(Array.isArray(v6)){
+      if(Array.isArray(v61)){
+        a=v61;
+      }else if(Array.isArray(v6)){
         a=v6;
       }else if(Array.isArray(v5)){
         a=v5;
@@ -792,7 +889,7 @@ function appRootUrl(){
   let path=here.pathname;
   if(!path.endsWith('/')) path=path.replace(/\/[^/]*$/,'/');
   const url=new URL(path, here.origin);
-  url.searchParams.set('v','6.1');
+  url.searchParams.set('v','7');
   return url.href;
 }
 function restartAtAppRoot(){
@@ -806,7 +903,9 @@ function freshState(){
     caseId:crypto.randomUUID?crypto.randomUUID():String(Date.now()),
     createdAt:Date.now(),timer:{running:false,startedEpoch:null,elapsedMs:0},
     records:[],events:[],recoveryChecks:[false,false,false,false,false,false],
-    patientSaved:false,bcs:'5',breed:''
+    patientSaved:false,
+  preopChecks:{},
+  caseStartedAt:null,bcs:'5',breed:''
   };
 }
 function resetCurrent(){
@@ -818,7 +917,15 @@ $('clearRecordsBtn').addEventListener('click',()=>{if(!confirm('ล้าง Ane
 
 $('startCaseBtn').addEventListener('click',()=>{
   if(state.timer.running)return;
-  state.timer.running=true;state.timer.startedEpoch=Date.now();startTimerLoop();save();toast('Case timer started');
+  const preopTotal=$$('.preop-check').length,preopDone=$$('.preop-check').filter(x=>x.checked).length;
+  if(preopDone<preopTotal && !confirm(`Pre-op checklist ยังไม่ครบ (${preopDone}/${preopTotal}) — ต้องการเริ่มเคสต่อหรือไม่?`))return;
+  const firstStart=(state.timer.elapsedMs||0)===0 && !state.caseStartedAt;
+  state.timer.running=true;
+  state.timer.startedEpoch=Date.now();
+  if(firstStart) state.caseStartedAt=state.timer.startedEpoch;
+  startTimerLoop();renderTimerState();save();
+  if(firstStart) addEvent({category:'Case',name:'Case started',note:'Anesthesia case timer started'});
+  toast(firstStart?'Case timer started':'Case timer resumed');
 });
 $('pauseCaseBtn').addEventListener('click',pauseTimer);
 
@@ -837,6 +944,6 @@ load();
 syncAsaCards();updatePatientSaveStatus();
 const initialTab=state.patientSaved?(localStorage.getItem(TAB_KEY)||'dashboard'):'patient';
 setTab(initialTab);
-updateDashboard();renderRecords();renderEvents();renderTrends();renderRecovery();renderArchives();updateDue();
+updateDashboard();renderPreop();renderRecords();renderEvents();renderTrends();renderProcedureTimeline();renderRecovery();renderArchives();updateDue();renderTimerState();
 if(state.timer.running && state.timer.startedEpoch) startTimerLoop();
 })();

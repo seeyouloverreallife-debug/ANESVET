@@ -8,8 +8,8 @@
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" href="./icon-192.png">
   <link rel="apple-touch-icon" href="./icon-192.png">
-  <link rel="stylesheet" href="./style.css?v=6.1">
-  <title>ANESVET V6.1</title>
+  <link rel="stylesheet" href="./style.css?v=7">
+  <title>ANESVET V7</title>
 </head>
 <body>
 <header class="topbar">
@@ -17,11 +17,14 @@
     <div class="brand-mark">A</div>
     <div>
       <div class="eyebrow">GENOVI PET CARE • DIGITAL ANESTHESIA RECORD</div>
-      <h1>ANESVET <span>V6.1</span></h1>
+      <h1>ANESVET <span>V7</span></h1>
     </div>
   </div>
   <div class="top-actions">
-    <span id="caseClock" class="case-clock">00:00:00</span>
+    <div class="timer-status-wrap">
+      <span id="timerStateBadge" class="timer-state ready">READY</span>
+      <span id="caseClock" class="case-clock">00:00:00</span>
+    </div>
     <button id="installBtn" class="btn light" hidden>ติดตั้งแอป</button>
   </div>
 </header>
@@ -51,9 +54,11 @@
 
   <nav class="tabs" aria-label="เมนู">
     <button class="tab active" data-tab="patient">Patient</button>
+    <button class="tab" data-tab="preop">Pre-op</button>
     <button class="tab" data-tab="dashboard">Dashboard</button>
     <button class="tab" data-tab="record">Record</button>
     <button class="tab" data-tab="trends">Trends</button>
+    <button class="tab" data-tab="timeline">Timeline</button>
     <button class="tab" data-tab="drugs">Drug Calculator</button>
     <button class="tab" data-tab="events">Events & Drugs</button>
     <button class="tab" data-tab="recovery">Recovery</button>
@@ -161,6 +166,41 @@
     </section>
   </section>
 
+
+  <section id="preop" class="tabpage">
+    <section class="panel">
+      <div class="section-heading">
+        <div>
+          <h2>Pre-anesthetic checklist</h2>
+          <p>ตรวจความพร้อมก่อน induction ให้ครบก่อนกด Start case</p>
+        </div>
+        <span id="preopProgress" class="status-pill warn">0/14 COMPLETE</span>
+      </div>
+
+      <div class="checklist-grid">
+        <label class="preop-item"><input class="preop-check" type="checkbox" data-key="consent"><span><b>Consent / owner discussion</b><small>มีใบยินยอมและอธิบายความเสี่ยงแล้ว</small></span></label>
+        <label class="preop-item"><input class="preop-check" type="checkbox" data-key="fasting"><span><b>Fasting / aspiration risk reviewed</b><small>ประเมิน fasting, regurgitation และ aspiration risk</small></span></label>
+        <label class="preop-item"><input class="preop-check" type="checkbox" data-key="exam"><span><b>Pre-anesthetic physical exam</b><small>HR/RR, pulse, MM/CRT, hydration, temperature, pain</small></span></label>
+        <label class="preop-item"><input class="preop-check" type="checkbox" data-key="labs"><span><b>Lab / imaging reviewed</b><small>ผลตรวจที่จำเป็นเหมาะกับ ASA และ procedure</small></span></label>
+        <label class="preop-item"><input class="preop-check" type="checkbox" data-key="iv"><span><b>IV catheter patent</b><small>ยึดแน่นและ flush ได้</small></span></label>
+        <label class="preop-item"><input class="preop-check" type="checkbox" data-key="oxygen"><span><b>O₂ source + backup checked</b><small>แหล่งออกซิเจนพร้อมใช้งาน</small></span></label>
+        <label class="preop-item"><input class="preop-check" type="checkbox" data-key="machine"><span><b>Anesthesia machine leak check</b><small>circuit, APL/pop-off, bag, valves พร้อม</small></span></label>
+        <label class="preop-item"><input class="preop-check" type="checkbox" data-key="vaporizer"><span><b>Vaporizer / agent checked</b><small>agent ถูกต้องและมีระดับเพียงพอ</small></span></label>
+        <label class="preop-item"><input class="preop-check" type="checkbox" data-key="absorber"><span><b>CO₂ absorbent checked</b><small>ไม่หมดสภาพและติดตั้งถูกต้อง</small></span></label>
+        <label class="preop-item"><input class="preop-check" type="checkbox" data-key="airway"><span><b>Airway equipment ready</b><small>ETT หลายขนาด, cuff syringe, laryngoscope, tie</small></span></label>
+        <label class="preop-item"><input class="preop-check" type="checkbox" data-key="suction"><span><b>Suction available</b><small>พร้อมสำหรับ secretion / regurgitation</small></span></label>
+        <label class="preop-item"><input class="preop-check" type="checkbox" data-key="monitor"><span><b>Monitor attached / functional</b><small>ECG, SpO₂, BP, ETCO₂, temperature</small></span></label>
+        <label class="preop-item"><input class="preop-check" type="checkbox" data-key="warming"><span><b>Active warming ready</b><small>เตรียม warming ก่อนเกิด hypothermia</small></span></label>
+        <label class="preop-item"><input class="preop-check" type="checkbox" data-key="emergency"><span><b>Emergency drugs / crash plan ready</b><small>ตรวจ dose, concentration และ access</small></span></label>
+      </div>
+
+      <div class="preop-footer">
+        <div id="preopWarning" class="info-line">Checklist ยังไม่ครบ</div>
+        <button id="goDashboardBtn" class="btn primary">ไป Dashboard →</button>
+      </div>
+    </section>
+  </section>
+
   <section id="dashboard" class="tabpage">
     <section class="panel">
       <div class="section-heading">
@@ -170,8 +210,9 @@
         </div>
         <div class="button-row">
           <button id="editPatientBtn" class="btn">แก้ข้อมูลผู้ป่วย</button>
+          <button id="openPreopBtn" class="btn">Pre-op checklist</button>
           <button id="startCaseBtn" class="btn primary">▶ Start case</button>
-          <button id="pauseCaseBtn" class="btn">Pause</button>
+          <button id="pauseCaseBtn" class="btn" disabled>Pause</button>
         </div>
       </div>
       <div class="form-grid three">
@@ -184,6 +225,25 @@
         <label>Anesthetist
           <input id="anesthetist" type="text" placeholder="optional">
         </label>
+      </div>
+    </section>
+
+    <section class="panel milestone-panel">
+      <div class="section-heading">
+        <div>
+          <h2>Procedure milestones</h2>
+          <p>กดเมื่อเกิดเหตุการณ์สำคัญ ระบบจะลงเวลาใน Timeline และ PDF report</p>
+        </div>
+        <span class="small muted">elapsed + clock time</span>
+      </div>
+      <div class="milestone-buttons">
+        <button class="milestone-btn" data-cat="Airway" data-label="Premedication">Premedication</button>
+        <button class="milestone-btn" data-cat="Airway" data-label="Induction">Induction</button>
+        <button class="milestone-btn" data-cat="Airway" data-label="Intubation">Intubation</button>
+        <button class="milestone-btn" data-cat="Surgery" data-label="Surgery start">Surgery start</button>
+        <button class="milestone-btn" data-cat="Surgery" data-label="Surgery end">Surgery end</button>
+        <button class="milestone-btn" data-cat="Airway" data-label="Extubation">Extubation</button>
+        <button class="milestone-btn" data-cat="Recovery" data-label="Recovery complete">Recovery complete</button>
       </div>
     </section>
 
@@ -427,6 +487,29 @@
     </section>
   </section>
 
+
+
+  <section id="timeline" class="tabpage">
+    <section class="panel">
+      <div class="section-heading">
+        <div>
+          <h2>Procedure timeline</h2>
+          <p>รวม milestones, drugs, complications และ record notes เรียงตามเวลา</p>
+        </div>
+        <div class="button-row">
+          <button id="timelineRecordBtn" class="btn">＋ Record current values</button>
+          <button id="timelineEventBtn" class="btn primary">＋ Add custom event</button>
+        </div>
+      </div>
+      <div class="timeline-ruler">
+        <div><span>Case start</span><b id="timelineStartClock">—</b></div>
+        <div><span>Elapsed</span><b id="timelineElapsed">00:00:00</b></div>
+        <div><span>Records</span><b id="timelineRecordCount">0</b></div>
+        <div><span>Events</span><b id="timelineEventCount">0</b></div>
+      </div>
+      <div id="procedureTimeline" class="procedure-timeline empty-state">ยังไม่มี Timeline</div>
+    </section>
+  </section>
 
   <section id="drugs" class="tabpage">
     <section class="panel">
@@ -702,6 +785,11 @@
     </section>
 
     <section class="report-section">
+      <h2>Pre-anesthetic Assessment</h2>
+      <div id="reportPreop"></div>
+    </section>
+
+    <section class="report-section">
       <h2>Case Summary</h2>
       <div id="reportSummaryGrid" class="report-summary-grid"></div>
     </section>
@@ -726,6 +814,15 @@
       <div id="reportRecovery"></div>
     </section>
 
+    <section class="report-section">
+      <h2>Clinical Sign-off</h2>
+      <div class="report-signoff">
+        <div><span>Anesthetist</span><b id="reportSignAnesthetist"></b><i>Signature ____________________</i></div>
+        <div><span>Surgeon</span><b id="reportSignSurgeon"></b><i>Signature ____________________</i></div>
+        <div><span>Record completed</span><b id="reportCompleted"></b><i>Time ____________________</i></div>
+      </div>
+    </section>
+
     <div class="report-disclaimer">
       Generated by ANESVET. This report is a clinical record based on values entered by the veterinary team and does not replace source monitor data or clinical judgment.
     </div>
@@ -738,6 +835,6 @@
 </main>
 
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
-<script src="./app.js?v=6.1"></script>
+<script src="./app.js?v=7"></script>
 </body>
 </html>
