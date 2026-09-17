@@ -3,16 +3,17 @@
 
 const $ = id => document.getElementById(id);
 const $$ = sel => [...document.querySelectorAll(sel)];
-const CURRENT_KEY = 'anesvet_v7_current';
-const ARCHIVE_KEY = 'anesvet_v7_archive';
-const TAB_KEY = 'anesvet_v7_tab';
+const CURRENT_KEY = 'anesvet_v8_current';
+const ARCHIVE_KEY = 'anesvet_v8_archive';
+const TAB_KEY = 'anesvet_v8_tab';
+const SETTINGS_KEY='anesvet_v8_settings';
 
 const numericFields = ['weight','hr','rr','sap','map','dap','spo2','etco2','temp','vaporizer','o2flow','fluidRateInput','fluidTotal','recRR','recSpO2','recTemp'];
 const dataFields = [
   'patientName','hospitalId','species','breed','weight','age','bcs','asa','emergency','procedure','surgeon','anesthetist',
   'hr','rr','sap','map','dap','spo2','etco2','temp','vaporizer','o2flow','fluidRateInput','fluidTotal',
   'depth','ventilation','bradyPoorPerf','bloodLoss','cardiacRisk','respRisk','recordInterval','reminderOn',
-  'recordNote','recRR','recSpO2','recTemp','recPain','diazepamConc','propofolConc','tramadolConc','rimadylConc','metacamConc','adrenalineConc','atropineConc','atropineMode','dopamineDose','dopamineConc'
+  'recordNote','recRR','recSpO2','recTemp','recPain','planPremed','planInduction','planMaintenance','planAnalgesia','planAntibiotic','planNSAID','planBlock','planNote','actualDiazepamMl','actualPropofolMl','actualTramadolMl','balanceCrystalloid','balanceBolus','balanceBloodIn','balanceBloodLoss','balanceUrine','diazepamConc','propofolConc','tramadolConc','rimadylConc','metacamConc','adrenalineConc','atropineConc','atropineMode','dopamineDose','dopamineConc'
 ];
 
 let state = {
@@ -24,7 +25,8 @@ let state = {
   recoveryChecks: [false,false,false,false,false,false],
   patientSaved:false,
   preopChecks:{},
-  caseStartedAt:null
+  caseStartedAt:null,
+  responses:[]
 };
 let timerHandle = null;
 let dueReminderToken = null;
@@ -132,11 +134,14 @@ function load(){
   try{
     let raw=JSON.parse(localStorage.getItem(CURRENT_KEY)||'null');
     if(!raw){
+      const v7=JSON.parse(localStorage.getItem('anesvet_v7_current')||'null');
       const v61=JSON.parse(localStorage.getItem('anesvet_v6_1_current')||'null');
       const v6=JSON.parse(localStorage.getItem('anesvet_v6_current')||'null');
       const v5=JSON.parse(localStorage.getItem('anesvet_v5_current')||'null');
       const v4=JSON.parse(localStorage.getItem('anesvet_v4_current')||'null');
-      if(v61){
+      if(v7){
+        raw=v7;if(!Array.isArray(raw.responses))raw.responses=[];localStorage.setItem(CURRENT_KEY,JSON.stringify(raw));
+      }else if(v61){
         raw=v61;
         if(!raw.preopChecks) raw.preopChecks={};
         if(!('caseStartedAt' in raw)) raw.caseStartedAt=null;
@@ -192,7 +197,7 @@ function updatePatientSaveStatus(){
 $$('.asa-card').forEach(card=>card.addEventListener('click',()=>{
   $('asa').value=card.dataset.asa;
   state.patientSaved=false;
-  syncAsaCards();updatePatientSaveStatus();updateDashboard();
+  loadSettings();syncAsaCards();updatePatientSaveStatus();updateDashboard();
 }));
 $('savePatientBtn').addEventListener('click',()=>{
   const name=$('patientName').value.trim(),weight=Number($('weight').value);
@@ -339,6 +344,9 @@ function updateDashboard(){
   renderInterpretation();
   renderRecordPreview();
   drugCalc();
+  updatePlanCalc();
+  updateBalance();
+  renderSmartAlerts();
   save();
 }
 function renderInterpretation(){
@@ -370,7 +378,7 @@ function addRecord(note=''){
   state.records.push(currentSnapshot(note));
   state.records.sort((a,b)=>a.epoch-b.epoch);
   $('recordNote').value='';
-  save();renderRecords();renderTrends();renderProcedureTimeline();updateDue();
+  save();renderRecords();renderTrends();renderProcedureTimeline();renderSmartAlerts();updateDue();
   toast('Record saved • '+state.records[state.records.length-1].clock);
 }
 $('recordFromDashboardBtn').addEventListener('click',()=>addRecord(''));
@@ -398,7 +406,7 @@ function renderRecords(){
   });
   $$('#recordBody .delete-btn').forEach(b=>b.addEventListener('click',()=>{
     state.records=state.records.filter(r=>String(r.id)!==String(b.dataset.id));
-    save();renderRecords();renderTrends();renderProcedureTimeline();updateDue();
+    save();renderRecords();renderTrends();renderProcedureTimeline();renderSmartAlerts();updateDue();
   }));
 }
 function latestRecord(){return state.records?.length?state.records[state.records.length-1]:null}
@@ -470,6 +478,8 @@ function addEvent({category,name,dose='',route='',note=''}){
   save();renderEvents();renderTrends();renderProcedureTimeline();renderProcedureTimeline();toast(`${name} • ${ev.clock}`);
 }
 
+$$('.administered-btn').forEach(btn=>btn.addEventListener('click',()=>{const inp=$(btn.dataset.input),ml=Number(inp?.value||0);if(!(ml>0)){toast('กรุณาใส่ actual administered volume');return}addEvent({category:'Drug',name:btn.dataset.drug,dose:`Actual administered ${fmtVol(ml)} mL`,route:'',note:'Actual dose administration'})}));
+$('copyPlanToEventsBtn')?.addEventListener('click',()=>{const planned=[];if($('planPremed').value)planned.push(['Premed',$('planPremed').value]);if($('planInduction').value)planned.push(['Induction',$('planInduction').value]);if($('planMaintenance').value)planned.push(['Maintenance',$('planMaintenance').value]);if($('planAnalgesia').value)planned.push(['Analgesia',$('planAnalgesia').value]);planned.forEach(([cat,name])=>addEvent({category:'Plan',name:`${cat}: ${name}`,note:'Planned anesthesia component'}));toast('Planned components added to Events')});
 $$('.drug-event-btn').forEach(btn=>btn.addEventListener('click',()=>{
   const parts=[];
   const doseEl=btn.dataset.doseid?$(btn.dataset.doseid):null;
@@ -489,7 +499,11 @@ $('addEventBtn').addEventListener('click',()=>{
   addEvent({category:$('eventCategory').value,name,dose:$('eventDose').value.trim(),route:$('eventRoute').value.trim(),note:$('eventNote').value.trim()});
   ['eventName','eventDose','eventRoute','eventNote'].forEach(id=>$(id).value='');
 });
+function populateResponseSelect(){const sel=$('responseEventSelect');if(!sel)return;const events=(state.events||[]).filter(e=>['Drug','Fluid','Complication','Ventilation'].includes(e.category));sel.innerHTML=events.length?events.map(e=>`<option value="${escapeHtml(e.id)}">${escapeHtml(formatShortElapsed(e.elapsedMs)+' • '+e.name)}</option>`).join(''):'<option value="">— no intervention event —</option>'}
+$('captureResponseBtn')?.addEventListener('click',()=>{const id=$('responseEventSelect').value;if(!id){toast('เลือก intervention ก่อน');return}const ev=(state.events||[]).find(e=>String(e.id)===String(id));if(!ev)return;const now=currentSnapshot(''),resp={id:crypto.randomUUID?crypto.randomUUID():String(Date.now()),eventId:id,eventName:ev.name,eventElapsed:ev.elapsedMs,capturedElapsed:now.elapsedMs,map:now.map,hr:now.hr,spo2:now.spo2,etco2:now.etco2,temp:now.temp,note:$('responseNote').value.trim()};state.responses=state.responses||[];state.responses.push(resp);$('responseNote').value='';save();renderResponses();toast('Response captured')});
+function renderResponses(){populateResponseSelect();const el=$('responseList'),arr=state.responses||[];if(!el)return;if(!arr.length){el.className='response-list empty-state';el.textContent='ยังไม่มี response tracking';return}el.className='response-list';el.innerHTML=arr.map(r=>`<div class="response-card"><b>${escapeHtml(r.eventName)} → response at +${escapeHtml(formatShortElapsed(r.capturedElapsed-r.eventElapsed))}</b><span>MAP ${r.map??'—'} • HR ${r.hr??'—'} • SpO₂ ${r.spo2??'—'} • ETCO₂ ${r.etco2??'—'} • Temp ${r.temp??'—'}°F${r.note?' • '+escapeHtml(r.note):''}</span></div>`).join('')}
 function renderEvents(){
+  renderResponses();
   const events=state.events||[];
   $('eventCountText').textContent=`${events.length} event${events.length===1?'':'s'}`;
   const el=$('eventLog');
@@ -628,6 +642,12 @@ $$('.graph-filter').forEach(b=>b.addEventListener('click',()=>{
 }));
 
 
+function updatePlanCalc(){
+  const w=getVal('weight',0)||0,dConc=Number($('diazepamConc')?.value||5),pConc=Number($('propofolConc')?.value||10),tConc=Number($('tramadolConc')?.value||50);
+  if($('planDiazepamCalc'))$('planDiazepamCalc').textContent=`${fmtDose(w*0.25)} mg • ${dConc>0?fmtVol((w*0.25)/dConc):'—'} mL`;
+  if($('planPropofolCalc'))$('planPropofolCalc').textContent=`${fmtDose(w*4)} mg • ${pConc>0?fmtVol((w*4)/pConc):'—'} mL planned`;
+  if($('planTramadolCalc'))$('planTramadolCalc').textContent=`${fmtDose(w*4)} mg • ${tConc>0?fmtVol((w*4)/tConc):'—'} mL`;
+}
 function drugCalc(){
   const w=getVal('weight',0)||0;
   if($('drugWeight')) $('drugWeight').textContent=`${w.toFixed(1)} kg`;
@@ -676,6 +696,12 @@ function fmtVol(n){
   return n.toFixed(1).replace(/\.0$/,'');
 }
 
+function updateBalance(){
+ const w=getVal('weight',1)||1,cryst=Number($('balanceCrystalloid')?.value||0),bolus=Number($('balanceBolus')?.value||0),bloodIn=Number($('balanceBloodIn')?.value||0),loss=Number($('balanceBloodLoss')?.value||0),urine=Number($('balanceUrine')?.value||0),totalIn=cryst+bolus+bloodIn,net=totalIn-loss-urine;
+ if($('balanceFluidIn'))$('balanceFluidIn').textContent=`${fmtVol(totalIn)} mL`;if($('balanceFluidInKg'))$('balanceFluidInKg').textContent=`${fmtVol(totalIn/w)} mL/kg`;if($('balanceLoss'))$('balanceLoss').textContent=`${fmtVol(loss)} mL`;if($('balanceLossKg'))$('balanceLossKg').textContent=`${fmtVol(loss/w)} mL/kg`;if($('balanceUrineOut'))$('balanceUrineOut').textContent=`${fmtVol(urine)} mL`;if($('balanceUrineKg'))$('balanceUrineKg').textContent=`${fmtVol(urine/w)} mL/kg`;if($('balanceNet'))$('balanceNet').textContent=`${fmtVol(net)} mL`;
+}
+['balanceCrystalloid','balanceBolus','balanceBloodIn','balanceBloodLoss','balanceUrine'].forEach(id=>$(id)?.addEventListener('input',()=>{updateBalance();save()}));
+function renderSmartAlerts(){const recs=state.records||[],alerts=[];if(recs.length>=3){const last3=recs.slice(-3),first=last3[0],last=last3[last3.length-1],spanMin=Math.max(1,(last.elapsedMs-first.elapsedMs)/60000);const mapDrop=Number(first.map)-Number(last.map);if(Number.isFinite(mapDrop)&&mapDrop>=10)alerts.push({level:Number(last.map)<60?'danger':'warn',title:'Progressive hypotension',text:`MAP decreased ${Math.round(mapDrop)} mmHg over ~${Math.round(spanMin)} min (${first.map} → ${last.map})`});const etRise=Number(last.etco2)-Number(first.etco2);if(Number.isFinite(etRise)&&etRise>=8)alerts.push({level:Number(last.etco2)>60?'danger':'warn',title:'Progressive hypercapnia',text:`ETCO₂ increased ${Math.round(etRise)} mmHg (${first.etco2} → ${last.etco2})`});const tempDrop=Number(first.temp)-Number(last.temp);if(Number.isFinite(tempDrop)&&tempDrop>=1.0)alerts.push({level:Number(last.temp)<98?'danger':'warn',title:'Progressive heat loss',text:`Temperature decreased ${tempDrop.toFixed(1)}°F (${first.temp} → ${last.temp})`});const spoDrop=Number(first.spo2)-Number(last.spo2);if(Number.isFinite(spoDrop)&&spoDrop>=3)alerts.push({level:Number(last.spo2)<90?'danger':'warn',title:'Falling SpO₂',text:`SpO₂ decreased ${Math.round(spoDrop)} points (${first.spo2}% → ${last.spo2}%)`})}const box=$('smartAlerts');if(!box)return;$('smartAlertCount').textContent=`${alerts.length} ALERT${alerts.length===1?'':'S'}`;$('smartAlertCount').className=`status-pill ${alerts.some(a=>a.level==='danger')?'danger':alerts.length?'warn':'good'}`;box.innerHTML=alerts.length?alerts.map(a=>`<div class="smart-alert-item ${a.level}"><b>${escapeHtml(a.title)}</b><span>${escapeHtml(a.text)}</span></div>`).join(''):'<div class="empty-state">ยังไม่พบ trend alert</div>'}
 function renderRecovery(){
   const all=$$('.recovery-check'),done=all.filter(x=>x.checked).length,el=$('recoveryStatus');
   el.textContent=`Checklist ${done}/${all.length}`;
@@ -723,6 +749,7 @@ function buildPdfReport(){
   };
   $('reportPreop').innerHTML=`<div class="report-preop-grid">${Object.entries(preopLabels).map(([k,label])=>`<div class="report-preop-item"><span class="mark">${(state.preopChecks||{})[k]?'☑':'☐'}</span><span>${escapeHtml(label)}</span></div>`).join('')}</div>`;
 
+  $('reportPlanGrid').innerHTML=[reportInfoItem('Premedication',$('planPremed').value||'—'),reportInfoItem('Induction',$('planInduction').value||'—'),reportInfoItem('Maintenance',$('planMaintenance').value||'—'),reportInfoItem('Analgesia',$('planAnalgesia').value||'—'),reportInfoItem('Antibiotic',$('planAntibiotic').value||'—'),reportInfoItem('NSAID',$('planNSAID').value||'—'),reportInfoItem('Block',$('planBlock').value||'—'),reportInfoItem('Plan note',$('planNote').value||'—')].join('');const bw=Number($('weight').value||1),cryst=Number($('balanceCrystalloid').value||0),bolus=Number($('balanceBolus').value||0),bloodIn=Number($('balanceBloodIn').value||0),loss=Number($('balanceBloodLoss').value||0),urine=Number($('balanceUrine').value||0),totalIn=cryst+bolus+bloodIn;$('reportBalanceGrid').innerHTML=[['Fluid in',`${fmtVol(totalIn)} mL`],['Fluid in/kg',`${fmtVol(totalIn/bw)} mL/kg`],['Blood loss',`${fmtVol(loss)} mL`],['Blood loss/kg',`${fmtVol(loss/bw)} mL/kg`],['Urine',`${fmtVol(urine)} mL`],['Net',`${fmtVol(totalIn-loss-urine)} mL`]].map(([l,v])=>`<div class="report-summary-item"><span>${escapeHtml(l)}</span><b>${escapeHtml(v)}</b></div>`).join('');
   $('reportCaseGrid').innerHTML=[
     reportInfoItem('Procedure',$('procedure').value||'—'),
     reportInfoItem('Surgeon',$('surgeon').value||'—'),
@@ -774,6 +801,7 @@ function buildPdfReport(){
     <div><b>Checklist</b><br>${checks.filter(Boolean).length}/${checks.length}</div>
   </div>
   <div style="margin-top:8px;font-size:9px"><b>Recovery note:</b> ${escapeHtml($('recPain').value||'—')}</div>`;
+  const smart=$('smartAlerts')?.innerText?.trim()||'No smart alerts',responses=state.responses||[];$('reportResponses').innerHTML=`<div style="font-size:8px;margin-bottom:6px"><b>Smart alerts:</b> ${escapeHtml(smart)}</div>`+(responses.length?responses.map(r=>`<div class="report-event"><b>${escapeHtml(r.eventName)}</b><span>+${escapeHtml(formatShortElapsed(r.capturedElapsed-r.eventElapsed))}</span><div>MAP ${r.map??'—'} • HR ${r.hr??'—'} • SpO₂ ${r.spo2??'—'} • ETCO₂ ${r.etco2??'—'} • Temp ${r.temp??'—'}°F${r.note?' • '+escapeHtml(r.note):''}</div></div>`).join(''):'<div style="font-size:8px">No intervention-response records</div>');
   $('reportSignAnesthetist').textContent=$('anesthetist').value||'—';
   $('reportSignSurgeon').textContent=$('surgeon').value||'—';
   $('reportCompleted').textContent=`${formatDate(Date.now())} ${formatClock()}`;
@@ -833,11 +861,12 @@ function getArchive(){
   try{
     let a=JSON.parse(localStorage.getItem(ARCHIVE_KEY)||'null');
     if(!Array.isArray(a)){
+      const v7=JSON.parse(localStorage.getItem('anesvet_v7_archive')||'null');
       const v61=JSON.parse(localStorage.getItem('anesvet_v6_1_archive')||'null');
       const v6=JSON.parse(localStorage.getItem('anesvet_v6_archive')||'null');
       const v5=JSON.parse(localStorage.getItem('anesvet_v5_archive')||'null');
       const v4=JSON.parse(localStorage.getItem('anesvet_v4_archive')||'null');
-      if(Array.isArray(v61)){
+      if(Array.isArray(v7)){a=v7;}else if(Array.isArray(v61)){
         a=v61;
       }else if(Array.isArray(v6)){
         a=v6;
@@ -889,7 +918,7 @@ function appRootUrl(){
   let path=here.pathname;
   if(!path.endsWith('/')) path=path.replace(/\/[^/]*$/,'/');
   const url=new URL(path, here.origin);
-  url.searchParams.set('v','7');
+  url.searchParams.set('v','8');
   return url.href;
 }
 function restartAtAppRoot(){
@@ -898,6 +927,9 @@ function restartAtAppRoot(){
   window.location.replace(appRootUrl());
 }
 
+function defaultSettings(){return{interval:'5',diazepamConc:'5',propofolConc:'10',tramadolConc:'50',rimadylConc:'50',metacamConc:'5',atropineConc:'0.6'}}
+function loadSettings(){let s;try{s=JSON.parse(localStorage.getItem(SETTINGS_KEY)||'null')}catch(e){}s={...defaultSettings(),...(s||{})};if($('settingInterval'))$('settingInterval').value=s.interval;if($('settingDiazepamConc'))$('settingDiazepamConc').value=s.diazepamConc;if($('settingPropofolConc'))$('settingPropofolConc').value=s.propofolConc;if($('settingTramadolConc'))$('settingTramadolConc').value=s.tramadolConc;if($('settingRimadylConc'))$('settingRimadylConc').value=s.rimadylConc;if($('settingMetacamConc'))$('settingMetacamConc').value=s.metacamConc;if($('settingAtropineConc'))$('settingAtropineConc').value=s.atropineConc}
+$('saveSettingsBtn')?.addEventListener('click',()=>{const s={interval:$('settingInterval').value,diazepamConc:$('settingDiazepamConc').value,propofolConc:$('settingPropofolConc').value,tramadolConc:$('settingTramadolConc').value,rimadylConc:$('settingRimadylConc').value,metacamConc:$('settingMetacamConc').value,atropineConc:$('settingAtropineConc').value};localStorage.setItem(SETTINGS_KEY,JSON.stringify(s));$('recordInterval').value=s.interval;$('diazepamConc').value=s.diazepamConc;$('propofolConc').value=s.propofolConc;$('tramadolConc').value=s.tramadolConc;$('rimadylConc').value=s.rimadylConc;$('metacamConc').value=s.metacamConc;$('atropineConc').value=s.atropineConc;updateDashboard();toast('Hospital settings saved')});
 function freshState(){
   return {
     caseId:crypto.randomUUID?crypto.randomUUID():String(Date.now()),

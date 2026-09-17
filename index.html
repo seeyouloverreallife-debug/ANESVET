@@ -8,8 +8,8 @@
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" href="./icon-192.png">
   <link rel="apple-touch-icon" href="./icon-192.png">
-  <link rel="stylesheet" href="./style.css?v=7">
-  <title>ANESVET V7</title>
+  <link rel="stylesheet" href="./style.css?v=8">
+  <title>ANESVET V8</title>
 </head>
 <body>
 <header class="topbar">
@@ -17,7 +17,7 @@
     <div class="brand-mark">A</div>
     <div>
       <div class="eyebrow">GENOVI PET CARE • DIGITAL ANESTHESIA RECORD</div>
-      <h1>ANESVET <span>V7</span></h1>
+      <h1>ANESVET <span>V8</span></h1>
     </div>
   </div>
   <div class="top-actions">
@@ -55,6 +55,7 @@
   <nav class="tabs" aria-label="เมนู">
     <button class="tab active" data-tab="patient">Patient</button>
     <button class="tab" data-tab="preop">Pre-op</button>
+    <button class="tab" data-tab="plan">Plan</button>
     <button class="tab" data-tab="dashboard">Dashboard</button>
     <button class="tab" data-tab="record">Record</button>
     <button class="tab" data-tab="trends">Trends</button>
@@ -63,6 +64,7 @@
     <button class="tab" data-tab="events">Events & Drugs</button>
     <button class="tab" data-tab="recovery">Recovery</button>
     <button class="tab" data-tab="cases">Cases</button>
+    <button class="tab" data-tab="settings">Settings</button>
   </nav>
 
   <section id="patient" class="tabpage active">
@@ -197,6 +199,29 @@
       <div class="preop-footer">
         <div id="preopWarning" class="info-line">Checklist ยังไม่ครบ</div>
         <button id="goDashboardBtn" class="btn primary">ไป Dashboard →</button>
+      </div>
+    </section>
+  </section>
+
+  <section id="plan" class="tabpage">
+    <section class="panel">
+      <div class="section-heading"><div><h2>Anesthesia plan</h2><p>กำหนดแผนก่อนเริ่มเคส และแยก calculated dose ออกจาก actual administered dose</p></div><button id="copyPlanToEventsBtn" class="btn">Copy planned drugs to Events</button></div>
+      <div class="plan-grid">
+        <label>Premedication<select id="planPremed"><option value="">—</option><option>Diazepam</option><option>Custom</option></select></label>
+        <label>Induction<select id="planInduction"><option value="Propofol">Propofol</option><option>Custom</option></select></label>
+        <label>Maintenance<select id="planMaintenance"><option value="Isoflurane">Isoflurane</option><option>Sevoflurane</option><option>TIVA / PIVA</option><option>Custom</option></select></label>
+        <label>Analgesia<input id="planAnalgesia" type="text" placeholder="opioid / tramadol / local block"></label>
+        <label>Antibiotic<input id="planAntibiotic" type="text" placeholder="เช่น Cefazolin"></label>
+        <label>NSAID<input id="planNSAID" type="text" placeholder="Dog: carprofen / Cat: meloxicam"></label>
+        <label class="span3">Local / regional block<input id="planBlock" type="text" placeholder="line block, dental block, TAP block"></label>
+        <label class="span3">Anesthetic concerns / plan note<input id="planNote" type="text" placeholder="airway, cardiac, CKD, geriatric, difficult intubation..."></label>
+      </div>
+    </section>
+    <section class="panel"><h2>Calculated vs administered</h2>
+      <div class="admin-grid">
+        <article class="admin-card"><div class="admin-head"><h3>Diazepam</h3><span>0.25 mg/kg</span></div><div class="admin-calc"><b id="planDiazepamCalc">—</b></div><label>Actual administered (mL)<input id="actualDiazepamMl" type="number" min="0" step="0.01"></label><button class="btn administered-btn" data-drug="Diazepam" data-input="actualDiazepamMl">Mark administered</button></article>
+        <article class="admin-card"><div class="admin-head"><h3>Propofol</h3><span>4 mg/kg planned</span></div><div class="admin-calc"><b id="planPropofolCalc">—</b></div><label>Actual administered (mL)<input id="actualPropofolMl" type="number" min="0" step="0.01"></label><small>Titrate to effect; actual dose may be lower than calculated dose.</small><button class="btn administered-btn" data-drug="Propofol" data-input="actualPropofolMl">Mark administered</button></article>
+        <article class="admin-card"><div class="admin-head"><h3>Tramadol</h3><span>4 mg/kg</span></div><div class="admin-calc"><b id="planTramadolCalc">—</b></div><label>Actual administered (mL)<input id="actualTramadolMl" type="number" min="0" step="0.01"></label><button class="btn administered-btn" data-drug="Tramadol" data-input="actualTramadolMl">Mark administered</button></article>
       </div>
     </section>
   </section>
@@ -353,6 +378,16 @@
         <label class="switchline"><input id="respRisk" type="checkbox"> Respiratory compromise / difficult airway</label>
       </section>
     </div>
+
+    <section class="panel"><div class="section-heading"><div><h2>Fluid / blood loss balance</h2><p>ติดตาม cumulative intake, bolus, blood product, blood loss และ urine output</p></div></div><div class="balance-grid">
+<label>Crystalloid running total (mL)<input id="balanceCrystalloid" type="number" min="0" step="1" value="0"></label>
+<label>Fluid bolus total (mL)<input id="balanceBolus" type="number" min="0" step="1" value="0"></label>
+<label>Blood product given (mL)<input id="balanceBloodIn" type="number" min="0" step="1" value="0"></label>
+<label>Estimated blood loss (mL)<input id="balanceBloodLoss" type="number" min="0" step="1" value="0"></label>
+<label>Urine output (mL)<input id="balanceUrine" type="number" min="0" step="1" value="0"></label></div>
+<div class="balance-summary"><div><span>Total fluid in</span><b id="balanceFluidIn">0 mL</b><small id="balanceFluidInKg">0 mL/kg</small></div><div><span>Blood loss</span><b id="balanceLoss">0 mL</b><small id="balanceLossKg">0 mL/kg</small></div><div><span>Urine</span><b id="balanceUrineOut">0 mL</b><small id="balanceUrineKg">0 mL/kg</small></div><div><span>Net balance*</span><b id="balanceNet">0 mL</b><small>simple input-output estimate</small></div></div></section>
+
+    <section class="panel smart-alert-panel"><div class="section-heading"><div><h2>Smart trend alerts</h2><p>ประเมินการเปลี่ยนแปลงจาก Record ล่าสุด ไม่ได้ดูเฉพาะ threshold จุดเดียว</p></div><span id="smartAlertCount" class="status-pill good">0 ALERTS</span></div><div id="smartAlerts" class="smart-alert-list"><div class="empty-state">ต้องมีอย่างน้อย 3 records เพื่อประเมิน trend</div></div></section>
 
     <section class="panel">
       <h2>Current interpretation</h2>
@@ -690,6 +725,8 @@
       </div>
     </section>
 
+    <section class="panel"><div class="section-heading"><div><h2>Intervention → response</h2><p>เลือก intervention ล่าสุด แล้วบันทึก response ของค่ามอนิเตอร์หลังรักษา</p></div><button id="captureResponseBtn" class="btn primary">Capture current response</button></div><div class="response-grid"><label>Intervention<select id="responseEventSelect"></select></label><label>Response note<input id="responseNote" type="text" placeholder="เช่น MAP improved after ephedrine"></label></div><div id="responseList" class="response-list empty-state">ยังไม่มี response tracking</div></section>
+
     <section class="panel">
       <div class="section-heading">
         <div><h2>Event log</h2><p id="eventCountText">0 events</p></div>
@@ -789,6 +826,8 @@
       <div id="reportPreop"></div>
     </section>
 
+    <section class="report-section"><h2>Anesthesia Plan</h2><div id="reportPlanGrid" class="report-info-grid"></div></section>
+    <section class="report-section"><h2>Fluid / Blood Loss Balance</h2><div id="reportBalanceGrid" class="report-summary-grid"></div></section>
     <section class="report-section">
       <h2>Case Summary</h2>
       <div id="reportSummaryGrid" class="report-summary-grid"></div>
@@ -809,6 +848,7 @@
       <div id="reportEvents"></div>
     </section>
 
+    <section class="report-section"><h2>Smart Alerts / Intervention Response</h2><div id="reportResponses"></div></section>
     <section class="report-section">
       <h2>Recovery</h2>
       <div id="reportRecovery"></div>
@@ -828,6 +868,16 @@
     </div>
   </section>
 
+  <section id="settings" class="tabpage"><section class="panel"><div class="section-heading"><div><h2>Hospital settings</h2><p>ปรับ default ของโรงพยาบาลโดยไม่ต้องแก้ code</p></div><button id="saveSettingsBtn" class="btn primary">Save settings</button></div><div class="settings-grid">
+<label>Default record interval<select id="settingInterval"><option value="5">5 min</option><option value="10">10 min</option></select></label>
+<label>Diazepam concentration (mg/mL)<input id="settingDiazepamConc" type="number" min="0.01" step="0.1" value="5"></label>
+<label>Propofol concentration (mg/mL)<input id="settingPropofolConc" type="number" min="0.01" step="0.1" value="10"></label>
+<label>Tramadol concentration (mg/mL)<input id="settingTramadolConc" type="number" min="0.01" step="0.1" value="50"></label>
+<label>Carprofen concentration (mg/mL)<input id="settingRimadylConc" type="number" min="0.01" step="0.1" value="50"></label>
+<label>Meloxicam concentration (mg/mL)<input id="settingMetacamConc" type="number" min="0.01" step="0.1" value="5"></label>
+<label>Atropine concentration (mg/mL)<input id="settingAtropineConc" type="number" min="0.01" step="0.1" value="0.6"></label>
+</div><div class="settings-note">บันทึกแล้วจะใช้กับ Drug Calculator และ default ของเคสใหม่</div></section></section>
+
   <section class="footer-note">
     <b>Clinical safety:</b> ANESVET เป็น decision-support และ digital anesthesia record ไม่ใช่ continuous physiologic monitor
     ต้องตรวจผู้ป่วย, waveform, airway, anesthetic depth และอุปกรณ์จริงร่วมเสมอ
@@ -835,6 +885,6 @@
 </main>
 
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
-<script src="./app.js?v=7"></script>
+<script src="./app.js?v=8"></script>
 </body>
 </html>
