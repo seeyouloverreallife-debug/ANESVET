@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0f4c5c" />
+  <meta name="description" content="Vet Anesthesia Monitor Quick-Check สำหรับสุนัขและแมว" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="icons/icon-192.png" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <link rel="stylesheet" href="style.css" />
+  <title>Vet Anesthesia Monitor</title>
+</head>
+<body>
+  <header class="app-header">
+    <div>
+      <div class="eyebrow">GENOVI PET CARE • CLINICAL TOOL</div>
+      <h1>Vet Anesthesia Monitor</h1>
+      <p>Quick-check สำหรับการดมยาสลบในสุนัขและแมว</p>
+    </div>
+    <button id="installBtn" class="btn ghost" hidden>ติดตั้งแอป</button>
+  </header>
+
+  <main>
+    <section class="panel patient-panel">
+      <div class="panel-title-row">
+        <h2>ข้อมูลผู้ป่วย</h2>
+        <span id="overallBadge" class="badge green">STABLE</span>
+      </div>
+      <div class="grid patient-grid">
+        <label>ชื่อสัตว์<input id="patientName" type="text" placeholder="เช่น Rocket" /></label>
+        <label>Species
+          <select id="species">
+            <option value="dog">Dog</option>
+            <option value="cat">Cat</option>
+          </select>
+        </label>
+        <label>น้ำหนัก (kg)<input id="weight" type="number" min="0.1" step="0.1" value="10" /></label>
+        <label>ASA
+          <select id="asa">
+            <option>I</option><option selected>II</option><option>III</option><option>IV</option><option>V</option>
+          </select>
+        </label>
+        <label class="inline-check"><input id="emergency" type="checkbox" /> Emergency (E)</label>
+      </div>
+      <div id="overallText" class="overall-text">ค่าหลักอยู่ในช่วงที่ยอมรับได้ — ติดตาม trend ต่อเนื่อง</div>
+    </section>
+
+    <nav class="tabs" aria-label="เมนูหลัก">
+      <button class="tab active" data-tab="monitor">Monitor</button>
+      <button class="tab" data-tab="algorithms">Algorithms</button>
+      <button class="tab" data-tab="timer">Timer</button>
+      <button class="tab" data-tab="recovery">Recovery</button>
+    </nav>
+
+    <section id="monitor" class="tabpage active">
+      <div class="grid monitor-grid">
+        <article class="panel metric-card">
+          <div class="metric-head"><h3>MAP</h3><span id="mapFlag" class="mini green">OK</span></div>
+          <div class="metric-input"><input id="map" type="number" value="72" min="0" max="250" /><span>mmHg</span></div>
+          <p id="mapMsg">≥70 โดยทั่วไปถือว่ายอมรับได้</p>
+        </article>
+
+        <article class="panel metric-card">
+          <div class="metric-head"><h3>SpO₂</h3><span id="spo2Flag" class="mini green">OK</span></div>
+          <div class="metric-input"><input id="spo2" type="number" value="98" min="0" max="100" /><span>%</span></div>
+          <p id="spo2Msg">≥95% โดยทั่วไปถือว่ายอมรับได้</p>
+        </article>
+
+        <article class="panel metric-card">
+          <div class="metric-head"><h3>ETCO₂</h3><span id="etco2Flag" class="mini green">OK</span></div>
+          <div class="metric-input"><input id="etco2" type="number" value="45" min="0" max="150" /><span>mmHg</span></div>
+          <p id="etco2Msg">เป้าหมายทั่วไป 40–50 mmHg</p>
+        </article>
+
+        <article class="panel metric-card">
+          <div class="metric-head"><h3>Temp</h3><span id="tempFlag" class="mini green">OK</span></div>
+          <div class="metric-input"><input id="temp" type="number" value="37.2" min="25" max="45" step="0.1" /><span>°C</span></div>
+          <p id="tempMsg">เริ่ม warming ก่อนอุณหภูมิลดมาก</p>
+        </article>
+
+        <article class="panel metric-card">
+          <div class="metric-head"><h3>HR</h3><span id="hrFlag" class="mini gray">INFO</span></div>
+          <div class="metric-input"><input id="hr" type="number" value="90" min="0" max="400" /><span>bpm</span></div>
+          <p>ตีความร่วมกับยา rhythm pulse และ BP</p>
+        </article>
+
+        <article class="panel metric-card">
+          <div class="metric-head"><h3>RR</h3><span class="mini gray">INFO</span></div>
+          <div class="metric-input"><input id="rr" type="number" value="12" min="0" max="200" /><span>/min</span></div>
+          <p>ดูร่วมกับ chest excursion และ capnogram</p>
+        </article>
+      </div>
+
+      <div class="grid two-col">
+        <section class="panel">
+          <h2>Clinical modifiers</h2>
+          <label class="switch-line"><input id="bradyPoorPerf" type="checkbox" /> Bradycardia + hypotension / poor perfusion</label>
+          <label class="switch-line"><input id="bloodLoss" type="checkbox" /> มี active blood loss / suspected hypovolemia</label>
+          <label class="switch-line"><input id="cardiacRisk" type="checkbox" /> Cardiac disease / fluid intolerance risk</label>
+          <label class="switch-line"><input id="respRisk" type="checkbox" /> Respiratory compromise / difficult airway risk</label>
+        </section>
+
+        <section class="panel">
+          <h2>Fluid reference</h2>
+          <div id="fluidRate" class="big-number">50 mL/hr</div>
+          <div id="fluidNote" class="muted">Dog ~5 mL/kg/hr สำหรับผู้ป่วย cardiac/renal function ปกติ</div>
+          <label class="field-top">Total fluid given (mL)
+            <input id="fluidTotal" type="number" min="0" step="1" value="0" />
+          </label>
+          <div id="fluidTotalMsg" class="callout info">เริ่มบันทึก total fluid เพื่อดู cumulative dose</div>
+        </section>
+      </div>
+
+      <section class="panel">
+        <div class="panel-title-row">
+          <h2>60-second check เมื่อ monitor ร้อง</h2>
+          <button id="printBtn" class="btn">พิมพ์ / Save PDF</button>
+        </div>
+        <div class="steps-five">
+          <div><b>1 LOOK</b><span>patient / chest / MM / blood loss</span></div>
+          <div><b>2 AIRWAY</b><span>ETT / circuit / O₂</span></div>
+          <div><b>3 DEPTH</b><span>vaporizer / reflex / stimulation</span></div>
+          <div><b>4 VERIFY</b><span>probe / cuff / lead</span></div>
+          <div><b>5 CAUSE</b><span>แก้กลไก ไม่ใช่แก้ตัวเลข</span></div>
+        </div>
+      </section>
+    </section>
+
+    <section id="algorithms" class="tabpage">
+      <div class="grid algorithm-grid">
+        <article class="panel algorithm danger-border">
+          <h2>Hypotension</h2>
+          <ol>
+            <li>Verify BP + pulse/perfusion</li>
+            <li>Assess anesthetic depth → ลด inhalant ถ้าลึก</li>
+            <li>Optimize analgesia / local block</li>
+            <li>ถามว่า volume, HR, contractility หรือ SVR?</li>
+            <li>ให้ fluid challenge เฉพาะเมื่อมีเหตุผลว่า fluid responsive</li>
+            <li>พิจารณา inotrope/vasopressor ตามกลไก</li>
+          </ol>
+          <div class="callout warn">อย่าเพิ่ม fluid rate เป็นคำตอบอัตโนมัติของ MAP ต่ำ โดยเฉพาะแมว CKD และ cardiac disease</div>
+        </article>
+
+        <article class="panel algorithm">
+          <h2>Hypercapnia / Hypoventilation</h2>
+          <ol>
+            <li>Check depth / vaporizer</li>
+            <li>Check ETT kink / obstruction / cuff</li>
+            <li>Check circuit, dead space, absorber, fresh gas flow</li>
+            <li>ETCO₂ &gt;60 mmHg → เริ่ม PPV และประเมินซ้ำ</li>
+            <li>หลัง PPV ให้ recheck BP</li>
+          </ol>
+        </article>
+
+        <article class="panel algorithm">
+          <h2>Hypoxemia</h2>
+          <ol>
+            <li>Confirm ETT in trachea + O₂ source</li>
+            <li>Check FiO₂ / circuit / leak</li>
+            <li>แก้ hypoventilation</li>
+            <li>Check one-lung intubation</li>
+            <li>คิดถึง V/Q mismatch, atelectasis, pneumothorax, edema</li>
+          </ol>
+        </article>
+
+        <article class="panel algorithm">
+          <h2>Bradycardia</h2>
+          <ol>
+            <li>ดู BP และ perfusion ก่อน</li>
+            <li>ประเมิน anesthetic depth / vagal stimulus / drug effect</li>
+            <li>ถ้า HR ต่ำแต่ perfusion ดี อาจยังไม่ต้องรักษาตัวเลข</li>
+            <li>ถ้า HR ต่ำ + hypotension/poor perfusion → แก้สาเหตุและพิจารณายาที่เหมาะสม</li>
+          </ol>
+        </article>
+
+        <article class="panel algorithm">
+          <h2>Hypothermia</h2>
+          <ol>
+            <li>หยุด heat loss: wet prep, cold surface, exposed cavity</li>
+            <li>เริ่ม active warming ที่ปลอดภัย</li>
+            <li>อุ่น fluids หากเหมาะสม</li>
+            <li>ลดเวลาสลบที่ไม่จำเป็น</li>
+            <li>monitor ต่อใน recovery</li>
+          </ol>
+        </article>
+      </div>
+    </section>
+
+    <section id="timer" class="tabpage">
+      <div class="grid two-col">
+        <section class="panel timer-panel">
+          <h2>Anesthesia Timer</h2>
+          <div id="timerDisplay" class="timer-display">00:00:00</div>
+          <div class="button-row">
+            <button id="timerStart" class="btn primary">Start</button>
+            <button id="timerPause" class="btn">Pause</button>
+            <button id="timerReset" class="btn ghost">Reset</button>
+          </div>
+          <div class="button-row">
+            <button class="btn lap" data-label="Induction">Mark Induction</button>
+            <button class="btn lap" data-label="Intubation">Mark Intubation</button>
+            <button class="btn lap" data-label="Surgery start">Mark Surgery start</button>
+            <button class="btn lap" data-label="Surgery end">Mark Surgery end</button>
+            <button class="btn lap" data-label="Extubation">Mark Extubation</button>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-title-row"><h2>Event log</h2><button id="clearLog" class="btn ghost">ล้าง</button></div>
+          <div id="eventLog" class="event-log muted">ยังไม่มี event</div>
+        </section>
+      </div>
+    </section>
+
+    <section id="recovery" class="tabpage">
+      <div class="grid two-col">
+        <section class="panel">
+          <h2>Recovery monitor</h2>
+          <label>RR<input id="recRR" type="number" min="0" max="200" value="20" /></label>
+          <label>SpO₂ (%)<input id="recSpO2" type="number" min="0" max="100" value="98" /></label>
+          <label>Temp (°C)<input id="recTemp" type="number" min="25" max="45" step="0.1" value="37.3" /></label>
+          <label>Pain score / note<input id="recPain" type="text" placeholder="เช่น CMPS-SF 3/24" /></label>
+        </section>
+
+        <section class="panel">
+          <h2>Recovery checklist</h2>
+          <label class="switch-line"><input class="recovery-check" type="checkbox" /> Airway patent / breathing adequate</label>
+          <label class="switch-line"><input class="recovery-check" type="checkbox" /> SpO₂ acceptable</label>
+          <label class="switch-line"><input class="recovery-check" type="checkbox" /> Swallow / airway protection adequate</label>
+          <label class="switch-line"><input class="recovery-check" type="checkbox" /> Temperature acceptable / warming continued</label>
+          <label class="switch-line"><input class="recovery-check" type="checkbox" /> Pain / nausea controlled</label>
+          <label class="switch-line"><input class="recovery-check" type="checkbox" /> Mentation improving / sternal when appropriate</label>
+          <div id="recoveryStatus" class="callout warn">Checklist ยังไม่ครบ</div>
+        </section>
+      </div>
+    </section>
+
+    <section class="panel footer-panel">
+      <div>
+        <b>สำคัญ:</b> แอปนี้เป็น decision-support สำหรับสัตวแพทย์ ไม่ใช่เครื่อง monitor จริง และไม่ควรใช้แทนการตรวจผู้ป่วยโดยตรง
+      </div>
+      <div class="muted small">
+        Thresholds อ้างอิงจากคู่มือที่จัดทำก่อนหน้า: AAHA anesthesia/monitoring 2020, AAHA fluid therapy 2024 และ veterinary anesthesia references ที่ผู้ใช้ให้มา
+      </div>
+      <div class="button-row">
+        <button id="exportBtn" class="btn ghost">Export case (.json)</button>
+        <button id="resetAllBtn" class="btn ghost">Reset app</button>
+      </div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
