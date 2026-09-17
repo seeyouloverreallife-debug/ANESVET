@@ -1,53 +1,56 @@
-# Vet Anesthesia Monitor — PWA V2
+# ANESVET V6
 
-## ใหม่ใน V2
-- บันทึก anesthesia values เป็น Record ตามเวลา
-- เลือก interval 5 หรือ 10 นาที
-- Reminder เมื่อถึงเวลาบันทึกครั้งถัดไป
-- Optional Auto-log (ปิดไว้เป็นค่าเริ่มต้นเพื่อป้องกัน stale data)
-- ตาราง Anesthesia Record
-- กราฟ Trend อัตโนมัติ:
-  - MAP
-  - HR
-  - SpO2
-  - ETCO2
-  - RR
-  - Temperature
-- ใส่ Event/Note แต่ละเวลาได้
-- Event timeline
-- Export Record เป็น CSV
-- Export case เป็น JSON
-- Print / Save PDF
-- เก็บข้อมูลใน browser ด้วย localStorage
-- ใช้งาน Offline หลังเปิดครั้งแรก
+## ใหม่จาก V5
 
-## Workflow แนะนำในห้องผ่าตัด
-1. Start Anesthesia Timer
-2. เลือก Record interval 5 หรือ 10 นาที
-3. อัปเดตค่าหน้า Monitor จากเครื่องจริง
-4. เมื่อถึงเวลา แอปจะแจ้งเตือน
-5. กด "บันทึกตอนนี้"
-6. แอปเพิ่มแถวใน Anesthesia Record และ update กราฟทันที
-7. ใส่ Note เช่น incision, fluid bolus, fentanyl CRI, hypotension
-8. จบเคส Export CSV / Print PDF
+### 1. Patient เป็นหน้าแรกแยกออกมา
+หน้าแรกบันทึกเฉพาะข้อมูลผู้ป่วย:
+- ชื่อสัตว์
+- HN / Case ID
+- Species
+- Breed / พันธุ์
+- Age
+- Body weight
+- BCS 1–9
+- Emergency modifier
+- ASA Physical Status
 
-## เหตุผลที่ Auto-log ปิดเป็นค่าเริ่มต้น
-แอปไม่ได้เชื่อมตรงกับ multiparameter monitor ใน V2 ดังนั้นหาก auto-save ทั้งที่ผู้ใช้ไม่ได้อัปเดตค่าบนหน้าจอ อาจเกิด stale/duplicate data ได้
-จึงใช้ Reminder + Manual Record เป็น default ที่ปลอดภัยกว่า
+มีปุ่ม **บันทึกข้อมูลผู้ป่วยและไป Dashboard**
 
-## ทดลองบนคอม
-เปิด Terminal ในโฟลเดอร์แล้วรัน:
+### 2. ASA guide ในตัวแอป
+- ASA I — normal healthy patient
+- ASA II — mild systemic disease / well-controlled condition
+- ASA III — severe systemic disease with reduced physiologic reserve
+- ASA IV — severe systemic disease that is a constant threat to life
+- ASA V — moribund patient unlikely to survive without intervention
+- E — Emergency modifier
 
-    python -m http.server 8080
+คำอธิบายเป็น quick guide และยังต้องใช้ clinical judgment ของสัตวแพทย์
 
-จากนั้นเปิด:
+### 3. Case setup ย้ายไป Dashboard
+Procedure / Surgeon / Anesthetist แยกจาก Patient information ชัดเจน
 
-    http://localhost:8080
+### 4. Export PDF Report
+ปุ่ม **Export PDF Report** จะสร้าง printable clinical report ที่ประกอบด้วย:
+- Patient information
+- ASA / BCS
+- Case information
+- Case summary
+- Anesthesia record table
+- Trend graphs
+- Drugs & clinical events
+- Recovery information
 
-## ติดตั้ง Android
-หลังอัปโหลดขึ้น HTTPS hosting:
-Chrome > เมนู ⋮ > Install app / Add to Home screen
+บน Chrome / Android:
+1. กด Export PDF
+2. ระบบเปิด Print dialog
+3. เลือก **Save as PDF**
 
-## Clinical note
-แอปเป็น decision-support และ record tool ไม่ใช่ continuous monitor
-ต้องดู patient, pulse, waveform, airway, anesthetic depth และอุปกรณ์จริงร่วมเสมอ
+วิธีนี้ใช้ browser PDF engine ทำให้ภาษาไทยและกราฟคมกว่า client-side PDF library และยังทำงานแบบ offline ได้
+
+### 5. Migration
+V6 จะพยายามนำ current case จาก V5 มาใช้ต่ออัตโนมัติ
+ข้อมูลใหม่ Breed และ BCS สามารถเติมในหน้า Patient ได้ภายหลัง
+
+## Updating GitHub Pages
+Upload V6 files ทับไฟล์เดิมทั้งหมดใน root ของ repo ANESVET แล้ว Commit
+ถ้ายังเห็น V5 ให้เปิด Pages URL ด้วย `?v=6` หรือ Clear site data หนึ่งครั้ง
