@@ -1,7 +1,7 @@
 {
-  "name": "Vet Anesthesia Monitor",
+  "name": "Vet Anesthesia Monitor & Trend Recorder",
   "short_name": "VetAnes",
-  "description": "Quick-check decision support สำหรับการดมยาสลบในสุนัขและแมว",
+  "description": "Anesthesia quick-check, 5–10 minute recording and trend graphs for dogs and cats",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

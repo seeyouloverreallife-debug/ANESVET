@@ -1,54 +1,53 @@
-# Vet Anesthesia Monitor — PWA V1
+# Vet Anesthesia Monitor — PWA V2
 
-แอป decision-support สำหรับสัตวแพทย์ในการ quick-check ค่าระหว่าง general anesthesia ในสุนัขและแมว
-
-## ฟีเจอร์
-- Patient setup: ชื่อ, species, BW, ASA, Emergency
-- Monitor: MAP, SpO2, ETCO2, Temp, HR, RR
-- Automatic status: Stable / Reassess / Intervene
-- Fluid reference + cumulative fluid warning
-- Algorithms: hypotension, hypercapnia, hypoxemia, bradycardia, hypothermia
-- Anesthesia timer + event markers
-- Recovery checklist
+## ใหม่ใน V2
+- บันทึก anesthesia values เป็น Record ตามเวลา
+- เลือก interval 5 หรือ 10 นาที
+- Reminder เมื่อถึงเวลาบันทึกครั้งถัดไป
+- Optional Auto-log (ปิดไว้เป็นค่าเริ่มต้นเพื่อป้องกัน stale data)
+- ตาราง Anesthesia Record
+- กราฟ Trend อัตโนมัติ:
+  - MAP
+  - HR
+  - SpO2
+  - ETCO2
+  - RR
+  - Temperature
+- ใส่ Event/Note แต่ละเวลาได้
+- Event timeline
+- Export Record เป็น CSV
 - Export case เป็น JSON
-- Print / Save PDF ผ่าน browser
-- PWA: ติดตั้งบน Android / desktop และใช้ offline หลังโหลดครั้งแรก
+- Print / Save PDF
+- เก็บข้อมูลใน browser ด้วย localStorage
+- ใช้งาน Offline หลังเปิดครั้งแรก
 
-## วิธีทดสอบบนคอม
-PWA / service worker ต้องรันผ่าน HTTP/HTTPS ไม่ควรเปิด index.html แบบ file://
+## Workflow แนะนำในห้องผ่าตัด
+1. Start Anesthesia Timer
+2. เลือก Record interval 5 หรือ 10 นาที
+3. อัปเดตค่าหน้า Monitor จากเครื่องจริง
+4. เมื่อถึงเวลา แอปจะแจ้งเตือน
+5. กด "บันทึกตอนนี้"
+6. แอปเพิ่มแถวใน Anesthesia Record และ update กราฟทันที
+7. ใส่ Note เช่น incision, fluid bolus, fentanyl CRI, hypotension
+8. จบเคส Export CSV / Print PDF
 
-### วิธีง่ายด้วย Python
-เปิด Terminal/Command Prompt ในโฟลเดอร์นี้แล้วรัน:
+## เหตุผลที่ Auto-log ปิดเป็นค่าเริ่มต้น
+แอปไม่ได้เชื่อมตรงกับ multiparameter monitor ใน V2 ดังนั้นหาก auto-save ทั้งที่ผู้ใช้ไม่ได้อัปเดตค่าบนหน้าจอ อาจเกิด stale/duplicate data ได้
+จึงใช้ Reminder + Manual Record เป็น default ที่ปลอดภัยกว่า
+
+## ทดลองบนคอม
+เปิด Terminal ในโฟลเดอร์แล้วรัน:
 
     python -m http.server 8080
 
 จากนั้นเปิด:
+
     http://localhost:8080
 
-## วิธีเอาขึ้นออนไลน์
-ตัวเลือกง่าย:
-1. GitHub Pages
-2. Netlify
-3. Cloudflare Pages
-4. Vercel (static site)
+## ติดตั้ง Android
+หลังอัปโหลดขึ้น HTTPS hosting:
+Chrome > เมนู ⋮ > Install app / Add to Home screen
 
-อัปโหลดไฟล์ทั้งหมดในโฟลเดอร์นี้ขึ้น root ของ static hosting
-
-## ติดตั้งบน Android
-1. เปิด URL ด้วย Chrome
-2. เมนู ⋮
-3. เลือก Install app / Add to Home screen
-4. หลังเปิดครั้งแรกออนไลน์ แอปจะ cache ไฟล์ไว้ใช้ offline ได้
-
-## หมายเหตุทางคลินิก
-แอปนี้เป็น decision-support ไม่ใช่เครื่อง monitor จริง ไม่แทนการตรวจผู้ป่วย การประเมิน waveform, pulse, perfusion, anesthetic depth และ clinical judgment
-
-Thresholds ใน V1 มาจากคู่มือที่จัดทำก่อนหน้า โดยใช้หลักจาก:
-- 2020 AAHA Anesthesia and Monitoring Guidelines for Dogs and Cats
-- 2024 AAHA Fluid Therapy Guidelines for Dogs and Cats
-- Small Animal Surgery, 5th ed.
-- BSAVA Small Animal Formulary, 10th ed.
-- Small Animal Fluid Therapy
-- Plumb's Veterinary Drug Handbook, 10th ed.
-
-ก่อนใช้จริงในโรงพยาบาล ควรให้ทีมกำหนด alarm targets และ SOP เฉพาะของโรงพยาบาลอีกครั้ง
+## Clinical note
+แอปเป็น decision-support และ record tool ไม่ใช่ continuous monitor
+ต้องดู patient, pulse, waveform, airway, anesthetic depth และอุปกรณ์จริงร่วมเสมอ
