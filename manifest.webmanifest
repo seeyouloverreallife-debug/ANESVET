@@ -1,8 +1,8 @@
 {
-  "name": "ANESVET V13.4 — Archive PDF & Due Alerts",
+  "name": "ANESVET V14 — Hardening",
   "short_name": "ANESVET",
-  "description": "Veterinary anesthesia workstation with direct archived-case PDF export and sound/vibration vital-sign reminders",
-  "start_url": "./?v=13.4",
+  "description": "Veterinary anesthesia workstation hardening release with IndexedDB archive, protocol governance, audit trail, first-record reminders, Wake Lock and locked-record amendments",
+  "start_url": "./?v=14",
   "scope": "./",
   "display": "standalone",
   "background_color": "#f3f7f8",

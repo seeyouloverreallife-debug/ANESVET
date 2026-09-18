@@ -434,3 +434,12 @@ body.or-fullscreen .topbar,body.or-fullscreen .case-strip,body.or-fullscreen .ta
   .top-actions{gap:6px}
   .alert-feedback-btn{font-size:.72rem;padding:7px 9px}
 }
+
+/* V14 hardening */
+.storage-status{display:inline-flex;align-items:center;padding:5px 8px;border-radius:999px;background:#eef5f7;border:1px solid #c9dce1;color:#45616b;font-size:.72rem;font-weight:850}
+.protocol-governance-panel{border:2px solid #c8dce2;background:linear-gradient(180deg,#fbfeff,#f7fbfc)}
+.protocol-governance-panel.locked{border-color:#b9d8c8;background:linear-gradient(180deg,#fbfffd,#f4fbf7)}
+.protocol-locked-input{opacity:.68}
+.archive-amend{border-color:#d0b98a!important;color:#765514!important;background:#fffaf0!important}
+.report-amendment,.report-audit{border:1px solid #ced8dc;border-radius:6px;padding:6px 8px;margin:5px 0;font-size:8px}
+.report-amendment b,.report-audit b{display:inline-block;margin-right:6px}
