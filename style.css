@@ -325,3 +325,29 @@ body.or-fullscreen .topbar,body.or-fullscreen .case-strip,body.or-fullscreen .ta
   .quick-preset-settings-grid,.drug-admin-grid{grid-template-columns:1fr}
   .drug-admin-grid .span2{grid-column:auto}
 }
+
+
+/* V13.2 — Recovery workflow */
+.status-pill.phase.emergence{background:#eef0ff;color:#4b4c9b}
+.status-pill.phase.emergency{background:#ffe7e5;color:#a12620}
+.or-live-tab.locked-step{opacity:.48;border-style:dashed}
+.or-live-tab.locked-step::after{content:" 🔒";font-size:.72rem}
+.recovery-emergency-btn{border-color:#df9b95;color:#9b2923;background:#fff7f6}
+.recovery-emergency-btn:disabled{opacity:.45;cursor:not-allowed}
+.recovery-record-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.recovery-record-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:10px 0}
+.recovery-record-summary>div{border:1px solid var(--line);background:#fbfdfe;border-radius:10px;padding:9px}
+.recovery-record-summary span{display:block;color:var(--muted);font-size:.67rem;text-transform:uppercase;font-weight:850}
+.recovery-record-summary b{display:block;margin-top:3px}
+.recovery-data-table{min-width:980px}
+.recovery-data-table td,.recovery-data-table th{white-space:nowrap}
+.recovery-data-table td:last-child{white-space:normal;min-width:180px}
+@media(max-width:700px){
+  .recovery-record-summary{grid-template-columns:1fr}
+  .recovery-record-actions{align-items:stretch;flex-direction:column}
+}
+@media print{
+  .report-recovery-table{width:100%;border-collapse:collapse;margin-top:7px;font-size:7.5px}
+  .report-recovery-table th,.report-recovery-table td{border:1px solid #cbd5da;padding:3px 4px;text-align:left}
+  .report-recovery-table th{background:#f1f5f7}
+}

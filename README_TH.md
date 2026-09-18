@@ -1,62 +1,50 @@
-# ANESVET V13.1 — Validation & Safety
+# ANESVET V13.2 — Recovery Workflow
 
-## Hospital Quick Presets
-กล่องยาด้านบนของ Drug Calculator ไม่ hard-code แล้ว
-โรงพยาบาลเลือกยาได้เอง 2 รายการต่อ phase:
-- Induction
-- Pre-anesthetic
-- Post-anesthetic
+## แก้ Navigation
+- เปลี่ยน page/step แล้ว scroll กลับด้านบนอัตโนมัติ
 
-เลือกได้จาก:
-- Built-in calculators ที่มีอยู่
-- Hospital Drug Library
+## OR → Recovery
+- Surgery end → EMERGENCE
+- Extubation → auto-fill extubation time + เข้า Recovery อัตโนมัติ
+- หลังเข้า Recovery แล้ว OR LIVE ถูกล็อก ไม่ย้อนกลับไป INTRAOPERATIVE ตามปกติ
+- Fresh case เริ่มที่ SETUP
 
-ถ้าต้องการยาอื่น ให้เพิ่มยา + formula + concentration ใน Hospital Drug Library ก่อน แล้วเลือกเป็น Quick Preset
+## Emergency return
+หน้า Recovery มีปุ่ม:
+⚠ Emergency return to OR LIVE
 
-## Actual Drug Administration
-ปุ่มยาใน Drug Calculator จะเปิดหน้าต่างยืนยัน:
-- calculated dose/volume
-- actual administered volume
-- route
-- note
+ใช้กรณี post-extubation apnea / airway problem / re-intubation / resuscitation
+ระบบใช้ phase EMERGENCY RETURN ไม่เปลี่ยนกลับเป็น INTRAOPERATIVE
+ใน OR LIVE ปุ่ม Recovery จะใช้กลับเข้าสู่ Recovery อีกครั้ง
 
-Event log จะบันทึก actual volume แยกจาก calculated value
-
-## Case Phase
-แสดงสถานะ:
-SETUP → INDUCTION → INTRAOPERATIVE → RECOVERY → COMPLETE → LOCKED
-
-Milestones:
-- Induction → INDUCTION
-- Surgery start → INTRAOPERATIVE
-- Surgery end / Begin recovery → RECOVERY
-- Recovery complete → COMPLETE
-
-## Recovery Readiness
-Recovery page แสดง readiness จาก:
-- recovery checklist
+## Recovery serial monitoring
+บันทึกเป็นช่วงเวลา:
+- HR
 - RR
+- MAP (optional)
 - SpO2
-- temperature
+- Temperature
+- Oxygen support
+- Mentation
+- Pain/recovery note
+
+Interval 5 / 10 / 15 min พร้อม due badge
+
+## Recovery completeness
+Readiness ดู:
+- checklist
+- RR / SpO2 / Temp
 - mentation
 - extubation time
+- มี serial recovery record อย่างน้อย 1 ชุด
+- ไม่มี active Emergency Return
 
-## End Case Lock
-End Case:
-- หยุด timer
-- phase = COMPLETE
-- mark caseLocked = true
-- timestamp lockedAt
-- archive เป็น final record
-- reset ไปเคสใหม่
+## Timeline / PDF
+Recovery vital records รวมใน Timeline และ PDF report
 
-## Backup
-ปุ่ม Backup แสดงใน End Case และ backup รวม:
-- current case
-- archived cases
-- hospital settings
-- drug library
-- quick presets
+## Additional UX
+- Auto-seed recovery vitals จากค่าปัจจุบันใน OR ตอนเริ่ม recovery
+- ป้องกัน milestone ย้อนกลับจาก EMERGENCE / RECOVERY ไป Surgery start
 
-## Update
-https://seeyouloverreallife-debug.github.io/ANESVET/?v=13.1
+## URL
+https://seeyouloverreallife-debug.github.io/ANESVET/?v=13.2

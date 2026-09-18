@@ -8,8 +8,8 @@
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" href="./icon-192.png">
   <link rel="apple-touch-icon" href="./icon-192.png">
-  <link rel="stylesheet" href="./style.css?v=13.1">
-  <title>ANESVET V13.1</title>
+  <link rel="stylesheet" href="./style.css?v=13.2">
+  <title>ANESVET V13.2</title>
 </head>
 <body>
 <header class="topbar">
@@ -17,7 +17,7 @@
     <div class="brand-mark">A</div>
     <div>
       <div class="eyebrow">GENOVI PET CARE • DIGITAL ANESTHESIA RECORD</div>
-      <h1>ANESVET <span>V13.1</span></h1>
+      <h1>ANESVET <span>V13.2</span></h1>
     </div>
   </div>
   <div class="top-actions">
@@ -1210,14 +1210,21 @@
         <strong id="recoveryElapsed">00:00:00</strong>
         <button id="beginRecoveryBtn" class="btn primary">Begin recovery</button>
         <button id="completeRecoveryBtn" class="btn">Recovery complete</button>
+        <button id="emergencyReturnOrBtn" class="btn recovery-emergency-btn">⚠ Emergency return to OR LIVE</button>
       </div>
     </section>
     <div class="dashboard-grid">
       <section class="panel">
         <h2>Recovery observations</h2>
         <div class="form-grid three">
+          <label>HR (bpm)
+            <input id="recHR" type="number" min="0" max="400" value="100">
+          </label>
           <label>RR
             <input id="recRR" type="number" min="0" max="200" value="20">
+          </label>
+          <label>MAP (mmHg) <span class="muted small">optional</span>
+            <input id="recMAP" type="number" min="0" max="250" placeholder="optional">
           </label>
           <label>SpO₂ (%)
             <input id="recSpO2" type="number" min="0" max="100" value="98">
@@ -1234,7 +1241,10 @@
           <label>Mentation
             <select id="recMentation"><option value="">—</option><option>Unresponsive</option><option>Dysphoric</option><option>Drowsy</option><option>Sternal</option><option>Alert</option></select>
           </label>
-          <label class="span3">Pain / Recovery note
+          <label>Record interval
+            <select id="recRecordInterval"><option value="5">5 min</option><option value="10">10 min</option><option value="15">15 min</option></select>
+          </label>
+          <label class="span2">Pain / Recovery note
             <input id="recPain" type="text" placeholder="เช่น CMPS-SF 3/24, calm, dysphoric...">
           </label>
         </div>
@@ -1251,6 +1261,31 @@
         <div id="recoveryReadiness" class="recovery-readiness warn">NOT READY</div><div id="recoveryStatus" class="recovery-status warn">Checklist 0/6</div>
       </section>
     </div>
+
+    <section class="panel recovery-record-panel">
+      <div class="section-heading">
+        <div>
+          <h2>Recovery vital-sign records</h2>
+          <p>บันทึกค่าระหว่างฟื้นสลบเป็นช่วงเวลา แยกจาก intraoperative anesthesia record</p>
+        </div>
+        <div class="recovery-record-actions">
+          <span id="recoveryDueBadge" class="status-pill warn">FIRST RECORD DUE</span>
+          <button id="recordRecoveryVitalsBtn" class="btn primary">＋ Record recovery vitals</button>
+        </div>
+      </div>
+      <div class="recovery-record-summary">
+        <div><span>Records</span><b id="recoveryRecordCount">0</b></div>
+        <div><span>Latest</span><b id="recoveryLatestTime">—</b></div>
+        <div><span>Recovery elapsed</span><b id="recoveryRecordElapsed">00:00:00</b></div>
+      </div>
+      <div class="table-wrap">
+        <table class="data-table recovery-data-table">
+          <thead><tr><th>#</th><th>Recovery</th><th>Clock</th><th>HR</th><th>RR</th><th>MAP</th><th>SpO₂</th><th>Temp °F</th><th>O₂</th><th>Mentation</th><th>Note</th></tr></thead>
+          <tbody id="recoveryRecordBody"><tr><td colspan="11" class="empty-state">ยังไม่มี Recovery record</td></tr></tbody>
+        </table>
+      </div>
+      <div class="settings-note">ใช้ค่าปัจจุบันจาก Recovery observations ด้านบน แล้วบันทึก snapshot เมื่อกด Record recovery vitals</div>
+    </section>
   </section>
 
   <section id="cases" class="tabpage">
@@ -1347,6 +1382,7 @@
     <section class="report-section">
       <h2>Recovery</h2>
       <div id="reportRecovery"></div>
+      <div id="reportRecoveryRecords"></div>
     </section>
 
     <section class="report-section">
@@ -1487,6 +1523,6 @@
 </dialog>
 
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
-<script src="./app.js?v=13.1"></script>
+<script src="./app.js?v=13.2"></script>
 </body>
 </html>

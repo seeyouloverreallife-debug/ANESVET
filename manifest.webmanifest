@@ -1,8 +1,8 @@
 {
-  "name": "ANESVET V13.1 — Validation & Safety",
+  "name": "ANESVET V13.2 — Recovery Workflow",
   "short_name": "ANESVET",
-  "description": "Veterinary anesthesia workstation with configurable hospital quick presets, actual drug administration capture, case phase status, recovery readiness and final record locking",
-  "start_url": "./?v=13.1",
+  "description": "Veterinary anesthesia workstation with automatic OR-to-recovery transition, emergency OR return, and serial recovery vital-sign records",
+  "start_url": "./?v=13.2",
   "scope": "./",
   "display": "standalone",
   "background_color": "#f3f7f8",
