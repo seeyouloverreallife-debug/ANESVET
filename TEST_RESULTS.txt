@@ -1,22 +1,11 @@
-ANESVET V14.6 validation run - 2026-09-18
+ANESVET V14.6.2 validation run - 2026-09-18
 
-1) JavaScript syntax
-PASS - node --check app.js
-
-2) Static regression suite
-ANESVET V14.6 regression checks: PASS (584 unique HTML ids, 298 unique named functions)
-
-3) Workflow model scenarios
-ANESVET V14.6 workflow model scenarios: PASS (4 scenarios)
-- Routine Patient Setup -> intraoperative -> medication -> Recovery -> Lock/Archive
-- Active complication blocks Lock until resolution/outcome is documented
-- Medication correction preserves original administration and marks VOID
-- Recovery N/A requires a reason and adjusts score denominator
-
-4) Structure / integrity
-PASS - 584 unique HTML IDs; 298 unique named functions
-PASS - manifest.webmanifest parses as JSON
-PASS - V14.6 migration guards locked/checksummed legacy records from new clinical-array mutation
-
-5) Browser E2E
-NOT RUN in this build environment. Requires manual test in Chrome/Edge on the deployment device.
+PASS - JavaScript syntax: node --check app.js
+PASS - Regression suite: 596 unique HTML IDs, 307 unique named functions
+PASS - Workflow model scenarios: 4/4
+PASS - Manifest JSON parse
+PASS - Critical popup trigger guards for MAP <60 / SpO2 <90
+PASS - Popup suppresses while critical inputs are being edited and while another dialog is open
+PASS - Quick guides: hypotension, bradycardia, hypoxemia, ventilation, hypothermia
+PASS - SAP/DAP UI visibility setting preserves underlying historical data
+PASS - PWA cache/version bumped to V14.6.2

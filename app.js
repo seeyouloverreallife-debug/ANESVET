@@ -138,7 +138,7 @@ function toast(msg){
 }
 function readSessionLock(){try{const x=JSON.parse(localStorage.getItem(SESSION_LOCK_KEY)||'null');return x&&x.tabId?x:null}catch(e){return null}}
 function sessionLockIsFresh(lock){return !!(lock&&lock.tabId&&Number(lock.heartbeatAt)>0&&(Date.now()-Number(lock.heartbeatAt))<SESSION_TTL_MS)}
-function writeSessionLock(){if(sessionMode!=='active')return;const lock={tabId:sessionTabId,heartbeatAt:Date.now(),caseId:state?.caseId||'',patientName:state?.patientName||'',version:'14.6'};try{localStorage.setItem(SESSION_LOCK_KEY,JSON.stringify(lock))}catch(e){};try{sessionChannel?.postMessage({type:'HEARTBEAT',...lock})}catch(e){}}
+function writeSessionLock(){if(sessionMode!=='active')return;const lock={tabId:sessionTabId,heartbeatAt:Date.now(),caseId:state?.caseId||'',patientName:state?.patientName||'',version:'14.6.2'};try{localStorage.setItem(SESSION_LOCK_KEY,JSON.stringify(lock))}catch(e){};try{sessionChannel?.postMessage({type:'HEARTBEAT',...lock})}catch(e){}}
 function releaseSessionLock(){const lock=readSessionLock();if(lock?.tabId===sessionTabId){try{localStorage.removeItem(SESSION_LOCK_KEY)}catch(e){};try{sessionChannel?.postMessage({type:'RELEASE',tabId:sessionTabId})}catch(e){}}}
 function sessionSafeTarget(target){return !!target?.closest?.('.session-safe,[data-tab],[data-more-tab],#moreMenuBtn,.archive-pdf,.verify-integrity')}
 function renderSessionMode(){
@@ -171,6 +171,9 @@ let alertAudioContext=null;
 let alertAudioReady=false;
 let alertFeedbackEnabled=localStorage.getItem(ALERT_PREF_KEY)!=='off';
 let recoveryDueReminderToken=null;
+let criticalAlertLatch={map:false,spo2:false};
+let currentClinicalGuideKey='';
+let currentClinicalGuideAuto=false;
 
 function renderAlertFeedbackState(){
   const btn=$('alertFeedbackBtn');if(!btn)return;
@@ -490,7 +493,7 @@ async function initArchiveDb(){
       if(!Array.isArray(c.auditTrail)){c.auditTrail=[];changed=true}
       if(!Array.isArray(c.amendments)){c.amendments=[];changed=true}
       // Never mutate the signed clinical payload of an already locked/checksummed legacy case.
-      // New V14.6 collections are optional on older records and render with [] fallbacks.
+      // New V14.6+ collections are optional on older records and render with [] fallbacks.
       const canMigrateClinicalPayload=!(c.caseLocked&&c.finalChecksum);
       if(canMigrateClinicalPayload&&!Array.isArray(c.complications)){c.complications=[];changed=true}
       if(canMigrateClinicalPayload&&!Array.isArray(c.drugAdministrations)){c.drugAdministrations=[];changed=true}
@@ -1144,6 +1147,7 @@ let wakeLock=null;
 function syncOrFromMain(){Object.entries(OR_SYNC).forEach(([aId,bId])=>{const a=$(aId),b=$(bId);if(a&&b&&document.activeElement!==a)a.value=b.value})}
 function syncMainFromOr(orId){const mainId=OR_SYNC[orId],a=$(orId),b=$(mainId);if(!a||!b)return;b.value=a.value;b.dispatchEvent(new Event(b.tagName==='SELECT'?'change':'input',{bubbles:true}))}
 Object.keys(OR_SYNC).forEach(id=>{const el=$(id);if(el)el.addEventListener(el.tagName==='SELECT'?'change':'input',()=>syncMainFromOr(id))});
+['map','spo2','orMap','orSpo2'].forEach(id=>$(id)?.addEventListener('blur',()=>setTimeout(maybeShowCriticalClinicalAlert,0)));
 function orStatusText(level,good,warn,danger){return level==='neutral'?'No measurement entered':level==='danger'?danger:level==='warn'?warn:good}
 function sparkSvg(values,minHint=null,maxHint=null){const vals=values.filter(v=>v!==null&&v!==''&&v!==undefined).map(Number).filter(Number.isFinite);if(vals.length<2)return '<div class="or-spark-empty">Need ≥2 records</div>';let min=Math.min(...vals),max=Math.max(...vals);if(Number.isFinite(minHint))min=Math.min(min,minHint);if(Number.isFinite(maxHint))max=Math.max(max,maxHint);if(max===min){max+=1;min-=1}const w=220,h=70,p=7;const coords=vals.map((v,i)=>{const x=p+(i/(vals.length-1))*(w-p*2),y=h-p-((v-min)/(max-min))*(h-p*2);return [x.toFixed(1),y.toFixed(1)]});const pts=coords.map(x=>x.join(',')).join(' '),last=coords[coords.length-1],lastVal=vals[vals.length-1];return `<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" aria-hidden="true"><polyline points="${pts}" fill="none" stroke="#14758c" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="${last[0]}" cy="${last[1]}" r="3.5" fill="#0d5265"/><text x="${w-p}" y="${p+7}" text-anchor="end" font-size="10" fill="#54656f">${escapeHtml(lastVal)}</text></svg>`}
 function renderOrMiniTrends(){const r=(state.records||[]).slice(-6),isC=activeTempDisplayUnit==='C',m={orSparkMap:['map',55,80],orSparkSpo2:['spo2',90,100],orSparkEtco2:['etco2',30,60],orSparkTemp:['temp',isC?tempStoredFToDisplay(98):98,isC?tempStoredFToDisplay(100):100]};Object.entries(m).forEach(([id,[key,min,max]])=>{if(!$(id))return;const vals=r.map(x=>key==='temp'&&x[key]!==null&&x[key]!==''&&x[key]!==undefined?tempStoredFToDisplay(x[key]):x[key]);$(id).innerHTML=sparkSvg(vals,min,max)})}
@@ -1209,12 +1213,17 @@ $('orStickyRecordBtn')?.addEventListener('click',()=>$('orRecordNowBtn')?.click(
   const cap={hr:'Hr',rr:'Rr',map:'Map',spo2:'Spo2',etco2:'Etco2',temp:'Temp'};
   ['hr','rr','map','spo2','etco2','temp'].forEach(k=>{const card=document.querySelector(`.or-vital-card[data-vital="${k}"]`);if(card){card.classList.remove('good','warn','danger','neutral');card.classList.add(st[k])}const h=$('or'+cap[k]+'Hint');if(h)h.textContent=hints[k]});
   const immediate=[];
-  if(['warn','danger'].includes(st.hr))immediate.push({level:st.hr,title:'HR alert',text:hints.hr});if(['warn','danger'].includes(st.rr))immediate.push({level:st.rr,title:'RR alert',text:hints.rr});if(['warn','danger'].includes(st.map))immediate.push({level:st.map,title:'Blood pressure',text:hints.map});if(['warn','danger'].includes(st.spo2))immediate.push({level:st.spo2,title:'Oxygenation',text:hints.spo2});if(['warn','danger'].includes(st.etco2))immediate.push({level:st.etco2,title:'Ventilation',text:hints.etco2});if(['warn','danger'].includes(st.temp))immediate.push({level:st.temp,title:'Temperature',text:hints.temp});
+  if(['warn','danger'].includes(st.hr))immediate.push({key:'hr',level:st.hr,title:'HR alert',text:hints.hr});
+  if(['warn','danger'].includes(st.rr))immediate.push({key:'rr',level:st.rr,title:'RR alert',text:hints.rr});
+  if(['warn','danger'].includes(st.map))immediate.push({key:'map',level:st.map,title:'Blood pressure',text:hints.map});
+  if(['warn','danger'].includes(st.spo2))immediate.push({key:'spo2',level:st.spo2,title:'Oxygenation',text:hints.spo2});
+  if(['warn','danger'].includes(st.etco2))immediate.push({key:'etco2',level:st.etco2,title:'Ventilation',text:hints.etco2});
+  if(['warn','danger'].includes(st.temp))immediate.push({key:'temp',level:st.temp,title:'Temperature',text:hints.temp});
   immediate.sort((a,b)=>(a.level==='danger'?0:1)-(b.level==='danger'?0:1));
-  const trends=getSmartAlerts();
-  const total=immediate.length+trends.length;$('orAlertCount').textContent=`${total} ALERT${total===1?'':'S'}`;$('orAlertCount').className=`status-pill ${immediate.some(a=>a.level==='danger')||trends.some(a=>a.level==='danger')?'danger':total?'warn':'good'}`;
-  const group=(title,kind,arr)=>arr.length?`<div class="or-alert-group ${kind}"><div class="or-alert-group-title">${title}</div>${arr.map(a=>`<div class="or-alert-item ${a.level}"><b>${escapeHtml(a.title)}</b><span>${escapeHtml(a.text)}</span></div>`).join('')}</div>`:'';
-  $('orAlertList').innerHTML=total?group('Immediate','immediate',immediate)+group('Trend','trend',trends):'<div class="empty-state compact">No active alerts</div>';
+  const trends=withAlertAdvice(getSmartAlerts()),immediateWithAdvice=withAlertAdvice(immediate);
+  const total=immediateWithAdvice.length+trends.length;$('orAlertCount').textContent=`${total} ALERT${total===1?'':'S'}`;$('orAlertCount').className=`status-pill ${immediateWithAdvice.some(a=>a.level==='danger')||trends.some(a=>a.level==='danger')?'danger':total?'warn':'good'}`;
+  const group=(title,kind,arr)=>arr.length?`<div class="or-alert-group ${kind}"><div class="or-alert-group-title">${title}</div>${arr.map(a=>`<div class="or-alert-item ${a.level}"><b>${escapeHtml(a.title)}</b><span>${escapeHtml(a.text)}</span>${a.advice?`<small class="alert-advice">Suggested first checks: ${escapeHtml(a.advice)}</small>`:''}</div>`).join('')}</div>`:'';
+  $('orAlertList').innerHTML=total?group('Immediate','immediate',immediateWithAdvice)+group('Trend','trend',trends):'<div class="empty-state compact">No active alerts</div>';
   renderOrFluidPanel();renderOrMiniTrends();renderOrRecent();renderOrTimerState();renderSaveState();renderRecoveryState();renderComplications();
 }
 function startCaseFromOr(){if(state.timer.running)return true;if(!validateCaseReadyToStart())return false;const preopTotal=$$('.preop-check').length,preopDone=$$('.preop-check').filter(x=>x.checked).length,preopNA=$$('.preop-item.na').length,preopReviewed=preopDone+preopNA;if(preopReviewed<preopTotal&&!confirm(`Pre-op checklist ยัง review ไม่ครบ (${preopReviewed}/${preopTotal}) — ต้องการเริ่มเคสต่อหรือไม่?`))return false;const firstStart=(state.timer.elapsedMs||0)===0&&!state.caseStartedAt;state.timer.running=true;state.timer.startedEpoch=Date.now();if(firstStart){state.caseStartedAt=state.timer.startedEpoch;state.casePhase='induction';captureProtocolSnapshot();addAudit('CASE_STARTED','Anesthesia case timer started');}startTimerLoop();renderTimerState();renderOrTimerState();renderCasePhase();save();if(autoWakeEnabled())requestScreenWakeLock(true);if(firstStart)addEvent({category:'Case',name:'Case started',note:'Anesthesia case timer started'});toast(firstStart?'Case timer started':'Case timer resumed');return true}
@@ -1412,6 +1421,156 @@ function currentSnapshot(note=''){
 }
 
 
+function alertGuidance(key,level='warn'){
+  const guidance={
+    hr:{
+      warn:'Check pulse quality/ECG, review anesthetic depth, pain, temperature and recent drugs.',
+      danger:'Verify pulse/ECG immediately, assess blood pressure and perfusion, review anesthetic depth/temperature/drugs, and support according to clinical judgment.'
+    },
+    rr:{
+      warn:'Check spontaneous effort, airway patency, anesthetic depth and ETCO₂ trend.',
+      danger:'Assess ventilation immediately: confirm airway/circuit, watch chest movement, and assist or control ventilation if indicated.'
+    },
+    map:{
+      warn:'Recheck the reading, review anesthetic depth/vaporizer, HR and volume status, and correct trends before MAP drops further.',
+      danger:'Verify the measurement, lighten anesthesia if appropriate, assess HR/rhythm/perfusion and blood loss, consider fluid bolus if hypovolemia is suspected, and use vasoactive support per clinician judgment.'
+    },
+    spo2:{
+      warn:'Check probe position/perfusion, oxygen source, airway patency and ventilation.',
+      danger:'Treat as urgent hypoxemia: confirm oxygen delivery and airway, assess ventilation immediately, and troubleshoot the circuit/probe at once.'
+    },
+    etco2:{
+      warn:'Review ventilation, airway/circuit resistance and capnogram trend.',
+      danger:'Check airway/circuit and ventilation immediately; assist/control ventilation if hypoventilation is present and assess perfusion if ETCO₂ is unexpectedly low.'
+    },
+    temp:{
+      warn:'Start warming early, minimize heat loss and recheck temperature trend.',
+      danger:'Provide active warming, minimize further heat loss and reassess temperature frequently.'
+    }
+  };
+  return guidance[key]?.[level] || guidance[key]?.warn || '';
+}
+function withAlertAdvice(alerts){
+  return (alerts||[]).map(a=>({
+    ...a,
+    advice:a.advice || alertGuidance(a.key,a.level)
+  }));
+}
+
+const CLINICAL_GUIDES={
+  hypotension:{
+    title:'Hypotension — quick checks',
+    complication:'Hypotension',
+    steps:[
+      'Verify the blood-pressure reading: repeat the measurement and check cuff/position or arterial waveform if available.',
+      'Review anesthetic depth and inhalant concentration; reduce cardiovascular depressant load if clinically appropriate.',
+      'Assess HR/rhythm, pulse quality/perfusion, surgical blood loss and other evidence of reduced circulating volume.',
+      'If hypovolemia is suspected, consider a targeted fluid challenge and reassess response rather than giving fluid automatically.',
+      'If hypotension persists despite appropriate depth/volume correction, consider inotropic or vasopressor support according to the hospital protocol and patient physiology.'
+    ],
+    note:'MAP <60 mmHg is treated as a critical trigger in ANESVET. Blood pressure must be interpreted with perfusion, anesthetic depth and the individual patient.'
+  },
+  bradycardia:{
+    title:'Bradycardia — quick checks',
+    complication:'Bradycardia',
+    steps:[
+      'Confirm the heart rate and rhythm with pulse/ECG and determine whether perfusion or blood pressure is compromised.',
+      'Review anesthetic depth, vagal stimulation, temperature and drugs that can reduce heart rate.',
+      'If bradycardia is accompanied by hypotension or poor perfusion, treat the underlying cause promptly and use chronotropic support according to the hospital protocol when indicated.',
+      'If perfusion and blood pressure remain adequate, avoid treating the monitor number alone; continue close reassessment.'
+    ],
+    note:'Heart-rate thresholds are screening triggers only and must be interpreted by species, rhythm and perfusion.'
+  },
+  hypoxemia:{
+    title:'Hypoxemia — quick checks',
+    complication:'Hypoxemia',
+    steps:[
+      'Confirm that the SpO₂ value is real: inspect pulse-ox waveform/signal quality, probe position and peripheral perfusion.',
+      'Confirm oxygen supply and breathing-system connections, then check endotracheal-tube position and patency.',
+      'Assess ventilation using chest movement and capnography/ETCO₂; assist or control ventilation if clinically indicated.',
+      'Auscultate and consider airway obstruction, atelectasis, aspiration or other pulmonary causes if oxygenation remains poor.',
+      'Persistent severe hypoxemia despite immediate troubleshooting requires escalation of ventilatory/diagnostic support.'
+    ],
+    note:'ANESVET treats SpO₂ <90% as a severe/critical trigger. Pulse oximetry can be artifact-prone, so confirm signal quality while acting on a credible low value.'
+  },
+  ventilation:{
+    title:'Ventilation / ETCO₂ — quick checks',
+    complication:'Hypercapnia / hypoventilation',
+    steps:[
+      'Inspect the capnogram before treating a number: verify sampling, circuit connection and waveform quality.',
+      'For high ETCO₂, assess respiratory rate/tidal excursion, anesthetic depth, airway resistance, rebreathing and apparatus dead space.',
+      'Assist or control ventilation when hypoventilation is clinically important and reassess ETCO₂ response.',
+      'For unexpectedly low ETCO₂, consider disconnection/leak, excessive ventilation, reduced pulmonary perfusion or acute circulatory compromise.'
+    ],
+    note:'ETCO₂ reflects ventilation and is also affected by perfusion and equipment factors; always interpret the waveform and patient together.'
+  },
+  hypothermia:{
+    title:'Hypothermia — quick checks',
+    complication:'Hypothermia',
+    steps:[
+      'Start active warming early and reduce further heat loss from exposed surfaces and cold surroundings.',
+      'Use safe warming methods and protect the patient from thermal injury; avoid direct excessive heat.',
+      'Warm IV fluids when appropriate and continue serial temperature monitoring.',
+      'Review anesthetic duration, body size, perfusion and other contributors if temperature continues to fall.'
+    ],
+    note:'The app flags falling temperature as a prompt to intervene early; the warming method and target should be individualized.'
+  }
+};
+function clinicalGuideKeyForAlert(key){return key==='map'?'hypotension':key==='spo2'?'hypoxemia':key==='rr'||key==='etco2'?'ventilation':key==='temp'?'hypothermia':key==='hr'?'bradycardia':''}
+function clinicalGuideSeverityFor(key){
+  const st=thresholds();
+  if(key==='hypotension')return st.map==='danger'?'danger':'warn';
+  if(key==='hypoxemia')return st.spo2==='danger'?'danger':'warn';
+  if(key==='bradycardia')return st.hr==='danger'?'danger':'warn';
+  if(key==='ventilation')return st.etco2==='danger'||st.rr==='danger'?'danger':'warn';
+  if(key==='hypothermia')return st.temp==='danger'?'danger':'warn';
+  return 'warn';
+}
+function clinicalGuideTriggerText(key){
+  if(key==='hypotension')return `Current MAP: ${getVal('map')??'—'} mmHg`;
+  if(key==='hypoxemia')return `Current SpO₂: ${getVal('spo2')??'—'}%`;
+  if(key==='bradycardia')return `Current HR: ${getVal('hr')??'—'} bpm`;
+  if(key==='ventilation')return `Current RR: ${getVal('rr')??'—'} /min • ETCO₂: ${getVal('etco2')??'—'} mmHg`;
+  if(key==='hypothermia'){const t=tempInputStoredF('temp');return `Current temperature: ${t==null?'—':tempTextF(t)}`}
+  return 'Current monitor values';
+}
+function openClinicalGuide(key,{auto=false}={}){
+  const g=CLINICAL_GUIDES[key];if(!g)return;
+  currentClinicalGuideKey=key;currentClinicalGuideAuto=!!auto;
+  const sev=clinicalGuideSeverityFor(key);
+  if($('clinicalGuideTitle'))$('clinicalGuideTitle').textContent=g.title;
+  if($('clinicalGuideTrigger'))$('clinicalGuideTrigger').textContent=clinicalGuideTriggerText(key);
+  if($('clinicalGuideSteps'))$('clinicalGuideSteps').innerHTML=g.steps.map(x=>`<li>${escapeHtml(x)}</li>`).join('');
+  if($('clinicalGuideNote'))$('clinicalGuideNote').textContent=g.note+' • Quick guide only — verify monitor data and use clinical judgment / hospital protocol.';
+  const badge=$('clinicalGuideSeverity');if(badge){badge.textContent=sev==='danger'?'CRITICAL — ACT / REASSESS':'REASSESS';badge.className=`critical-guide-badge ${sev}`}
+  const card=$('clinicalGuideDialog')?.querySelector('.clinical-guide-card');card?.classList.toggle('critical-guide-card-danger',sev==='danger');
+  const d=$('clinicalGuideDialog');try{if(d&&!d.open)d.showModal()}catch(e){d?.setAttribute('open','')}
+  if(auto){playDueTone('test');vibrateDue('anesthesia')}
+}
+function closeClinicalGuide(){try{$('clinicalGuideDialog')?.close()}catch(e){$('clinicalGuideDialog')?.removeAttribute('open')}}
+function maybeShowCriticalClinicalAlert(){
+  const active=!!(state.timer?.running||state.caseStartedAt);if(!active)return;
+  const editingId=document.activeElement?.id||'';if(['map','orMap','spo2','orSpo2'].includes(editingId))return;
+  const cfg=currentSettingsObject();if(cfg.criticalPopupEnabled===false)return;
+  const map=getVal('map'),spo2=getVal('spo2');
+  if(map===null||map>=60)criticalAlertLatch.map=false;
+  if(spo2===null||spo2>=90)criticalAlertLatch.spo2=false;
+  if($('clinicalGuideDialog')?.open||document.querySelector('dialog[open]'))return;
+  if(spo2!==null&&spo2<90&&!criticalAlertLatch.spo2){criticalAlertLatch.spo2=true;openClinicalGuide('hypoxemia',{auto:true});return}
+  if(map!==null&&map<60&&!criticalAlertLatch.map){criticalAlertLatch.map=true;openClinicalGuide('hypotension',{auto:true});}
+}
+function renderSapDapVisibility(){
+  const cfg=currentSettingsObject(),show=cfg.showSapDap!==false;
+  document.body.classList.toggle('hide-sap-dap',!show);
+  if($('settingShowSapDap'))$('settingShowSapDap').checked=show;
+  if($('settingCriticalPopup'))$('settingCriticalPopup').checked=cfg.criticalPopupEnabled!==false;
+  const f=$('correctionField');if(f){[...f.options].forEach(o=>{if(o.dataset.sapDap==='1')o.hidden=!show});if(!show&&['sap','dap'].includes(f.value))f.value='map'}
+  if($('bpChartSeriesLabel'))$('bpChartSeriesLabel').textContent=show?'SAP / MAP / DAP':'MAP';
+}
+$$('.clinical-guide-btn').forEach(btn=>btn.addEventListener('click',()=>openClinicalGuide(btn.dataset.guide||'')));
+$('clinicalGuideCloseBtn')?.addEventListener('click',closeClinicalGuide);$('clinicalGuideDismissBtn')?.addEventListener('click',closeClinicalGuide);
+$('clinicalGuideComplicationBtn')?.addEventListener('click',()=>{const g=CLINICAL_GUIDES[currentClinicalGuideKey];closeClinicalGuide();if(g)openComplicationDialog(g.complication||'')});
+
 function plausibilityWarnings(v,context='anesthesia'){
   const w=[],num=x=>x===null||x===''||x===undefined?null:Number(x);
   const hr=num(v.hr),rr=num(v.rr),sap=num(v.sap),map=num(v.map),dap=num(v.dap),spo2=num(v.spo2),et=num(v.etco2),temp=num(v.temp);
@@ -1420,8 +1579,8 @@ function plausibilityWarnings(v,context='anesthesia'){
   if(spo2!==null&&(spo2<50||spo2>100))w.push(`SpO₂ ${spo2}% ตรวจหน่วย/การพิมพ์`);
   if(et!==null&&(et<5||et>100))w.push(`ETCO₂ ${et} mmHg ตรวจ waveform/การพิมพ์`);
   if(temp!==null&&(temp<90||temp>106))w.push(`Temp ${tempTextF(temp)} ตรวจหน่วยหรือ decimal`);
-  [sap,map,dap].forEach((x,i)=>{if(x!==null&&(x<0||x>300))w.push(`${['SAP','MAP','DAP'][i]} ${x} mmHg ตรวจการพิมพ์`)});
-  if(sap!==null&&map!==null&&dap!==null&&!(sap>=map&&map>=dap))w.push(`BP relation ไม่สอดคล้อง: SAP ${sap} / MAP ${map} / DAP ${dap}`);
+  if(map!==null&&(map<0||map>300))w.push(`MAP ${map} mmHg ตรวจการพิมพ์`);
+  // SAP / DAP remain optional helper fields and do not trigger plausibility prompts.
   if(context==='recovery'&&rr===0)w.push('Recovery RR = 0 ต้องยืนยันว่าเป็น apnea จริง');
   return [...new Set(w)];
 }
@@ -1486,6 +1645,7 @@ function updateDashboard(){
   renderSmartAlerts();
   renderCaseSummary();renderWeightSafetyState();
   if($('orlive')?.classList.contains('active')) renderOrLive();
+  maybeShowCriticalClinicalAlert();
   save();
 }
 function renderInterpretation(){
@@ -1503,7 +1663,8 @@ function renderInterpretation(){
   $('interpretationCards').innerHTML=data.map(([name,level,text])=>`<div class="interpret-card ${level}"><span>${name}</span><b>${escapeHtml(text)}</b></div>`).join('');
 }
 function renderRecordPreview(){
-  const pairs=[['HR','hr'],['RR','rr'],['SAP','sap'],['MAP','map'],['DAP','dap'],['SpO₂','spo2'],['ETCO₂','etco2'],['Temp','temp']];
+  const showSapDap=currentSettingsObject().showSapDap!==false;
+  const pairs=[['HR','hr'],['RR','rr'],...(showSapDap?[['SAP','sap']]:[]),['MAP','map'],...(showSapDap?[['DAP','dap']]:[]),['SpO₂','spo2'],['ETCO₂','etco2'],['Temp','temp']];
   $('recordPreview').innerHTML=pairs.map(([label,id])=>`<div class="preview-item"><span>${label}</span><b>${escapeHtml($(id).value||'—')}</b></div>`).join('');
 }
 
@@ -1538,7 +1699,7 @@ function renderRecords(){
     const tr=document.createElement('tr');if(recordAlert(r))tr.classList.add('alert');
     const fields=['hr','rr','sap','map','dap','spo2','etco2','temp','vaporizer','fluidRate'];
     tr.innerHTML=`<td>${i+1}</td><td>${formatElapsed(r.elapsedMs)}</td><td>${escapeHtml(r.clock)}</td>`+
-      fields.map(f=>`<td class="${recordCorrectionCount(r.id,f)?'corrected-cell':''}" title="${recordCorrectionCount(r.id,f)?'Corrected value — see history':''}">${f==='temp'?(r[f]==null||r[f]===''?'':tempStoredFToDisplay(r[f])):(r[f]??'')}${recordCorrectionCount(r.id,f)?'<span class="correction-badge">C</span>':''}</td>`).join('')+
+      fields.map(f=>`<td class="${['sap','dap'].includes(f)?'sap-dap-helper ':''}${recordCorrectionCount(r.id,f)?'corrected-cell':''}" title="${recordCorrectionCount(r.id,f)?'Corrected value — see history':''}">${f==='temp'?(r[f]==null||r[f]===''?'':tempStoredFToDisplay(r[f])):(r[f]??'')}${recordCorrectionCount(r.id,f)?'<span class="correction-badge">C</span>':''}</td>`).join('')+
       `<td class="note">${escapeHtml(r.note||'')}</td><td><div class="record-actions"><button class="record-correct-btn" data-id="${escapeHtml(r.id)}">Correct</button><button class="delete-btn" data-id="${escapeHtml(r.id)}">✕</button></div></td>`;
     body.appendChild(tr);
   });
@@ -1896,7 +2057,9 @@ function svgChartMulti(svgId,series,opts={}){
 }
 function renderTrends(){
   renderSummary();
-  svgChartMulti('chartBP',[{key:'sap',label:'SAP'},{key:'map',label:'MAP'},{key:'dap',label:'DAP'}],{min:30,max:180,lines:[{value:60,label:'MAP 60'}]});
+  const showSapDap=currentSettingsObject().showSapDap!==false;
+  svgChartMulti('chartBP',showSapDap?[{key:'sap',label:'SAP'},{key:'map',label:'MAP'},{key:'dap',label:'DAP'}]:[{key:'map',label:'MAP'}],{min:30,max:180,lines:[{value:60,label:'MAP 60'}]});
+  if($('bpChartSeriesLabel'))$('bpChartSeriesLabel').textContent=showSapDap?'SAP / MAP / DAP':'MAP';
   const sp=$('species').value;
   const hrLines=sp==='cat'
     ? [{value:100,label:'HR 100'},{value:180,label:'HR 180'}]
@@ -2093,18 +2256,18 @@ function getSmartAlerts(){
   const recs=state.records||[],alerts=[],num=v=>v===null||v===''||v===undefined?null:Number(v);
   if(recs.length>=3){
     const last3=recs.slice(-3),first=last3[0],last=last3[last3.length-1],spanMin=Math.max(1,(last.elapsedMs-first.elapsedMs)/60000);
-    const fm=num(first.map),lm=num(last.map);if(fm!==null&&lm!==null){const drop=fm-lm;if(drop>=10)alerts.push({level:lm<60?'danger':'warn',title:'Progressive hypotension',text:`MAP decreased ${Math.round(drop)} mmHg over ~${Math.round(spanMin)} min (${fm} → ${lm})`})}
-    const fe=num(first.etco2),le=num(last.etco2);if(fe!==null&&le!==null){const rise=le-fe;if(rise>=8)alerts.push({level:le>60?'danger':'warn',title:'Progressive hypercapnia',text:`ETCO₂ increased ${Math.round(rise)} mmHg (${fe} → ${le})`})}
-    const ft=num(first.temp),lt=num(last.temp);if(ft!==null&&lt!==null){const drop=ft-lt;if(drop>=1.0)alerts.push({level:lt<98?'danger':'warn',title:'Progressive heat loss',text:`Temperature decreased ${tempDeltaTextF(drop)} (${tempTextF(ft)} → ${tempTextF(lt)})`})}
-    const fs=num(first.spo2),ls=num(last.spo2);if(fs!==null&&ls!==null){const drop=fs-ls;if(drop>=3)alerts.push({level:ls<90?'danger':'warn',title:'Falling SpO₂',text:`SpO₂ decreased ${Math.round(drop)} points (${fs}% → ${ls}%)`})}
+    const fm=num(first.map),lm=num(last.map);if(fm!==null&&lm!==null){const drop=fm-lm;if(drop>=10)alerts.push({key:'map',level:lm<60?'danger':'warn',title:'Progressive hypotension',text:`MAP decreased ${Math.round(drop)} mmHg over ~${Math.round(spanMin)} min (${fm} → ${lm})`})}
+    const fe=num(first.etco2),le=num(last.etco2);if(fe!==null&&le!==null){const rise=le-fe;if(rise>=8)alerts.push({key:'etco2',level:le>60?'danger':'warn',title:'Progressive hypercapnia',text:`ETCO₂ increased ${Math.round(rise)} mmHg (${fe} → ${le})`})}
+    const ft=num(first.temp),lt=num(last.temp);if(ft!==null&&lt!==null){const drop=ft-lt;if(drop>=1.0)alerts.push({key:'temp',level:lt<98?'danger':'warn',title:'Progressive heat loss',text:`Temperature decreased ${tempDeltaTextF(drop)} (${tempTextF(ft)} → ${tempTextF(lt)})`})}
+    const fs=num(first.spo2),ls=num(last.spo2);if(fs!==null&&ls!==null){const drop=fs-ls;if(drop>=3)alerts.push({key:'spo2',level:ls<90?'danger':'warn',title:'Falling SpO₂',text:`SpO₂ decreased ${Math.round(drop)} points (${fs}% → ${ls}%)`})}
   }
   return alerts;
 }
 function renderSmartAlerts(){
-  const alerts=getSmartAlerts(),box=$('smartAlerts');if(!box)return;
+  const alerts=withAlertAdvice(getSmartAlerts()),box=$('smartAlerts');if(!box)return;
   $('smartAlertCount').textContent=`${alerts.length} ALERT${alerts.length===1?'':'S'}`;
   $('smartAlertCount').className=`status-pill ${alerts.some(a=>a.level==='danger')?'danger':alerts.length?'warn':'good'}`;
-  box.innerHTML=alerts.length?alerts.map(a=>`<div class="smart-alert-item ${a.level}"><b>${escapeHtml(a.title)}</b><span>${escapeHtml(a.text)}</span></div>`).join(''):'<div class="empty-state">ยังไม่พบ trend alert</div>';
+  box.innerHTML=alerts.length?alerts.map(a=>`<div class="smart-alert-item ${a.level}"><b>${escapeHtml(a.title)}</b><span>${escapeHtml(a.text)}</span>${a.advice?`<small class="alert-advice">Suggested first checks: ${escapeHtml(a.advice)}</small>`:''}</div>`).join(''):'<div class="empty-state">ยังไม่พบ trend alert</div>';
 }
 function seedRecoveryVitalsFromCurrent(){
   const pairs={recHR:'hr',recRR:'rr',recMAP:'map',recSpO2:'spo2',recTemp:'temp'};
@@ -2453,7 +2616,7 @@ $('backupNowHealthBtn')?.addEventListener('click',()=>backupAllData());
 
 async function backupAllData(){
   save();await initArchiveDb();await initPatientMaster();
-  const payload={format:'ANESVET_BACKUP',version:'14.6',exportedAt:Date.now(),current:state,archive:getArchive(),patients:getPatients(),breedAliases:loadBreedAliases(),settings:(()=>{try{return JSON.parse(localStorage.getItem(SETTINGS_KEY)||'null')}catch(e){return null}})(),drugLibrary:loadDrugLibraryData(),quickPresets:loadQuickPresets(),protocolAudit:getProtocolAudit()};
+  const payload={format:'ANESVET_BACKUP',version:'14.6.2',exportedAt:Date.now(),current:state,archive:getArchive(),patients:getPatients(),breedAliases:loadBreedAliases(),settings:(()=>{try{return JSON.parse(localStorage.getItem(SETTINGS_KEY)||'null')}catch(e){return null}})(),drugLibrary:loadDrugLibraryData(),quickPresets:loadQuickPresets(),protocolAudit:getProtocolAudit()};
   downloadBlob(JSON.stringify(payload,null,2),'application/json',`ANESVET_BACKUP_${formatDate(Date.now())}.json`);
   const backupEpoch=Date.now();localStorage.setItem(LAST_BACKUP_KEY,String(backupEpoch));
   if($('backupStatus'))$('backupStatus').textContent=`Backup created ${formatClock(backupEpoch)} • ${payload.archive.length} cases • ${payload.patients.length} patients`;
@@ -2589,7 +2752,7 @@ function appRootUrl(){
   let path=here.pathname;
   if(!path.endsWith('/')) path=path.replace(/\/[^/]*$/,'/');
   const url=new URL(path, here.origin);
-  url.searchParams.set('v','14.6');
+  url.searchParams.set('v','14.6.2');
   return url.href;
 }
 function restartAtAppRoot(){
@@ -2884,14 +3047,17 @@ $$('.custom-drug-event-btn').forEach(btn=>btn.addEventListener('click',()=>{
 }));
 
 
-function defaultSettings(){return{interval:'5',temperatureUnit:'C',diazepamConc:'5',propofolConc:'10',tramadolConc:'50',rimadylConc:'50',metacamConc:'5',atropineConc:'0.6',protocolName:'Hospital anesthesia protocol',protocolVersion:'',protocolVerifiedAt:'',protocolLocked:false,autoWakeLock:true}}
+function defaultSettings(){return{interval:'5',temperatureUnit:'C',diazepamConc:'5',propofolConc:'10',tramadolConc:'50',rimadylConc:'50',metacamConc:'5',atropineConc:'0.6',protocolName:'Hospital anesthesia protocol',protocolVersion:'',protocolVerifiedAt:'',protocolLocked:false,autoWakeLock:true,showSapDap:true,criticalPopupEnabled:true}}
 function loadSettings(){
   let s;try{s=JSON.parse(localStorage.getItem(SETTINGS_KEY)||'null')||JSON.parse(localStorage.getItem('anesvet_v14_2_settings')||'null')||JSON.parse(localStorage.getItem('anesvet_v14_1_settings')||'null')||JSON.parse(localStorage.getItem('anesvet_v14_settings')||'null')||JSON.parse(localStorage.getItem('anesvet_v13_4_settings')||'null')||JSON.parse(localStorage.getItem('anesvet_v13_3_settings')||'null')||JSON.parse(localStorage.getItem('anesvet_v13_2_settings')||'null')||JSON.parse(localStorage.getItem('anesvet_v13_1_settings')||'null')||JSON.parse(localStorage.getItem('anesvet_v13_settings')||'null')||JSON.parse(localStorage.getItem('anesvet_v12_1_settings')||'null')||JSON.parse(localStorage.getItem('anesvet_v12_settings')||'null')||JSON.parse(localStorage.getItem('anesvet_v11_settings')||'null')||JSON.parse(localStorage.getItem('anesvet_v10_settings')||'null')}catch(e){}
   s={...defaultSettings(),...(s||{})};
   const map={settingInterval:'interval',settingTemperatureUnit:'temperatureUnit',settingDiazepamConc:'diazepamConc',settingPropofolConc:'propofolConc',settingTramadolConc:'tramadolConc',settingRimadylConc:'rimadylConc',settingMetacamConc:'metacamConc',settingAtropineConc:'atropineConc',settingProtocolName:'protocolName',settingProtocolVersion:'protocolVersion',settingProtocolVerifiedAt:'protocolVerifiedAt'};
   Object.entries(map).forEach(([id,key])=>{if($(id))$(id).value=s[key]??''});
   if($('settingAutoWakeLock'))$('settingAutoWakeLock').checked=s.autoWakeLock!==false;
+  if($('settingShowSapDap'))$('settingShowSapDap').checked=s.showSapDap!==false;
+  if($('settingCriticalPopup'))$('settingCriticalPopup').checked=s.criticalPopupEnabled!==false;
   setTemperatureDisplayUnit(s.temperatureUnit,{convertInputs:true,rerender:false});
+  renderSapDapVisibility();
   renderProtocolGovernance();
 }
 function applyHospitalDefaultsToFreshCaseUi(){
@@ -2906,13 +3072,13 @@ function applyHospitalDefaultsToFreshCaseUi(){
 $('saveSettingsBtn')?.addEventListener('click',()=>{
   const old=currentSettingsObject(),locked=!!old.protocolLocked;
   const newTempUnit=normalizeTempUnit($('settingTemperatureUnit')?.value||old.temperatureUnit);setTemperatureDisplayUnit(newTempUnit,{convertInputs:true,rerender:false});
-  const s={...old,interval:$('settingInterval').value,temperatureUnit:newTempUnit,autoWakeLock:$('settingAutoWakeLock')?.checked!==false};
+  const s={...old,interval:$('settingInterval').value,temperatureUnit:newTempUnit,autoWakeLock:$('settingAutoWakeLock')?.checked!==false,showSapDap:$('settingShowSapDap')?.checked!==false,criticalPopupEnabled:$('settingCriticalPopup')?.checked!==false};
   if(!locked){
     Object.assign(s,{diazepamConc:$('settingDiazepamConc').value,propofolConc:$('settingPropofolConc').value,tramadolConc:$('settingTramadolConc').value,rimadylConc:$('settingRimadylConc').value,metacamConc:$('settingMetacamConc').value,atropineConc:$('settingAtropineConc').value,protocolName:$('settingProtocolName')?.value.trim()||'Hospital anesthesia protocol',protocolVersion:$('settingProtocolVersion')?.value.trim()||'',protocolVerifiedAt:$('settingProtocolVerifiedAt')?.value||''});
   }
   localStorage.setItem(SETTINGS_KEY,JSON.stringify(s));
   $('recordInterval').value=s.interval;$('diazepamConc').value=s.diazepamConc;$('propofolConc').value=s.propofolConc;$('tramadolConc').value=s.tramadolConc;$('rimadylConc').value=s.rimadylConc;$('metacamConc').value=s.metacamConc;$('atropineConc').value=s.atropineConc;
-  addProtocolAudit('HOSPITAL_SETTINGS_SAVED',`Protocol ${s.protocolVersion||'unversioned'} • temp=${s.temperatureUnit} • locked=${!!s.protocolLocked}`);renderRecords();renderRecoveryRecords();renderTrends();renderProcedureTimeline();renderResponses();updateDashboard();renderOrLive();renderProtocolGovernance();toast(locked?'General settings saved • protocol remains locked':'Hospital settings saved');
+  addProtocolAudit('HOSPITAL_SETTINGS_SAVED',`Protocol ${s.protocolVersion||'unversioned'} • temp=${s.temperatureUnit} • showSapDap=${s.showSapDap!==false} • criticalPopup=${s.criticalPopupEnabled!==false} • locked=${!!s.protocolLocked}`);renderSapDapVisibility();renderRecords();renderRecoveryRecords();renderTrends();renderProcedureTimeline();renderResponses();updateDashboard();renderOrLive();renderProtocolGovernance();toast(locked?'General settings saved • protocol remains locked':'Hospital settings saved');
 });
 function isProtocolLocked(){return !!currentSettingsObject().protocolLocked}
 function renderProtocolGovernance(){
@@ -2973,7 +3139,7 @@ function freshState(){
 function resetCurrent(){
   // Set this BEFORE navigation. Otherwise pagehide/visibilitychange can autosave
   // the old on-screen fields and resurrect the case we just cleared.
-  resetInProgress=true;
+  resetInProgress=true;criticalAlertLatch={map:false,spo2:false};
   clearInterval(timerHandle);timerHandle=null;
   dueReminderToken=null;recoveryDueReminderToken=null;
   state=freshState();

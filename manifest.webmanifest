@@ -1,8 +1,8 @@
 {
-  "name": "ANESVET V14.6 — Clinical Workflow Integrity",
+  "name": "ANESVET V14.6.2 — Critical Alerts & Quick Guides",
   "short_name": "ANESVET",
-  "description": "Veterinary anesthesia workstation with structured complication workflow, medication administration audit, recovery scoring and strengthened final-record integrity",
-  "start_url": "./?v=14.6",
+  "description": "Veterinary anesthesia workstation with critical alert popups, quick clinical guides, configurable SAP/DAP helpers, complication workflow and recovery documentation",
+  "start_url": "./?v=14.6.2",
   "scope": "./",
   "display": "standalone",
   "background_color": "#f3f7f8",

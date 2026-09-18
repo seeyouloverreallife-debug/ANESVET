@@ -4,20 +4,20 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#0d5265">
-  <meta name="description" content="ANESVET V14.6 — veterinary anesthesia workstation with complication workflow, medication audit and recovery scoring">
+  <meta name="description" content="ANESVET V14.6.2 — veterinary anesthesia workstation with critical alert popups, quick clinical guides and configurable SAP/DAP helpers">
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" href="./icon-192.png">
   <link rel="apple-touch-icon" href="./icon-192.png">
-  <link rel="stylesheet" href="./style.css?v=14.6">
-  <title>ANESVET V14.6</title>
+  <link rel="stylesheet" href="./style.css?v=14.6.2">
+  <title>ANESVET V14.6.2</title>
 </head>
 <body>
 <header class="topbar">
   <div class="brand">
-    <div class="brand-mark">A</div>
+    <img class="brand-logo" src="./icon-192.png" alt="ANESVET logo">
     <div>
       <div class="eyebrow">GENOVI PET CARE • DIGITAL ANESTHESIA RECORD</div>
-      <h1>ANESVET <span>V14.6</span></h1>
+      <h1>ANESVET <span>V14.6.2</span></h1>
     </div>
   </div>
   <div class="top-actions">
@@ -406,8 +406,8 @@
       <section class="panel or-bp-panel">
         <div class="section-heading"><div><h2>Blood pressure & maintenance</h2><p>ค่าที่ใช้บ่อยระหว่างผ่าตัด</p></div></div>
         <div class="or-maint-grid">
-          <label>SAP (mmHg)<input id="orSap" type="number" inputmode="numeric"></label>
-          <label>DAP (mmHg)<input id="orDap" type="number" inputmode="numeric"></label>
+          <label class="sap-dap-helper">SAP (mmHg) <small class="optional-note">optional</small><input id="orSap" type="number" inputmode="numeric"></label>
+          <label class="sap-dap-helper">DAP (mmHg) <small class="optional-note">optional</small><input id="orDap" type="number" inputmode="numeric"></label>
           <label>Vaporizer (%)<input id="orVaporizer" type="number" step="0.1" inputmode="decimal"></label>
           <label>O₂ (L/min)<input id="orO2" type="number" step="0.1" inputmode="decimal"></label>
           
@@ -418,6 +418,16 @@
       <section class="panel or-alert-panel">
         <div class="section-heading"><div><h2>Prioritized alerts</h2><p>Immediate problems ก่อน ตามด้วย trend alerts</p></div><span id="orAlertCount" class="status-pill good">0 ALERTS</span></div>
         <div id="orAlertList" class="or-alert-list"><div class="empty-state compact">No active alerts</div></div>
+        <div class="or-quick-guides">
+          <span>Quick guides</span>
+          <div class="button-row compact">
+            <button class="btn clinical-guide-btn" type="button" data-guide="hypotension">Hypotension</button>
+            <button class="btn clinical-guide-btn" type="button" data-guide="bradycardia">Bradycardia</button>
+            <button class="btn clinical-guide-btn" type="button" data-guide="hypoxemia">Hypoxemia</button>
+            <button class="btn clinical-guide-btn" type="button" data-guide="ventilation">Ventilation</button>
+            <button class="btn clinical-guide-btn" type="button" data-guide="hypothermia">Hypothermia</button>
+          </div>
+        </div>
       </section>
     </section>
 
@@ -771,10 +781,10 @@
         <div id="rrHint" class="vital-foot good">กำลังประเมินตาม species</div>
       </article>
 
-      <article class="vital-card">
+      <article class="vital-card sap-dap-helper">
         <div class="vital-title"><span>SAP</span><span class="unit">mmHg</span></div>
         <input id="sap" class="vital-input" type="number" min="0" max="300" placeholder="—">
-        <div id="sapHint" class="vital-foot neutral">systolic BP</div>
+        <div id="sapHint" class="vital-foot neutral">Optional helper only — MAP is the main alert value</div>
       </article>
 
       <article class="vital-card">
@@ -783,10 +793,10 @@
         <div id="mapHint" class="vital-foot good">≥70 โดยทั่วไป</div>
       </article>
 
-      <article class="vital-card">
+      <article class="vital-card sap-dap-helper">
         <div class="vital-title"><span>DAP</span><span class="unit">mmHg</span></div>
         <input id="dap" class="vital-input" type="number" min="0" max="200" placeholder="—">
-        <div id="dapHint" class="vital-foot neutral">diastolic BP</div>
+        <div id="dapHint" class="vital-foot neutral">Optional helper only — does not trigger alert prompts</div>
       </article>
 
       <article class="vital-card">
@@ -933,7 +943,7 @@
           <thead>
             <tr>
               <th>#</th><th>Elapsed</th><th>Clock</th><th>HR</th><th>RR</th>
-              <th>SAP</th><th>MAP</th><th>DAP</th><th>SpO₂</th><th>ETCO₂</th>
+              <th class="sap-dap-helper">SAP</th><th>MAP</th><th class="sap-dap-helper">DAP</th><th>SpO₂</th><th>ETCO₂</th>
               <th id="recordTempHeader">Temp °F</th><th>Vap%</th><th>Fluid</th><th>Note</th><th></th>
             </tr>
           </thead>
@@ -951,7 +961,7 @@
       <div class="correction-grid">
         <label>Record<select id="correctionRecord"></select></label>
         <label>Field<select id="correctionField">
-          <option value="hr">HR</option><option value="rr">RR</option><option value="sap">SAP</option><option value="map">MAP</option><option value="dap">DAP</option><option value="spo2">SpO₂</option><option value="etco2">ETCO₂</option><option value="temp">Temp</option><option value="vaporizer">Vaporizer</option><option value="fluidRate">Fluid rate</option>
+          <option value="hr">HR</option><option value="rr">RR</option><option value="sap" data-sap-dap="1">SAP</option><option value="map">MAP</option><option value="dap" data-sap-dap="1">DAP</option><option value="spo2">SpO₂</option><option value="etco2">ETCO₂</option><option value="temp">Temp</option><option value="vaporizer">Vaporizer</option><option value="fluidRate">Fluid rate</option>
         </select></label>
         <label>Corrected value<input id="correctionValue" type="number" step="0.1"></label>
         <label>Reason<input id="correctionReason" type="text" placeholder="เช่น transcription error / monitor recheck"></label>
@@ -988,7 +998,7 @@
 
     <div class="chart-grid">
       <section class="panel chart-card hemo-chart">
-        <div class="chart-heading"><h3>Blood pressure</h3><span>SAP / MAP / DAP</span></div>
+        <div class="chart-heading"><h3>Blood pressure</h3><span id="bpChartSeriesLabel">SAP / MAP / DAP</span></div>
         <svg id="chartBP" class="trend-chart" viewBox="0 0 760 300"></svg>
       </section>
       <section class="panel chart-card hemo-chart">
@@ -1710,13 +1720,15 @@
   <section id="settings" class="tabpage"><section class="panel"><div class="section-heading"><div><h2>Hospital settings</h2><p>ปรับ default ของโรงพยาบาลโดยไม่ต้องแก้ code</p></div><button id="saveSettingsBtn" class="btn primary">Save settings</button></div><div class="settings-grid">
 <label>Default record interval<select id="settingInterval"><option value="5">5 min</option><option value="10">10 min</option></select></label>
 <label>Temperature unit<select id="settingTemperatureUnit"><option value="C">°C (recommended for Thailand)</option><option value="F">°F</option></select></label>
+<label class="settings-toggle"><span>Show SAP / DAP helper fields</span><input id="settingShowSapDap" type="checkbox" checked></label>
+<label class="settings-toggle"><span>Critical popup (MAP &lt;60 / SpO₂ &lt;90)</span><input id="settingCriticalPopup" type="checkbox" checked></label>
 <label>Diazepam concentration (mg/mL)<input id="settingDiazepamConc" type="number" min="0.01" step="0.1" value="5"></label>
 <label>Propofol concentration (mg/mL)<input id="settingPropofolConc" type="number" min="0.01" step="0.1" value="10"></label>
 <label>Tramadol concentration (mg/mL)<input id="settingTramadolConc" type="number" min="0.01" step="0.1" value="50"></label>
 <label>Carprofen concentration (mg/mL)<input id="settingRimadylConc" type="number" min="0.01" step="0.1" value="50"></label>
 <label>Meloxicam concentration (mg/mL)<input id="settingMetacamConc" type="number" min="0.01" step="0.1" value="5"></label>
 <label>Atropine concentration (mg/mL)<input id="settingAtropineConc" type="number" min="0.01" step="0.1" value="0.6"></label>
-</div><div class="settings-note">บันทึกแล้วจะใช้กับ Drug Calculator, temperature display และ default ของเคสใหม่ • Temperature ถูกเก็บภายในเป็น °F canonical เพื่อรักษาความต่อเนื่องและ checksum ของ record รุ่นก่อน</div></section>
+</div><div class="settings-note">บันทึกแล้วจะใช้กับ Drug Calculator, temperature display, alert behavior และหน้าจอ monitoring • Temperature ถูกเก็บภายในเป็น °F canonical เพื่อรักษาความต่อเนื่องและ checksum ของ record รุ่นก่อน</div></section>
 
 <section class="panel protocol-governance-panel">
   <div class="section-heading">
@@ -1868,6 +1880,26 @@
   </form>
 </dialog>
 
+<dialog id="clinicalGuideDialog" class="clinical-guide-dialog">
+  <form method="dialog" class="clinical-guide-card" onsubmit="return false;">
+    <div class="clinical-guide-head">
+      <div>
+        <div class="eyebrow">CLINICAL QUICK GUIDE</div>
+        <h2 id="clinicalGuideTitle">—</h2>
+        <p id="clinicalGuideTrigger">—</p>
+      </div>
+      <button id="clinicalGuideCloseBtn" class="btn" type="button">✕</button>
+    </div>
+    <div id="clinicalGuideSeverity" class="critical-guide-badge warn">REASSESS</div>
+    <ol id="clinicalGuideSteps" class="clinical-guide-steps"></ol>
+    <div id="clinicalGuideNote" class="drug-admin-safety">Quick guide only — verify monitor data and use clinical judgment / hospital protocol.</div>
+    <div class="dialog-actions">
+      <button id="clinicalGuideComplicationBtn" class="btn" type="button">＋ Record complication</button>
+      <button id="clinicalGuideDismissBtn" class="btn primary" type="button">Acknowledge</button>
+    </div>
+  </form>
+</dialog>
+
 <dialog id="amendmentDialog" class="drug-admin-dialog">
   <form method="dialog" class="drug-admin-card" onsubmit="return false;">
     <div class="section-heading">
@@ -1915,6 +1947,6 @@
 </dialog>
 
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
-<script src="./app.js?v=14.6"></script>
+<script src="./app.js?v=14.6.2"></script>
 </body>
 </html>

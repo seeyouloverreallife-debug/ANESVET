@@ -89,7 +89,7 @@ must(app.includes('function agePartsFromDob'),'age calculation missing');
 must(app.includes('function getFluidMetrics'),'fluid integration missing');
 
 // Backup / restore
-must(app.includes("format:'ANESVET_BACKUP',version:'14.6'"),'backup version must be 14.6');
+must(app.includes("format:'ANESVET_BACKUP',version:'14.6.2'"),'backup version must be 14.6.2');
 must(app.includes("raw.format!=='ANESVET_BACKUP'")&&app.includes('idbClearCases()'),'backup restore integrity path missing');
 
 // Reset must preserve persistent stores by only resetting current case state.
@@ -105,4 +105,15 @@ for(const id of ['reportComplications','reportDrugAdministrations','reportRecove
   must(html.includes(`id="${id}"`),`PDF/report section missing ${id}`);
 }
 
-console.log(`ANESVET V14.6 regression checks: PASS (${ids.length} unique HTML ids, ${fnNames.length} unique named functions)`);
+// V14.6.2 alert UX / configurable BP helpers
+for(const id of ['clinicalGuideDialog','clinicalGuideTitle','clinicalGuideSteps','clinicalGuideComplicationBtn','settingShowSapDap','settingCriticalPopup']){
+  must(html.includes(`id="${id}"`),`V14.6.2 clinical alert UI missing ${id}`);
+}
+must(app.includes('function maybeShowCriticalClinicalAlert'),'critical alert popup logic missing');
+must(app.includes("spo2<90")&&app.includes("map<60"),'critical popup triggers must include SpO2 <90 and MAP <60');
+must(app.includes('CLINICAL_GUIDES')&&app.includes("hypotension:{")&&app.includes("hypoxemia:{"),'quick clinical guide content missing');
+must(app.includes('function renderSapDapVisibility'),'SAP/DAP visibility setting missing');
+must(css.includes('body.hide-sap-dap .sap-dap-helper'),'SAP/DAP hide CSS missing');
+must(app.includes('criticalPopupEnabled:true')&&app.includes('showSapDap:true'),'new alert settings should have explicit defaults');
+
+console.log(`ANESVET V14.6.2 regression checks: PASS (${ids.length} unique HTML ids, ${fnNames.length} unique named functions)`);
