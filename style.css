@@ -410,3 +410,27 @@ body.or-fullscreen .topbar,body.or-fullscreen .case-strip,body.or-fullscreen .ta
   .or-phase-steps{grid-template-columns:1fr}
   .or-phase-step{min-height:56px}
 }
+
+
+/* V13.4 — archived PDF export + due alert feedback */
+.alert-feedback-btn.alert-on{background:#e9f7ef!important;color:#176b4a!important;border-color:#b9dfc9!important}
+.alert-feedback-btn.alert-off{background:#f2f4f5!important;color:#66757c!important}
+.alert-feedback-btn.alert-need-tap{background:#fff4dd!important;color:#815500!important;border-color:#ead19b!important}
+.archive-actions{display:flex;gap:7px;align-items:center;flex-wrap:wrap}
+.archive-pdf{border-color:#8fbac5!important;color:#0d5f73!important}
+.archive-final-badge{
+  display:inline-flex;align-items:center;padding:3px 7px;border-radius:999px;
+  background:#e9f7ef;color:#176b4a;font-size:.66rem;font-weight:900
+}
+.archive-recovery-count{color:var(--muted);font-size:.72rem}
+.due-banner.alert-pulse,.status-pill.alert-pulse{
+  animation:duePulse 1s ease-in-out 3
+}
+@keyframes duePulse{
+  0%,100%{box-shadow:none}
+  50%{box-shadow:0 0 0 5px rgba(197,54,44,.13)}
+}
+@media(max-width:700px){
+  .top-actions{gap:6px}
+  .alert-feedback-btn{font-size:.72rem;padding:7px 9px}
+}

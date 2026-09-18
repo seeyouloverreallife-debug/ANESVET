@@ -1,8 +1,8 @@
 {
-  "name": "ANESVET V13.3 — OR Status Tracker",
+  "name": "ANESVET V13.4 — Archive PDF & Due Alerts",
   "short_name": "ANESVET",
-  "description": "Veterinary anesthesia workstation with a prominent OR workflow status tracker",
-  "start_url": "./?v=13.3",
+  "description": "Veterinary anesthesia workstation with direct archived-case PDF export and sound/vibration vital-sign reminders",
+  "start_url": "./?v=13.4",
   "scope": "./",
   "display": "standalone",
   "background_color": "#f3f7f8",

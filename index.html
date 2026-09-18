@@ -8,8 +8,8 @@
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" href="./icon-192.png">
   <link rel="apple-touch-icon" href="./icon-192.png">
-  <link rel="stylesheet" href="./style.css?v=13.3">
-  <title>ANESVET V13.3</title>
+  <link rel="stylesheet" href="./style.css?v=13.4">
+  <title>ANESVET V13.4</title>
 </head>
 <body>
 <header class="topbar">
@@ -17,7 +17,7 @@
     <div class="brand-mark">A</div>
     <div>
       <div class="eyebrow">GENOVI PET CARE • DIGITAL ANESTHESIA RECORD</div>
-      <h1>ANESVET <span>V13.3</span></h1>
+      <h1>ANESVET <span>V13.4</span></h1>
     </div>
   </div>
   <div class="top-actions">
@@ -26,6 +26,7 @@
       <span id="caseClock" class="case-clock">00:00:00</span>
       <span id="saveState" class="save-state saved">✓ Saved locally</span>
     </div>
+    <button id="alertFeedbackBtn" class="btn light alert-feedback-btn" type="button" title="เสียงและการสั่นสำหรับ Record due">🔔 Alerts ON</button>
     <button id="installBtn" class="btn light" hidden>ติดตั้งแอป</button>
   </div>
 </header>
@@ -760,6 +761,7 @@
             </select>
           </label>
           <label class="checkline smallcheck"><input id="reminderOn" type="checkbox" checked> Reminder</label>
+          <span id="alertCapabilityText" class="muted small">Sound/vibration where supported</span>
         </div>
       </div>
 
@@ -1315,7 +1317,7 @@
       <div class="section-heading">
         <div>
           <h2>Case management</h2>
-          <p>ข้อมูลเก็บใน browser ของอุปกรณ์นี้ • V10 แนะนำ Backup เป็นระยะ</p>
+          <p>ข้อมูลเก็บใน browser ของอุปกรณ์นี้ • Archived case สามารถ Export PDF ได้ทันที • แนะนำ Backup เป็นระยะ</p>
         </div>
         <div class="button-row">
           <button id="archiveCaseBtn" class="btn primary">Archive current case</button>
@@ -1545,6 +1547,6 @@
 </dialog>
 
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
-<script src="./app.js?v=13.3"></script>
+<script src="./app.js?v=13.4"></script>
 </body>
 </html>

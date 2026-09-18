@@ -3,12 +3,13 @@
 
 const $ = id => document.getElementById(id);
 const $$ = sel => [...document.querySelectorAll(sel)];
-const CURRENT_KEY = 'anesvet_v13_3_current';
-const ARCHIVE_KEY = 'anesvet_v13_3_archive';
-const TAB_KEY = 'anesvet_v13_3_tab';
-const SETTINGS_KEY='anesvet_v13_3_settings';
-const DRUG_LIBRARY_KEY='anesvet_v13_3_drug_library';
-const QUICK_PRESET_KEY='anesvet_v13_3_quick_presets';
+const CURRENT_KEY = 'anesvet_v13_4_current';
+const ARCHIVE_KEY = 'anesvet_v13_4_archive';
+const TAB_KEY = 'anesvet_v13_4_tab';
+const SETTINGS_KEY='anesvet_v13_4_settings';
+const DRUG_LIBRARY_KEY='anesvet_v13_4_drug_library';
+const QUICK_PRESET_KEY='anesvet_v13_4_quick_presets';
+const ALERT_PREF_KEY='anesvet_due_alert_feedback';
 
 const numericFields = ['weight','hr','rr','sap','map','dap','spo2','etco2','temp','vaporizer','o2flow','fluidRateInput','fluidTotal','recRR','recSpO2','recTemp'];
 const dataFields = [
@@ -72,6 +73,77 @@ function toast(msg){
   const t=$('toast');t.textContent=msg;t.classList.add('show');
   clearTimeout(toast._t);toast._t=setTimeout(()=>t.classList.remove('show'),2200);
 }
+
+let alertAudioContext=null;
+let alertAudioReady=false;
+let alertFeedbackEnabled=localStorage.getItem(ALERT_PREF_KEY)!=='off';
+let recoveryDueReminderToken=null;
+
+function renderAlertFeedbackState(){
+  const btn=$('alertFeedbackBtn');if(!btn)return;
+  btn.classList.remove('alert-on','alert-off','alert-need-tap');
+  if(!alertFeedbackEnabled){
+    btn.textContent='🔕 Alerts OFF';btn.classList.add('alert-off');
+    if($('alertCapabilityText'))$('alertCapabilityText').textContent='Sound/vibration disabled';
+  }else if(alertAudioReady){
+    btn.textContent='🔔 Alerts ON';btn.classList.add('alert-on');
+    if($('alertCapabilityText'))$('alertCapabilityText').textContent=`Sound ON • Vibration ${'vibrate' in navigator?'supported':'not supported'}`;
+  }else{
+    btn.textContent='🔔 Enable alerts';btn.classList.add('alert-need-tap');
+    if($('alertCapabilityText'))$('alertCapabilityText').textContent='Tap once to enable sound; vibration depends on device/browser';
+  }
+}
+async function primeAlertAudio(test=false){
+  if(!alertFeedbackEnabled){renderAlertFeedbackState();return false}
+  try{
+    const AC=window.AudioContext||window.webkitAudioContext;
+    if(!AC){alertAudioReady=false;renderAlertFeedbackState();return false}
+    if(!alertAudioContext)alertAudioContext=new AC();
+    if(alertAudioContext.state==='suspended')await alertAudioContext.resume();
+    alertAudioReady=alertAudioContext.state==='running';
+    if(test&&alertAudioReady)playDueTone('test');
+    renderAlertFeedbackState();return alertAudioReady;
+  }catch(e){alertAudioReady=false;renderAlertFeedbackState();return false}
+}
+function playDueTone(kind='anesthesia'){
+  if(!alertFeedbackEnabled||!alertAudioReady||!alertAudioContext)return;
+  const ctx=alertAudioContext,now=ctx.currentTime;
+  const pattern=kind==='recovery'
+    ? [[880,0,.12],[660,.18,.12],[880,.36,.16]]
+    : [[880,0,.15],[880,.23,.15]];
+  pattern.forEach(([freq,offset,dur])=>{
+    const osc=ctx.createOscillator(),gain=ctx.createGain();
+    osc.type='sine';osc.frequency.value=freq;
+    gain.gain.setValueAtTime(0.0001,now+offset);
+    gain.gain.exponentialRampToValueAtTime(0.12,now+offset+.015);
+    gain.gain.exponentialRampToValueAtTime(0.0001,now+offset+dur);
+    osc.connect(gain).connect(ctx.destination);
+    osc.start(now+offset);osc.stop(now+offset+dur+.03);
+  });
+}
+function vibrateDue(kind='anesthesia'){
+  if(!alertFeedbackEnabled||!('vibrate' in navigator))return;
+  try{navigator.vibrate(kind==='recovery'?[140,90,140,90,180]:[140,90,140])}catch(e){}
+}
+function fireDueFeedback(kind='anesthesia'){
+  if(!alertFeedbackEnabled)return;
+  playDueTone(kind);vibrateDue(kind);
+  const el=kind==='recovery'?$('recoveryDueBadge'):$('dueBanner');
+  if(el){el.classList.remove('alert-pulse');void el.offsetWidth;el.classList.add('alert-pulse')}
+}
+$('alertFeedbackBtn')?.addEventListener('click',async()=>{
+  if(alertFeedbackEnabled&&alertAudioReady){
+    alertFeedbackEnabled=false;localStorage.setItem(ALERT_PREF_KEY,'off');
+    if('vibrate' in navigator)try{navigator.vibrate(0)}catch(e){}
+    renderAlertFeedbackState();toast('Sound/vibration alerts OFF');return;
+  }
+  alertFeedbackEnabled=true;localStorage.setItem(ALERT_PREF_KEY,'on');
+  await primeAlertAudio(true);
+  if('vibrate' in navigator)try{navigator.vibrate(60)}catch(e){}
+  toast(alertAudioReady?'Sound/vibration alerts enabled':'Vibration enabled where supported • sound unavailable on this browser');
+});
+document.addEventListener('pointerdown',()=>{if(alertFeedbackEnabled&&!alertAudioReady)primeAlertAudio(false)},{once:true,passive:true});
+
 function currentElapsed(){
   if(state.timer.running && state.timer.startedEpoch){
     return (state.timer.elapsedMs||0) + (Date.now()-state.timer.startedEpoch);
@@ -232,6 +304,7 @@ function migrateV3Case(raw){
 function load(){
   try{
     let raw=JSON.parse(localStorage.getItem(CURRENT_KEY)||'null');
+    if(!raw){const prev133=JSON.parse(localStorage.getItem('anesvet_v13_3_current')||'null');if(prev133){raw=prev133;localStorage.setItem(CURRENT_KEY,JSON.stringify(raw));}}
     if(!raw){const prev132=JSON.parse(localStorage.getItem('anesvet_v13_2_current')||'null');if(prev132){raw=prev132;localStorage.setItem(CURRENT_KEY,JSON.stringify(raw));}}
     if(!raw){const prev131=JSON.parse(localStorage.getItem('anesvet_v13_1_current')||'null');if(prev131){raw=prev131;localStorage.setItem(CURRENT_KEY,JSON.stringify(raw));}}
     if(!raw){const prev13=JSON.parse(localStorage.getItem('anesvet_v13_current')||'null');if(prev13){raw=prev13;localStorage.setItem(CURRENT_KEY,JSON.stringify(raw));}}
@@ -724,7 +797,7 @@ function renderRecordPreview(){
 
 function addRecord(note=''){
   ensureTimerStarted();
-  state.records.push(currentSnapshot(note));
+  state.records.push(currentSnapshot(note));dueReminderToken=null;
   state.records.sort((a,b)=>a.epoch-b.epoch);
   $('recordNote').value='';
   save();renderRecords();renderTrends();renderProcedureTimeline();renderSmartAlerts();renderOrLive();updateDue();
@@ -799,7 +872,7 @@ function updateDue(){
     $('dueStatus').textContent=`DUE +${Math.floor(Math.abs(delta)/60000)}m`;
     banner.classList.remove('hidden');
     if($('reminderOn').checked && dueReminderToken!==due){
-      dueReminderToken=due;toast('ถึงเวลาบันทึกค่า anesthesia แล้ว');
+      dueReminderToken=due;toast('ถึงเวลาบันทึกค่า anesthesia แล้ว');fireDueFeedback('anesthesia');
     }
   }else{
     $('dueStatus').textContent=`${Math.floor(delta/60000)}:${pad(Math.floor((delta%60000)/1000))}`;
@@ -1311,7 +1384,7 @@ function addRecoveryRecord(){
   const hr=Number($('recHR')?.value||0),rr=Number($('recRR')?.value||0),mapRaw=$('recMAP')?.value,spo2=Number($('recSpO2')?.value||0),temp=Number($('recTemp')?.value||0);
   if(!(hr>0&&rr>0&&spo2>0&&temp>0)){toast('กรุณาตรวจ HR, RR, SpO₂ และ Temp ก่อนบันทึก');return}
   const rec={id:crypto.randomUUID?crypto.randomUUID():String(Date.now()+Math.random()),epoch:Date.now(),clock:formatClock(),caseElapsedMs:currentElapsed(),recoveryElapsedMs:recoveryElapsed(),hr,rr,map:mapRaw===''||mapRaw==null?null:Number(mapRaw),spo2,temp,oxygen:$('recOxygen')?.value||'',mentation:$('recMentation')?.value||'',note:$('recPain')?.value.trim()||''};
-  state.recoveryRecords=state.recoveryRecords||[];state.recoveryRecords.push(rec);
+  state.recoveryRecords=state.recoveryRecords||[];state.recoveryRecords.push(rec);recoveryDueReminderToken=null;
   save();renderRecoveryRecords();renderRecovery();renderProcedureTimeline();updateRecoveryDue();toast(`Recovery vitals recorded • ${rec.clock}`);
 }
 function renderRecoveryRecords(){
@@ -1328,10 +1401,23 @@ function updateRecoveryDue(){
     badge.textContent=state.emergencyReturnActive?'PAUSED — EMERGENCY RETURN':'NOT ACTIVE';badge.className='status-pill warn';return;
   }
   const arr=state.recoveryRecords||[],interval=Math.max(1,Number($('recRecordInterval')?.value||5))*60000;
-  if(!arr.length){badge.textContent='FIRST RECORD DUE';badge.className='status-pill warn';return}
+  if(!arr.length){
+    badge.textContent='FIRST RECORD DUE';badge.className='status-pill warn';
+    const token=`first-${state.recoveryStartedAt||0}`;
+    if(state.recoveryStartedAt && Date.now()-state.recoveryStartedAt>=10000 && recoveryDueReminderToken!==token){
+      recoveryDueReminderToken=token;toast('ถึงเวลาบันทึก Recovery vital signs ชุดแรก');fireDueFeedback('recovery');
+    }
+    return;
+  }
   const due=arr.at(-1).epoch+interval,delta=due-Date.now();
-  if(delta<=0){badge.textContent=`DUE +${Math.floor(Math.abs(delta)/60000)}:${pad(Math.floor((Math.abs(delta)%60000)/1000))}`;badge.className='status-pill danger'}
-  else{badge.textContent=`NEXT ${Math.floor(delta/60000)}:${pad(Math.floor((delta%60000)/1000))}`;badge.className='status-pill good'}
+  if(delta<=0){
+    badge.textContent=`DUE +${Math.floor(Math.abs(delta)/60000)}:${pad(Math.floor((Math.abs(delta)%60000)/1000))}`;badge.className='status-pill danger';
+    if(recoveryDueReminderToken!==due){
+      recoveryDueReminderToken=due;toast('ถึงเวลาบันทึก Recovery vital signs ซ้ำ');fireDueFeedback('recovery');
+    }
+  }else{
+    badge.textContent=`NEXT ${Math.floor(delta/60000)}:${pad(Math.floor((delta%60000)/1000))}`;badge.className='status-pill good';
+  }
 }
 $('recordRecoveryVitalsBtn')?.addEventListener('click',addRecoveryRecord);
 
@@ -1539,7 +1625,7 @@ $('exportCsvBtn2').addEventListener('click',exportRecordsCsv);
 $('exportEventsCsvBtn').addEventListener('click',exportEventsCsv);
 $('exportJsonBtn').addEventListener('click',()=>{save();downloadBlob(JSON.stringify(state,null,2),'application/json',caseBase()+'.json')});
 function backupAllData(){
-  save();const payload={format:'ANESVET_BACKUP',version:13.3,exportedAt:Date.now(),current:state,archive:getArchive(),settings:(()=>{try{return JSON.parse(localStorage.getItem(SETTINGS_KEY)||'null')}catch(e){return null}})(),drugLibrary:loadDrugLibraryData(),quickPresets:loadQuickPresets()};
+  save();const payload={format:'ANESVET_BACKUP',version:13.4,exportedAt:Date.now(),current:state,archive:getArchive(),settings:(()=>{try{return JSON.parse(localStorage.getItem(SETTINGS_KEY)||'null')}catch(e){return null}})(),drugLibrary:loadDrugLibraryData(),quickPresets:loadQuickPresets()};
   downloadBlob(JSON.stringify(payload,null,2),'application/json',`ANESVET_BACKUP_${formatDate(Date.now())}.json`);if($('backupStatus'))$('backupStatus').textContent=`Backup created ${formatClock()}`;toast('Full backup created');
 }
 $('backupAllBtn')?.addEventListener('click',backupAllData);
@@ -1566,7 +1652,8 @@ function archiveSnapshot(){
 function getArchive(){
   try{
     let a=JSON.parse(localStorage.getItem(ARCHIVE_KEY)||'null');
-    if(!Array.isArray(a)){const old132=JSON.parse(localStorage.getItem('anesvet_v13_2_archive')||'null');if(Array.isArray(old132)){a=old132;localStorage.setItem(ARCHIVE_KEY,JSON.stringify(a));}
+    if(!Array.isArray(a)){const old133=JSON.parse(localStorage.getItem('anesvet_v13_3_archive')||'null');if(Array.isArray(old133)){a=old133;localStorage.setItem(ARCHIVE_KEY,JSON.stringify(a));}
+      const old132=JSON.parse(localStorage.getItem('anesvet_v13_2_archive')||'null');if(Array.isArray(old132)){a=old132;localStorage.setItem(ARCHIVE_KEY,JSON.stringify(a));}
       const old131=JSON.parse(localStorage.getItem('anesvet_v13_1_archive')||'null');if(Array.isArray(old131)){a=old131;localStorage.setItem(ARCHIVE_KEY,JSON.stringify(a));}
       const old13=JSON.parse(localStorage.getItem('anesvet_v13_archive')||'null');if(Array.isArray(old13)){a=old13;localStorage.setItem(ARCHIVE_KEY,JSON.stringify(a));}
       const old121=JSON.parse(localStorage.getItem('anesvet_v12_1_archive')||'null');if(Array.isArray(old121)){a=old121;localStorage.setItem(ARCHIVE_KEY,JSON.stringify(a));}
@@ -1598,17 +1685,67 @@ function getArchive(){
     return Array.isArray(a)?a:[];
   }catch{return[]}
 }
+
+function applyCaseToDomForReport(caseObj){
+  state=JSON.parse(JSON.stringify(caseObj||{}));
+  if(!state.timer)state.timer={running:false,startedEpoch:null,elapsedMs:0};
+  state.timer={...state.timer,running:false,startedEpoch:null};
+  if(!Array.isArray(state.records))state.records=[];
+  if(!Array.isArray(state.events))state.events=[];
+  if(!Array.isArray(state.corrections))state.corrections=[];
+  if(!Array.isArray(state.recoveryRecords))state.recoveryRecords=[];
+  if(!Array.isArray(state.fluidRateHistory))state.fluidRateHistory=[];
+  dataFields.forEach(id=>{
+    const el=$(id);if(!el)return;
+    const value=(id in state)?state[id]:'';
+    if(el.type==='checkbox')el.checked=!!value;else el.value=value??'';
+  });
+  $$('.recovery-check').forEach((el,i)=>el.checked=!!(state.recoveryChecks||[])[i]);
+  $$('.preop-check').forEach(el=>el.checked=!!(state.preopChecks||{})[el.dataset.key]);
+  $$('.preop-na-btn').forEach(btn=>{
+    const na=!!(state.preopNA||{})[btn.dataset.key];
+    btn.closest('.preop-item')?.classList.toggle('na',na);
+    const cb=btn.closest('.preop-item')?.querySelector('.preop-check');if(na&&cb)cb.checked=false;
+  });
+  syncAsaCards();
+}
+function exportArchivedPdf(i){
+  const list=getArchive(),archived=list[i];if(!archived){toast('Archived case not found');return}
+  save();
+  const liveState=JSON.parse(JSON.stringify(state));
+  const oldTitle=document.title;
+  try{
+    applyCaseToDomForReport(archived);
+    buildPdfReport();
+    const safeName=(archived.patientName||'Patient').replace(/[^\wก-๙-]+/g,'_');
+    document.title=`ANESVET_${safeName}_${formatDate(archived.archivedAt||archived.createdAt||Date.now())}`;
+    document.body.classList.add('report-mode');
+    setTimeout(()=>window.print(),120);
+  }catch(e){
+    console.error(e);toast('สร้าง PDF จาก archived case ไม่สำเร็จ');
+  }finally{
+    setTimeout(()=>{
+      document.body.classList.remove('report-mode');
+      document.title=oldTitle;
+      state=liveState;applyCaseToDomForReport(liveState);
+      renderPatientRiskBanner();renderCasePhase();renderCaseSummary();renderRecords();renderEvents();renderTrends();renderRecovery();renderRecoveryRecords();renderOrLive();renderArchives();updateDue();
+    },800);
+  }
+}
+
 function renderArchives(){
   const list=getArchive(),el=$('archiveList');
   if(!list.length){el.className='archive-list empty-state';el.textContent='ยังไม่มี archived case';return}
   el.className='archive-list';
   el.innerHTML=list.map((c,i)=>{
     const name=(c.patientName||'Unnamed'),asa=`ASA ${c.asa||'—'}${c.emergency?'-E':''}`,records=(c.records||[]).length,events=(c.events||[]).length;
+    const recoveryRecords=(c.recoveryRecords||[]).length,finalBadge=c.caseLocked?'<span class="archive-final-badge">✓ LOCKED FINAL</span>':'';
     return `<div class="archive-card">
-      <div><h3>${escapeHtml(name)}</h3><div class="archive-meta"><span>${escapeHtml(formatDate(c.createdAt||c.archivedAt||Date.now()))}</span><span>${escapeHtml(asa)}</span><span>${records} records</span><span>${events} events</span><span>${escapeHtml(c.procedure||'—')}</span></div></div>
-      <div class="archive-actions"><button class="btn load-archive" data-i="${i}">Load</button><button class="btn danger-outline delete-archive" data-i="${i}">Delete</button></div>
+      <div><h3>${escapeHtml(name)} ${finalBadge}</h3><div class="archive-meta"><span>${escapeHtml(formatDate(c.createdAt||c.archivedAt||Date.now()))}</span><span>${escapeHtml(asa)}</span><span>${records} anesthesia records</span><span>${recoveryRecords} recovery records</span><span>${events} events</span><span>${escapeHtml(c.procedure||c.patientProcedure||'—')}</span></div></div>
+      <div class="archive-actions"><button class="btn archive-pdf" data-i="${i}">Export PDF</button><button class="btn load-archive" data-i="${i}">Load</button><button class="btn danger-outline delete-archive" data-i="${i}">Delete</button></div>
     </div>`;
   }).join('');
+  $$('.archive-pdf').forEach(b=>b.addEventListener('click',()=>exportArchivedPdf(Number(b.dataset.i))));
   $$('.load-archive').forEach(b=>b.addEventListener('click',()=>loadArchive(Number(b.dataset.i))));
   $$('.delete-archive').forEach(b=>b.addEventListener('click',()=>deleteArchive(Number(b.dataset.i))));
 }
@@ -1633,7 +1770,7 @@ function appRootUrl(){
   let path=here.pathname;
   if(!path.endsWith('/')) path=path.replace(/\/[^/]*$/,'/');
   const url=new URL(path, here.origin);
-  url.searchParams.set('v','13.3');
+  url.searchParams.set('v','13.4');
   return url.href;
 }
 function restartAtAppRoot(){
@@ -1654,6 +1791,7 @@ function defaultQuickPresets(){
 function loadQuickPresets(){
   try{
     let x=JSON.parse(localStorage.getItem(QUICK_PRESET_KEY)||'null');
+    if(!x){const p133=JSON.parse(localStorage.getItem('anesvet_v13_3_quick_presets')||'null');if(p133){x=p133;localStorage.setItem(QUICK_PRESET_KEY,JSON.stringify(p133));}}
     if(!x){const p132=JSON.parse(localStorage.getItem('anesvet_v13_2_quick_presets')||'null');if(p132){x=p132;localStorage.setItem(QUICK_PRESET_KEY,JSON.stringify(p132));}}
     if(!x){const prev=JSON.parse(localStorage.getItem('anesvet_v13_1_quick_presets')||'null');if(prev){x=prev;localStorage.setItem(QUICK_PRESET_KEY,JSON.stringify(prev));}}
     if(x&&Array.isArray(x.induction)&&Array.isArray(x.pre)&&Array.isArray(x.post))return x;
@@ -1753,6 +1891,7 @@ function loadDrugLibraryData(){
   try{
     const own=JSON.parse(localStorage.getItem(DRUG_LIBRARY_KEY)||'null');
     if(Array.isArray(own))return own;
+    const prev133=JSON.parse(localStorage.getItem('anesvet_v13_3_drug_library')||'null');if(Array.isArray(prev133)){localStorage.setItem(DRUG_LIBRARY_KEY,JSON.stringify(prev133));return prev133}
     const prev132=JSON.parse(localStorage.getItem('anesvet_v13_2_drug_library')||'null');if(Array.isArray(prev132)){localStorage.setItem(DRUG_LIBRARY_KEY,JSON.stringify(prev132));return prev132}
     const prev131=JSON.parse(localStorage.getItem('anesvet_v13_1_drug_library')||'null');if(Array.isArray(prev131)){localStorage.setItem(DRUG_LIBRARY_KEY,JSON.stringify(prev131));return prev131}
     const prev13=JSON.parse(localStorage.getItem('anesvet_v13_drug_library')||'null');if(Array.isArray(prev13)){localStorage.setItem(DRUG_LIBRARY_KEY,JSON.stringify(prev13));return prev13}
@@ -1917,7 +2056,7 @@ $$('.custom-drug-event-btn').forEach(btn=>btn.addEventListener('click',()=>{
 
 
 function defaultSettings(){return{interval:'5',diazepamConc:'5',propofolConc:'10',tramadolConc:'50',rimadylConc:'50',metacamConc:'5',atropineConc:'0.6'}}
-function loadSettings(){let s;try{s=JSON.parse(localStorage.getItem(SETTINGS_KEY)||'null')||JSON.parse(localStorage.getItem('anesvet_v13_2_settings')||'null')||JSON.parse(localStorage.getItem('anesvet_v13_1_settings')||'null')||JSON.parse(localStorage.getItem('anesvet_v13_settings')||'null')||JSON.parse(localStorage.getItem('anesvet_v12_1_settings')||'null')||JSON.parse(localStorage.getItem('anesvet_v12_settings')||'null')||JSON.parse(localStorage.getItem('anesvet_v11_settings')||'null')||JSON.parse(localStorage.getItem('anesvet_v10_settings')||'null')||JSON.parse(localStorage.getItem('anesvet_v9_settings')||'null')||JSON.parse(localStorage.getItem('anesvet_v8_settings')||'null')}catch(e){}s={...defaultSettings(),...(s||{})};if($('settingInterval'))$('settingInterval').value=s.interval;if($('settingDiazepamConc'))$('settingDiazepamConc').value=s.diazepamConc;if($('settingPropofolConc'))$('settingPropofolConc').value=s.propofolConc;if($('settingTramadolConc'))$('settingTramadolConc').value=s.tramadolConc;if($('settingRimadylConc'))$('settingRimadylConc').value=s.rimadylConc;if($('settingMetacamConc'))$('settingMetacamConc').value=s.metacamConc;if($('settingAtropineConc'))$('settingAtropineConc').value=s.atropineConc}
+function loadSettings(){let s;try{s=JSON.parse(localStorage.getItem(SETTINGS_KEY)||'null')||JSON.parse(localStorage.getItem('anesvet_v13_3_settings')||'null')||JSON.parse(localStorage.getItem('anesvet_v13_2_settings')||'null')||JSON.parse(localStorage.getItem('anesvet_v13_1_settings')||'null')||JSON.parse(localStorage.getItem('anesvet_v13_settings')||'null')||JSON.parse(localStorage.getItem('anesvet_v12_1_settings')||'null')||JSON.parse(localStorage.getItem('anesvet_v12_settings')||'null')||JSON.parse(localStorage.getItem('anesvet_v11_settings')||'null')||JSON.parse(localStorage.getItem('anesvet_v10_settings')||'null')||JSON.parse(localStorage.getItem('anesvet_v9_settings')||'null')||JSON.parse(localStorage.getItem('anesvet_v8_settings')||'null')}catch(e){}s={...defaultSettings(),...(s||{})};if($('settingInterval'))$('settingInterval').value=s.interval;if($('settingDiazepamConc'))$('settingDiazepamConc').value=s.diazepamConc;if($('settingPropofolConc'))$('settingPropofolConc').value=s.propofolConc;if($('settingTramadolConc'))$('settingTramadolConc').value=s.tramadolConc;if($('settingRimadylConc'))$('settingRimadylConc').value=s.rimadylConc;if($('settingMetacamConc'))$('settingMetacamConc').value=s.metacamConc;if($('settingAtropineConc'))$('settingAtropineConc').value=s.atropineConc}
 $('saveSettingsBtn')?.addEventListener('click',()=>{const s={interval:$('settingInterval').value,diazepamConc:$('settingDiazepamConc').value,propofolConc:$('settingPropofolConc').value,tramadolConc:$('settingTramadolConc').value,rimadylConc:$('settingRimadylConc').value,metacamConc:$('settingMetacamConc').value,atropineConc:$('settingAtropineConc').value};localStorage.setItem(SETTINGS_KEY,JSON.stringify(s));$('recordInterval').value=s.interval;$('diazepamConc').value=s.diazepamConc;$('propofolConc').value=s.propofolConc;$('tramadolConc').value=s.tramadolConc;$('rimadylConc').value=s.rimadylConc;$('metacamConc').value=s.metacamConc;$('atropineConc').value=s.atropineConc;updateDashboard();toast('Hospital settings saved')});
 function freshState(){
   return {
@@ -1978,7 +2117,7 @@ let storedTab=localStorage.getItem(TAB_KEY)||'casesummary';
 if(storedTab==='dashboard')storedTab='casesummary';
 const initialTab=state.patientSaved?((state.timer.running||(state.timer.elapsedMs||0)>0)?'orlive':storedTab):'patient';
 setTab(initialTab);
-renderPatientRiskBanner();renderAirwayPanel();renderFavoriteDrugButtons();renderQuickPresetSettings();renderQuickPresetSummary();renderOrFluidPanel();renderCaseSummary();renderCasePhase();renderOrPhaseTracker();renderRecoveryRecords();renderWorkflowLocks();
+renderPatientRiskBanner();renderAirwayPanel();renderFavoriteDrugButtons();renderQuickPresetSettings();renderQuickPresetSummary();renderOrFluidPanel();renderCaseSummary();renderCasePhase();renderOrPhaseTracker();renderRecoveryRecords();renderWorkflowLocks();renderAlertFeedbackState();
 updateDashboard();renderPreop();renderRecords();renderCorrections();renderEvents();renderTrends();renderProcedureTimeline();renderRecovery();renderRecoveryState();renderArchives();updateDue();renderTimerState();updateDoseSpotlights();renderEndCase();renderOrLive();renderSaveState();
 if(state.timer.running && state.timer.startedEpoch) startTimerLoop();
 })();
