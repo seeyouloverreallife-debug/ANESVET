@@ -608,3 +608,5 @@ body.hide-sap-dap .sap-dap-helper{display:none!important}
 .record-table td.sap-dap-helper{display:table-cell}
 body.hide-sap-dap .record-table td.sap-dap-helper,body.hide-sap-dap .record-table th.sap-dap-helper{display:none!important}
 @media(max-width:720px){.clinical-guide-head{padding:16px 16px 12px}.clinical-guide-steps{margin:12px 16px}.clinical-guide-card .drug-admin-safety{margin:12px 16px}.clinical-guide-card .dialog-actions{padding:0 16px 16px}.or-quick-guides .btn{flex:1 1 44%}}
+
+/* V14.6.3 — New Patient Current BW propagation fix (no visual style changes) */

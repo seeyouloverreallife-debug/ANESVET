@@ -41,6 +41,7 @@ for(const id of ['hr','rr','sap','map','dap','spo2','etco2','temp']){
 }
 must(app.includes('validateCaseReadyToStart()'),'case-start safety validation missing');
 must(app.includes("requireCurrentWeight('using the Drug Calculator')"),'weight-based drug guard missing');
+must(app.includes("state.patientSaved=true;save();syncAsaCards();updatePatientSaveStatus();")&&app.includes("// V14.6.3: current-weight dependent UI")&&app.includes("updateDashboard();\n  toast('บันทึก Patient Master + Case Setup แล้ว')"),'new-patient current BW must propagate immediately after successful Save');
 
 // Patient / data integrity
 must(html.includes('id="hospitalId"')&&html.includes('id="visitId"'),'HN and Visit IDs must remain separate');
@@ -89,7 +90,7 @@ must(app.includes('function agePartsFromDob'),'age calculation missing');
 must(app.includes('function getFluidMetrics'),'fluid integration missing');
 
 // Backup / restore
-must(app.includes("format:'ANESVET_BACKUP',version:'14.6.2'"),'backup version must be 14.6.2');
+must(app.includes("format:'ANESVET_BACKUP',version:'14.6.3'"),'backup version must be 14.6.3');
 must(app.includes("raw.format!=='ANESVET_BACKUP'")&&app.includes('idbClearCases()'),'backup restore integrity path missing');
 
 // Reset must preserve persistent stores by only resetting current case state.
@@ -107,7 +108,7 @@ for(const id of ['reportComplications','reportDrugAdministrations','reportRecove
 
 // V14.6.2 alert UX / configurable BP helpers
 for(const id of ['clinicalGuideDialog','clinicalGuideTitle','clinicalGuideSteps','clinicalGuideComplicationBtn','settingShowSapDap','settingCriticalPopup']){
-  must(html.includes(`id="${id}"`),`V14.6.2 clinical alert UI missing ${id}`);
+  must(html.includes(`id="${id}"`),`V14.6.3 clinical alert UI missing ${id}`);
 }
 must(app.includes('function maybeShowCriticalClinicalAlert'),'critical alert popup logic missing');
 must(app.includes("spo2<90")&&app.includes("map<60"),'critical popup triggers must include SpO2 <90 and MAP <60');
@@ -116,4 +117,4 @@ must(app.includes('function renderSapDapVisibility'),'SAP/DAP visibility setting
 must(css.includes('body.hide-sap-dap .sap-dap-helper'),'SAP/DAP hide CSS missing');
 must(app.includes('criticalPopupEnabled:true')&&app.includes('showSapDap:true'),'new alert settings should have explicit defaults');
 
-console.log(`ANESVET V14.6.2 regression checks: PASS (${ids.length} unique HTML ids, ${fnNames.length} unique named functions)`);
+console.log(`ANESVET V14.6.3 regression checks: PASS (${ids.length} unique HTML ids, ${fnNames.length} unique named functions)`);

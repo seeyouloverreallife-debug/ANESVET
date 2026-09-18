@@ -1,4 +1,10 @@
-# ANESVET V14.6.2 — Critical Alerts & Quick Guides
+# ANESVET V14.6.3 — New Patient Current BW Fix
+
+## V14.6.3
+- แก้ **New Patient Current BW bug**: หลังกรอกน้ำหนักผู้ป่วยใหม่และกด **Save Patient & Case Setup** ค่า Current BW จะ propagate ไปยัง Drug Calculator / Fluid reference / weight-based plan ทันที
+- ไม่ต้องแก้ช่องอื่น, reload หน้า, หรือเรียกผู้ป่วยเดิมกลับมาอีกครั้งเพื่อให้ BW link
+- เพิ่ม regression check เพื่อป้องกัน bug นี้กลับมา
+- อัปเดต PWA cache/version เป็น V14.6.3
 
 ## V14.6.2
 - เพิ่ม **Critical Alert Popup** ระหว่าง active anesthesia case

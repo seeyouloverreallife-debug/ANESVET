@@ -1,11 +1,12 @@
-ANESVET V14.6.2 validation run - 2026-09-18
+ANESVET V14.6.3 validation run - 2026-09-18
 
-PASS - JavaScript syntax: node --check app.js
-PASS - Regression suite: 596 unique HTML IDs, 307 unique named functions
-PASS - Workflow model scenarios: 4/4
-PASS - Manifest JSON parse
-PASS - Critical popup trigger guards for MAP <60 / SpO2 <90
-PASS - Popup suppresses while critical inputs are being edited and while another dialog is open
-PASS - Quick guides: hypotension, bradycardia, hypoxemia, ventilation, hypothermia
-PASS - SAP/DAP UI visibility setting preserves underlying historical data
-PASS - PWA cache/version bumped to V14.6.2
+PASS - node --check app.js
+PASS - tests/regression.mjs
+PASS - tests/workflow_scenarios.mjs
+PASS - New Patient Current BW recalculates immediately after Save Patient & Case Setup
+PASS - Drug Calculator receives confirmed BW without reload/re-selecting patient
+PASS - Fluid reference / weight-based plan refresh in the same save flow
+PASS - Previous-weight safety behavior retained (previous BW remains reference only)
+PASS - Current BW still required before Start case / weight-based drug administration
+PASS - Patient Master / Archive / Settings storage keys preserved for in-place upgrade
+PASS - PWA cache/version bumped to V14.6.3
