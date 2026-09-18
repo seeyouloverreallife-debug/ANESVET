@@ -1,26 +1,22 @@
-ANESVET V14.5 validation run - 2026-09-18
+ANESVET V14.6 validation run - 2026-09-18
 
 1) JavaScript syntax
-   node --check app.js
-   PASS
+PASS - node --check app.js
 
-2) Automated regression
-   node tests/regression.mjs
-   PASS
-   Includes: unique IDs, duplicate phaseLabel protection, blank fresh BW/vitals,
-   temperature canonicalization anchors, Recovery N/A/reason safeguards,
-   HN vs Visit separation, Patient Master lifecycle, multi-tab lock,
-   case start/weight guards, dose/age/fluid anchors, checksum, backup/restore,
-   reset persistence and print CSS hardening.
+2) Static regression suite
+ANESVET V14.6 regression checks: PASS (584 unique HTML ids, 298 unique named functions)
 
-3) PDF stress fixture
-   Synthetic fixture: 120 anesthesia rows + 60 long events
-   Engine: WeasyPrint 68.0
-   Output: A4, 16 pages, not encrypted
-   Render verification: 16/16 pages rendered at 110 DPI
-   Visual spot checks: page 1, page 2 and page 16
-   Result: table header repeats; rows do not split; long text wraps; final events remain readable.
+3) Workflow model scenarios
+ANESVET V14.6 workflow model scenarios: PASS (4 scenarios)
+- Routine Patient Setup -> intraoperative -> medication -> Recovery -> Lock/Archive
+- Active complication blocks Lock until resolution/outcome is documented
+- Medication correction preserves original administration and marks VOID
+- Recovery N/A requires a reason and adjusts score denominator
 
-4) Static structure
-   Named function declarations: 283; duplicate names: 0
-   HTML IDs: 548; duplicate IDs: 0
+4) Structure / integrity
+PASS - 584 unique HTML IDs; 298 unique named functions
+PASS - manifest.webmanifest parses as JSON
+PASS - V14.6 migration guards locked/checksummed legacy records from new clinical-array mutation
+
+5) Browser E2E
+NOT RUN in this build environment. Requires manual test in Chrome/Edge on the deployment device.

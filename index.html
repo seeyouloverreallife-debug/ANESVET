@@ -4,12 +4,12 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#0d5265">
-  <meta name="description" content="ANESVET V14.5 — veterinary anesthesia workstation with clinical UX, temperature-unit and recovery N/A safeguards">
+  <meta name="description" content="ANESVET V14.6 — veterinary anesthesia workstation with complication workflow, medication audit and recovery scoring">
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" href="./icon-192.png">
   <link rel="apple-touch-icon" href="./icon-192.png">
-  <link rel="stylesheet" href="./style.css?v=14.5">
-  <title>ANESVET V14.5</title>
+  <link rel="stylesheet" href="./style.css?v=14.6">
+  <title>ANESVET V14.6</title>
 </head>
 <body>
 <header class="topbar">
@@ -17,7 +17,7 @@
     <div class="brand-mark">A</div>
     <div>
       <div class="eyebrow">GENOVI PET CARE • DIGITAL ANESTHESIA RECORD</div>
-      <h1>ANESVET <span>V14.5</span></h1>
+      <h1>ANESVET <span>V14.6</span></h1>
     </div>
   </div>
   <div class="top-actions">
@@ -540,14 +540,26 @@
           <button class="or-milestone" data-cat="Airway" data-label="Extubation">Extubation</button>
         </div></div>
         <div><h3>Clinical events</h3><div class="or-action-buttons">
-          <button class="or-event warn" data-cat="Complication" data-label="Hypotension">Hypotension</button>
+          <button class="or-complication warn" data-complication="Hypotension">Hypotension</button>
+          <button class="or-complication warn" data-complication="Bradycardia">Bradycardia</button>
+          <button class="or-complication warn" data-complication="Hypoxemia">Hypoxemia</button>
+          <button class="or-complication warn" data-complication="Hypercapnia / hypoventilation">Hypercapnia</button>
+          <button class="or-complication warn" data-complication="Arrhythmia">Arrhythmia</button>
+          <button class="or-complication warn" data-complication="Hypothermia">Hypothermia</button>
           <button class="or-event" data-cat="Fluid" data-label="Fluid bolus">Fluid bolus</button>
           <button class="or-event" data-cat="Ventilation" data-label="PPV started">PPV started</button>
-          <button class="or-event warn" data-cat="Complication" data-label="Arrhythmia">Arrhythmia</button>
           <button id="orRecoveryQuickBtn" class="or-action-link">→ Begin recovery</button>
           <button id="orOpenDrugBtn" class="or-action-link">Drug calculator →</button>
         </div></div>
       </div>
+    </section>
+
+    <section class="panel complication-watch-panel">
+      <div class="section-heading">
+        <div><h2>Active complications</h2><p>ติดตาม complication จนมี response / resolution โดยไม่ลบเหตุการณ์เดิม</p></div>
+        <span id="orActiveComplicationCount" class="status-pill good">0 ACTIVE</span>
+      </div>
+      <div id="orActiveComplications" class="complication-list empty-state compact">No active complications</div>
     </section>
 
     <section class="or-lower-grid">
@@ -1287,7 +1299,12 @@
         <button class="quick-event" data-cat="Airway" data-label="Induction">Induction</button>
         <button class="quick-event" data-cat="Airway" data-label="Intubation">Intubation</button>
         <button class="quick-event" data-cat="Surgery" data-label="Incision">Incision</button>
-        <button class="quick-event" data-cat="Complication" data-label="Hypotension">Hypotension</button>
+        <button class="quick-complication" data-complication="Hypotension">Hypotension</button>
+        <button class="quick-complication" data-complication="Bradycardia">Bradycardia</button>
+        <button class="quick-complication" data-complication="Hypoxemia">Hypoxemia</button>
+        <button class="quick-complication" data-complication="Hypercapnia / hypoventilation">Hypercapnia</button>
+        <button class="quick-complication" data-complication="Arrhythmia">Arrhythmia</button>
+        <button class="quick-complication" data-complication="Hypothermia">Hypothermia</button>
         <button class="quick-event" data-cat="Fluid" data-label="Fluid bolus">Fluid bolus</button>
         <button class="quick-event" data-cat="Ventilation" data-label="PPV started">PPV started</button>
         <button class="quick-event" data-cat="Surgery" data-label="Surgery end">Surgery end</button>
@@ -1331,7 +1348,24 @@
       </div>
     </section>
 
+    <section class="panel complication-workflow-panel">
+      <div class="section-heading">
+        <div><h2>Complication workflow</h2><p>บันทึก onset → assessment/intervention → response → resolution เป็นโครงสร้างเดียวกัน</p></div>
+        <button id="addComplicationBtn" class="btn primary" type="button">＋ Record complication</button>
+      </div>
+      <div id="complicationList" class="complication-list empty-state">ยังไม่มี complication</div>
+      <div class="settings-note">รายการนี้เป็น documentation workflow ไม่ใช่ treatment protocol; การวินิจฉัยและการรักษาขึ้นกับสัตวแพทย์ผู้ดูแลเคส</div>
+    </section>
+
     <section class="panel"><div class="section-heading"><div><h2>Intervention → response</h2><p>เลือก intervention ล่าสุด แล้วบันทึก response ของค่ามอนิเตอร์หลังรักษา</p></div><button id="captureResponseBtn" class="btn primary">Capture current response</button></div><div class="response-grid"><label>Intervention<select id="responseEventSelect"></select></label><label>Response note<input id="responseNote" type="text" placeholder="เช่น MAP improved after ephedrine"></label></div><div id="responseList" class="response-list empty-state">ยังไม่มี response tracking</div></section>
+
+    <section class="panel drug-audit-panel">
+      <div class="section-heading">
+        <div><h2>Medication administration audit</h2><p>Structured record ของยาที่ให้จริง แยกจาก calculated dose และไม่ลบรายการเดิมเมื่อมีการแก้ไข</p></div>
+        <span id="drugAuditCount" class="status-pill good">0 ADMIN</span>
+      </div>
+      <div id="drugAdministrationAudit" class="drug-audit-list empty-state">ยังไม่มีการยืนยัน administration</div>
+    </section>
 
     <section class="panel">
       <div class="section-heading">
@@ -1411,6 +1445,23 @@
         <div id="recoveryReadiness" class="recovery-readiness warn">NOT READY</div><div id="recoveryStatus" class="recovery-status warn">Checklist 0/6</div>
       </section>
     </div>
+
+    <section class="panel recovery-score-panel">
+      <div class="section-heading">
+        <div><h2>Recovery Readiness Score</h2><p>Internal documentation aid 0–2 per domain; ไม่ใช่ validated discharge score และไม่แทน clinical judgment</p></div>
+        <button id="saveRecoveryScoreBtn" class="btn primary" type="button">Save score</button>
+      </div>
+      <div class="recovery-score-grid">
+        <label>Airway / breathing<select id="recScoreAirway"><option value="">—</option><option value="0">0 • Concern / unstable</option><option value="1">1 • Improving / support needed</option><option value="2">2 • Acceptable</option></select></label>
+        <label>Oxygenation<select id="recScoreOxygen"><option value="">—</option><option value="0">0 • Concern / unstable</option><option value="1">1 • Improving / support needed</option><option value="2">2 • Acceptable</option><option value="NA">N/A</option></select></label>
+        <label>Temperature<select id="recScoreTemp"><option value="">—</option><option value="0">0 • Concern / unstable</option><option value="1">1 • Improving / active support</option><option value="2">2 • Acceptable</option><option value="NA">N/A</option></select></label>
+        <label>Mentation<select id="recScoreMentation"><option value="">—</option><option value="0">0 • Concern / inappropriate</option><option value="1">1 • Improving</option><option value="2">2 • Appropriate for stage</option></select></label>
+        <label>Comfort / nausea<select id="recScoreComfort"><option value="">—</option><option value="0">0 • Concern / uncontrolled</option><option value="1">1 • Partial control / reassess</option><option value="2">2 • Acceptable</option></select></label>
+        <label>Score note<input id="recScoreNote" type="text" placeholder="optional clinical context"></label>
+      </div>
+      <div class="recovery-score-summary"><div><span>Current</span><b id="recoveryScoreCurrent">Incomplete</b></div><div><span>Saved scores</span><b id="recoveryScoreCount">0</b></div><div><span>Latest</span><b id="recoveryScoreLatest">—</b></div></div>
+      <div id="recoveryScoreHistory" class="recovery-score-history empty-state">ยังไม่มี Recovery score</div>
+    </section>
 
     <section class="panel recovery-record-panel">
       <div class="section-heading">
@@ -1557,6 +1608,15 @@
     </section>
 
     <section class="report-section">
+      <h2>Complication Workflow</h2>
+      <div id="reportComplications"></div>
+    </section>
+    <section class="report-section">
+      <h2>Medication Administration Audit</h2>
+      <div id="reportDrugAdministrations"></div>
+    </section>
+
+    <section class="report-section">
       <h2>Correction History</h2>
       <div id="reportCorrections"></div>
     </section>
@@ -1573,6 +1633,7 @@
     <section class="report-section">
       <h2>Recovery</h2>
       <div id="reportRecovery"></div>
+      <div id="reportRecoveryScores"></div>
       <div id="reportRecoveryRecords"></div>
     </section>
 
@@ -1605,8 +1666,11 @@
         <div><span>Procedure</span><b id="endProcedure">—</b></div>
         <div><span>Total time</span><b id="endDuration">00:00:00</b></div>
         <div><span>Records</span><b id="endRecordCount">0</b></div>
-        <div><span>Events / Drugs</span><b id="endEventCount">0</b></div>
+        <div><span>Events</span><b id="endEventCount">0</b></div>
+        <div><span>Drug administrations</span><b id="endDrugAdminCount">0</b></div>
+        <div><span>Active complications</span><b id="endActiveComplications">0</b></div>
         <div><span>Recovery</span><b id="endRecoveryStatus">Not complete</b></div>
+        <div><span>Latest recovery score</span><b id="endRecoveryScore">—</b></div>
         <div><span>Total fluid in</span><b id="endFluidTotal">0 mL</b></div>
         <div><span>Blood loss</span><b id="endBloodLoss">0 mL</b></div>
         <div><span>Urine</span><b id="endUrine">0 mL</b></div>
@@ -1758,17 +1822,26 @@
       <button id="drugAdminCloseBtn" class="btn" type="button">✕</button>
     </div>
     <div class="drug-admin-grid">
-      <label>Actual administered volume (mL)
+      <label>Actual administered amount / rate
         <input id="drugAdminActualMl" type="number" min="0" step="0.01" inputmode="decimal">
       </label>
+      <label>Unit
+        <select id="drugAdminUnit"><option value="mL">mL</option><option value="mL/hr">mL/hr</option><option value="mg">mg</option><option value="mcg">μg</option></select>
+      </label>
       <label>Route
-        <input id="drugAdminRoute" type="text" placeholder="IV / IM / SC / PO ...">
+        <input id="drugAdminRoute" type="text" placeholder="IV / IM / SC / PO / IV CRI ...">
+      </label>
+      <label>Administered by
+        <input id="drugAdminBy" type="text" placeholder="ชื่อผู้ให้ยา">
+      </label>
+      <label class="span2">Concentration / preparation
+        <input id="drugAdminConcentration" type="text" placeholder="เช่น 10 mg/mL หรือ dilution used">
       </label>
       <label class="span2">Administration note
         <input id="drugAdminNote" type="text" placeholder="optional">
       </label>
     </div>
-    <div class="drug-admin-safety">Calculated volume ≠ actual administered dose เสมอ โดยเฉพาะ induction drugs ควรบันทึก volume ที่ให้จริง</div>
+    <div class="drug-admin-safety">Calculated dose ≠ actual administered amount เสมอ • บันทึก amount/rate, unit, route และผู้ให้ยาตามที่ให้จริง</div>
     <div class="dialog-actions">
       <button id="drugAdminCancelBtn" class="btn" type="button">Cancel</button>
       <button id="drugAdminConfirmBtn" class="btn primary" type="button">✓ Confirm administration</button>
@@ -1776,6 +1849,24 @@
   </form>
 </dialog>
 
+
+<dialog id="complicationDialog" class="drug-admin-dialog">
+  <form method="dialog" class="drug-admin-card" onsubmit="return false;">
+    <div class="section-heading">
+      <div><div class="eyebrow">COMPLICATION WORKFLOW</div><h2>Record complication</h2><p id="complicationDetectedValues">Current monitor values: —</p></div>
+      <button id="complicationCloseBtn" class="btn" type="button">✕</button>
+    </div>
+    <div class="drug-admin-grid">
+      <label>Complication<select id="complicationType"><option>Hypotension</option><option>Bradycardia</option><option>Hypoxemia</option><option>Hypercapnia / hypoventilation</option><option>Arrhythmia</option><option>Hypothermia</option><option>Airway problem</option><option>Other</option></select></label>
+      <label>Severity / priority<select id="complicationSeverity"><option value="observe">Observe / assess</option><option value="significant">Clinically significant</option><option value="emergency">Emergency</option></select></label>
+      <label class="span2">Assessment / suspected cause<input id="complicationAssessment" type="text" placeholder="optional — document clinical assessment"></label>
+      <label class="span2">Initial intervention<input id="complicationIntervention" type="text" placeholder="optional — document what was done"></label>
+      <label class="span2">Note<input id="complicationNote" type="text" placeholder="optional"></label>
+    </div>
+    <div class="drug-admin-safety">ANESVET บันทึกข้อมูลเท่านั้น ไม่แนะนำ treatment หรือแทนการประเมินผู้ป่วย/monitor waveform จริง</div>
+    <div class="dialog-actions"><button id="complicationCancelBtn" class="btn" type="button">Cancel</button><button id="complicationSaveBtn" class="btn primary" type="button">＋ Start complication record</button></div>
+  </form>
+</dialog>
 
 <dialog id="amendmentDialog" class="drug-admin-dialog">
   <form method="dialog" class="drug-admin-card" onsubmit="return false;">
@@ -1824,6 +1915,6 @@
 </dialog>
 
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
-<script src="./app.js?v=14.5"></script>
+<script src="./app.js?v=14.6"></script>
 </body>
 </html>

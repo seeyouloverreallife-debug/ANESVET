@@ -1,8 +1,8 @@
 {
-  "name": "ANESVET V14.5 — Clinical UX Polish",
+  "name": "ANESVET V14.6 — Clinical Workflow Integrity",
   "short_name": "ANESVET",
-  "description": "Veterinary anesthesia workstation with configurable °C/°F display, canonical temperature storage, Recovery N/A documentation and strengthened printable clinical records",
-  "start_url": "./?v=14.5",
+  "description": "Veterinary anesthesia workstation with structured complication workflow, medication administration audit, recovery scoring and strengthened final-record integrity",
+  "start_url": "./?v=14.6",
   "scope": "./",
   "display": "standalone",
   "background_color": "#f3f7f8",

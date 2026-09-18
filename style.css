@@ -561,7 +561,7 @@ body.session-readonly .tabpage button:not(.session-safe):not(.archive-pdf):not(.
 @media(max-width:650px){.session-banner{align-items:flex-start;flex-direction:column}.session-choice-grid{grid-template-columns:1fr}.patient-history-head{align-items:flex-start;flex-direction:column}.patient-history-item{grid-template-columns:1fr}.patient-master-actions{justify-content:flex-start}}
 
 
-/* V14.5 — Clinical UX Polish */
+/* V14.5 — Clinical UX Polish (carried into V14.6) */
 .recovery-field-na{display:grid;grid-template-columns:1fr auto;gap:7px;align-items:end;min-width:0}
 .recovery-field-na>label{min-width:0}
 .recovery-observation-na-btn,.recovery-check-na-btn{border:1px solid #c8d5da;background:#fff;color:#52636e;border-radius:8px;padding:8px 10px;font-weight:850;cursor:pointer;white-space:nowrap}
@@ -584,3 +584,17 @@ body.session-readonly .tabpage button:not(.session-safe):not(.archive-pdf):not(.
   body.report-mode .report-chart svg{max-height:70mm}
   body.report-mode .report-disclaimer{break-inside:avoid}
 }
+
+/* V14.6 — Complication workflow, medication audit & recovery scoring */
+.or-complication,.quick-complication{border:1px solid #e2b0aa;background:#fff7f6;color:#8b342d;border-radius:10px;padding:10px 12px;font-weight:900;cursor:pointer}
+.quick-complication{border-radius:999px}.or-complication.warn{background:#fff3e3;border-color:#edc58b;color:#80500b}
+.complication-watch-panel{border:1px solid #e4c0bb;background:linear-gradient(180deg,#fffdfc,#fff8f6)}
+.complication-list{display:grid;gap:8px;margin-top:8px}.complication-list.compact{gap:6px}
+.complication-card{border:1px solid #e5c5bf;background:#fff;border-radius:11px;padding:10px;display:grid;gap:5px}
+.complication-card.emergency{border:2px solid #c95349;background:#fff4f3}.complication-card.resolved{border-color:#b9dac8;background:#f5fbf7}
+.complication-head{display:flex;justify-content:space-between;gap:10px;align-items:center}.complication-head b{color:#722f2a}.complication-card.resolved .complication-head b{color:#246144}.complication-head span{font-size:.66rem;font-weight:900;letter-spacing:.04em}
+.complication-meta,.complication-detail{font-size:.76rem;color:#53656e;overflow-wrap:anywhere}.complication-card small{color:var(--muted)}.complication-card em{font-style:normal;color:#226447;font-weight:800;font-size:.74rem}.complication-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:3px}
+.drug-audit-list{display:grid;gap:8px;margin-top:10px}.drug-audit-row{display:grid;grid-template-columns:90px 1fr auto;gap:10px;align-items:center;border:1px solid #cfdfe4;border-radius:11px;padding:10px;background:#fff}.drug-audit-row.voided{background:#fff7f6;border-color:#dfb3ae}.drug-audit-time{font-variant-numeric:tabular-nums}.drug-audit-time b,.drug-audit-time small{display:block}.drug-audit-time small{color:var(--muted)}.drug-audit-main b,.drug-audit-main span,.drug-audit-main small,.drug-audit-main em{display:block;overflow-wrap:anywhere}.drug-audit-main span,.drug-audit-main small{color:var(--muted);margin-top:2px}.drug-audit-main em{font-style:normal;color:#9a332b;font-weight:900;margin-top:4px}
+.recovery-score-panel{border:1px solid #bdd7de;background:linear-gradient(180deg,#fbfeff,#f5fbfc)}.recovery-score-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}.recovery-score-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}.recovery-score-summary>div{padding:8px 10px;border:1px solid #d4e2e6;background:#fff;border-radius:9px}.recovery-score-summary span{display:block;color:var(--muted);font-size:.66rem;font-weight:900;text-transform:uppercase}.recovery-score-summary b{display:block;margin-top:2px;color:#16586a}.recovery-score-history{display:grid;gap:7px;margin-top:9px}.recovery-score-row{border:1px solid #d8e5e8;background:#fff;border-radius:9px;padding:8px}.recovery-score-row b,.recovery-score-row span,.recovery-score-row small{display:block}.recovery-score-row span,.recovery-score-row small{color:var(--muted);margin-top:2px;font-size:.74rem}
+@media(max-width:760px){.drug-audit-row{grid-template-columns:1fr}.recovery-score-grid,.recovery-score-summary{grid-template-columns:1fr}.complication-head{align-items:flex-start;flex-direction:column}}
+@media print{body.report-mode .complication-card,body.report-mode .drug-audit-row,body.report-mode .recovery-score-row{break-inside:avoid;page-break-inside:avoid}}
