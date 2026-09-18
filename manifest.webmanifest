@@ -1,8 +1,8 @@
 {
-  "name": "ANESVET V14 — Hardening",
+  "name": "ANESVET V14.1 — Clinical Record Integrity",
   "short_name": "ANESVET",
-  "description": "Veterinary anesthesia workstation hardening release with IndexedDB archive, protocol governance, audit trail, first-record reminders, Wake Lock and locked-record amendments",
-  "start_url": "./?v=14",
+  "description": "Veterinary anesthesia workstation with archive search, voidable final records, final sign-off, SHA-256 record integrity, backup health and sticky OR due status",
+  "start_url": "./?v=14.1",
   "scope": "./",
   "display": "standalone",
   "background_color": "#f3f7f8",

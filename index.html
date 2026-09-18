@@ -8,8 +8,8 @@
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" href="./icon-192.png">
   <link rel="apple-touch-icon" href="./icon-192.png">
-  <link rel="stylesheet" href="./style.css?v=14">
-  <title>ANESVET V14</title>
+  <link rel="stylesheet" href="./style.css?v=14.1">
+  <title>ANESVET V14.1</title>
 </head>
 <body>
 <header class="topbar">
@@ -17,7 +17,7 @@
     <div class="brand-mark">A</div>
     <div>
       <div class="eyebrow">GENOVI PET CARE • DIGITAL ANESTHESIA RECORD</div>
-      <h1>ANESVET <span>V14</span></h1>
+      <h1>ANESVET <span>V14.1</span></h1>
     </div>
   </div>
   <div class="top-actions">
@@ -247,6 +247,13 @@
           <button id="orFullscreenBtn" class="btn">⛶ Full screen</button>
         </div>
       </div>
+    </section>
+
+    <section class="or-sticky-mini" id="orStickyMini">
+      <div><span>STATUS</span><b id="orStickyPhase">SETUP</b></div>
+      <div><span>CASE TIME</span><b id="orStickyClock">00:00:00</b></div>
+      <div><span>NEXT VITALS</span><b id="orStickyDue">Not started</b></div>
+      <button id="orStickyRecordBtn" class="btn primary">＋ RECORD NOW</button>
     </section>
 
     <section class="or-phase-tracker-panel">
@@ -1324,6 +1331,19 @@
           <button id="newCaseBtn" class="btn">New case</button>
         </div>
       </div>
+      <section class="data-health-panel">
+        <div class="section-heading compact">
+          <div><h3>Data Health</h3><p>สถานะฐานข้อมูลและการสำรองข้อมูลล่าสุด</p></div>
+          <button id="backupNowHealthBtn" class="btn primary">⬇ Backup now</button>
+        </div>
+        <div class="data-health-grid">
+          <div><span>Database</span><b id="dbBackendHealth">Initializing…</b></div>
+          <div><span>Archived cases</span><b id="archiveCountHealth">0</b></div>
+          <div><span>Last backup</span><b id="backupLastTime">Never</b><small id="backupAgeStatus">Backup recommended</small></div>
+          <div><span>Storage</span><b id="storageUsedHealth">—</b><small id="storageQuotaHealth">Browser estimate</small></div>
+        </div>
+      </section>
+
       <div class="button-row backup-row">
         <button id="backupAllBtn" class="btn primary">⬇ Backup all data</button>
         <button id="restoreBackupBtn" class="btn">⬆ Restore backup</button>
@@ -1339,14 +1359,27 @@
       </div>
     </section>
 
-    <section class="panel">
-      <h2>Archived cases</h2>
+    <section class="panel archive-browser-panel">
+      <div class="section-heading">
+        <div><h2>Archived cases</h2><p>ค้นหา Patient / HN / Procedure / Surgeon และกรองสถานะได้</p></div>
+        <b id="archiveResultCount" class="archive-result-count">0 cases</b>
+      </div>
+      <div class="archive-filter-grid">
+        <label class="archive-search-wide">Search
+          <input id="archiveSearch" type="search" placeholder="Patient, HN, procedure, surgeon…">
+        </label>
+        <label>From<input id="archiveDateFrom" type="date"></label>
+        <label>To<input id="archiveDateTo" type="date"></label>
+        <label>Status<select id="archiveStatusFilter"><option value="all">All</option><option value="locked">Locked final</option><option value="voided">Voided</option><option value="working">Working copy</option></select></label>
+        <label>Sort<select id="archiveSort"><option value="newest">Newest</option><option value="oldest">Oldest</option><option value="patient">Patient A–Z</option><option value="hn">HN / Case ID</option></select></label>
+        <button id="clearArchiveFiltersBtn" class="btn">Clear filters</button>
+      </div>
       <div id="archiveList" class="archive-list empty-state">ยังไม่มี archived case</div>
     </section>
 
     <section class="panel danger-zone">
       <h2>Danger zone</h2>
-      <p>ล้าง current case ทั้งหมด • V10 จะให้ยืนยันแบบพิเศษเมื่อมีข้อมูลหรือเคสกำลังทำงาน</p>
+      <p>ใช้สำหรับ current/test case เท่านั้น • Final record จะใช้ Void แทนการลบ เพื่อคง audit history</p>
       <button id="resetCurrentBtn" class="btn danger-solid">Reset current case</button>
     </section>
   </section>
@@ -1360,6 +1393,12 @@
       </div>
       <div class="report-date" id="reportDate"></div>
     </div>
+
+    <div id="reportVoidNotice" class="report-void-notice" hidden></div>
+    <section class="report-section">
+      <h2>Record Identity & Integrity</h2>
+      <div id="reportIntegrityGrid" class="report-info-grid"></div>
+    </section>
 
     <section class="report-section">
       <h2>Patient Information</h2>
@@ -1402,8 +1441,14 @@
       <h2>Correction History</h2>
       <div id="reportCorrections"></div>
     </section>
-    <section class="report-section"><h2>Amendments / Addenda</h2><div id="reportAmendments"></div></section>
-    <section class="report-section"><h2>Record Audit Trail</h2><div id="reportAuditTrail"></div></section>
+    <section class="report-section">
+      <h2>Amendments / Addenda</h2>
+      <div id="reportAmendments"></div>
+    </section>
+    <section class="report-section">
+      <h2>Record Audit Trail</h2>
+      <div id="reportAuditTrail"></div>
+    </section>
 
     <section class="report-section"><h2>Smart Alerts / Intervention Response</h2><div id="reportResponses"></div></section>
     <section class="report-section">
@@ -1447,6 +1492,23 @@
         <div><span>Blood loss</span><b id="endBloodLoss">0 mL</b></div>
         <div><span>Urine</span><b id="endUrine">0 mL</b></div>
       </div>
+      <section class="final-signoff-panel">
+        <div class="section-heading compact">
+          <div><h3>Final Sign-off</h3><p>ผู้วางยาและผู้ผ่าตัดต้อง review ก่อน Lock final record</p></div>
+          <span id="finalSignoffStatus" class="status-pill warn">SIGN-OFF REQUIRED</span>
+        </div>
+        <div class="final-signoff-grid">
+          <div class="signoff-card">
+            <span>Anesthetist</span><b id="signoffAnesthetistName">—</b><small id="signoffAnesthetistTime">Not signed</small>
+            <button id="signAnesthetistBtn" class="btn">✓ Sign anesthetist</button>
+          </div>
+          <div class="signoff-card">
+            <span>Surgeon</span><b id="signoffSurgeonName">—</b><small id="signoffSurgeonTime">Not signed</small>
+            <button id="signSurgeonBtn" class="btn">✓ Sign surgeon</button>
+          </div>
+        </div>
+      </section>
+
       <div class="end-case-checklist">
         <label><input id="endConfirmRecovery" type="checkbox"> ตรวจ Recovery แล้ว</label>
         <label><input id="endConfirmRecord" type="checkbox"> ตรวจ Anesthesia record แล้ว</label>
@@ -1476,7 +1538,7 @@
   <div class="section-heading">
     <div>
       <h2>Hospital Protocol Governance</h2>
-      <p>กำหนดชื่อ/เวอร์ชัน protocol และล็อกการแก้ยา/สูตรเพื่อป้องกันการเปลี่ยนโดยไม่ตั้งใจ</p>
+      <p>กำหนดชื่อ/เวอร์ชัน protocol และล็อกการแก้ยา/สูตรเพื่อป้องกันการเปลี่ยนโดยไม่ตั้งใจระหว่างใช้งานจริง</p>
     </div>
     <div class="button-row">
       <span id="protocolLockStatus" class="status-pill warn">UNLOCKED</span>
@@ -1484,12 +1546,22 @@
     </div>
   </div>
   <div class="settings-grid">
-    <label>Protocol name<input id="settingProtocolName" type="text" value="Hospital anesthesia protocol"></label>
-    <label>Protocol version<input id="settingProtocolVersion" type="text" placeholder="เช่น 2026.09"></label>
-    <label>Last verified<input id="settingProtocolVerifiedAt" type="date"></label>
-    <label class="checkline">Auto keep screen awake<input id="settingAutoWakeLock" type="checkbox" checked></label>
+    <label>Protocol name
+      <input id="settingProtocolName" type="text" value="Hospital anesthesia protocol">
+    </label>
+    <label>Protocol version
+      <input id="settingProtocolVersion" type="text" placeholder="เช่น 2026.09">
+    </label>
+    <label>Last verified
+      <input id="settingProtocolVerifiedAt" type="date">
+    </label>
+    <label class="checkline">Auto keep screen awake
+      <input id="settingAutoWakeLock" type="checkbox" checked>
+    </label>
   </div>
-  <div id="protocolGovernanceNote" class="settings-note">เมื่อเริ่มเคส ระบบจะ freeze protocol version + drug configuration snapshot ไว้กับเคสนั้น</div>
+  <div id="protocolGovernanceNote" class="settings-note">
+    เมื่อเริ่มเคส ระบบจะ freeze protocol version + drug configuration snapshot ไว้กับเคสนั้น
+  </div>
 </section>
 
 <section class="panel quick-preset-settings-panel">
@@ -1569,16 +1641,27 @@
   </form>
 </dialog>
 
+
 <dialog id="amendmentDialog" class="drug-admin-dialog">
   <form method="dialog" class="drug-admin-card" onsubmit="return false;">
     <div class="section-heading">
-      <div><div class="eyebrow">LOCKED RECORD AMENDMENT</div><h2 id="amendmentCaseName">—</h2><p>เพิ่ม addendum โดยไม่แก้ข้อมูล original record</p></div>
+      <div>
+        <div class="eyebrow">LOCKED RECORD AMENDMENT</div>
+        <h2 id="amendmentCaseName">—</h2>
+        <p>เพิ่ม addendum โดยไม่แก้ข้อมูล original record</p>
+      </div>
       <button id="amendmentCloseBtn" class="btn" type="button">✕</button>
     </div>
     <div class="drug-admin-grid">
-      <label>Author<input id="amendmentAuthor" type="text" placeholder="ชื่อผู้บันทึก"></label>
-      <label>Reason<input id="amendmentReason" type="text" placeholder="เช่น transcription error / late entry"></label>
-      <label class="span2">Amendment / Addendum<textarea id="amendmentText" rows="5" placeholder="ระบุข้อมูลที่ต้องการเพิ่มเติมหรือแก้ไข"></textarea></label>
+      <label>Author
+        <input id="amendmentAuthor" type="text" placeholder="ชื่อผู้แก้ไข/ผู้บันทึก">
+      </label>
+      <label>Reason
+        <input id="amendmentReason" type="text" placeholder="เช่น transcription error / late entry">
+      </label>
+      <label class="span2">Amendment / Addendum
+        <textarea id="amendmentText" rows="5" placeholder="ระบุข้อมูลที่ต้องการเพิ่มเติมหรือแก้ไข โดยอ้างถึง original record ให้ชัดเจน"></textarea>
+      </label>
     </div>
     <div class="drug-admin-safety">ข้อมูลเดิมจะไม่ถูกลบหรือเขียนทับ Amendment จะถูกเพิ่มพร้อมเวลาและผู้บันทึก</div>
     <div class="dialog-actions">
@@ -1589,6 +1672,6 @@
 </dialog>
 
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
-<script src="./app.js?v=14"></script>
+<script src="./app.js?v=14.1"></script>
 </body>
 </html>

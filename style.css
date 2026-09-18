@@ -443,3 +443,20 @@ body.or-fullscreen .topbar,body.or-fullscreen .case-strip,body.or-fullscreen .ta
 .archive-amend{border-color:#d0b98a!important;color:#765514!important;background:#fffaf0!important}
 .report-amendment,.report-audit{border:1px solid #ced8dc;border-radius:6px;padding:6px 8px;margin:5px 0;font-size:8px}
 .report-amendment b,.report-audit b{display:inline-block;margin-right:6px}
+
+
+/* V14.1 — Clinical Record Integrity & Archive UX */
+.or-sticky-mini{
+  position:sticky;top:8px;z-index:35;margin:8px 0 10px;padding:8px 10px;
+  display:grid;grid-template-columns:1fr 1fr 1.2fr auto;gap:8px;align-items:center;
+  border:1px solid #b9d4db;border-radius:12px;background:rgba(248,253,254,.96);
+  backdrop-filter:blur(7px);box-shadow:0 7px 22px rgba(21,70,82,.09)
+}
+.or-sticky-mini>div{min-width:0}.or-sticky-mini span{display:block;color:var(--muted);font-size:.62rem;font-weight:900;text-transform:uppercase}.or-sticky-mini b{display:block;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.or-sticky-mini .due{color:#a52c25}
+.data-health-panel{margin:12px 0;padding:12px;border:1px solid #cadde2;background:#f8fcfd;border-radius:12px}
+.data-health-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.data-health-grid>div{padding:9px;border:1px solid var(--line);border-radius:10px;background:#fff}.data-health-grid span{display:block;color:var(--muted);font-size:.66rem;font-weight:900;text-transform:uppercase}.data-health-grid b{display:block;margin-top:3px}.data-health-grid small{display:block;color:var(--muted);margin-top:2px}.data-health-grid .health-warn{color:#95630e}.data-health-grid .health-good{color:#176b4a}
+.archive-filter-grid{display:grid;grid-template-columns:2fr repeat(4,minmax(130px,1fr)) auto;gap:8px;align-items:end;margin-bottom:12px}.archive-search-wide{min-width:220px}.archive-result-count{color:#0f6175}.archive-voided{border-color:#d9a7a2!important;background:#fff8f7!important}.archive-void-badge{display:inline-flex;padding:3px 7px;border-radius:999px;background:#ffe7e5;color:#9f2923;font-size:.66rem;font-weight:900}.archive-integrity-badge{display:inline-flex;padding:3px 7px;border-radius:999px;background:#edf5f7;color:#48606a;font-size:.66rem;font-weight:850}.archive-void{border-color:#d39e98!important;color:#932f29!important;background:#fff7f6!important}
+.final-signoff-panel{margin:13px 0;padding:12px;border:1px solid #c9dce1;border-radius:12px;background:#f8fcfd}.final-signoff-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.signoff-card{border:1px solid var(--line);background:#fff;border-radius:10px;padding:10px}.signoff-card>span{display:block;color:var(--muted);font-size:.67rem;font-weight:900;text-transform:uppercase}.signoff-card>b{display:block;margin:4px 0}.signoff-card>small{display:block;color:var(--muted);margin-bottom:8px}.signoff-card.signed{border-color:#abd7bd;background:#f4fbf7}.signoff-card.signed small{color:#176b4a;font-weight:800}
+.report-void-notice{border:2px solid #b1352d;background:#fff1f0;color:#8d251f;padding:10px 12px;margin:10px 0;font-weight:900;text-align:center}.report-integrity-value{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:8px;word-break:break-all}
+@media(max-width:1050px){.archive-filter-grid{grid-template-columns:1fr 1fr 1fr}.archive-search-wide{grid-column:1/-1}.data-health-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:700px){.or-sticky-mini{grid-template-columns:1fr 1fr}.or-sticky-mini button{grid-column:1/-1}.archive-filter-grid,.data-health-grid,.final-signoff-grid{grid-template-columns:1fr}.archive-search-wide{grid-column:auto}}

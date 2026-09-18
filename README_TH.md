@@ -1,19 +1,55 @@
-# ANESVET V14 — Hardening
+# ANESVET V14.1 — Clinical Record Integrity & Archive UX
 
-V14 เน้นความทนทานของระบบมากกว่าการเพิ่ม clinical feature
+## Archive Search / Filter
+- Search patient / HN / Record ID / procedure / surgeon / anesthetist
+- Date range
+- Locked / Voided / Working copy
+- Newest / Oldest / Patient / HN sort
 
-- IndexedDB archive เป็น primary storage และยกเลิก hard cap 50 cases
-- current case ยัง autosave localStorage และ mirror เข้า IndexedDB
-- First anesthesia record reminder เริ่มนับตั้งแต่ Start case
-- Auto screen Wake Lock ระหว่าง anesthesia/recovery
-- Plausibility validation ก่อนบันทึก vital signs
-- Hospital Protocol name/version/verified date + Lock/Unlock
-- Freeze protocol snapshot ตอนเริ่มเคส
-- Case audit trail
-- Locked final record ไม่ Load กลับมาแก้ original โดยตรง
-- Add amendment/addendum ให้ locked record
-- PDF แสดง protocol, amendments และ audit trail
-- Backup/Restore รวม IndexedDB archive + protocol audit
+## Void instead of Delete
+- LOCKED FINAL records cannot be permanently deleted from normal archive UI
+- Void requires reason + author + typed VOID confirmation
+- Original record, checksum, amendments and audit trail remain available
+- Working copies can still be deleted
 
-URL:
-https://seeyouloverreallife-debug.github.io/ANESVET/?v=14
+## Final Sign-off
+Before End, Lock & Archive:
+- Anesthetist signs
+- Surgeon signs
+- Signer name + timestamp stored
+- Both signatures are required for READY TO END
+
+## Record Identity & Integrity
+- Human Record ID: ANV-YYYYMMDD-XXXXX
+- Final SHA-256 checksum created at final lock
+- Archive shows short checksum
+- Verify integrity button recomputes checksum
+- Amendments / void metadata do not rewrite original clinical checksum
+
+## Backup Health
+Cases page shows:
+- Database backend
+- Archived case count
+- Last backup age
+- Browser storage estimate
+- Backup now button
+- Backup age warning at 7+ days
+
+## Sticky OR status
+While scrolling OR LIVE, a compact sticky bar keeps visible:
+- Case status
+- Case time
+- Next vital-sign due
+- Record now button
+
+## Preserved V14 hardening
+- IndexedDB archive
+- First-record reminder
+- Sound/vibration alert
+- Wake Lock
+- Plausibility validation
+- Protocol governance/versioning
+- Audit trail + amendments
+
+## URL
+https://seeyouloverreallife-debug.github.io/ANESVET/?v=14.1
