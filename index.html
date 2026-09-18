@@ -8,8 +8,8 @@
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" href="./icon-192.png">
   <link rel="apple-touch-icon" href="./icon-192.png">
-  <link rel="stylesheet" href="./style.css?v=12">
-  <title>ANESVET V12</title>
+  <link rel="stylesheet" href="./style.css?v=12.1">
+  <title>ANESVET V12.1</title>
 </head>
 <body>
 <header class="topbar">
@@ -17,7 +17,7 @@
     <div class="brand-mark">A</div>
     <div>
       <div class="eyebrow">GENOVI PET CARE • DIGITAL ANESTHESIA RECORD</div>
-      <h1>ANESVET <span>V12</span></h1>
+      <h1>ANESVET <span>V12.1</span></h1>
     </div>
   </div>
   <div class="top-actions">
@@ -51,6 +51,16 @@
       </div>
     </div>
     <span id="globalStatus" class="status-pill good">STABLE</span>
+  </section>
+
+
+  <section id="patientRiskBanner" class="patient-risk-banner" hidden>
+    <div class="risk-icon">⚠</div>
+    <div class="risk-content">
+      <b>Patient-specific cautions</b>
+      <div id="patientRiskText">—</div>
+    </div>
+    <button id="editRiskBtn" class="btn">แก้ไข</button>
   </section>
 
   <nav class="tabs workflow-tabs" aria-label="ขั้นตอนการวางยาสลบ">
@@ -251,6 +261,28 @@
       </section>
     </section>
 
+    <section class="panel airway-panel">
+      <div class="section-heading">
+        <div><h2>Airway / Ventilation record</h2><p>บันทึกข้อมูล airway แบบย่อ — ventilator fields แสดงเฉพาะเมื่อเลือก Mechanical ventilation</p></div>
+        <span id="airwayStatus" class="status-pill warn">NOT RECORDED</span>
+      </div>
+      <div class="airway-grid">
+        <label>ETT size (mm)<input id="airwayEttSize" type="number" min="0" step="0.5" placeholder="เช่น 6.0"></label>
+        <label>ETT depth (cm)<input id="airwayEttDepth" type="number" min="0" step="0.5" placeholder="optional"></label>
+        <label>Cuff<select id="airwayCuff"><option value="">—</option><option>Inflated / sealed</option><option>Minimal occlusive volume</option><option>Uncuffed</option></select></label>
+        <label>Intubation<select id="airwayDifficulty"><option value="">—</option><option>Easy</option><option>Moderate</option><option>Difficult</option></select></label>
+        <label>Circuit<select id="airwayCircuit"><option value="">—</option><option>Rebreathing</option><option>Non-rebreathing</option></select></label>
+        <label>Ventilation mode<select id="airwayVentMode"><option>Spontaneous</option><option>Manual PPV</option><option>Mechanical ventilation</option></select></label>
+      </div>
+      <div id="ventilatorFields" class="ventilator-grid" hidden>
+        <label>VT (mL)<input id="airwayVt" type="number" min="0" step="1"></label>
+        <label>PIP (cmH₂O)<input id="airwayPip" type="number" min="0" step="1"></label>
+        <label>PEEP (cmH₂O)<input id="airwayPeep" type="number" min="0" step="1"></label>
+        <label>Ventilator RR (/min)<input id="airwayVentRr" type="number" min="0" step="1"></label>
+      </div>
+      <div class="airway-actions"><button id="saveAirwayBtn" class="btn primary">Save airway record</button></div>
+    </section>
+
     <section class="panel or-action-panel">
       <div class="section-heading"><div><h2>Quick actions</h2><p>ปุ่มใหญ่สำหรับใช้ระหว่าง anesthesia โดยไม่ต้องเปลี่ยนหน้า</p></div></div>
       <div class="or-action-groups">
@@ -291,26 +323,68 @@
       <div class="section-heading">
         <div>
           <h2>Pre-anesthetic checklist</h2>
-          <p>ตรวจความพร้อมก่อน induction ให้ครบก่อนกด Start case</p>
+          <p>ทบทวนแต่ละรายการเป็น Done หรือ N/A ก่อนเริ่มเคส</p>
         </div>
-        <span id="preopProgress" class="status-pill warn">0/14 COMPLETE</span>
+        <span id="preopProgress" class="status-pill warn">0/14 REVIEWED</span>
       </div>
 
       <div class="checklist-grid">
-        <label class="preop-item"><input class="preop-check" type="checkbox" data-key="consent"><span><b>Consent / owner discussion</b><small>มีใบยินยอมและอธิบายความเสี่ยงแล้ว</small></span></label>
-        <label class="preop-item"><input class="preop-check" type="checkbox" data-key="fasting"><span><b>Fasting / aspiration risk reviewed</b><small>ประเมิน fasting, regurgitation และ aspiration risk</small></span></label>
-        <label class="preop-item"><input class="preop-check" type="checkbox" data-key="exam"><span><b>Pre-anesthetic physical exam</b><small>HR/RR, pulse, MM/CRT, hydration, temperature, pain</small></span></label>
-        <label class="preop-item"><input class="preop-check" type="checkbox" data-key="labs"><span><b>Lab / imaging reviewed</b><small>ผลตรวจที่จำเป็นเหมาะกับ ASA และ procedure</small></span></label>
-        <label class="preop-item"><input class="preop-check" type="checkbox" data-key="iv"><span><b>IV catheter patent</b><small>ยึดแน่นและ flush ได้</small></span></label>
-        <label class="preop-item"><input class="preop-check" type="checkbox" data-key="oxygen"><span><b>O₂ source + backup checked</b><small>แหล่งออกซิเจนพร้อมใช้งาน</small></span></label>
-        <label class="preop-item"><input class="preop-check" type="checkbox" data-key="machine"><span><b>Anesthesia machine leak check</b><small>circuit, APL/pop-off, bag, valves พร้อม</small></span></label>
-        <label class="preop-item"><input class="preop-check" type="checkbox" data-key="vaporizer"><span><b>Vaporizer / agent checked</b><small>agent ถูกต้องและมีระดับเพียงพอ</small></span></label>
-        <label class="preop-item"><input class="preop-check" type="checkbox" data-key="absorber"><span><b>CO₂ absorbent checked</b><small>ไม่หมดสภาพและติดตั้งถูกต้อง</small></span></label>
-        <label class="preop-item"><input class="preop-check" type="checkbox" data-key="airway"><span><b>Airway equipment ready</b><small>ETT หลายขนาด, cuff syringe, laryngoscope, tie</small></span></label>
-        <label class="preop-item"><input class="preop-check" type="checkbox" data-key="suction"><span><b>Suction available</b><small>พร้อมสำหรับ secretion / regurgitation</small></span></label>
-        <label class="preop-item"><input class="preop-check" type="checkbox" data-key="monitor"><span><b>Monitor attached / functional</b><small>ECG, SpO₂, BP, ETCO₂, temperature</small></span></label>
-        <label class="preop-item"><input class="preop-check" type="checkbox" data-key="warming"><span><b>Active warming ready</b><small>เตรียม warming ก่อนเกิด hypothermia</small></span></label>
-        <label class="preop-item"><input class="preop-check" type="checkbox" data-key="emergency"><span><b>Emergency drugs / crash plan ready</b><small>ตรวจ dose, concentration และ access</small></span></label>
+        <div class="preop-item" data-preop-key="consent">
+          <label class="preop-main"><input class="preop-check" type="checkbox" data-key="consent"><span><b>Consent / owner discussion</b><small>มีใบยินยอมและอธิบายความเสี่ยงแล้ว</small></span></label>
+          <button type="button" class="preop-na-btn" data-key="consent">N/A</button>
+        </div>
+        <div class="preop-item" data-preop-key="fasting">
+          <label class="preop-main"><input class="preop-check" type="checkbox" data-key="fasting"><span><b>Fasting / aspiration risk reviewed</b><small>ประเมิน fasting, regurgitation และ aspiration risk</small></span></label>
+          <button type="button" class="preop-na-btn" data-key="fasting">N/A</button>
+        </div>
+        <div class="preop-item" data-preop-key="exam">
+          <label class="preop-main"><input class="preop-check" type="checkbox" data-key="exam"><span><b>Pre-anesthetic physical exam</b><small>HR/RR, pulse, MM/CRT, hydration, temperature, pain</small></span></label>
+          <button type="button" class="preop-na-btn" data-key="exam">N/A</button>
+        </div>
+        <div class="preop-item" data-preop-key="labs">
+          <label class="preop-main"><input class="preop-check" type="checkbox" data-key="labs"><span><b>Lab / imaging reviewed</b><small>ผลตรวจที่จำเป็นเหมาะกับ ASA และ procedure</small></span></label>
+          <button type="button" class="preop-na-btn" data-key="labs">N/A</button>
+        </div>
+        <div class="preop-item" data-preop-key="iv">
+          <label class="preop-main"><input class="preop-check" type="checkbox" data-key="iv"><span><b>IV catheter patent</b><small>ยึดแน่นและ flush ได้</small></span></label>
+          <button type="button" class="preop-na-btn" data-key="iv">N/A</button>
+        </div>
+        <div class="preop-item" data-preop-key="oxygen">
+          <label class="preop-main"><input class="preop-check" type="checkbox" data-key="oxygen"><span><b>O₂ source + backup checked</b><small>แหล่งออกซิเจนพร้อมใช้งาน</small></span></label>
+          <button type="button" class="preop-na-btn" data-key="oxygen">N/A</button>
+        </div>
+        <div class="preop-item" data-preop-key="machine">
+          <label class="preop-main"><input class="preop-check" type="checkbox" data-key="machine"><span><b>Anesthesia machine leak check</b><small>circuit, APL/pop-off, bag, valves พร้อม</small></span></label>
+          <button type="button" class="preop-na-btn" data-key="machine">N/A</button>
+        </div>
+        <div class="preop-item" data-preop-key="vaporizer">
+          <label class="preop-main"><input class="preop-check" type="checkbox" data-key="vaporizer"><span><b>Vaporizer / agent checked</b><small>agent ถูกต้องและมีระดับเพียงพอ</small></span></label>
+          <button type="button" class="preop-na-btn" data-key="vaporizer">N/A</button>
+        </div>
+        <div class="preop-item" data-preop-key="absorber">
+          <label class="preop-main"><input class="preop-check" type="checkbox" data-key="absorber"><span><b>CO₂ absorbent checked</b><small>ไม่หมดสภาพและติดตั้งถูกต้อง</small></span></label>
+          <button type="button" class="preop-na-btn" data-key="absorber">N/A</button>
+        </div>
+        <div class="preop-item" data-preop-key="airway">
+          <label class="preop-main"><input class="preop-check" type="checkbox" data-key="airway"><span><b>Airway equipment ready</b><small>ETT หลายขนาด, cuff syringe, laryngoscope, tie</small></span></label>
+          <button type="button" class="preop-na-btn" data-key="airway">N/A</button>
+        </div>
+        <div class="preop-item" data-preop-key="suction">
+          <label class="preop-main"><input class="preop-check" type="checkbox" data-key="suction"><span><b>Suction available</b><small>พร้อมสำหรับ secretion / regurgitation</small></span></label>
+          <button type="button" class="preop-na-btn" data-key="suction">N/A</button>
+        </div>
+        <div class="preop-item" data-preop-key="monitor">
+          <label class="preop-main"><input class="preop-check" type="checkbox" data-key="monitor"><span><b>Monitor attached / functional</b><small>ECG, SpO₂, BP, ETCO₂, temperature</small></span></label>
+          <button type="button" class="preop-na-btn" data-key="monitor">N/A</button>
+        </div>
+        <div class="preop-item" data-preop-key="warming">
+          <label class="preop-main"><input class="preop-check" type="checkbox" data-key="warming"><span><b>Active warming ready</b><small>เตรียม warming ก่อนเกิด hypothermia</small></span></label>
+          <button type="button" class="preop-na-btn" data-key="warming">N/A</button>
+        </div>
+        <div class="preop-item" data-preop-key="emergency">
+          <label class="preop-main"><input class="preop-check" type="checkbox" data-key="emergency"><span><b>Emergency drugs / crash plan ready</b><small>ตรวจ dose, concentration และ access</small></span></label>
+          <button type="button" class="preop-na-btn" data-key="emergency">N/A</button>
+        </div>
       </div>
 
       <div class="preop-footer">
@@ -759,6 +833,10 @@
         </div>
         <button id="openDrugLibraryBtn" class="btn">⚙ Hospital Drug Library</button>
       </div>
+      <div class="favorite-drug-strip">
+        <div><b>Favorite hospital drugs</b><small>ติ๊ก ⭐ Favorite ใน Settings เพื่อให้ยาที่ใช้บ่อยขึ้นตรงนี้</small></div>
+        <div id="favoriteDrugButtons" class="favorite-drug-buttons"><span class="muted small">ยังไม่มี favorite drugs</span></div>
+      </div>
 
       <div class="drug-phase-section induction-phase">
         <div class="drug-phase-head">
@@ -915,6 +993,10 @@
           <button class="btn drug-event-btn" data-drug="Dopamine CRI" data-doseid="dopamineMcgMin" data-volid="dopamineMlHr">Add to Event</button>
         </article>
       </div>
+    </section>
+  <section class="drug-next-step">
+      <div><b>พร้อมเข้าสู่ช่วงวางยาแล้วหรือยัง?</b><span>ตรวจยาที่เตรียมไว้และ concentration อีกครั้งก่อนเริ่ม anesthesia</span></div>
+      <button id="goOrLiveFromDrugBtn" class="btn primary xl">ไปช่วงวางยา / OR LIVE →</button>
     </section>
   </section>
 
@@ -1213,6 +1295,6 @@
 </main>
 
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
-<script src="./app.js?v=12"></script>
+<script src="./app.js?v=12.1"></script>
 </body>
 </html>

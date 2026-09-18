@@ -228,3 +228,22 @@ body.or-fullscreen .topbar,body.or-fullscreen .case-strip,body.or-fullscreen .ta
 @media(max-width:520px){
   .patient-clinical-grid,.custom-drug-inputs,.drug-library-row{grid-template-columns:1fr}
 }
+
+
+/* V12.1 Clinical UX refinement */
+.patient-risk-banner{display:flex;align-items:center;gap:10px;margin:8px 0 10px;padding:10px 12px;border:1px solid #e5c58b;border-radius:12px;background:#fffaf0;color:#604616}
+.patient-risk-banner[hidden]{display:none}.risk-icon{font-size:1.25rem}.risk-content{flex:1}.risk-content b{display:block;margin-bottom:2px}.risk-content div{font-size:.84rem;line-height:1.35}
+.preop-item{display:flex;align-items:center;justify-content:space-between;gap:10px}.preop-main{display:flex;align-items:flex-start;gap:10px;flex:1;cursor:pointer}
+.preop-na-btn{border:1px solid #cad7dc;background:#fff;color:#5c6e77;border-radius:999px;padding:7px 10px;font-size:.72rem;font-weight:900;cursor:pointer}
+.preop-item.na{background:#f5f7f8;border-color:#d9e0e3}.preop-item.na .preop-main{opacity:.58}.preop-item.na .preop-na-btn{background:#65747c;color:#fff;border-color:#65747c}
+.favorite-drug-strip{margin:8px 18px 14px;padding:10px 12px;border:1px solid var(--line);border-radius:11px;background:#fbfdfe;display:flex;justify-content:space-between;gap:12px;align-items:center}
+.favorite-drug-strip>div:first-child b{display:block}.favorite-drug-strip small{display:block;color:var(--muted);margin-top:2px}.favorite-drug-buttons{display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end}
+.favorite-drug-btn{border:1px solid #bfcfd5;background:#fff;color:#294d59;border-radius:999px;padding:8px 10px;font-weight:850;cursor:pointer}.favorite-drug-btn:hover{background:var(--primary-soft);color:var(--primary)}
+.drug-next-step{display:flex;justify-content:space-between;gap:12px;align-items:center;margin:12px 0 4px;padding:14px 16px;border:1px solid #bcd7de;border-radius:14px;background:#f7fcfd}
+.drug-next-step b{display:block}.drug-next-step span{display:block;color:var(--muted);font-size:.8rem;margin-top:3px}
+.airway-panel{margin-top:11px}.airway-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;margin-top:10px}
+.ventilator-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:9px;padding-top:9px;border-top:1px dashed var(--line)}.ventilator-grid[hidden]{display:none}.airway-actions{display:flex;justify-content:flex-end;margin-top:10px}
+.drug-library-row .favorite-cell{display:flex;align-items:center;gap:6px;height:42px}.drug-library-row .favorite-cell input{width:18px;height:18px;accent-color:var(--primary)}
+@media(max-width:1050px){.airway-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.ventilator-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:760px){.favorite-drug-strip,.drug-next-step{align-items:stretch;flex-direction:column}.favorite-drug-buttons{justify-content:flex-start}}
+@media(max-width:540px){.airway-grid,.ventilator-grid{grid-template-columns:1fr 1fr}}

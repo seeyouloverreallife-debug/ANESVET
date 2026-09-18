@@ -1,8 +1,8 @@
 {
-  "name": "ANESVET V12 — Phase-based Drug Workflow",
+  "name": "ANESVET V12.1 — Clinical UX Refinement",
   "short_name": "ANESVET",
-  "description": "Veterinary anesthesia workstation with patient-specific cautions and a configurable hospital drug library",
-  "start_url": "./?v=12",
+  "description": "Veterinary anesthesia workstation with Done/N-A precheck, favorite drugs, patient risk banner, compact airway record and OR-centered workflow",
+  "start_url": "./?v=12.1",
   "scope": "./",
   "display": "standalone",
   "background_color": "#f3f7f8",

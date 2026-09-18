@@ -1,64 +1,30 @@
-# ANESVET V12 — Phase-based Drug Workflow
+# ANESVET V12.1 — Clinical UX Refinement
 
-## Patient history
-หน้า “ประวัติผู้ป่วย” เพิ่ม:
-- Procedure
-- ประวัติแพ้ยา / สิ่งที่ต้องหลีกเลี่ยง
-- โรคประจำตัว / ปัญหาสำคัญ
-- ข้อควรระวังเฉพาะราย / Anesthetic concerns
+ปรับ UX โดยไม่เพิ่มเมนูหลักใหม่
 
-Procedure sync กับ Dashboard/OR LIVE และข้อมูลความเสี่ยงแสดงใน OR LIVE + PDF report
+## Pre-check
+- แต่ละรายการเลือก Done หรือ N/A
+- progress เป็น REVIEWED
+- Start Case ดูจำนวนรายการที่ review แล้ว
+- PDF แสดง Done / N/A / Pending แยกกัน
 
-## Drug Calculator แยกตามช่วง
-### 1) Induction / Co-induction
-- Diazepam
-- Propofol
-- Additional induction drug จาก Hospital Drug Library
+## Patient risk banner
+Allergy / underlying disease / anesthetic cautions แสดงเป็นแถบเตือนด้านบนตลอด workflow
+และยังอยู่ใน OR LIVE + PDF
 
-### 2) Pre-anesthetic / Perioperative
-- Cefazolin (ABO)
-- Tramadol
-- Additional antibiotic / analgesic / drug จาก Hospital Drug Library
+## Drug workflow
+- Hospital Drug Library เพิ่ม Favorite
+- Favorite drugs แสดงเป็น quick buttons ใน Drug Calculator
+- ท้าย Drug Calculator มีปุ่มไป OR LIVE โดยตรง
 
-### 3) Post-anesthetic / Postoperative
-- Convenia
-- Dog: Carprofen
-- Cat: Meloxicam
-- Additional postoperative drug จาก Hospital Drug Library
+## Airway / Ventilation record ใน OR LIVE
+- ETT size / depth
+- cuff
+- intubation difficulty
+- circuit
+- ventilation mode
+- VT / PIP / PEEP / ventilator RR เมื่อเลือก Mechanical ventilation
+- ข้อมูลถูกเก็บใน case และ PDF
 
-Emergency drugs ยังแยกต่างหากเหมือนเดิม
-
-## Hospital Drug Library
-อยู่ใน Settings:
-- Drug name
-- Phase
-- Drug class
-- Calculation mode
-- Dose / factor
-- Concentration
-- Route
-
-Calculation modes:
-- mg/kg
-- μg/kg
-- mL/kg
-- BW ÷ factor
-- Manual
-
-มี template ชื่อยาที่ใช้บ่อย เช่น Midazolam, Alfaxalone, Ketamine, Etomidate,
-Ampicillin-sulbactam, Clindamycin, Methadone, Buprenorphine, Fentanyl,
-Butorphanol, Robenacoxib, Amoxicillin-clavulanate
-
-สำคัญ: template ยาเพิ่มเติม “ไม่ใส่ dose/concentration เริ่มต้น” ผู้ใช้ต้องกำหนด protocol ของโรงพยาบาลเองก่อนระบบจะคำนวณ volume
-
-## Existing hospital presets retained
-- Diazepam 0.25 mg/kg
-- Propofol 4 mg/kg planned
-- Cefazolin = BW ÷ 10 mL
-- Convenia = BW ÷ 10 mL
-- Tramadol 4 mg/kg
-- Dog Carprofen 4.4 mg/kg
-- Cat Meloxicam 0.3 mg/kg
-
-## Update URL
-https://seeyouloverreallife-debug.github.io/ANESVET/?v=12
+## Update
+https://seeyouloverreallife-debug.github.io/ANESVET/?v=12.1
