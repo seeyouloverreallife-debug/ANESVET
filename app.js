@@ -289,12 +289,33 @@ function renderTimerState(){
   if($('timelineStartClock')) $('timelineStartClock').textContent=state.caseStartedAt?formatClock(state.caseStartedAt):'—';
   renderSaveState();renderCasePhase();
 }
+function currentWeightKg(){const w=Number($('weight')?.value);return Number.isFinite(w)&&w>0?w:null}
+function currentWeightReady(){return !!state.patientSaved&&currentWeightKg()!==null}
+function requireCurrentWeight(action='continue'){
+  if(currentWeightReady())return true;
+  toast(`Current BW not confirmed — Save Patient & Case Setup before ${action}`);
+  setTab('patient');$('weight')?.focus();return false;
+}
+function validateCaseReadyToStart(){
+  if(!$('patientName')?.value.trim()){toast('กรุณากรอกชื่อผู้ป่วยก่อนเริ่มเคส');setTab('patient');$('patientName')?.focus();return false}
+  if(!state.patientSaved){toast('Patient & Case Setup changed or not saved — Save setup before Start case');setTab('patient');$('savePatientBtn')?.focus();return false}
+  if(currentWeightKg()===null){toast('Current BW required — enter today’s measured weight before Start case');setTab('patient');$('weight')?.focus();return false}
+  return true;
+}
+function renderWeightSafetyState(){
+  const ready=currentWeightReady();
+  const ids=['drugAdminConfirmBtn'];ids.forEach(id=>{if($(id))$(id).disabled=!ready});
+  $$('.drug-event-btn,.custom-drug-event-btn,.administered-btn').forEach(btn=>{btn.disabled=!ready;btn.title=ready?'':'Save Patient & Case Setup with today’s current BW first'});
+  if($('currentWeightSafety')){$('currentWeightSafety').textContent=ready?`✓ Current BW confirmed: ${currentWeightKg().toFixed(1)} kg`:'⚠ Current BW not confirmed — enter today’s measured weight and Save Patient & Case Setup';$('currentWeightSafety').className=`current-weight-safety ${ready?'good':'warn'}`}
+}
 function ensureTimerStarted(){
-  if(state.timer.running || state.timer.elapsedMs>0) return;
+  if(state.timer.running || state.timer.elapsedMs>0) return true;
+  if(!validateCaseReadyToStart())return false;
   state.timer.running=true;
   state.timer.startedEpoch=Date.now();
-  if(!state.caseStartedAt) state.caseStartedAt=state.timer.startedEpoch;
-  startTimerLoop();renderTimerState();
+  if(!state.caseStartedAt){state.caseStartedAt=state.timer.startedEpoch;state.casePhase='induction';captureProtocolSnapshot();addAudit('CASE_STARTED','Anesthesia case timer started')}
+  startTimerLoop();renderTimerState();renderCasePhase();save();
+  return true;
 }
 function startTimerLoop(){
   clearInterval(timerHandle);
@@ -345,7 +366,16 @@ function openAnesvetDb(){
         p.createIndex('updatedAt','updatedAt',{unique:false});
       }
     };
-    req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error||new Error('IndexedDB failed'));
+    let settled=false;
+    req.onblocked=()=>{
+      if(settled)return;settled=true;archiveDbPromise=null;archiveBackend='blocked';patientBackend='blocked';
+      const msg='ANESVET database upgrade is blocked by another open tab. Close other ANESVET tabs/windows, then reload this page.';
+      if($('storageStatus'))$('storageStatus').textContent='Storage: BLOCKED — close other ANESVET tabs and reload';
+      try{alert(msg)}catch(e){}
+      reject(new Error('IndexedDB upgrade blocked by another ANESVET tab'));
+    };
+    req.onsuccess=()=>{if(settled){try{req.result.close()}catch(e){}return}settled=true;resolve(req.result)};
+    req.onerror=()=>{if(settled)return;settled=true;archiveDbPromise=null;reject(req.error||new Error('IndexedDB failed'))};
   });
   return archiveDbPromise;
 }
@@ -372,7 +402,7 @@ function saveFallbackPatients(){localStorage.setItem(PATIENT_FALLBACK_KEY,JSON.s
 function normalizePatientKey(v){return String(v||'').toLowerCase().trim().replace(/\s+/g,' ')}
 function patientFromCase(c){
   if(!c?.patientName)return null;
-  return {patientId:c.patientMasterId||crypto.randomUUID?.()||String(Date.now()+Math.random()),hospitalId:c.hospitalId||'',patientName:c.patientName||'',species:c.species||'dog',sex:c.sex||'',reproductiveStatus:c.reproductiveStatus||'',microchip:c.microchip||'',breed:c.breed||'',birthDate:c.birthDate||'',birthDateEstimated:!!c.birthDateEstimated,ageSource:c.ageSource||(c.birthDateEstimated?'estimated':c.birthDate?'dob':''),estimatedBirthPeriod:c.estimatedBirthPeriod||'',approxAgeYears:c.approxAgeYears||'0',approxAgeMonths:c.approxAgeMonths||'0',approxAgeWeeks:c.approxAgeWeeks||'0',lastWeight:c.weight||'',lastBcs:c.bcs||'',allergies:c.patientAllergies||'',comorbidities:c.patientComorbidities||'',precautions:c.patientPrecautions||'',createdAt:c.createdAt||Date.now(),updatedAt:c.archivedAt||c.lastSavedAt||c.createdAt||Date.now()};
+  return {patientId:c.patientMasterId||crypto.randomUUID?.()||String(Date.now()+Math.random()),hospitalId:c.hospitalId||'',patientName:c.patientName||'',species:c.species||'dog',sex:c.sex||'',reproductiveStatus:c.reproductiveStatus||'',microchip:c.microchip||'',breed:c.breed||'',birthDate:c.birthDate||'',birthDateEstimated:!!c.birthDateEstimated,ageSource:c.ageSource||(c.birthDateEstimated?'estimated':c.birthDate?'dob':''),estimatedBirthPeriod:c.estimatedBirthPeriod||'',approxAgeYears:c.approxAgeYears||'0',approxAgeMonths:c.approxAgeMonths||'0',approxAgeWeeks:c.approxAgeWeeks||'0',lastWeight:c.weight||'',lastWeightAt:c.lastSavedAt||c.archivedAt||c.createdAt||null,lastBcs:c.bcs||'',allergies:c.patientAllergies||'',comorbidities:c.patientComorbidities||'',precautions:c.patientPrecautions||'',createdAt:c.createdAt||Date.now(),updatedAt:c.archivedAt||c.lastSavedAt||c.createdAt||Date.now()};
 }
 function patientIdentityKey(p){
   const hn=normalizePatientKey(p.hospitalId),chip=normalizePatientKey(p.microchip);
@@ -541,7 +571,7 @@ function load(){
   if(state.timer.running && state.timer.startedEpoch) startTimerLoop();
 initArchiveDb();
 if((state.timer.running||state.casePhase==='recovery')&&autoWakeEnabled())requestScreenWakeLock(true);
-  $('caseClock').textContent=formatElapsed(currentElapsed());
+  $('caseClock').textContent=formatElapsed(currentElapsed());renderWeightSafetyState();
 }
 
 
@@ -823,9 +853,16 @@ function migrateLegacyAgeUi(){
 
 function sexReproText(p){const sex=({male:'Male',female:'Female'})[p.sex]||'Sex unknown',repro=({intact:'Intact',neutered:'Neutered',spayed:'Spayed'})[p.reproductiveStatus]||'status unknown';return `${sex} • ${repro}`}
 function patientAgeText(p){const d=dateFromIso(p.birthDate||''),parts=agePartsFromDob(d);return parts?formatAgeThai(parts,!!p.birthDateEstimated):'Age —'}
+function renderPreviousWeightReference(p=null){
+  const box=$('previousWeightReference'),text=$('previousWeightText');if(!box||!text)return;
+  if(!p||!(Number(p.lastWeight)>0)){box.hidden=true;text.textContent='—';return}
+  const d=p.lastWeightAt?formatDate(p.lastWeightAt):null;
+  box.hidden=false;text.textContent=`Previous weight: ${p.lastWeight} kg${d?` • recorded ${d}`:' • recorded date unavailable'} • reference only — enter today's measured weight below`;
+}
 function renderLinkedPatient(){
   const box=$('linkedPatientBanner'),id=$('patientMasterId')?.value||state.patientMasterId||'',p=patientCache.find(x=>x.patientId===id);
   if(!box)return;box.hidden=!p;if(p&&$('linkedPatientText'))$('linkedPatientText').textContent=`${p.patientName}${p.hospitalId?' • HN '+p.hospitalId:''} • ${p.species==='cat'?'Cat':'Dog'}${p.breed?' • '+p.breed:''}`;
+  renderPreviousWeightReference(p||null);
 }
 function patientSearchMatches(p,q){if(!q)return true;const s=normalizePatientKey(q);return[p.patientName,p.hospitalId,p.microchip,p.breed,p.sex,p.reproductiveStatus].some(v=>normalizePatientKey(v).includes(s))}
 function renderPatientMaster(){
@@ -841,26 +878,51 @@ function setPatientField(id,value){const el=$(id);if(!el)return;if(el.type==='ch
 function usePatientMaster(id){
   const p=patientCache.find(x=>x.patientId===id);if(!p)return;
   if(state.timer.running||(state.timer.elapsedMs||0)>0||(state.records||[]).length){toast('เคสเริ่มแล้ว ไม่สามารถเปลี่ยน Patient Master ได้');return}
-  setPatientField('patientMasterId',p.patientId);state.patientMasterId=p.patientId;setPatientField('patientName',p.patientName);setPatientField('hospitalId',p.hospitalId);setPatientField('species',p.species);setPatientField('sex',p.sex);setPatientField('reproductiveStatus',p.reproductiveStatus);setPatientField('microchip',p.microchip);setPatientField('breed',p.breed);setPatientField('birthDate',p.birthDate);setPatientField('birthDateEstimated',p.birthDateEstimated);setPatientField('ageSource',p.ageSource);setPatientField('estimatedBirthPeriod',p.estimatedBirthPeriod);setPatientField('approxAgeYears',p.approxAgeYears||0);setPatientField('approxAgeMonths',p.approxAgeMonths||0);setPatientField('approxAgeWeeks',p.approxAgeWeeks||0);setPatientField('weight',p.lastWeight||$('weight')?.value||'');setPatientField('bcs',p.lastBcs||'5');setPatientField('patientAllergies',p.allergies);setPatientField('patientComorbidities',p.comorbidities);setPatientField('patientPrecautions',p.precautions);
+  setPatientField('patientMasterId',p.patientId);state.patientMasterId=p.patientId;setPatientField('patientName',p.patientName);setPatientField('hospitalId',p.hospitalId);setPatientField('species',p.species);setPatientField('sex',p.sex);setPatientField('reproductiveStatus',p.reproductiveStatus);setPatientField('microchip',p.microchip);setPatientField('breed',p.breed);setPatientField('birthDate',p.birthDate);setPatientField('birthDateEstimated',p.birthDateEstimated);setPatientField('ageSource',p.ageSource);setPatientField('estimatedBirthPeriod',p.estimatedBirthPeriod);setPatientField('approxAgeYears',p.approxAgeYears||0);setPatientField('approxAgeMonths',p.approxAgeMonths||0);setPatientField('approxAgeWeeks',p.approxAgeWeeks||0);setPatientField('weight','');setPatientField('bcs',p.lastBcs||'5');setPatientField('patientAllergies',p.allergies);setPatientField('patientComorbidities',p.comorbidities);setPatientField('patientPrecautions',p.precautions);
   if($('birthDateUnknown'))$('birthDateUnknown').checked=!!p.birthDateEstimated;renderAgeUI();syncAsaCards();state.patientSaved=false;updatePatientSaveStatus();renderLinkedPatient();updateDashboard();toast(`ใช้ Patient Master: ${p.patientName}`);
 }
 function clearPatientRegistration(){
   if(state.timer.running||(state.timer.elapsedMs||0)>0||(state.records||[]).length){toast('เคสเริ่มแล้ว ไม่สามารถเปลี่ยนผู้ป่วยได้');return}
   ['patientMasterId','patientName','hospitalId','microchip','breed','birthDate','age','ageSource','estimatedBirthPeriod','patientAllergies','patientComorbidities','patientPrecautions'].forEach(id=>setPatientField(id,''));
-  setPatientField('species','dog');setPatientField('sex','');setPatientField('reproductiveStatus','');setPatientField('birthDateEstimated',false);setPatientField('approxAgeYears','0');setPatientField('approxAgeMonths','0');setPatientField('approxAgeWeeks','0');setPatientField('weight','10');setPatientField('bcs','5');
+  setPatientField('species','dog');setPatientField('sex','');setPatientField('reproductiveStatus','');setPatientField('birthDateEstimated',false);setPatientField('approxAgeYears','0');setPatientField('approxAgeMonths','0');setPatientField('approxAgeWeeks','0');setPatientField('weight','');setPatientField('bcs','5');
   if($('birthDateUnknown'))$('birthDateUnknown').checked=false;if($('approxAgeControls'))$('approxAgeControls').hidden=true;state.patientMasterId='';state.patientSaved=false;renderAgeUI();updatePatientSaveStatus();renderLinkedPatient();updateDashboard();$('patientName')?.focus();
 }
 $('newPatientMasterBtn')?.addEventListener('click',clearPatientRegistration);
 $('unlinkPatientBtn')?.addEventListener('click',()=>{setPatientField('patientMasterId','');state.patientMasterId='';renderLinkedPatient();toast('Unlinked from Patient Master')});
 function currentPatientMasterObject(){
   const id=$('patientMasterId')?.value||state.patientMasterId||'';
-  return {patientId:id||crypto.randomUUID?.()||String(Date.now()+Math.random()),hospitalId:$('hospitalId')?.value.trim()||'',patientName:$('patientName')?.value.trim()||'',species:$('species')?.value||'dog',sex:$('sex')?.value||'',reproductiveStatus:$('reproductiveStatus')?.value||'',microchip:$('microchip')?.value.trim()||'',breed:$('breed')?.value.trim()||'',birthDate:$('birthDate')?.value||'',birthDateEstimated:!!$('birthDateEstimated')?.checked,ageSource:$('ageSource')?.value||'',estimatedBirthPeriod:$('estimatedBirthPeriod')?.value||'',approxAgeYears:$('approxAgeYears')?.value||'0',approxAgeMonths:$('approxAgeMonths')?.value||'0',approxAgeWeeks:$('approxAgeWeeks')?.value||'0',lastWeight:$('weight')?.value||'',lastBcs:$('bcs')?.value||'',allergies:$('patientAllergies')?.value.trim()||'',comorbidities:$('patientComorbidities')?.value.trim()||'',precautions:$('patientPrecautions')?.value.trim()||'',createdAt:Date.now(),updatedAt:Date.now()};
+  return {patientId:id||crypto.randomUUID?.()||String(Date.now()+Math.random()),hospitalId:$('hospitalId')?.value.trim()||'',patientName:$('patientName')?.value.trim()||'',species:$('species')?.value||'dog',sex:$('sex')?.value||'',reproductiveStatus:$('reproductiveStatus')?.value||'',microchip:$('microchip')?.value.trim()||'',breed:$('breed')?.value.trim()||'',birthDate:$('birthDate')?.value||'',birthDateEstimated:!!$('birthDateEstimated')?.checked,ageSource:$('ageSource')?.value||'',estimatedBirthPeriod:$('estimatedBirthPeriod')?.value||'',approxAgeYears:$('approxAgeYears')?.value||'0',approxAgeMonths:$('approxAgeMonths')?.value||'0',approxAgeWeeks:$('approxAgeWeeks')?.value||'0',lastWeight:$('weight')?.value||'',lastWeightAt:Date.now(),lastBcs:$('bcs')?.value||'',allergies:$('patientAllergies')?.value.trim()||'',comorbidities:$('patientComorbidities')?.value.trim()||'',precautions:$('patientPrecautions')?.value.trim()||'',createdAt:Date.now(),updatedAt:Date.now()};
 }
 async function upsertPatientMasterFromCurrent(){
   if(!$('patientName')?.value.trim())return null;
   let p=currentPatientMasterObject(),existing=patientCache.find(x=>x.patientId===p.patientId);
-  if(!existing&&p.hospitalId)existing=patientCache.find(x=>normalizePatientKey(x.hospitalId)===normalizePatientKey(p.hospitalId));
-  if(!existing&&p.microchip)existing=patientCache.find(x=>normalizePatientKey(x.microchip)===normalizePatientKey(p.microchip));
+  const hn=normalizePatientKey(p.hospitalId),chip=normalizePatientKey(p.microchip);
+  const conflicts=patientCache.filter(x=>x.patientId!==p.patientId&&((hn&&normalizePatientKey(x.hospitalId)===hn)||(chip&&normalizePatientKey(x.microchip)===chip)));
+  const unique=[...new Map(conflicts.map(x=>[x.patientId,x])).values()];
+  if(unique.length>1){
+    alert('Data conflict: HN / microchip matches more than one Patient Master. Please check the identifiers before saving.');
+    return false;
+  }
+  if(unique.length===1){
+    const m=unique[0],sameHn=hn&&normalizePatientKey(m.hospitalId)===hn,sameChip=chip&&normalizePatientKey(m.microchip)===chip;
+    const mismatch=[];
+    if(normalizePatientKey(m.patientName)!==normalizePatientKey(p.patientName))mismatch.push(`Name: ${m.patientName} ↔ ${p.patientName}`);
+    if((m.species||'')!==(p.species||''))mismatch.push(`Species: ${m.species||'—'} ↔ ${p.species||'—'}`);
+    if(normalizePatientKey(m.breed)!==normalizePatientKey(p.breed)&&m.breed&&p.breed)mismatch.push(`Breed: ${m.breed} ↔ ${p.breed}`);
+    const reason=[sameHn?'HN match':'',sameChip?'Microchip match':''].filter(Boolean).join(' + ');
+    const diffText=mismatch.length?`\n\nDifferences:\n• ${mismatch.join('\n• ')}`:'';
+    const choice=prompt(`⚠ Existing Patient Master match (${reason})\n\nExisting: ${m.patientName||'Unnamed'} • ${m.species==='cat'?'Cat':'Dog'}${m.breed?' • '+m.breed:''}\nForm: ${p.patientName||'Unnamed'} • ${p.species==='cat'?'Cat':'Dog'}${p.breed?' • '+p.breed:''}${diffText}\n\nType USE = load existing patient\nType NEW = create a separate patient (conflicting identifier(s) will be cleared)\nCancel = return to check HN / microchip`,'');
+    if(choice===null||!choice.trim())return false;
+    if(choice.trim().toUpperCase()==='USE'){
+      usePatientMaster(m.patientId);toast('Existing Patient Master loaded • enter today’s current weight and save again');return false;
+    }
+    if(choice.trim().toUpperCase()==='NEW'){
+      if(sameHn)setPatientField('hospitalId','');if(sameChip)setPatientField('microchip','');setPatientField('patientMasterId','');state.patientMasterId='';state.patientSaved=false;updatePatientSaveStatus();renderLinkedPatient();
+      toast('Conflicting identifier cleared • enter a unique HN / microchip, then Save again');
+      if(sameHn)$('hospitalId')?.focus();else $('microchip')?.focus();return false;
+    }
+    toast('No merge performed • type USE or NEW, or check the identifiers');return false;
+  }
   if(existing){p.patientId=existing.patientId;p.createdAt=existing.createdAt||p.createdAt}
   try{if(patientBackend==='IndexedDB')p=await idbPutPatient(p);else{patientCache=patientCache.filter(x=>x.patientId!==p.patientId);patientCache.unshift(p);saveFallbackPatients()}}
   catch(e){patientBackend='localStorage fallback';patientCache=patientCache.filter(x=>x.patientId!==p.patientId);patientCache.unshift(p);saveFallbackPatients()}
@@ -915,7 +977,7 @@ $('savePatientBtn').addEventListener('click',async()=>{
   const name=$('patientName').value.trim(),weight=Number($('weight').value);
   if(!name){toast('กรุณาใส่ชื่อสัตว์');$('patientName').focus();return}
   if(!Number.isFinite(weight)||weight<=0){toast('กรุณาใส่น้ำหนักที่ถูกต้อง');$('weight').focus();return}
-  syncPatientProcedureToCase();await upsertPatientMasterFromCurrent();state.patientSaved=true;save();syncAsaCards();updatePatientSaveStatus();
+  syncPatientProcedureToCase();const master=await upsertPatientMasterFromCurrent();if(master===false)return;state.patientSaved=true;save();syncAsaCards();updatePatientSaveStatus();renderWeightSafetyState();
   toast('บันทึก Patient Master + Case Setup แล้ว');setTab('preop');
 });
 $('editPatientBtn').addEventListener('click',()=>setTab('patient'));
@@ -956,10 +1018,10 @@ let wakeLock=null;
 function syncOrFromMain(){Object.entries(OR_SYNC).forEach(([aId,bId])=>{const a=$(aId),b=$(bId);if(a&&b&&document.activeElement!==a)a.value=b.value})}
 function syncMainFromOr(orId){const mainId=OR_SYNC[orId],a=$(orId),b=$(mainId);if(!a||!b)return;b.value=a.value;b.dispatchEvent(new Event(b.tagName==='SELECT'?'change':'input',{bubbles:true}))}
 Object.keys(OR_SYNC).forEach(id=>{const el=$(id);if(el)el.addEventListener(el.tagName==='SELECT'?'change':'input',()=>syncMainFromOr(id))});
-function orStatusText(level,good,warn,danger){return level==='danger'?danger:level==='warn'?warn:good}
-function sparkSvg(values,minHint=null,maxHint=null){const vals=values.map(Number).filter(Number.isFinite);if(vals.length<2)return '<div class="or-spark-empty">Need ≥2 records</div>';let min=Math.min(...vals),max=Math.max(...vals);if(Number.isFinite(minHint))min=Math.min(min,minHint);if(Number.isFinite(maxHint))max=Math.max(max,maxHint);if(max===min){max+=1;min-=1}const w=220,h=70,p=7;const coords=vals.map((v,i)=>{const x=p+(i/(vals.length-1))*(w-p*2),y=h-p-((v-min)/(max-min))*(h-p*2);return [x.toFixed(1),y.toFixed(1)]});const pts=coords.map(x=>x.join(',')).join(' '),last=coords[coords.length-1],lastVal=vals[vals.length-1];return `<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" aria-hidden="true"><polyline points="${pts}" fill="none" stroke="#14758c" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="${last[0]}" cy="${last[1]}" r="3.5" fill="#0d5265"/><text x="${w-p}" y="${p+7}" text-anchor="end" font-size="10" fill="#54656f">${escapeHtml(lastVal)}</text></svg>`}
+function orStatusText(level,good,warn,danger){return level==='neutral'?'No measurement entered':level==='danger'?danger:level==='warn'?warn:good}
+function sparkSvg(values,minHint=null,maxHint=null){const vals=values.filter(v=>v!==null&&v!==''&&v!==undefined).map(Number).filter(Number.isFinite);if(vals.length<2)return '<div class="or-spark-empty">Need ≥2 records</div>';let min=Math.min(...vals),max=Math.max(...vals);if(Number.isFinite(minHint))min=Math.min(min,minHint);if(Number.isFinite(maxHint))max=Math.max(max,maxHint);if(max===min){max+=1;min-=1}const w=220,h=70,p=7;const coords=vals.map((v,i)=>{const x=p+(i/(vals.length-1))*(w-p*2),y=h-p-((v-min)/(max-min))*(h-p*2);return [x.toFixed(1),y.toFixed(1)]});const pts=coords.map(x=>x.join(',')).join(' '),last=coords[coords.length-1],lastVal=vals[vals.length-1];return `<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" aria-hidden="true"><polyline points="${pts}" fill="none" stroke="#14758c" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="${last[0]}" cy="${last[1]}" r="3.5" fill="#0d5265"/><text x="${w-p}" y="${p+7}" text-anchor="end" font-size="10" fill="#54656f">${escapeHtml(lastVal)}</text></svg>`}
 function renderOrMiniTrends(){const r=(state.records||[]).slice(-6),m={orSparkMap:['map',55,80],orSparkSpo2:['spo2',90,100],orSparkEtco2:['etco2',30,60],orSparkTemp:['temp',98,100]};Object.entries(m).forEach(([id,[key,min,max]])=>{if($(id))$(id).innerHTML=sparkSvg(r.map(x=>x[key]),min,max)})}
-function renderOrRecent(){const items=[...(state.records||[]).slice(-5).map(r=>({epoch:r.epoch,elapsedMs:r.elapsedMs,kind:'Record',desc:`HR ${r.hr} • MAP ${r.map} • SpO₂ ${r.spo2} • ETCO₂ ${r.etco2} • Temp ${r.temp}°F`})),...(state.events||[]).slice(-5).map(e=>({epoch:e.epoch,elapsedMs:e.elapsedMs,kind:e.category,desc:`${e.name}${e.dose?' • '+e.dose:''}`}))].sort((a,b)=>b.epoch-a.epoch).slice(0,7);const box=$('orRecentActivity');if(!box)return;if(!items.length){box.className='or-recent-list empty-state compact';box.textContent='ยังไม่มีข้อมูล';return}box.className='or-recent-list';box.innerHTML=items.map(i=>`<div class="or-recent-item"><span class="t">${escapeHtml(formatShortElapsed(i.elapsedMs))}</span><span class="kind">${escapeHtml(i.kind)}</span><span class="desc">${escapeHtml(i.desc)}</span></div>`).join('')}
+function renderOrRecent(){const items=[...(state.records||[]).slice(-5).map(r=>({epoch:r.epoch,elapsedMs:r.elapsedMs,kind:'Record',desc:`HR ${r.hr??'—'} • MAP ${r.map??'—'} • SpO₂ ${r.spo2??'—'} • ETCO₂ ${r.etco2??'—'} • Temp ${r.temp??'—'}°F`})),...(state.events||[]).slice(-5).map(e=>({epoch:e.epoch,elapsedMs:e.elapsedMs,kind:e.category,desc:`${e.name}${e.dose?' • '+e.dose:''}`}))].sort((a,b)=>b.epoch-a.epoch).slice(0,7);const box=$('orRecentActivity');if(!box)return;if(!items.length){box.className='or-recent-list empty-state compact';box.textContent='ยังไม่มีข้อมูล';return}box.className='or-recent-list';box.innerHTML=items.map(i=>`<div class="or-recent-item"><span class="t">${escapeHtml(formatShortElapsed(i.elapsedMs))}</span><span class="kind">${escapeHtml(i.kind)}</span><span class="desc">${escapeHtml(i.desc)}</span></div>`).join('')}
 function renderOrTimerState(){if(!$('orTimerState'))return;if(state.timer.running){$('orTimerState').className='timer-state running';$('orTimerState').textContent='● RUNNING';$('orStartBtn').textContent='Running';$('orStartBtn').disabled=true;$('orPauseBtn').disabled=false;$('orPauseBtn').textContent='Pause case'}else if((state.timer.elapsedMs||0)>0){$('orTimerState').className='timer-state paused';$('orTimerState').textContent='PAUSED';$('orStartBtn').textContent='▶ Resume';$('orStartBtn').disabled=false;$('orPauseBtn').disabled=true;$('orPauseBtn').textContent='Paused'}else{$('orTimerState').className='timer-state ready';$('orTimerState').textContent='READY';$('orStartBtn').textContent='▶ Start case';$('orStartBtn').disabled=false;$('orPauseBtn').disabled=true;$('orPauseBtn').textContent='Pause'}$('orCaseClock').textContent=formatElapsed(currentElapsed())}
 
 function renderAirwayPanel(){
@@ -984,7 +1046,7 @@ function renderOrLive(){
   renderOrPhaseTracker();
   syncOrFromMain();
   const st=thresholds(),species=$('species').value,name=$('patientName').value.trim()||'Unnamed patient',breed=$('breed').value.trim(),weight=getVal('weight',0);
-  $('orPatientName').textContent=name;$('orPatientMeta').textContent=`${species==='cat'?'Cat':'Dog'}${$('sex')?.value?' • '+({male:'M',female:'F'}[$('sex').value]||''):''}${$('reproductiveStatus')?.value?' '+({intact:'intact',neutered:'neutered',spayed:'spayed'}[$('reproductiveStatus').value]||''):''}${breed?' • '+breed:''}${$('age')?.value?' • '+$('age').value:''} • ${weight||'—'} kg`;
+  $('orPatientName').textContent=name;$('orPatientMeta').textContent=`${species==='cat'?'Cat':'Dog'}${$('sex')?.value?' • '+({male:'M',female:'F'}[$('sex').value]||''):''}${$('reproductiveStatus')?.value?' '+({intact:'intact',neutered:'neutered',spayed:'spayed'}[$('reproductiveStatus').value]||''):''}${breed?' • '+breed:''}${$('age')?.value?' • '+$('age').value:''} • ${weight??'—'} kg`;
   $('orAsaBadge').textContent=`ASA ${$('asa').value}${$('emergency').checked?'-E':''}`;
   $('orProcedureLine').textContent=`Procedure: ${$('procedure').value.trim()||$('patientProcedure')?.value.trim()||'—'}`;
   if($('orTeamLine'))$('orTeamLine').textContent=`Team: Surgeon ${$('surgeon')?.value.trim()||'—'} • Anesthetist ${$('anesthetist')?.value.trim()||'—'} • Assistant ${$('surgicalAssistant')?.value.trim()||'—'}`;
@@ -998,7 +1060,7 @@ function renderOrLive(){
   $('orPhaseBadge').className=`status-pill phase ${phaseClass()}`;
   $('orlive').classList.toggle('recovery-mode',state.casePhase==='recovery');
   $('orlive').classList.toggle('emergency-return-mode',state.casePhase==='emergency');
-  const overall=$('globalStatus').textContent;$('orGlobalStatus').textContent=overall;$('orGlobalStatus').className=overall==='INTERVENE'?'or-status-danger':overall==='REASSESS'?'or-status-warn':'or-status-good';
+  const overall=$('globalStatus').textContent;$('orGlobalStatus').textContent=overall;$('orGlobalStatus').className=overall==='INTERVENE'?'or-status-danger':overall==='REASSESS'?'or-status-warn':overall==='NO DATA'?'or-status-neutral':'or-status-good';
   const latest=latestRecord();$('orLastRecord').textContent=latest?`${latest.clock} • ${formatShortElapsed(latest.elapsedMs)}`:'—';
   if(latest){
     const due=latest.epoch+Number($('recordInterval').value||5)*60000,delta=due-Date.now();
@@ -1019,9 +1081,9 @@ $('orStickyRecordBtn')?.addEventListener('click',()=>$('orRecordNowBtn')?.click(
   if($('orStickyDue')){$('orStickyDue').textContent=$('orNextDue')?.textContent||'—';$('orStickyDue').classList.toggle('due',$('orRecordNowBtn')?.classList.contains('due'))}
   const hints={hr:orStatusText(st.hr,species==='cat'?'100–180 screening':'60–150 screening','Reassess HR','Critical HR alert'),rr:orStatusText(st.rr,species==='cat'?'10–28 screening':'8–20 screening','Reassess RR','Critical RR / apnea risk'),map:orStatusText(st.map,'MAP acceptable','MAP 60–69','MAP <60'),spo2:orStatusText(st.spo2,'≥95%','SpO₂ <95%','SpO₂ <90%'),etco2:orStatusText(st.etco2,'40–55','Outside usual range','Critical ETCO₂ range'),temp:orStatusText(st.temp,'Temp acceptable','Warming indicated','<98°F')};
   const cap={hr:'Hr',rr:'Rr',map:'Map',spo2:'Spo2',etco2:'Etco2',temp:'Temp'};
-  ['hr','rr','map','spo2','etco2','temp'].forEach(k=>{const card=document.querySelector(`.or-vital-card[data-vital="${k}"]`);if(card){card.classList.remove('good','warn','danger');card.classList.add(st[k])}const h=$('or'+cap[k]+'Hint');if(h)h.textContent=hints[k]});
+  ['hr','rr','map','spo2','etco2','temp'].forEach(k=>{const card=document.querySelector(`.or-vital-card[data-vital="${k}"]`);if(card){card.classList.remove('good','warn','danger','neutral');card.classList.add(st[k])}const h=$('or'+cap[k]+'Hint');if(h)h.textContent=hints[k]});
   const immediate=[];
-  if(st.hr!=='good')immediate.push({level:st.hr,title:'HR alert',text:hints.hr});if(st.rr!=='good')immediate.push({level:st.rr,title:'RR alert',text:hints.rr});if(st.map!=='good')immediate.push({level:st.map,title:'Blood pressure',text:hints.map});if(st.spo2!=='good')immediate.push({level:st.spo2,title:'Oxygenation',text:hints.spo2});if(st.etco2!=='good')immediate.push({level:st.etco2,title:'Ventilation',text:hints.etco2});if(st.temp!=='good')immediate.push({level:st.temp,title:'Temperature',text:hints.temp});
+  if(['warn','danger'].includes(st.hr))immediate.push({level:st.hr,title:'HR alert',text:hints.hr});if(['warn','danger'].includes(st.rr))immediate.push({level:st.rr,title:'RR alert',text:hints.rr});if(['warn','danger'].includes(st.map))immediate.push({level:st.map,title:'Blood pressure',text:hints.map});if(['warn','danger'].includes(st.spo2))immediate.push({level:st.spo2,title:'Oxygenation',text:hints.spo2});if(['warn','danger'].includes(st.etco2))immediate.push({level:st.etco2,title:'Ventilation',text:hints.etco2});if(['warn','danger'].includes(st.temp))immediate.push({level:st.temp,title:'Temperature',text:hints.temp});
   immediate.sort((a,b)=>(a.level==='danger'?0:1)-(b.level==='danger'?0:1));
   const trends=getSmartAlerts();
   const total=immediate.length+trends.length;$('orAlertCount').textContent=`${total} ALERT${total===1?'':'S'}`;$('orAlertCount').className=`status-pill ${immediate.some(a=>a.level==='danger')||trends.some(a=>a.level==='danger')?'danger':total?'warn':'good'}`;
@@ -1029,7 +1091,7 @@ $('orStickyRecordBtn')?.addEventListener('click',()=>$('orRecordNowBtn')?.click(
   $('orAlertList').innerHTML=total?group('Immediate','immediate',immediate)+group('Trend','trend',trends):'<div class="empty-state compact">No active alerts</div>';
   renderOrFluidPanel();renderOrMiniTrends();renderOrRecent();renderOrTimerState();renderSaveState();renderRecoveryState();
 }
-function startCaseFromOr(){if(state.timer.running)return true;const preopTotal=$$('.preop-check').length,preopDone=$$('.preop-check').filter(x=>x.checked).length,preopNA=$$('.preop-item.na').length,preopReviewed=preopDone+preopNA;if(preopReviewed<preopTotal&&!confirm(`Pre-op checklist ยัง review ไม่ครบ (${preopReviewed}/${preopTotal}) — ต้องการเริ่มเคสต่อหรือไม่?`))return false;const firstStart=(state.timer.elapsedMs||0)===0&&!state.caseStartedAt;state.timer.running=true;state.timer.startedEpoch=Date.now();if(firstStart){state.caseStartedAt=state.timer.startedEpoch;state.casePhase='induction';captureProtocolSnapshot();addAudit('CASE_STARTED','Anesthesia case timer started');}startTimerLoop();renderTimerState();renderOrTimerState();renderCasePhase();save();if(autoWakeEnabled())requestScreenWakeLock(true);if(firstStart)addEvent({category:'Case',name:'Case started',note:'Anesthesia case timer started'});toast(firstStart?'Case timer started':'Case timer resumed');return true}
+function startCaseFromOr(){if(state.timer.running)return true;if(!validateCaseReadyToStart())return false;const preopTotal=$$('.preop-check').length,preopDone=$$('.preop-check').filter(x=>x.checked).length,preopNA=$$('.preop-item.na').length,preopReviewed=preopDone+preopNA;if(preopReviewed<preopTotal&&!confirm(`Pre-op checklist ยัง review ไม่ครบ (${preopReviewed}/${preopTotal}) — ต้องการเริ่มเคสต่อหรือไม่?`))return false;const firstStart=(state.timer.elapsedMs||0)===0&&!state.caseStartedAt;state.timer.running=true;state.timer.startedEpoch=Date.now();if(firstStart){state.caseStartedAt=state.timer.startedEpoch;state.casePhase='induction';captureProtocolSnapshot();addAudit('CASE_STARTED','Anesthesia case timer started');}startTimerLoop();renderTimerState();renderOrTimerState();renderCasePhase();save();if(autoWakeEnabled())requestScreenWakeLock(true);if(firstStart)addEvent({category:'Case',name:'Case started',note:'Anesthesia case timer started'});toast(firstStart?'Case timer started':'Case timer resumed');return true}
 $('orStartBtn')?.addEventListener('click',startCaseFromOr);$('orPauseBtn')?.addEventListener('click',()=>{pauseTimer();renderOrLive()});$('orRecordNowBtn')?.addEventListener('click',()=>{if(!state.timer.running&&(state.timer.elapsedMs||0)===0){if(!startCaseFromOr())return}addRecord('');renderOrLive()});$('openOrLiveBtn')?.addEventListener('click',()=>setTab('orlive'));$('orOpenDrugBtn')?.addEventListener('click',()=>setTab('drugs'));$('orOpenTrendsBtn')?.addEventListener('click',()=>setTab('trends'));$('orOpenTimelineBtn')?.addEventListener('click',()=>setTab('timeline'));
 $$('.or-milestone').forEach(btn=>btn.addEventListener('click',()=>{markMilestone(btn);renderOrLive()}));$$('.or-event').forEach(btn=>btn.addEventListener('click',()=>{addEvent({category:btn.dataset.cat,name:btn.dataset.label});renderOrLive()}));
 $('orFullscreenBtn')?.addEventListener('click',async()=>{try{if(!document.fullscreenElement){if(document.documentElement.requestFullscreen)await document.documentElement.requestFullscreen();document.body.classList.add('or-fullscreen');$('orFullscreenBtn').textContent='Exit full screen'}else{if(document.exitFullscreen)await document.exitFullscreen();document.body.classList.remove('or-fullscreen');$('orFullscreenBtn').textContent='⛶ Full screen'}}catch(e){document.body.classList.toggle('or-fullscreen')}});document.addEventListener('fullscreenchange',()=>{if(!document.fullscreenElement){document.body.classList.remove('or-fullscreen');if($('orFullscreenBtn'))$('orFullscreenBtn').textContent='⛶ Full screen'}});
@@ -1185,7 +1247,23 @@ function getVal(id, fallback=null){
 }
 
 function addAudit(action,detail='',actor=''){state.auditTrail=state.auditTrail||[];state.auditTrail.push({id:crypto.randomUUID?crypto.randomUUID():String(Date.now()+Math.random()),epoch:Date.now(),clock:formatClock(),elapsedMs:currentElapsed(),action,detail,actor:actor||$('anesthetist')?.value.trim()||'Unspecified'})}
-function getProtocolAudit(){try{const a=JSON.parse(localStorage.getItem(PROTOCOL_AUDIT_KEY)||localStorage.getItem('anesvet_v14_protocol_audit')||'[]');return Array.isArray(a)?a:[]}catch(e){return[]}}
+function getProtocolAudit(){
+  const keys=[PROTOCOL_AUDIT_KEY,'anesvet_v14_2_protocol_audit','anesvet_v14_1_protocol_audit','anesvet_v14_protocol_audit','anesvet_v13_4_protocol_audit'];
+  let current=[];
+  for(const key of keys){
+    try{
+      const a=JSON.parse(localStorage.getItem(key)||'null');if(!Array.isArray(a))continue;
+      if(key===PROTOCOL_AUDIT_KEY){current=a;if(a.length)return a;continue}
+      if(a.length){localStorage.setItem(PROTOCOL_AUDIT_KEY,JSON.stringify(a));return a}
+    }catch(e){}
+  }
+  return current;
+}
+function getLastBackupEpoch(){
+  const keys=[LAST_BACKUP_KEY,'anesvet_v14_2_last_backup','anesvet_v14_1_last_backup','anesvet_v14_last_backup','anesvet_v13_4_last_backup'];
+  for(const key of keys){const n=Number(localStorage.getItem(key)||0);if(Number.isFinite(n)&&n>0){if(key!==LAST_BACKUP_KEY)localStorage.setItem(LAST_BACKUP_KEY,String(n));return n}}
+  return 0;
+}
 function addProtocolAudit(action,detail=''){const a=getProtocolAudit();a.push({epoch:Date.now(),clock:formatClock(),action,detail});localStorage.setItem(PROTOCOL_AUDIT_KEY,JSON.stringify(a.slice(-500)))}
 
 function currentSnapshot(note=''){
@@ -1221,31 +1299,14 @@ function confirmPlausibility(warnings,title){return confirm(`${title}: พบค
 
 function thresholds(){
   const species=$('species').value;
-  const hr=getVal('hr',0), rr=getVal('rr',0), map=getVal('map',0), spo2=getVal('spo2',0), et=getVal('etco2',0), temp=getVal('temp',99);
-  const status={hr:'good',rr:'good',map:'good',spo2:'good',etco2:'good',temp:'good'};
-
-  // HR alert logic: anesthesia screening ranges, not stand-alone treatment triggers.
-  if(species==='cat'){
-    if(hr<90 || hr>225) status.hr='danger';
-    else if(hr<100 || hr>180) status.hr='warn';
-  }else{
-    if(hr<40 || hr>190) status.hr='danger';
-    else if(hr<60 || hr>150) status.hr='warn';
-  }
-
-  // RR alert logic: respiratory rate is only a screening signal; ETCO2 is used to assess ventilation adequacy.
-  if(species==='cat'){
-    if(rr<7) status.rr='danger';
-    else if(rr<10 || rr>28) status.rr='warn';
-  }else{
-    if(rr<6) status.rr='danger';
-    else if(rr<8 || rr>20) status.rr='warn';
-  }
-
-  if(map<60)status.map='danger';else if(map<70)status.map='warn';
-  if(spo2<90)status.spo2='danger';else if(spo2<95)status.spo2='warn';
-  if(et>60||et<30)status.etco2='danger';else if(et>55||et<40)status.etco2='warn';
-  if(temp<98.0)status.temp='danger';else if(temp<99.0)status.temp='warn';
+  const hr=getVal('hr'),rr=getVal('rr'),map=getVal('map'),spo2=getVal('spo2'),et=getVal('etco2'),temp=getVal('temp');
+  const status={hr:'neutral',rr:'neutral',map:'neutral',spo2:'neutral',etco2:'neutral',temp:'neutral'};
+  if(hr!==null){status.hr='good';if(species==='cat'){if(hr<90||hr>225)status.hr='danger';else if(hr<100||hr>180)status.hr='warn'}else{if(hr<40||hr>190)status.hr='danger';else if(hr<60||hr>150)status.hr='warn'}}
+  if(rr!==null){status.rr='good';if(species==='cat'){if(rr<7)status.rr='danger';else if(rr<10||rr>28)status.rr='warn'}else{if(rr<6)status.rr='danger';else if(rr<8||rr>20)status.rr='warn'}}
+  if(map!==null){status.map='good';if(map<60)status.map='danger';else if(map<70)status.map='warn'}
+  if(spo2!==null){status.spo2='good';if(spo2<90)status.spo2='danger';else if(spo2<95)status.spo2='warn'}
+  if(et!==null){status.etco2='good';if(et>60||et<30)status.etco2='danger';else if(et>55||et<40)status.etco2='warn'}
+  if(temp!==null){status.temp='good';if(temp<98.0)status.temp='danger';else if(temp<99.0)status.temp='warn'}
   return status;
 }
 function setHint(id,level,text){
@@ -1254,41 +1315,29 @@ function setHint(id,level,text){
 function updateDashboard(){
   const st=thresholds();
   const speciesForAlert=$('species').value;
-  const hrNow=getVal('hr',0), rrNow=getVal('rr',0);
+  const hrNow=getVal('hr'), rrNow=getVal('rr');
 
-  if(speciesForAlert==='cat'){
-    setHint('hrHint',st.hr,
-      st.hr==='danger' ? (hrNow<90?'Critical bradycardia alert (<90)':'Marked tachycardia alert (>225)') :
-      st.hr==='warn' ? (hrNow<100?'Bradycardia alert (<100)':'Tachycardia alert (>180)') :
-      'Cat HR acceptable screening range 100–180');
-    setHint('rrHint',st.rr,
-      st.rr==='danger' ? (rrNow===0?'Apnea / no spontaneous breaths':'Critical low RR (<7)') :
-      st.rr==='warn' ? (rrNow<10?'Low RR (<10)':'High RR (>28): reassess depth/pain') :
-      'Cat RR screening range 10–28');
-  }else{
-    setHint('hrHint',st.hr,
-      st.hr==='danger' ? (hrNow<40?'Critical bradycardia alert (<40)':'Marked tachycardia alert (>190)') :
-      st.hr==='warn' ? (hrNow<60?'Bradycardia alert (<60)':'Tachycardia alert (>150)') :
-      'Dog HR acceptable screening range 60–150');
-    setHint('rrHint',st.rr,
-      st.rr==='danger' ? (rrNow===0?'Apnea / no spontaneous breaths':'Critical low RR (<6)') :
-      st.rr==='warn' ? (rrNow<8?'Low RR (<8)':'High RR (>20): reassess depth/pain') :
-      'Dog RR screening range 8–20');
-  }
-  setHint('mapHint',st.map,st.map==='danger'?'MAP <60: intervene':st.map==='warn'?'MAP 60–69: reassess':'≥70 โดยทั่วไป');
-  setHint('spo2Hint',st.spo2,st.spo2==='danger'?'SpO₂ <90% severe':st.spo2==='warn'?'SpO₂ <95%: investigate':'≥95%');
-  setHint('etco2Hint',st.etco2,st.etco2==='danger'?'ETCO₂ critical range':st.etco2==='warn'?'outside typical range':'40–50 โดยทั่วไป');
-  setHint('tempHint',st.temp,st.temp==='danger'?'<98°F: hypothermia':st.temp==='warn'?'falling: warm early':'warming early');
+  if(hrNow===null)setHint('hrHint','neutral','No measurement entered');
+  else if(speciesForAlert==='cat')setHint('hrHint',st.hr,st.hr==='danger'?(hrNow<90?'Critical bradycardia alert (<90)':'Marked tachycardia alert (>225)'):st.hr==='warn'?(hrNow<100?'Bradycardia alert (<100)':'Tachycardia alert (>180)'):'Cat HR acceptable screening range 100–180');
+  else setHint('hrHint',st.hr,st.hr==='danger'?(hrNow<40?'Critical bradycardia alert (<40)':'Marked tachycardia alert (>190)'):st.hr==='warn'?(hrNow<60?'Bradycardia alert (<60)':'Tachycardia alert (>150)'):'Dog HR acceptable screening range 60–150');
+  if(rrNow===null)setHint('rrHint','neutral','No measurement entered');
+  else if(speciesForAlert==='cat')setHint('rrHint',st.rr,st.rr==='danger'?(rrNow===0?'Apnea / no spontaneous breaths':'Critical low RR (<7)'):st.rr==='warn'?(rrNow<10?'Low RR (<10)':'High RR (>28): reassess depth/pain'):'Cat RR screening range 10–28');
+  else setHint('rrHint',st.rr,st.rr==='danger'?(rrNow===0?'Apnea / no spontaneous breaths':'Critical low RR (<6)'):st.rr==='warn'?(rrNow<8?'Low RR (<8)':'High RR (>20): reassess depth/pain'):'Dog RR screening range 8–20');
+  setHint('mapHint',st.map,st.map==='neutral'?'No measurement entered':st.map==='danger'?'MAP <60: intervene':st.map==='warn'?'MAP 60–69: reassess':'≥70 โดยทั่วไป');
+  setHint('spo2Hint',st.spo2,st.spo2==='neutral'?'No measurement entered':st.spo2==='danger'?'SpO₂ <90% severe':st.spo2==='warn'?'SpO₂ <95%: investigate':'≥95%');
+  setHint('etco2Hint',st.etco2,st.etco2==='neutral'?'No measurement entered':st.etco2==='danger'?'ETCO₂ critical range':st.etco2==='warn'?'outside typical range':'40–50 โดยทั่วไป');
+  setHint('tempHint',st.temp,st.temp==='neutral'?'No measurement entered':st.temp==='danger'?'<98°F: hypothermia':st.temp==='warn'?'falling: warm early':'warming early');
 
   const levels=Object.values(st);
   if($('bradyPoorPerf').checked) levels.push('danger');
-  const global=$('globalStatus');
+  const global=$('globalStatus'),measured=Object.values(st).filter(x=>x!=='neutral').length;
   if(levels.includes('danger')){global.className='status-pill danger';global.textContent='INTERVENE'}
   else if(levels.includes('warn')){global.className='status-pill warn';global.textContent='REASSESS'}
+  else if(!measured){global.className='status-pill neutral';global.textContent='NO DATA'}
   else{global.className='status-pill good';global.textContent='STABLE'}
 
-  const species=$('species').value,weight=getVal('weight',1);
-  $('fluidReference').textContent=species==='cat'
+  const species=$('species').value,weight=currentWeightReady()?currentWeightKg():null;
+  $('fluidReference').textContent=weight===null?'Current BW required — mL/kg calculations disabled until Patient & Case Setup is saved':species==='cat'
     ? `Reference: Cat ~3–5 mL/kg/hr ≈ ${(weight*3).toFixed(0)}–${(weight*5).toFixed(0)} mL/hr (normal cardiac/renal function)`
     : `Reference: Dog ~5 mL/kg/hr ≈ ${(weight*5).toFixed(0)} mL/hr (normal cardiac/renal function)`;
 
@@ -1305,28 +1354,23 @@ function updateDashboard(){
   updatePlanCalc();
   updateBalance();
   renderSmartAlerts();
-  renderCaseSummary();
+  renderCaseSummary();renderWeightSafetyState();
   if($('orlive')?.classList.contains('active')) renderOrLive();
   save();
 }
 function renderInterpretation(){
   const st=thresholds();
-  const species=$('species').value,hr=getVal('hr',0),rr=getVal('rr',0);
+  const species=$('species').value,hr=getVal('hr'),rr=getVal('rr');
+  const msg=(key,good,warn,danger)=>st[key]==='neutral'?'No measurement entered':st[key]==='danger'?danger:st[key]==='warn'?warn:good;
   const data=[
-    ['HR',st.hr,
-      st.hr==='danger'?'Critical HR alert — verify pulse/ECG, BP, anesthetic depth, temperature and drugs':
-      st.hr==='warn'?(hr<(species==='cat'?100:60)?'Bradycardia — assess perfusion/BP and cause':'Tachycardia — assess pain/depth, hypoxemia, hypercarbia, volume status and drugs'):
-      'HR acceptable on screening'],
-    ['RR',st.rr,
-      st.rr==='danger'?'Very low RR / apnea risk — check chest movement, airway and ETCO₂; support ventilation as indicated':
-      st.rr==='warn'?(rr<(species==='cat'?10:8)?'Low RR — check depth, tidal movement and ETCO₂':'High RR — reassess surgical stimulation, depth, pain, ETCO₂ and airway'):
-      'RR acceptable on screening; ETCO₂ determines ventilation adequacy'],
-    ['MAP',st.map,st.map==='danger'?'Hypotension — verify BP/perfusion, depth, HR, volume/contractility/SVR':st.map==='warn'?'MAP borderline — reassess trend and perfusion':'MAP acceptable'],
-    ['SpO₂',st.spo2,st.spo2==='danger'?'Severe hypoxemia — airway/O₂/ventilation immediately':st.spo2==='warn'?'SpO₂ below 95% — investigate':'Oxygenation acceptable'],
-    ['ETCO₂',st.etco2,st.etco2==='danger'?'Check ventilation, airway/circuit and perfusion':st.etco2==='warn'?'ETCO₂ outside usual range — review waveform':'Ventilation range acceptable'],
-    ['Temp',st.temp,st.temp==='danger'?'Clinically important hypothermia (<98°F) — active warming':st.temp==='warn'?'Temperature falling — warm now':'Temperature acceptable']
+    ['HR',st.hr,msg('hr','HR acceptable on screening',hr!==null&&hr<(species==='cat'?100:60)?'Bradycardia — assess perfusion/BP and cause':'Tachycardia — assess pain/depth, hypoxemia, hypercarbia, volume status and drugs','Critical HR alert — verify pulse/ECG, BP, anesthetic depth, temperature and drugs')],
+    ['RR',st.rr,msg('rr','RR acceptable on screening; ETCO₂ determines ventilation adequacy',rr!==null&&rr<(species==='cat'?10:8)?'Low RR — check depth, tidal movement and ETCO₂':'High RR — reassess surgical stimulation, depth, pain, ETCO₂ and airway','Very low RR / apnea risk — check chest movement, airway and ETCO₂; support ventilation as indicated')],
+    ['MAP',st.map,msg('map','MAP acceptable','MAP borderline — reassess trend and perfusion','Hypotension — verify BP/perfusion, depth, HR, volume/contractility/SVR')],
+    ['SpO₂',st.spo2,msg('spo2','Oxygenation acceptable','SpO₂ below 95% — investigate','Severe hypoxemia — airway/O₂/ventilation immediately')],
+    ['ETCO₂',st.etco2,msg('etco2','Ventilation range acceptable','ETCO₂ outside usual range — review waveform','Check ventilation, airway/circuit and perfusion')],
+    ['Temp',st.temp,msg('temp','Temperature acceptable','Temperature falling — warm now','Clinically important hypothermia (<98°F) — active warming')]
   ];
-  $('interpretationCards').innerHTML=data.map(([name,level,msg])=>`<div class="interpret-card ${level}"><span>${name}</span><b>${escapeHtml(msg)}</b></div>`).join('');
+  $('interpretationCards').innerHTML=data.map(([name,level,text])=>`<div class="interpret-card ${level}"><span>${name}</span><b>${escapeHtml(text)}</b></div>`).join('');
 }
 function renderRecordPreview(){
   const pairs=[['HR','hr'],['RR','rr'],['SAP','sap'],['MAP','map'],['DAP','dap'],['SpO₂','spo2'],['ETCO₂','etco2'],['Temp','temp']];
@@ -1334,9 +1378,10 @@ function renderRecordPreview(){
 }
 
 function addRecord(note=''){
-  ensureTimerStarted();
+  if(!ensureTimerStarted())return false;
   const snap=currentSnapshot(note),warnings=plausibilityWarnings(snap,'anesthesia');
-  if(warnings.length&&!confirmPlausibility(warnings,'Anesthesia record'))return;
+  if(['hr','rr','sap','map','dap','spo2','etco2','temp'].every(k=>snap[k]===null)){toast('No measurement entered — enter at least one measured vital before recording');return false}
+  if(warnings.length&&!confirmPlausibility(warnings,'Anesthesia record'))return false;
   state.records.push(snap);dueReminderToken=null;
   addAudit('ANESTHESIA_RECORD_ADDED',`Record ${snap.clock} • HR ${snap.hr} • MAP ${snap.map} • SpO₂ ${snap.spo2} • ETCO₂ ${snap.etco2}`);
   state.records.sort((a,b)=>a.epoch-b.epoch);
@@ -1348,11 +1393,11 @@ $('recordFromDashboardBtn').addEventListener('click',()=>addRecord(''));
 $('recordNowBtn').addEventListener('click',()=>addRecord(''));
 
 function recordAlert(r){
-  const sp=$('species').value;
-  const hr=Number(r.hr),rr=Number(r.rr);
-  const hrCritical=sp==='cat'?(hr<90||hr>225):(hr<40||hr>190);
-  const rrCritical=sp==='cat'?(rr<7):(rr<6);
-  return hrCritical||rrCritical||(Number(r.map)<60)||(Number(r.spo2)<90)||(Number(r.etco2)>60)||(Number(r.etco2)<30)||(Number(r.temp)<98.0);
+  const sp=$('species').value,num=v=>v===null||v===''||v===undefined?null:Number(v);
+  const hr=num(r.hr),rr=num(r.rr),map=num(r.map),spo2=num(r.spo2),et=num(r.etco2),temp=num(r.temp);
+  const hrCritical=hr!==null&&(sp==='cat'?(hr<90||hr>225):(hr<40||hr>190));
+  const rrCritical=rr!==null&&(sp==='cat'?(rr<7):(rr<6));
+  return hrCritical||rrCritical||(map!==null&&map<60)||(spo2!==null&&spo2<90)||(et!==null&&(et>60||et<30))||(temp!==null&&temp<98.0);
 }
 function renderRecords(){
   const body=$('recordBody');body.innerHTML='';
@@ -1488,7 +1533,7 @@ function closeDrugAdministration(){
 $('drugAdminCloseBtn')?.addEventListener('click',closeDrugAdministration);
 $('drugAdminCancelBtn')?.addEventListener('click',closeDrugAdministration);
 $('drugAdminConfirmBtn')?.addEventListener('click',()=>{
-  if(!pendingDrugAdministration)return;
+  if(!pendingDrugAdministration)return;if(!requireCurrentWeight('confirming drug administration'))return;
   const ml=Number($('drugAdminActualMl').value),route=$('drugAdminRoute').value.trim(),extra=$('drugAdminNote').value.trim();
   if(!(ml>0)){toast('กรุณาใส่ actual administered volume');return}
   const p=pendingDrugAdministration;
@@ -1499,7 +1544,7 @@ $('drugAdminConfirmBtn')?.addEventListener('click',()=>{
 });
 
 function addEvent({category,name,dose='',route='',note=''}){
-  ensureTimerStarted();
+  if(!ensureTimerStarted())return false;
   const ev={
     id:crypto.randomUUID?crypto.randomUUID():String(Date.now()+Math.random()),
     epoch:Date.now(),elapsedMs:currentElapsed(),clock:formatClock(),
@@ -1510,6 +1555,7 @@ function addEvent({category,name,dose='',route='',note=''}){
 }
 
 $$('.administered-btn').forEach(btn=>btn.addEventListener('click',()=>{
+  if(!requireCurrentWeight('administering weight-based medication'))return;
   const inp=$(btn.dataset.input),ml=Number(inp?.value||0);if(!(ml>0)){toast('กรุณาใส่ actual administered volume');return}
   const drug=btn.dataset.drug,concMap={Diazepam:'diazepamConc',Propofol:'propofolConc',Tramadol:'tramadolConc'},concId=concMap[drug],conc=concId?Number($(concId)?.value||0):0,mg=conc>0?ml*conc:null;
   const details=`${fmtVol(ml)} mL${mg!==null?` • ${fmtDose(mg)} mg`:''}`;
@@ -1518,6 +1564,7 @@ $$('.administered-btn').forEach(btn=>btn.addEventListener('click',()=>{
 }));
 $('copyPlanToEventsBtn')?.addEventListener('click',()=>{const planned=[];if($('planPremed').value)planned.push(['Premed',$('planPremed').value]);if($('planInduction').value)planned.push(['Induction',$('planInduction').value]);if($('planMaintenance').value)planned.push(['Maintenance',$('planMaintenance').value]);if($('planAnalgesia').value)planned.push(['Analgesia',$('planAnalgesia').value]);planned.forEach(([cat,name])=>addEvent({category:'Plan',name:`${cat}: ${name}`,note:'Planned anesthesia component'}));toast('Planned components added to Events')});
 $$('.drug-event-btn').forEach(btn=>btn.addEventListener('click',()=>{
+  if(!requireCurrentWeight('using the Drug Calculator'))return;
   const doseEl=btn.dataset.doseid?$(btn.dataset.doseid):null,volEl=btn.dataset.volid?$(btn.dataset.volid):null;
   const calculated=[doseEl?.textContent,volEl?.textContent].filter(Boolean).join(' • ');
   const suggested=parseMlNumber(volEl?.textContent);
@@ -1558,7 +1605,7 @@ $('clearEventsBtn').addEventListener('click',()=>{
   if(!confirm('ล้าง Event log ทั้งหมด?'))return;state.events=[];save();renderEvents();renderTrends();renderProcedureTimeline();
 });
 
-function metricValues(key){return (state.records||[]).map(r=>Number(r[key])).filter(Number.isFinite)}
+function metricValues(key){return (state.records||[]).map(r=>r[key]).filter(v=>v!==null&&v!==''&&v!==undefined).map(Number).filter(Number.isFinite)}
 function renderSummary(){
   const recs=state.records||[];
   $('sumDuration').textContent=formatShortElapsed(currentElapsed());
@@ -1583,7 +1630,7 @@ function svgChartMulti(svgId,series,opts={}){
   }
   const xs=eventXDomain(recs),xMin=Math.min(...xs),xMax0=Math.max(...xs),xMax=xMax0===xMin?xMin+60000:xMax0;
   const allVals=[];
-  series.forEach(s=>recs.forEach(r=>{const n=Number(r[s.key]);if(Number.isFinite(n))allVals.push(n)}));
+  series.forEach(s=>recs.forEach(r=>{const raw=r[s.key];if(raw===null||raw===''||raw===undefined)return;const n=Number(raw);if(Number.isFinite(n))allVals.push(n)}));
   if(!allVals.length)return;
   let yMin=opts.min!==undefined?opts.min:Math.min(...allVals),yMax=opts.max!==undefined?opts.max:Math.max(...allVals);
   if(yMin===yMax){yMin-=1;yMax+=1}
@@ -1623,12 +1670,12 @@ function svgChartMulti(svgId,series,opts={}){
   series.forEach((s,si)=>{
     let d='';
     recs.forEach((r,i)=>{
-      const y=Number(r[s.key]);if(!Number.isFinite(y))return;
+      const raw=r[s.key];if(raw===null||raw===''||raw===undefined)return;const y=Number(raw);if(!Number.isFinite(y))return;
       d+=(d?' L':'M')+` ${sx(xs[i]).toFixed(1)} ${sy(y).toFixed(1)}`;
     });
     add('path',{d,fill:'none',stroke:colors[si%colors.length],'stroke-width':2.7,'stroke-linecap':'round','stroke-linejoin':'round'});
     recs.forEach((r,i)=>{
-      const y=Number(r[s.key]);if(!Number.isFinite(y))return;
+      const raw=r[s.key];if(raw===null||raw===''||raw===undefined)return;const y=Number(raw);if(!Number.isFinite(y))return;
       const c=add('circle',{cx:sx(xs[i]),cy:sy(y),r:4.3,fill:colors[si%colors.length],stroke:'#fff','stroke-width':1.5});
       const title=document.createElementNS(NS,'title');title.textContent=`${s.label} ${y} • ${formatShortElapsed(r.elapsedMs)}${r.note?' • '+r.note:''}`;c.appendChild(title);
     });
@@ -1678,47 +1725,28 @@ $$('.graph-filter').forEach(b=>b.addEventListener('click',()=>{
 
 
 function updatePlanCalc(){
-  const w=getVal('weight',0)||0,dConc=Number($('diazepamConc')?.value||5),pConc=Number($('propofolConc')?.value||10),tConc=Number($('tramadolConc')?.value||50);
+  const w=currentWeightReady()?currentWeightKg():null,dConc=Number($('diazepamConc')?.value||5),pConc=Number($('propofolConc')?.value||10),tConc=Number($('tramadolConc')?.value||50);
+  if(w===null){['planDiazepamCalc','planPropofolCalc','planTramadolCalc'].forEach(id=>{if($(id))$(id).textContent='Current BW required'});return}
   if($('planDiazepamCalc'))$('planDiazepamCalc').textContent=`${fmtDose(w*0.25)} mg • ${dConc>0?fmtVol((w*0.25)/dConc):'—'} mL`;
   if($('planPropofolCalc'))$('planPropofolCalc').textContent=`${fmtDose(w*4)} mg • ${pConc>0?fmtVol((w*4)/pConc):'—'} mL planned`;
   if($('planTramadolCalc'))$('planTramadolCalc').textContent=`${fmtDose(w*4)} mg • ${tConc>0?fmtVol((w*4)/tConc):'—'} mL`;
 }
 function drugCalc(){
-  const w=getVal('weight',0)||0;
-  if($('drugWeight')) $('drugWeight').textContent=`${w.toFixed(1)} kg`;
-
-  const doseCalc=(dose,conc,mgId,mlId)=>{
-    const mg=w*dose, c=Number($(conc)?.value||0);
-    if($(mgId)) $(mgId).textContent=`${fmtDose(mg)} mg`;
-    if($(mlId)) $(mlId).textContent=c>0?`${fmtVol(mg/c)} mL`:'— mL';
-  };
-  doseCalc(0.25,'diazepamConc','diazepamMg','diazepamMl');
-  doseCalc(4,'propofolConc','propofolMg','propofolMl');
-  doseCalc(4,'tramadolConc','tramadolMg','tramadolMl');
-  doseCalc(4.4,'rimadylConc','rimadylMg','rimadylMl');
-  doseCalc(0.3,'metacamConc','metacamMg','metacamMl');
-
-  if($('cefazolinMl')) $('cefazolinMl').textContent=`${fmtVol(w/10)} mL`;
-  if($('conveniaMl')) $('conveniaMl').textContent=`${fmtVol(w/10)} mL`;
-
-  const adrMg=w*0.01, adrConc=Number($('adrenalineConc')?.value||1);
-  if($('adrenalineMg')) $('adrenalineMg').textContent=`${fmtDose(adrMg)} mg`;
-  if($('adrenalineMl')) $('adrenalineMl').textContent=adrConc>0?`${fmtVol(adrMg/adrConc)} mL`:'— mL';
-
-  const atropDose=Number($('atropineMode')?.value||0.02), atropMg=w*atropDose, atropConc=Number($('atropineConc')?.value||0.6);
-  if($('atropineMg')) $('atropineMg').textContent=`${fmtDose(atropMg)} mg`;
-  if($('atropineMl')) $('atropineMl').textContent=atropConc>0?`${fmtVol(atropMg/atropConc)} mL`:'— mL';
-
-  const dopDose=Number($('dopamineDose')?.value||5), dopConc=Number($('dopamineConc')?.value||1);
-  const mcgMin=dopDose*w;
-  if($('dopamineMcgMin')) $('dopamineMcgMin').textContent=`${fmtDose(mcgMin)} μg/min`;
-  if($('dopamineMlHr')) $('dopamineMlHr').textContent=dopConc>0?`${fmtVol((mcgMin*60)/(1000*dopConc))} mL/hr`:'— mL/hr';
-
-  const sp=$('species')?.value;
-  if($('nsaidDogCard')) $('nsaidDogCard').style.display=sp==='dog'?'flex':'none';
-  if($('nsaidCatCard')) $('nsaidCatCard').style.display=sp==='cat'?'flex':'none';
-  updateDoseSpotlights();
-  updateCustomDrugCalc('induction',false);updateCustomDrugCalc('pre',false);updateCustomDrugCalc('post',false);
+  const w=currentWeightReady()?currentWeightKg():null;
+  if($('drugWeight')) $('drugWeight').textContent=w===null?'Current BW required':`${w.toFixed(1)} kg`;
+  const setText=(id,text)=>{if($(id))$(id).textContent=text};
+  if(w===null){
+    ['diazepamMg','diazepamMl','propofolMg','propofolMl','tramadolMg','tramadolMl','rimadylMg','rimadylMl','metacamMg','metacamMl','cefazolinMl','conveniaMl','adrenalineMg','adrenalineMl','atropineMg','atropineMl','dopamineMcgMin','dopamineMlHr'].forEach(id=>setText(id,id.endsWith('Ml')||id.endsWith('MlHr')?'— mL':'—'));
+    updateDoseSpotlights();updateCustomDrugCalc('induction',false);updateCustomDrugCalc('pre',false);updateCustomDrugCalc('post',false);renderWeightSafetyState();return;
+  }
+  const doseCalc=(dose,conc,mgId,mlId)=>{const mg=w*dose,c=Number($(conc)?.value||0);setText(mgId,`${fmtDose(mg)} mg`);setText(mlId,c>0?`${fmtVol(mg/c)} mL`:'— mL')};
+  doseCalc(0.25,'diazepamConc','diazepamMg','diazepamMl');doseCalc(4,'propofolConc','propofolMg','propofolMl');doseCalc(4,'tramadolConc','tramadolMg','tramadolMl');doseCalc(4.4,'rimadylConc','rimadylMg','rimadylMl');doseCalc(0.3,'metacamConc','metacamMg','metacamMl');
+  setText('cefazolinMl',`${fmtVol(w/10)} mL`);setText('conveniaMl',`${fmtVol(w/10)} mL`);
+  const adrMg=w*0.01,adrConc=Number($('adrenalineConc')?.value||1);setText('adrenalineMg',`${fmtDose(adrMg)} mg`);setText('adrenalineMl',adrConc>0?`${fmtVol(adrMg/adrConc)} mL`:'— mL');
+  const atropDose=Number($('atropineMode')?.value||0.02),atropMg=w*atropDose,atropConc=Number($('atropineConc')?.value||0.6);setText('atropineMg',`${fmtDose(atropMg)} mg`);setText('atropineMl',atropConc>0?`${fmtVol(atropMg/atropConc)} mL`:'— mL');
+  const dopDose=Number($('dopamineDose')?.value||5),dopConc=Number($('dopamineConc')?.value||1),mcgMin=dopDose*w;setText('dopamineMcgMin',`${fmtDose(mcgMin)} μg/min`);setText('dopamineMlHr',dopConc>0?`${fmtVol((mcgMin*60)/(1000*dopConc))} mL/hr`:'— mL/hr');
+  const sp=$('species')?.value;if($('nsaidDogCard'))$('nsaidDogCard').style.display=sp==='dog'?'flex':'none';if($('nsaidCatCard'))$('nsaidCatCard').style.display=sp==='cat'?'flex':'none';
+  updateDoseSpotlights();updateCustomDrugCalc('induction',false);updateCustomDrugCalc('pre',false);updateCustomDrugCalc('post',false);renderWeightSafetyState();
 }
 function fmtDose(n){
   if(!Number.isFinite(n))return '—';
@@ -1734,14 +1762,10 @@ function fmtVol(n){
 }
 
 function renderLegacyBalanceSummary(){
- const w=getVal('weight',1)||1,cryst=Number($('balanceCrystalloid')?.value||0),bolus=Number($('balanceBolus')?.value||0),bloodIn=Number($('balanceBloodIn')?.value||0),loss=Number($('balanceBloodLoss')?.value||0),urine=Number($('balanceUrine')?.value||0),totalIn=cryst+bolus+bloodIn,net=totalIn-loss-urine;
- if($('balanceFluidIn'))$('balanceFluidIn').textContent=`${fmtVol(totalIn)} mL`;
- if($('balanceFluidInKg'))$('balanceFluidInKg').textContent=`${fmtVol(totalIn/w)} mL/kg`;
- if($('balanceLoss'))$('balanceLoss').textContent=`${fmtVol(loss)} mL`;
- if($('balanceLossKg'))$('balanceLossKg').textContent=`${fmtVol(loss/w)} mL/kg`;
- if($('balanceUrineOut'))$('balanceUrineOut').textContent=`${fmtVol(urine)} mL`;
- if($('balanceUrineKg'))$('balanceUrineKg').textContent=`${fmtVol(urine/w)} mL/kg`;
- if($('balanceNet'))$('balanceNet').textContent=`${fmtVol(net)} mL`;
+ const w=currentWeightReady()?currentWeightKg():null,cryst=Number($('balanceCrystalloid')?.value||0),bolus=Number($('balanceBolus')?.value||0),bloodIn=Number($('balanceBloodIn')?.value||0),loss=Number($('balanceBloodLoss')?.value||0),urine=Number($('balanceUrine')?.value||0),totalIn=cryst+bolus+bloodIn,net=totalIn-loss-urine;
+ if($('balanceFluidIn'))$('balanceFluidIn').textContent=`${fmtVol(totalIn)} mL`;if($('balanceFluidInKg'))$('balanceFluidInKg').textContent=w?`${fmtVol(totalIn/w)} mL/kg`:'— mL/kg';
+ if($('balanceLoss'))$('balanceLoss').textContent=`${fmtVol(loss)} mL`;if($('balanceLossKg'))$('balanceLossKg').textContent=w?`${fmtVol(loss/w)} mL/kg`:'— mL/kg';
+ if($('balanceUrineOut'))$('balanceUrineOut').textContent=`${fmtVol(urine)} mL`;if($('balanceUrineKg'))$('balanceUrineKg').textContent=w?`${fmtVol(urine/w)} mL/kg`:'— mL/kg';if($('balanceNet'))$('balanceNet').textContent=`${fmtVol(net)} mL`;
 }
 function updateBalance(){renderLegacyBalanceSummary();renderOrFluidPanel();}
 ['balanceCrystalloid','balanceBolus','balanceBloodIn','balanceBloodLoss','balanceUrine'].forEach(id=>$(id)?.addEventListener('input',()=>{renderLegacyBalanceSummary();save()}));
@@ -1772,7 +1796,7 @@ function effectiveCrystalloidTotal(){
   return calculatedCrystalloidTotal();
 }
 function getFluidMetrics(){
-  const w=Math.max(0.01,Number($('weight')?.value||1));
+  const w=currentWeightReady()?currentWeightKg():null;
   const calc=calculatedCrystalloidTotal(),cryst=effectiveCrystalloidTotal();
   const bolus=Number($('balanceBolus')?.value||0)||0;
   const bloodIn=Number($('balanceBloodIn')?.value||0)||0;
@@ -1805,19 +1829,19 @@ function renderOrFluidPanel(){
   if(!$('orFluidManageRate'))return;
   const fm=getFluidMetrics(),rate=currentFluidRate();
   if(document.activeElement!==$('orFluidManageRate'))$('orFluidManageRate').value=rate||'';
-  $('orFluidRateKg').textContent=`${fmtVol(rate/fm.w)} mL/kg/hr`;
+  $('orFluidRateKg').textContent=fm.w?`${fmtVol(rate/fm.w)} mL/kg/hr`:'— mL/kg/hr';
   $('orCalculatedCrystalloid').textContent=`${fmtVol(fm.calc)} mL`;
-  $('orCalculatedCrystalloidKg').textContent=`${fmtVol(fm.calc/fm.w)} mL/kg`;
+  $('orCalculatedCrystalloidKg').textContent=fm.w?`${fmtVol(fm.calc/fm.w)} mL/kg`:'— mL/kg';
   $('orEffectiveCrystalloid').textContent=`${fmtVol(fm.cryst)} mL`;
   $('orBolusTotal').textContent=`${fmtVol(fm.bolus)} mL`;
   $('orBloodLossTotal').textContent=`${fmtVol(fm.loss)} mL`;
-  $('orBloodLossKg').textContent=`${fmtVol(fm.loss/fm.w)} mL/kg`;
+  $('orBloodLossKg').textContent=fm.w?`${fmtVol(fm.loss/fm.w)} mL/kg`:'— mL/kg';
   $('orUrineTotal').textContent=`${fmtVol(fm.urine)} mL`;
-  $('orUrineKg').textContent=`${fmtVol(fm.urine/fm.w)} mL/kg`;
+  $('orUrineKg').textContent=fm.w?`${fmtVol(fm.urine/fm.w)} mL/kg`:'— mL/kg';
   if(document.activeElement!==$('orBloodProductInput'))$('orBloodProductInput').value=fmtVol(fm.bloodIn);
-  $('orBloodProductKg').textContent=`${fmtVol(fm.bloodIn/fm.w)} mL/kg`;
+  $('orBloodProductKg').textContent=fm.w?`${fmtVol(fm.bloodIn/fm.w)} mL/kg`:'— mL/kg';
   $('orTotalFluidIn').textContent=`${fmtVol(fm.totalIn)} mL`;
-  $('orTotalFluidInKg').textContent=`${fmtVol(fm.totalIn/fm.w)} mL/kg`;
+  $('orTotalFluidInKg').textContent=fm.w?`${fmtVol(fm.totalIn/fm.w)} mL/kg`:'— mL/kg';
   $('orFluidNet').textContent=`${fmtVol(fm.net)} mL`;
   $('orCurrentRateDisplay').textContent=`${fmtVol(rate)} mL/hr`;
   const hist=state.fluidRateHistory||[];
@@ -1854,13 +1878,13 @@ $$('[data-fluid-custom]').forEach(btn=>btn.addEventListener('click',()=>{
 }));
 
 function getSmartAlerts(){
-  const recs=state.records||[],alerts=[];
+  const recs=state.records||[],alerts=[],num=v=>v===null||v===''||v===undefined?null:Number(v);
   if(recs.length>=3){
     const last3=recs.slice(-3),first=last3[0],last=last3[last3.length-1],spanMin=Math.max(1,(last.elapsedMs-first.elapsedMs)/60000);
-    const mapDrop=Number(first.map)-Number(last.map);if(Number.isFinite(mapDrop)&&mapDrop>=10)alerts.push({level:Number(last.map)<60?'danger':'warn',title:'Progressive hypotension',text:`MAP decreased ${Math.round(mapDrop)} mmHg over ~${Math.round(spanMin)} min (${first.map} → ${last.map})`});
-    const etRise=Number(last.etco2)-Number(first.etco2);if(Number.isFinite(etRise)&&etRise>=8)alerts.push({level:Number(last.etco2)>60?'danger':'warn',title:'Progressive hypercapnia',text:`ETCO₂ increased ${Math.round(etRise)} mmHg (${first.etco2} → ${last.etco2})`});
-    const tempDrop=Number(first.temp)-Number(last.temp);if(Number.isFinite(tempDrop)&&tempDrop>=1.0)alerts.push({level:Number(last.temp)<98?'danger':'warn',title:'Progressive heat loss',text:`Temperature decreased ${tempDrop.toFixed(1)}°F (${first.temp} → ${last.temp})`});
-    const spoDrop=Number(first.spo2)-Number(last.spo2);if(Number.isFinite(spoDrop)&&spoDrop>=3)alerts.push({level:Number(last.spo2)<90?'danger':'warn',title:'Falling SpO₂',text:`SpO₂ decreased ${Math.round(spoDrop)} points (${first.spo2}% → ${last.spo2}%)`});
+    const fm=num(first.map),lm=num(last.map);if(fm!==null&&lm!==null){const drop=fm-lm;if(drop>=10)alerts.push({level:lm<60?'danger':'warn',title:'Progressive hypotension',text:`MAP decreased ${Math.round(drop)} mmHg over ~${Math.round(spanMin)} min (${fm} → ${lm})`})}
+    const fe=num(first.etco2),le=num(last.etco2);if(fe!==null&&le!==null){const rise=le-fe;if(rise>=8)alerts.push({level:le>60?'danger':'warn',title:'Progressive hypercapnia',text:`ETCO₂ increased ${Math.round(rise)} mmHg (${fe} → ${le})`})}
+    const ft=num(first.temp),lt=num(last.temp);if(ft!==null&&lt!==null){const drop=ft-lt;if(drop>=1.0)alerts.push({level:lt<98?'danger':'warn',title:'Progressive heat loss',text:`Temperature decreased ${drop.toFixed(1)}°F (${ft} → ${lt})`})}
+    const fs=num(first.spo2),ls=num(last.spo2);if(fs!==null&&ls!==null){const drop=fs-ls;if(drop>=3)alerts.push({level:ls<90?'danger':'warn',title:'Falling SpO₂',text:`SpO₂ decreased ${Math.round(drop)} points (${fs}% → ${ls}%)`})}
   }
   return alerts;
 }
@@ -2081,7 +2105,7 @@ function buildPdfReport(){
     reportInfoItem('Ventilation mode',$('airwayVentMode')?.value||'—')
   ].join('');
 
-  const vals=key=>(state.records||[]).map(r=>Number(r[key])).filter(Number.isFinite);
+  const vals=key=>(state.records||[]).map(r=>r[key]).filter(v=>v!==null&&v!==''&&v!==undefined).map(Number).filter(Number.isFinite);
   const minv=(key,dec=0)=>{const v=vals(key);return v.length?(dec?Math.min(...v).toFixed(dec):Math.round(Math.min(...v))):'—'};
   const maxv=(key,dec=0)=>{const v=vals(key);return v.length?(dec?Math.max(...v).toFixed(dec):Math.round(Math.max(...v))):'—'};
   const summary=[
@@ -2177,7 +2201,7 @@ function formatBytes(n){if(!Number.isFinite(Number(n)))return '—';n=Number(n);
 async function renderBackupHealth(){
   if($('dbBackendHealth'))$('dbBackendHealth').textContent=archiveBackend;
   if($('archiveCountHealth'))$('archiveCountHealth').textContent=String(getArchive().length);
-  const last=Number(localStorage.getItem(LAST_BACKUP_KEY)||0),age=last?Date.now()-last:null;
+  const last=getLastBackupEpoch(),age=last?Date.now()-last:null;
   if($('backupLastTime'))$('backupLastTime').textContent=last?`${formatDate(last)} ${formatClock(last)}`:'Never';
   if($('backupAgeStatus')){const days=age==null?null:Math.floor(age/86400000);$('backupAgeStatus').textContent=days==null?'Backup recommended':days>=7?`⚠ ${days} days ago`:days===0?'✓ Today':`✓ ${days} day${days===1?'':'s'} ago`;$('backupAgeStatus').className=days==null||days>=7?'health-warn':'health-good'}
   try{if(navigator.storage?.estimate){const e=await navigator.storage.estimate();if($('storageUsedHealth'))$('storageUsedHealth').textContent=formatBytes(e.usage);if($('storageQuotaHealth'))$('storageQuotaHealth').textContent=e.quota?`of ${formatBytes(e.quota)} browser quota`:'Browser estimate'}}catch(e){}
@@ -2186,7 +2210,7 @@ $('backupNowHealthBtn')?.addEventListener('click',()=>backupAllData());
 
 async function backupAllData(){
   save();await initArchiveDb();await initPatientMaster();
-  const payload={format:'ANESVET_BACKUP',version:14.3,exportedAt:Date.now(),current:state,archive:getArchive(),patients:getPatients(),breedAliases:loadBreedAliases(),settings:(()=>{try{return JSON.parse(localStorage.getItem(SETTINGS_KEY)||'null')}catch(e){return null}})(),drugLibrary:loadDrugLibraryData(),quickPresets:loadQuickPresets(),protocolAudit:getProtocolAudit()};
+  const payload={format:'ANESVET_BACKUP',version:'14.3.1',exportedAt:Date.now(),current:state,archive:getArchive(),patients:getPatients(),breedAliases:loadBreedAliases(),settings:(()=>{try{return JSON.parse(localStorage.getItem(SETTINGS_KEY)||'null')}catch(e){return null}})(),drugLibrary:loadDrugLibraryData(),quickPresets:loadQuickPresets(),protocolAudit:getProtocolAudit()};
   downloadBlob(JSON.stringify(payload,null,2),'application/json',`ANESVET_BACKUP_${formatDate(Date.now())}.json`);
   const backupEpoch=Date.now();localStorage.setItem(LAST_BACKUP_KEY,String(backupEpoch));
   if($('backupStatus'))$('backupStatus').textContent=`Backup created ${formatClock(backupEpoch)} • ${payload.archive.length} cases • ${payload.patients.length} patients`;
@@ -2319,7 +2343,7 @@ function appRootUrl(){
   let path=here.pathname;
   if(!path.endsWith('/')) path=path.replace(/\/[^/]*$/,'/');
   const url=new URL(path, here.origin);
-  url.searchParams.set('v','14.3');
+  url.searchParams.set('v','14.3.1');
   return url.href;
 }
 function restartAtAppRoot(){
@@ -2444,9 +2468,9 @@ function loadDrugLibraryData(){
   try{
     const own=JSON.parse(localStorage.getItem(DRUG_LIBRARY_KEY)||'null');
     if(Array.isArray(own))return own;
-    const prev14=JSON.parse(localStorage.getItem('anesvet_v14_drug_library')||'null');if(Array.isArray(prev14)){localStorage.setItem(DRUG_LIBRARY_KEY,JSON.stringify(prev14));return prev14}
     const prev142=JSON.parse(localStorage.getItem('anesvet_v14_2_drug_library')||'null');if(Array.isArray(prev142)){localStorage.setItem(DRUG_LIBRARY_KEY,JSON.stringify(prev142));return prev142}
     const prev141=JSON.parse(localStorage.getItem('anesvet_v14_1_drug_library')||'null');if(Array.isArray(prev141)){localStorage.setItem(DRUG_LIBRARY_KEY,JSON.stringify(prev141));return prev141}
+    const prev14=JSON.parse(localStorage.getItem('anesvet_v14_drug_library')||'null');if(Array.isArray(prev14)){localStorage.setItem(DRUG_LIBRARY_KEY,JSON.stringify(prev14));return prev14}
     const prev134=JSON.parse(localStorage.getItem('anesvet_v13_4_drug_library')||'null');if(Array.isArray(prev134)){localStorage.setItem(DRUG_LIBRARY_KEY,JSON.stringify(prev134));return prev134}
     const prev133=JSON.parse(localStorage.getItem('anesvet_v13_3_drug_library')||'null');if(Array.isArray(prev133)){localStorage.setItem(DRUG_LIBRARY_KEY,JSON.stringify(prev133));return prev133}
     const prev132=JSON.parse(localStorage.getItem('anesvet_v13_2_drug_library')||'null');if(Array.isArray(prev132)){localStorage.setItem(DRUG_LIBRARY_KEY,JSON.stringify(prev132));return prev132}
@@ -2466,7 +2490,7 @@ let hospitalDrugLibrary=loadDrugLibraryData();
 function formulaLabel(mode){
   return ({mgkg:'mg/kg ÷ mg/mL',mcgkg:'μg/kg ÷ μg/mL',mlkg:'mL/kg × BW',bwdiv:'BW ÷ factor',manual:'Manual'})[mode]||mode;
 }
-function phaseLabel(phase){return ({induction:'Induction',pre:'Pre-anesthetic',post:'Post-anesthetic'})[phase]||phase}
+function drugPhaseLabel(phase){return ({induction:'Induction',pre:'Pre-anesthetic',post:'Post-anesthetic'})[phase]||phase}
 
 function renderDrugLibrarySettings(){
   const box=$('drugLibraryRows');if(!box)return;
@@ -2563,6 +2587,7 @@ function selectedLibraryDrug(phase){
 function calculateLibraryDrug(d,weight,dose,conc){
   dose=Number(dose);conc=Number(conc);
   if(!d)return {total:'—',ml:null,unit:''};
+  if(d.mode!=='manual'&&!(Number(weight)>0))return {total:'Current BW required',ml:null,unit:''};
   if(d.mode==='mgkg'){
     if(!(dose>0&&conc>0))return {total:'Set dose / concentration',ml:null,unit:'mg'};
     const total=weight*dose;return {total:`${fmtDose(total)} mg`,ml:total/conc,unit:'mg'};
@@ -2582,7 +2607,7 @@ function calculateLibraryDrug(d,weight,dose,conc){
   return {total:'Manual entry',ml:null,unit:''};
 }
 function updateCustomDrugCalc(phase,resetFields=false){
-  const c=customPhaseConfig[phase],d=selectedLibraryDrug(phase),w=getVal('weight',0)||0;
+  const c=customPhaseConfig[phase],d=selectedLibraryDrug(phase),w=currentWeightReady()?currentWeightKg():0;
   if(resetFields){
     if($(c.dose))$(c.dose).value=d?.dose??'';
     if($(c.conc))$(c.conc).value=d?.conc??'';
@@ -2604,17 +2629,18 @@ Object.entries(customPhaseConfig).forEach(([phase,c])=>{
   $(c.conc)?.addEventListener('input',()=>updateCustomDrugCalc(phase,false));
 });
 $$('.custom-drug-event-btn').forEach(btn=>btn.addEventListener('click',()=>{
+  if(!requireCurrentWeight('using the Drug Calculator'))return;
   const phase=btn.dataset.phase,c=customPhaseConfig[phase],d=selectedLibraryDrug(phase);
   if(!d){toast('กรุณาเลือกยา');return}
-  const r=calculateLibraryDrug(d,getVal('weight',0)||0,$(c.dose)?.value,$(c.conc)?.value);
+  const r=calculateLibraryDrug(d,currentWeightReady()?currentWeightKg():0,$(c.dose)?.value,$(c.conc)?.value);
   if(r.ml==null){toast('สูตรนี้ยังคำนวณ volume ไม่ได้ — ตรวจ dose/concentration');return}
-  openDrugAdministration({drug:d.name,calculated:`${r.total} • ${fmtVol(r.ml)} mL`,suggestedMl:r.ml,route:d.route||'',note:`${phaseLabel(phase)} • Hospital Drug Library`});
+  openDrugAdministration({drug:d.name,calculated:`${r.total} • ${fmtVol(r.ml)} mL`,suggestedMl:r.ml,route:d.route||'',note:`${drugPhaseLabel(phase)} • Hospital Drug Library`});
 }));
 
 
 function defaultSettings(){return{interval:'5',diazepamConc:'5',propofolConc:'10',tramadolConc:'50',rimadylConc:'50',metacamConc:'5',atropineConc:'0.6',protocolName:'Hospital anesthesia protocol',protocolVersion:'',protocolVerifiedAt:'',protocolLocked:false,autoWakeLock:true}}
 function loadSettings(){
-  let s;try{s=JSON.parse(localStorage.getItem(SETTINGS_KEY)||'null')||JSON.parse(localStorage.getItem('anesvet_v14_settings')||'null')||JSON.parse(localStorage.getItem('anesvet_v13_4_settings')||'null')||JSON.parse(localStorage.getItem('anesvet_v13_3_settings')||'null')||JSON.parse(localStorage.getItem('anesvet_v13_2_settings')||'null')||JSON.parse(localStorage.getItem('anesvet_v13_1_settings')||'null')||JSON.parse(localStorage.getItem('anesvet_v13_settings')||'null')||JSON.parse(localStorage.getItem('anesvet_v12_1_settings')||'null')||JSON.parse(localStorage.getItem('anesvet_v12_settings')||'null')||JSON.parse(localStorage.getItem('anesvet_v11_settings')||'null')||JSON.parse(localStorage.getItem('anesvet_v10_settings')||'null')}catch(e){}
+  let s;try{s=JSON.parse(localStorage.getItem(SETTINGS_KEY)||'null')||JSON.parse(localStorage.getItem('anesvet_v14_2_settings')||'null')||JSON.parse(localStorage.getItem('anesvet_v14_1_settings')||'null')||JSON.parse(localStorage.getItem('anesvet_v14_settings')||'null')||JSON.parse(localStorage.getItem('anesvet_v13_4_settings')||'null')||JSON.parse(localStorage.getItem('anesvet_v13_3_settings')||'null')||JSON.parse(localStorage.getItem('anesvet_v13_2_settings')||'null')||JSON.parse(localStorage.getItem('anesvet_v13_1_settings')||'null')||JSON.parse(localStorage.getItem('anesvet_v13_settings')||'null')||JSON.parse(localStorage.getItem('anesvet_v12_1_settings')||'null')||JSON.parse(localStorage.getItem('anesvet_v12_settings')||'null')||JSON.parse(localStorage.getItem('anesvet_v11_settings')||'null')||JSON.parse(localStorage.getItem('anesvet_v10_settings')||'null')}catch(e){}
   s={...defaultSettings(),...(s||{})};
   const map={settingInterval:'interval',settingDiazepamConc:'diazepamConc',settingPropofolConc:'propofolConc',settingTramadolConc:'tramadolConc',settingRimadylConc:'rimadylConc',settingMetacamConc:'metacamConc',settingAtropineConc:'atropineConc',settingProtocolName:'protocolName',settingProtocolVersion:'protocolVersion',settingProtocolVerifiedAt:'protocolVerifiedAt'};
   Object.entries(map).forEach(([id,key])=>{if($(id))$(id).value=s[key]??''});
@@ -2682,6 +2708,7 @@ $('clearRecordsBtn').addEventListener('click',()=>{if(!confirm('ล้าง Ane
 
 $('startCaseBtn').addEventListener('click',()=>{
   if(state.timer.running)return;
+  if(!validateCaseReadyToStart())return;
   const preopTotal=$$('.preop-check').length,preopDone=$$('.preop-check').filter(x=>x.checked).length,preopNA=$$('.preop-item.na').length,preopReviewed=preopDone+preopNA;
   if(preopReviewed<preopTotal && !confirm(`Pre-op checklist ยังไม่ครบ (${preopDone}/${preopTotal}) — ต้องการเริ่มเคสต่อหรือไม่?`))return;
   const firstStart=(state.timer.elapsedMs||0)===0 && !state.caseStartedAt;

@@ -1,8 +1,8 @@
 {
-  "name": "ANESVET V14.3 — Patient Master",
+  "name": "ANESVET V14.3.1 — Safety Hotfix",
   "short_name": "ANESVET",
   "description": "Veterinary anesthesia workstation with Patient Master, HN/name/microchip search, sex/reproductive status, improved estimated-age model and hospital breed aliases",
-  "start_url": "./?v=14.3",
+  "start_url": "./?v=14.3.1",
   "scope": "./",
   "display": "standalone",
   "background_color": "#f3f7f8",

@@ -540,3 +540,10 @@ body.or-fullscreen .topbar,body.or-fullscreen .case-strip,body.or-fullscreen .ta
   .breed-alias-row{grid-template-columns:1fr 1fr}
   .breed-alias-row label:nth-child(3){grid-column:1/-1}
 }
+
+/* V14.3.1 — Safety hotfix */
+.status-pill.neutral{color:var(--neutral);background:#f0f3f5}
+.or-vital-card.neutral{border-color:var(--line);background:#fff}.or-vital-card.neutral footer{color:var(--muted)}
+.or-status-neutral{background:#eef2f4!important;color:#5b6a72!important}
+.previous-weight-reference{grid-column:1/-1;border:1px solid #d9e2e7;background:#f7fafb;border-radius:12px;padding:10px 12px;color:#43545d;font-size:.82rem}
+.current-weight-safety{grid-column:1/-1;border-radius:10px;padding:8px 10px;font-size:.78rem;font-weight:800}.current-weight-safety.warn{background:var(--warn-bg);color:var(--warn)}.current-weight-safety.good{background:var(--good-bg);color:var(--good)}

@@ -8,8 +8,8 @@
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" href="./icon-192.png">
   <link rel="apple-touch-icon" href="./icon-192.png">
-  <link rel="stylesheet" href="./style.css?v=14.3">
-  <title>ANESVET V14.3</title>
+  <link rel="stylesheet" href="./style.css?v=14.3.1">
+  <title>ANESVET V14.3.1</title>
 </head>
 <body>
 <header class="topbar">
@@ -17,7 +17,7 @@
     <div class="brand-mark">A</div>
     <div>
       <div class="eyebrow">GENOVI PET CARE • DIGITAL ANESTHESIA RECORD</div>
-      <h1>ANESVET <span>V14.3</span></h1>
+      <h1>ANESVET <span>V14.3.1</span></h1>
     </div>
   </div>
   <div class="top-actions">
@@ -124,8 +124,8 @@
         <label>ชื่อสัตว์ <span class="required">*</span>
           <input id="patientName" type="text" placeholder="เช่น Rocket">
         </label>
-        <label>HN / Case ID
-          <input id="hospitalId" type="text" placeholder="optional">
+        <label>HN / Patient ID
+          <input id="hospitalId" type="text" placeholder="optional • use a stable patient identifier">
         </label>
         <label>Species <span class="required">*</span>
           <select id="species">
@@ -192,9 +192,14 @@
           <input id="ageSource" type="hidden" value="">
           <input id="estimatedBirthPeriod" type="hidden">
         </div>
-        <label>น้ำหนัก (kg) <span class="required">*</span>
-          <input id="weight" type="number" min="0.1" step="0.1" value="10">
+        <div id="previousWeightReference" class="previous-weight-reference" hidden>
+          <b id="previousWeightText">—</b>
+        </div>
+        <label>Current weight วันนี้ (kg) <span class="required">*</span>
+          <input id="weight" type="number" min="0.1" step="0.1" placeholder="Enter today's measured weight" autocomplete="off">
+          <small>Previous weight is reference only. Drug/fluid calculations require this current BW to be saved.</small>
         </label>
+        <div id="currentWeightSafety" class="current-weight-safety warn">⚠ Current BW not confirmed</div>
         <label>BCS (1–9)
           <select id="bcs">
             <option value="">— ไม่ระบุ —</option>
@@ -364,12 +369,12 @@
     </section>
 
     <section class="or-vital-grid">
-      <article class="or-vital-card priority" data-vital="hr"><div><span>HR</span><small>bpm</small></div><input id="orHr" inputmode="numeric" type="number" min="0" max="400" value="90"><footer id="orHrHint">—</footer></article>
-      <article class="or-vital-card priority" data-vital="map"><div><span>MAP</span><small>mmHg</small></div><input id="orMap" inputmode="numeric" type="number" min="0" max="250" value="72"><footer id="orMapHint">—</footer></article>
-      <article class="or-vital-card priority" data-vital="spo2"><div><span>SpO₂</span><small>%</small></div><input id="orSpo2" inputmode="numeric" type="number" min="0" max="100" value="98"><footer id="orSpo2Hint">—</footer></article>
-      <article class="or-vital-card priority" data-vital="etco2"><div><span>ETCO₂</span><small>mmHg</small></div><input id="orEtco2" inputmode="numeric" type="number" min="0" max="150" value="45"><footer id="orEtco2Hint">—</footer></article>
-      <article class="or-vital-card secondary" data-vital="rr"><div><span>RR</span><small>/min</small></div><input id="orRr" inputmode="numeric" type="number" min="0" max="200" value="12"><footer id="orRrHint">—</footer></article>
-      <article class="or-vital-card secondary" data-vital="temp"><div><span>Temp</span><small>°F</small></div><input id="orTemp" inputmode="decimal" type="number" min="77" max="113" step="0.1" value="99.0"><footer id="orTempHint">—</footer></article>
+      <article class="or-vital-card priority" data-vital="hr"><div><span>HR</span><small>bpm</small></div><input id="orHr" inputmode="numeric" type="number" min="0" max="400"><footer id="orHrHint">—</footer></article>
+      <article class="or-vital-card priority" data-vital="map"><div><span>MAP</span><small>mmHg</small></div><input id="orMap" inputmode="numeric" type="number" min="0" max="250"><footer id="orMapHint">—</footer></article>
+      <article class="or-vital-card priority" data-vital="spo2"><div><span>SpO₂</span><small>%</small></div><input id="orSpo2" inputmode="numeric" type="number" min="0" max="100"><footer id="orSpo2Hint">—</footer></article>
+      <article class="or-vital-card priority" data-vital="etco2"><div><span>ETCO₂</span><small>mmHg</small></div><input id="orEtco2" inputmode="numeric" type="number" min="0" max="150"><footer id="orEtco2Hint">—</footer></article>
+      <article class="or-vital-card secondary" data-vital="rr"><div><span>RR</span><small>/min</small></div><input id="orRr" inputmode="numeric" type="number" min="0" max="200"><footer id="orRrHint">—</footer></article>
+      <article class="or-vital-card secondary" data-vital="temp"><div><span>Temp</span><small>°F</small></div><input id="orTemp" inputmode="decimal" type="number" min="77" max="113" step="0.1"><footer id="orTempHint">—</footer></article>
     </section>
 
     <section class="or-secondary-grid">
@@ -719,49 +724,49 @@
     <div class="vital-grid">
       <article class="vital-card">
         <div class="vital-title"><span>HR</span><span class="unit">bpm</span></div>
-        <input id="hr" class="vital-input" type="number" min="0" max="400" value="90">
+        <input id="hr" class="vital-input" type="number" min="0" max="400" placeholder="—">
         <div id="hrHint" class="vital-foot good">กำลังประเมินตาม species</div>
       </article>
 
       <article class="vital-card">
         <div class="vital-title"><span>RR</span><span class="unit">/min</span></div>
-        <input id="rr" class="vital-input" type="number" min="0" max="200" value="12">
+        <input id="rr" class="vital-input" type="number" min="0" max="200" placeholder="—">
         <div id="rrHint" class="vital-foot good">กำลังประเมินตาม species</div>
       </article>
 
       <article class="vital-card">
         <div class="vital-title"><span>SAP</span><span class="unit">mmHg</span></div>
-        <input id="sap" class="vital-input" type="number" min="0" max="300" value="100">
+        <input id="sap" class="vital-input" type="number" min="0" max="300" placeholder="—">
         <div id="sapHint" class="vital-foot neutral">systolic BP</div>
       </article>
 
       <article class="vital-card">
         <div class="vital-title"><span>MAP</span><span class="unit">mmHg</span></div>
-        <input id="map" class="vital-input" type="number" min="0" max="250" value="72">
+        <input id="map" class="vital-input" type="number" min="0" max="250" placeholder="—">
         <div id="mapHint" class="vital-foot good">≥70 โดยทั่วไป</div>
       </article>
 
       <article class="vital-card">
         <div class="vital-title"><span>DAP</span><span class="unit">mmHg</span></div>
-        <input id="dap" class="vital-input" type="number" min="0" max="200" value="50">
+        <input id="dap" class="vital-input" type="number" min="0" max="200" placeholder="—">
         <div id="dapHint" class="vital-foot neutral">diastolic BP</div>
       </article>
 
       <article class="vital-card">
         <div class="vital-title"><span>SpO₂</span><span class="unit">%</span></div>
-        <input id="spo2" class="vital-input" type="number" min="0" max="100" value="98">
+        <input id="spo2" class="vital-input" type="number" min="0" max="100" placeholder="—">
         <div id="spo2Hint" class="vital-foot good">≥95%</div>
       </article>
 
       <article class="vital-card">
         <div class="vital-title"><span>ETCO₂</span><span class="unit">mmHg</span></div>
-        <input id="etco2" class="vital-input" type="number" min="0" max="150" value="45">
+        <input id="etco2" class="vital-input" type="number" min="0" max="150" placeholder="—">
         <div id="etco2Hint" class="vital-foot good">40–50 โดยทั่วไป</div>
       </article>
 
       <article class="vital-card">
         <div class="vital-title"><span>Temp</span><span class="unit">°F</span></div>
-        <input id="temp" class="vital-input" type="number" min="77" max="113" step="0.1" value="99.0">
+        <input id="temp" class="vital-input" type="number" min="77" max="113" step="0.1" placeholder="—">
         <div id="tempHint" class="vital-foot good">warming early</div>
       </article>
     </div>
@@ -1765,6 +1770,6 @@
 </dialog>
 
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
-<script src="./app.js?v=14.3"></script>
+<script src="./app.js?v=14.3.1"></script>
 </body>
 </html>
