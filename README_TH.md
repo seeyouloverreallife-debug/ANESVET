@@ -1,31 +1,64 @@
-# ANESVET V11.1
+# ANESVET V12 — Phase-based Drug Workflow
 
-แก้ตาม feedback จาก V11
+## Patient history
+หน้า “ประวัติผู้ป่วย” เพิ่ม:
+- Procedure
+- ประวัติแพ้ยา / สิ่งที่ต้องหลีกเลี่ยง
+- โรคประจำตัว / ปัญหาสำคัญ
+- ข้อควรระวังเฉพาะราย / Anesthetic concerns
 
-## 1. Pre-check
-หลัง checklist มี 2 ทางเลือก:
-- ไป Drug Calculator → (ปุ่มหลัก)
-- ข้ามไปช่วงวางยา / OR LIVE
+Procedure sync กับ Dashboard/OR LIVE และข้อมูลความเสี่ยงแสดงใน OR LIVE + PDF report
 
-ไม่พาไป Dashboard แล้ว
+## Drug Calculator แยกตามช่วง
+### 1) Induction / Co-induction
+- Diazepam
+- Propofol
+- Additional induction drug จาก Hospital Drug Library
 
-## 2. Drug Calculator
-เพิ่ม Cefazolin (ABO) และ Convenia ให้เห็นเด่นใน Calculated Injection Volume ด้านบน
-พร้อม Diazepam, Propofol, Tramadol และ NSAID
+### 2) Pre-anesthetic / Perioperative
+- Cefazolin (ABO)
+- Tramadol
+- Additional antibiotic / analgesic / drug จาก Hospital Drug Library
 
-สูตร hospital preset เดิม:
+### 3) Post-anesthetic / Postoperative
+- Convenia
+- Dog: Carprofen
+- Cat: Meloxicam
+- Additional postoperative drug จาก Hospital Drug Library
+
+Emergency drugs ยังแยกต่างหากเหมือนเดิม
+
+## Hospital Drug Library
+อยู่ใน Settings:
+- Drug name
+- Phase
+- Drug class
+- Calculation mode
+- Dose / factor
+- Concentration
+- Route
+
+Calculation modes:
+- mg/kg
+- μg/kg
+- mL/kg
+- BW ÷ factor
+- Manual
+
+มี template ชื่อยาที่ใช้บ่อย เช่น Midazolam, Alfaxalone, Ketamine, Etomidate,
+Ampicillin-sulbactam, Clindamycin, Methadone, Buprenorphine, Fentanyl,
+Butorphanol, Robenacoxib, Amoxicillin-clavulanate
+
+สำคัญ: template ยาเพิ่มเติม “ไม่ใส่ dose/concentration เริ่มต้น” ผู้ใช้ต้องกำหนด protocol ของโรงพยาบาลเองก่อนระบบจะคำนวณ volume
+
+## Existing hospital presets retained
+- Diazepam 0.25 mg/kg
+- Propofol 4 mg/kg planned
 - Cefazolin = BW ÷ 10 mL
 - Convenia = BW ÷ 10 mL
+- Tramadol 4 mg/kg
+- Dog Carprofen 4.4 mg/kg
+- Cat Meloxicam 0.3 mg/kg
 
-## 3. “เพิ่มเติม” hotfix
-V11 มี bug เพราะปุ่ม “เพิ่มเติม” ใช้ class เดียวกับ tab แต่ไม่มี data-tab
-เมื่อกดจึงเรียก setTab(undefined) แล้วซ่อนหน้าปัจจุบัน ทำให้เหมือนเมนูว่าง
-
-V11.1 แก้แล้ว:
-- tab handler ทำงานเฉพาะปุ่มที่มี data-tab
-- setTab ป้องกัน invalid page
-- More menu เปิดได้โดยไม่ซ่อนหน้าปัจจุบัน
-
-## Update
-อัปโหลดไฟล์ทั้งหมดทับ V11 แล้วเปิด:
-https://seeyouloverreallife-debug.github.io/ANESVET/?v=11.1
+## Update URL
+https://seeyouloverreallife-debug.github.io/ANESVET/?v=12

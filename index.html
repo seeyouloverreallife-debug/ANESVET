@@ -8,8 +8,8 @@
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" href="./icon-192.png">
   <link rel="apple-touch-icon" href="./icon-192.png">
-  <link rel="stylesheet" href="./style.css?v=11.1">
-  <title>ANESVET V11.1</title>
+  <link rel="stylesheet" href="./style.css?v=12">
+  <title>ANESVET V12</title>
 </head>
 <body>
 <header class="topbar">
@@ -17,7 +17,7 @@
     <div class="brand-mark">A</div>
     <div>
       <div class="eyebrow">GENOVI PET CARE • DIGITAL ANESTHESIA RECORD</div>
-      <h1>ANESVET <span>V11.1</span></h1>
+      <h1>ANESVET <span>V12</span></h1>
     </div>
   </div>
   <div class="top-actions">
@@ -123,6 +123,21 @@
         <span><b>6–7</b> Overweight</span>
         <span><b>8–9</b> Obese</span>
       </div>
+
+      <div class="patient-clinical-grid">
+        <label class="span2">Procedure ที่จะทำ
+          <input id="patientProcedure" type="text" placeholder="เช่น OHE / Dental / Exploratory laparotomy">
+        </label>
+        <label class="span2">ประวัติแพ้ยา / สิ่งที่ต้องหลีกเลี่ยง
+          <input id="patientAllergies" type="text" placeholder="เช่น แพ้ amoxicillin / ไม่ทราบประวัติแพ้ยา">
+        </label>
+        <label class="span2">โรคประจำตัว / ปัญหาสำคัญ
+          <textarea id="patientComorbidities" rows="3" placeholder="เช่น MMVD, CKD, seizure, brachycephalic airway"></textarea>
+        </label>
+        <label class="span2">ข้อควรระวังเฉพาะราย / Anesthetic concerns
+          <textarea id="patientPrecautions" rows="3" placeholder="เช่น difficult airway, aspiration risk, previous anesthetic reaction, ต้องหลีกเลี่ยงยาบางกลุ่ม"></textarea>
+        </label>
+      </div>
     </section>
 
     <section class="panel">
@@ -186,6 +201,7 @@
           <span id="orPhaseBadge" class="status-pill good">INTRAOP</span>
         </div>
         <div id="orProcedureLine" class="or-procedure-line">Procedure: —</div>
+        <div id="orRiskLine" class="or-risk-line" hidden></div>
       </div>
       <div class="or-timer-block">
         <span id="orTimerState" class="timer-state ready">READY</span>
@@ -698,16 +714,25 @@
     </section>
 
     <section class="panel dose-spotlight-panel">
-      <div class="dose-spotlight-title">Calculated injection volume</div>
-      <div class="dose-spotlight-grid">
-        <div><span>Diazepam</span><b id="spotDiazepam">—</b><small>mL</small></div>
-        <div><span>Propofol</span><b id="spotPropofol">—</b><small>mL</small></div>
-        <div><span>Tramadol</span><b id="spotTramadol">—</b><small>mL</small></div>
-        <div class="antibiotic-spot"><span>Cefazolin (ABO)</span><b id="spotCefazolin">—</b><small>mL</small></div>
-        <div class="antibiotic-spot"><span>Convenia</span><b id="spotConvenia">—</b><small>mL</small></div>
-        <div><span id="spotNsaidLabel">NSAID</span><b id="spotNsaid">—</b><small>mL</small></div>
+      <div class="dose-spotlight-title">Calculated injection volume — grouped by phase</div>
+      <div class="dose-phase-summary">
+        <div class="dose-phase-box">
+          <h3>Induction</h3>
+          <div><span>Diazepam</span><b id="spotDiazepam">—</b><small>mL</small></div>
+          <div><span>Propofol</span><b id="spotPropofol">—</b><small>mL</small></div>
+        </div>
+        <div class="dose-phase-box">
+          <h3>Pre-anesthetic</h3>
+          <div><span>Cefazolin (ABO)</span><b id="spotCefazolin">—</b><small>mL</small></div>
+          <div><span>Tramadol</span><b id="spotTramadol">—</b><small>mL</small></div>
+        </div>
+        <div class="dose-phase-box">
+          <h3>Post-anesthetic</h3>
+          <div><span>Convenia</span><b id="spotConvenia">—</b><small>mL</small></div>
+          <div><span id="spotNsaidLabel">NSAID</span><b id="spotNsaid">—</b><small>mL</small></div>
+        </div>
       </div>
-      <p class="small muted">ตัวเลขใหญ่คือปริมาตรที่คำนวณจากน้ำหนักและ concentration ปัจจุบัน ควรตรวจฉลากยาและยืนยัน actual administered volume ก่อนให้ทุกครั้ง</p>
+      <p class="small muted">Built-in presets ด้านบนเป็น protocol ของโรงพยาบาล/ผู้ใช้เดิม ส่วนยาเพิ่มเติมให้ตั้งสูตรใน Hospital Drug Library ก่อนใช้งาน</p>
     </section>
 
     <section class="panel">
@@ -726,63 +751,120 @@
       </div>
     </section>
 
-    <section class="panel">
+    <section class="panel phase-drug-panel">
       <div class="section-heading">
         <div>
-          <h2>Routine anesthesia / perioperative presets</h2>
-          <p>คำนวณ Total dose และ volume จาก concentration ที่ระบุ — สามารถแก้ concentration ให้ตรงกับยาที่โรงพยาบาลมี</p>
+          <h2>Peri-anesthetic drug plan by phase</h2>
+          <p>แยกยาตามช่วงที่ใช้งานจริง เพื่อลดการมองผิดกลุ่มและช่วยตรวจทานก่อนให้ยา</p>
+        </div>
+        <button id="openDrugLibraryBtn" class="btn">⚙ Hospital Drug Library</button>
+      </div>
+
+      <div class="drug-phase-section induction-phase">
+        <div class="drug-phase-head">
+          <div><span class="phase-badge">1</span><div><h3>Induction / Co-induction</h3><p>ยานำสลบและยาที่ใช้ร่วมช่วง induction</p></div></div>
+        </div>
+        <div class="drug-grid">
+          <article class="drug-card">
+            <div class="drug-card-head"><h3>Diazepam</h3><span class="protocol-chip">0.25 mg/kg</span></div>
+            <div class="drug-result"><b id="diazepamMg">— mg</b><span id="diazepamMl">— mL</span></div>
+            <label>Concentration (mg/mL)<input id="diazepamConc" type="number" min="0.01" step="0.1" value="5"></label>
+            <button class="btn drug-event-btn" data-drug="Diazepam" data-doseid="diazepamMg" data-volid="diazepamMl">Add to Event</button>
+          </article>
+
+          <article class="drug-card">
+            <div class="drug-card-head"><h3>Propofol</h3><span class="protocol-chip">4 mg/kg planned</span></div>
+            <div class="drug-result"><b id="propofolMg">— mg</b><span id="propofolMl">— mL</span></div>
+            <label>Concentration (mg/mL)<input id="propofolConc" type="number" min="0.01" step="0.1" value="10"></label>
+            <p class="drug-note">Induction dose ควร titrate to effect; actual administered volume ให้บันทึกตามที่ให้จริง</p>
+            <button class="btn drug-event-btn" data-drug="Propofol" data-doseid="propofolMg" data-volid="propofolMl">Add to Event</button>
+          </article>
+
+          <article class="drug-card custom-drug-card">
+            <div class="drug-card-head"><h3>Additional induction drug</h3><span class="protocol-chip">Hospital library</span></div>
+            <label>เลือกยา<select id="customInductionDrug"></select></label>
+            <div class="custom-drug-inputs">
+              <label>Dose / factor<input id="customInductionDose" type="number" min="0" step="0.001"></label>
+              <label>Concentration<input id="customInductionConc" type="number" min="0" step="0.001"></label>
+            </div>
+            <div class="drug-result"><b id="customInductionTotal">—</b><span id="customInductionMl">— mL</span></div>
+            <div id="customInductionMeta" class="drug-note">เลือกยาจาก Hospital Drug Library</div>
+            <button class="btn custom-drug-event-btn" data-phase="induction">Add selected drug to Event</button>
+          </article>
         </div>
       </div>
 
-      <div class="drug-grid">
-        <article class="drug-card">
-          <div class="drug-card-head"><h3>Diazepam</h3><span class="protocol-chip">0.25 mg/kg</span></div>
-          <div class="drug-result"><b id="diazepamMg">— mg</b><span id="diazepamMl">— mL</span></div>
-          <label>Concentration (mg/mL)<input id="diazepamConc" type="number" min="0.01" step="0.1" value="5"></label>
-          <button class="btn drug-event-btn" data-drug="Diazepam" data-doseid="diazepamMg" data-volid="diazepamMl">Add to Event</button>
-        </article>
+      <div class="drug-phase-section preanes-phase">
+        <div class="drug-phase-head">
+          <div><span class="phase-badge">2</span><div><h3>Pre-anesthetic / Perioperative</h3><p>Antibiotic prophylaxis และ analgesic ที่เตรียมก่อนหรือช่วงต้นของการวางยา</p></div></div>
+        </div>
+        <div class="drug-grid">
+          <article class="drug-card special-formula">
+            <div class="drug-card-head"><h3>Cefazolin (ABO)</h3><span class="protocol-chip">BW ÷ 10 mL</span></div>
+            <div class="drug-result"><b id="cefazolinMl">— mL</b><span>Hospital preset formula</span></div>
+            <p class="drug-note">สูตรนี้เป็น hospital preset ตาม dilution ที่ผู้ใช้กำหนดไว้เดิม</p>
+            <button class="btn drug-event-btn" data-drug="Cefazolin" data-volid="cefazolinMl">Add to Event</button>
+          </article>
 
-        <article class="drug-card">
-          <div class="drug-card-head"><h3>Propofol</h3><span class="protocol-chip">4 mg/kg</span></div>
-          <div class="drug-result"><b id="propofolMg">— mg</b><span id="propofolMl">— mL</span></div>
-          <label>Concentration (mg/mL)<input id="propofolConc" type="number" min="0.01" step="0.1" value="10"></label>
-          <button class="btn drug-event-btn" data-drug="Propofol" data-doseid="propofolMg" data-volid="propofolMl">Add to Event</button>
-        </article>
+          <article class="drug-card">
+            <div class="drug-card-head"><h3>Tramadol</h3><span class="protocol-chip">4 mg/kg</span></div>
+            <div class="drug-result"><b id="tramadolMg">— mg</b><span id="tramadolMl">— mL</span></div>
+            <label>Concentration (mg/mL)<input id="tramadolConc" type="number" min="0.01" step="0.1" value="50"></label>
+            <button class="btn drug-event-btn" data-drug="Tramadol" data-doseid="tramadolMg" data-volid="tramadolMl">Add to Event</button>
+          </article>
 
-        <article class="drug-card special-formula">
-          <div class="drug-card-head"><h3>Cefazolin (ABO)</h3><span class="protocol-chip">BW ÷ 10 mL</span></div>
-          <div class="drug-result"><b id="cefazolinMl">— mL</b><span>Hospital preset formula</span></div>
-          <p class="drug-note">สูตรนี้ขึ้นกับ dilution ที่โรงพยาบาลใช้ จึงแสดงตามสูตรที่กำหนด ไม่แปลงเป็น mg/kg</p>
-          <button class="btn drug-event-btn" data-drug="Cefazolin" data-volid="cefazolinMl">Add to Event</button>
-        </article>
+          <article class="drug-card custom-drug-card">
+            <div class="drug-card-head"><h3>Additional pre-anesthetic drug</h3><span class="protocol-chip">Hospital library</span></div>
+            <label>เลือกยา<select id="customPreDrug"></select></label>
+            <div class="custom-drug-inputs">
+              <label>Dose / factor<input id="customPreDose" type="number" min="0" step="0.001"></label>
+              <label>Concentration<input id="customPreConc" type="number" min="0" step="0.001"></label>
+            </div>
+            <div class="drug-result"><b id="customPreTotal">—</b><span id="customPreMl">— mL</span></div>
+            <div id="customPreMeta" class="drug-note">เลือกยาจาก Hospital Drug Library</div>
+            <button class="btn custom-drug-event-btn" data-phase="pre">Add selected drug to Event</button>
+          </article>
+        </div>
+      </div>
 
-        <article class="drug-card special-formula">
-          <div class="drug-card-head"><h3>Convenia</h3><span class="protocol-chip">BW ÷ 10 mL</span></div>
-          <div class="drug-result"><b id="conveniaMl">— mL</b><span>Hospital preset formula</span></div>
-          <p class="drug-note">คำนวณ volume ตามสูตรที่กำหนดโดยผู้ใช้</p>
-          <button class="btn drug-event-btn" data-drug="Convenia" data-volid="conveniaMl">Add to Event</button>
-        </article>
+      <div class="drug-phase-section postanes-phase">
+        <div class="drug-phase-head">
+          <div><span class="phase-badge">3</span><div><h3>Post-anesthetic / Postoperative</h3><p>NSAID, antibiotic และยาหลังผ่าตัดตามแผนของสัตวแพทย์</p></div></div>
+        </div>
+        <div class="drug-grid">
+          <article class="drug-card special-formula">
+            <div class="drug-card-head"><h3>Convenia</h3><span class="protocol-chip">BW ÷ 10 mL</span></div>
+            <div class="drug-result"><b id="conveniaMl">— mL</b><span>Hospital preset formula</span></div>
+            <p class="drug-note">คำนวณตาม hospital preset ที่ผู้ใช้กำหนดไว้เดิม</p>
+            <button class="btn drug-event-btn" data-drug="Convenia" data-volid="conveniaMl">Add to Event</button>
+          </article>
 
-        <article class="drug-card">
-          <div class="drug-card-head"><h3>Tramadol</h3><span class="protocol-chip">4 mg/kg</span></div>
-          <div class="drug-result"><b id="tramadolMg">— mg</b><span id="tramadolMl">— mL</span></div>
-          <label>Concentration (mg/mL)<input id="tramadolConc" type="number" min="0.01" step="0.1" value="50"></label>
-          <button class="btn drug-event-btn" data-drug="Tramadol" data-doseid="tramadolMg" data-volid="tramadolMl">Add to Event</button>
-        </article>
+          <article id="nsaidDogCard" class="drug-card">
+            <div class="drug-card-head"><h3>Rimadyl / Carprofen</h3><span class="protocol-chip">DOG • 4.4 mg/kg</span></div>
+            <div class="drug-result"><b id="rimadylMg">— mg</b><span id="rimadylMl">— mL</span></div>
+            <label>Concentration (mg/mL)<input id="rimadylConc" type="number" min="0.01" step="0.1" value="50"></label>
+            <button class="btn drug-event-btn" data-drug="Rimadyl" data-doseid="rimadylMg" data-volid="rimadylMl">Add to Event</button>
+          </article>
 
-        <article id="nsaidDogCard" class="drug-card">
-          <div class="drug-card-head"><h3>Rimadyl / Carprofen</h3><span class="protocol-chip">DOG • 4.4 mg/kg</span></div>
-          <div class="drug-result"><b id="rimadylMg">— mg</b><span id="rimadylMl">— mL</span></div>
-          <label>Concentration (mg/mL)<input id="rimadylConc" type="number" min="0.01" step="0.1" value="50"></label>
-          <button class="btn drug-event-btn" data-drug="Rimadyl" data-doseid="rimadylMg" data-volid="rimadylMl">Add to Event</button>
-        </article>
+          <article id="nsaidCatCard" class="drug-card">
+            <div class="drug-card-head"><h3>Metacam / Meloxicam</h3><span class="protocol-chip">CAT • 0.3 mg/kg</span></div>
+            <div class="drug-result"><b id="metacamMg">— mg</b><span id="metacamMl">— mL</span></div>
+            <label>Concentration (mg/mL)<input id="metacamConc" type="number" min="0.01" step="0.1" value="5"></label>
+            <button class="btn drug-event-btn" data-drug="Metacam" data-doseid="metacamMg" data-volid="metacamMl">Add to Event</button>
+          </article>
 
-        <article id="nsaidCatCard" class="drug-card">
-          <div class="drug-card-head"><h3>Metacam / Meloxicam</h3><span class="protocol-chip">CAT • 0.3 mg/kg</span></div>
-          <div class="drug-result"><b id="metacamMg">— mg</b><span id="metacamMl">— mL</span></div>
-          <label>Concentration (mg/mL)<input id="metacamConc" type="number" min="0.01" step="0.1" value="5"></label>
-          <button class="btn drug-event-btn" data-drug="Metacam" data-doseid="metacamMg" data-volid="metacamMl">Add to Event</button>
-        </article>
+          <article class="drug-card custom-drug-card">
+            <div class="drug-card-head"><h3>Additional postoperative drug</h3><span class="protocol-chip">Hospital library</span></div>
+            <label>เลือกยา<select id="customPostDrug"></select></label>
+            <div class="custom-drug-inputs">
+              <label>Dose / factor<input id="customPostDose" type="number" min="0" step="0.001"></label>
+              <label>Concentration<input id="customPostConc" type="number" min="0" step="0.001"></label>
+            </div>
+            <div class="drug-result"><b id="customPostTotal">—</b><span id="customPostMl">— mL</span></div>
+            <div id="customPostMeta" class="drug-note">เลือกยาจาก Hospital Drug Library</div>
+            <button class="btn custom-drug-event-btn" data-phase="post">Add selected drug to Event</button>
+          </article>
+        </div>
       </div>
     </section>
 
@@ -1100,7 +1182,29 @@
 <label>Carprofen concentration (mg/mL)<input id="settingRimadylConc" type="number" min="0.01" step="0.1" value="50"></label>
 <label>Meloxicam concentration (mg/mL)<input id="settingMetacamConc" type="number" min="0.01" step="0.1" value="5"></label>
 <label>Atropine concentration (mg/mL)<input id="settingAtropineConc" type="number" min="0.01" step="0.1" value="0.6"></label>
-</div><div class="settings-note">บันทึกแล้วจะใช้กับ Drug Calculator และ default ของเคสใหม่</div></section></section>
+</div><div class="settings-note">บันทึกแล้วจะใช้กับ Drug Calculator และ default ของเคสใหม่</div></section>
+
+<section class="panel drug-library-panel">
+  <div class="section-heading">
+    <div>
+      <h2>Hospital Drug Library</h2>
+      <p>เพิ่มยาที่โรงพยาบาลใช้เอง และกำหนด phase + สูตรคำนวณ โดยยาที่เพิ่มใหม่จะไม่ใส่ dose อัตโนมัติจนกว่าผู้ใช้จะกำหนด</p>
+    </div>
+    <div class="button-row">
+      <button id="addDrugLibraryRowBtn" class="btn">＋ Add drug</button>
+      <button id="saveDrugLibraryBtn" class="btn primary">Save drug library</button>
+    </div>
+  </div>
+  <div class="drug-library-help">
+    <b>Calculation modes:</b>
+    mg/kg = dose × BW ÷ concentration mg/mL •
+    μg/kg = dose × BW ÷ concentration μg/mL •
+    mL/kg = factor × BW •
+    BW ÷ factor = BW / factor •
+    Manual = ไม่คำนวณอัตโนมัติ
+  </div>
+  <div id="drugLibraryRows" class="drug-library-rows"></div>
+</section></section>
 
   <section class="footer-note">
     <b>Clinical safety:</b> ANESVET เป็น decision-support และ digital anesthesia record ไม่ใช่ continuous physiologic monitor
@@ -1109,6 +1213,6 @@
 </main>
 
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
-<script src="./app.js?v=11.1"></script>
+<script src="./app.js?v=12"></script>
 </body>
 </html>

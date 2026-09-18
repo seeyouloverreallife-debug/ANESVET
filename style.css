@@ -185,3 +185,46 @@ body.or-fullscreen .topbar,body.or-fullscreen .case-strip,body.or-fullscreen .ta
   .preop-next-actions .btn{width:100%}
   .dose-spotlight-grid{grid-template-columns:1fr 1fr}
 }
+
+
+/* V12 — patient risk + phase drug workflow */
+.patient-clinical-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:11px;margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
+.patient-clinical-grid textarea{resize:vertical;min-height:78px}
+.or-risk-line{margin-top:5px;padding:6px 8px;border-radius:8px;background:rgba(255,229,181,.18);color:#ffe9b8;font-size:.78rem;font-weight:800}
+.dose-phase-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:11px}
+.dose-phase-box{border:1px solid #cfe0e5;border-radius:13px;background:#fff;padding:11px}
+.dose-phase-box h3{font-size:.82rem;text-transform:uppercase;letter-spacing:.05em;color:var(--primary);margin-bottom:8px}
+.dose-phase-box>div{display:grid;grid-template-columns:1fr auto auto;gap:6px;align-items:baseline;padding:7px 0;border-top:1px solid #edf2f4}
+.dose-phase-box>div:first-of-type{border-top:0}
+.dose-phase-box span{font-weight:800;color:var(--muted);font-size:.77rem}
+.dose-phase-box b{font-size:1.5rem;color:#0b5063;font-variant-numeric:tabular-nums}
+.dose-phase-box small{color:var(--muted);font-weight:800}
+.phase-drug-panel{padding:0;overflow:hidden}
+.phase-drug-panel>.section-heading{padding:18px 18px 6px}
+.drug-phase-section{padding:16px 18px;border-top:1px solid var(--line)}
+.drug-phase-section.induction-phase{background:#fbfdff}
+.drug-phase-section.preanes-phase{background:#fbfffc}
+.drug-phase-section.postanes-phase{background:#fffdf9}
+.drug-phase-head>div{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.phase-badge{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:var(--primary);color:#fff;font-weight:950}
+.drug-phase-head h3{margin:0;font-size:1.05rem}.drug-phase-head p{margin:2px 0 0;color:var(--muted);font-size:.82rem}
+.custom-drug-card{border-style:dashed}
+.custom-drug-inputs{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.drug-library-help{background:#f3f8fa;border:1px solid var(--line);border-radius:10px;padding:10px;font-size:.78rem;color:#4c626d;margin:10px 0}
+.drug-library-rows{display:grid;gap:8px}
+.drug-library-row{display:grid;grid-template-columns:1.25fr .85fr .9fr .85fr .8fr .9fr .8fr auto;gap:7px;align-items:end;border:1px solid var(--line);border-radius:11px;padding:9px;background:#fbfdfe}
+.drug-library-row label{font-size:.67rem;color:var(--muted);font-weight:800}
+.drug-library-row input,.drug-library-row select{margin-top:4px}
+.drug-library-row .remove-drug-row{height:42px;min-width:42px;border:1px solid #e1b8b5;background:#fff7f6;color:#9e2924;border-radius:9px;font-weight:950;cursor:pointer}
+.library-incomplete{border-color:#e7c789;background:#fffdf7}
+@media(max-width:1100px){
+  .patient-clinical-grid{grid-template-columns:1fr 1fr}
+  .drug-library-row{grid-template-columns:repeat(4,minmax(0,1fr))}
+}
+@media(max-width:760px){
+  .dose-phase-summary{grid-template-columns:1fr}
+  .drug-library-row{grid-template-columns:1fr 1fr}
+}
+@media(max-width:520px){
+  .patient-clinical-grid,.custom-drug-inputs,.drug-library-row{grid-template-columns:1fr}
+}

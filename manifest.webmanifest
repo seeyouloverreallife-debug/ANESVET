@@ -1,8 +1,8 @@
 {
-  "name": "ANESVET V11.1 — Simplified Clinical Workflow",
+  "name": "ANESVET V12 — Phase-based Drug Workflow",
   "short_name": "ANESVET",
-  "description": "V11.1 hotfix: improved pre-check navigation, Cefazolin/Convenia spotlight, and fixed More menu",
-  "start_url": "./?v=11.1",
+  "description": "Veterinary anesthesia workstation with patient-specific cautions and a configurable hospital drug library",
+  "start_url": "./?v=12",
   "scope": "./",
   "display": "standalone",
   "background_color": "#f3f7f8",
