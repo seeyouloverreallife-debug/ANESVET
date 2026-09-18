@@ -8,8 +8,8 @@
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" href="./icon-192.png">
   <link rel="apple-touch-icon" href="./icon-192.png">
-  <link rel="stylesheet" href="./style.css?v=13.2">
-  <title>ANESVET V13.2</title>
+  <link rel="stylesheet" href="./style.css?v=13.3">
+  <title>ANESVET V13.3</title>
 </head>
 <body>
 <header class="topbar">
@@ -17,7 +17,7 @@
     <div class="brand-mark">A</div>
     <div>
       <div class="eyebrow">GENOVI PET CARE • DIGITAL ANESTHESIA RECORD</div>
-      <h1>ANESVET <span>V13.2</span></h1>
+      <h1>ANESVET <span>V13.3</span></h1>
     </div>
   </div>
   <div class="top-actions">
@@ -246,6 +246,28 @@
           <button id="orFullscreenBtn" class="btn">⛶ Full screen</button>
         </div>
       </div>
+    </section>
+
+    <section class="or-phase-tracker-panel">
+      <div class="or-phase-current">
+        <span>CASE STATUS</span>
+        <b id="orPhaseCurrentText">SETUP</b>
+        <small id="orPhaseCurrentHelp">เตรียมข้อมูลและอุปกรณ์ก่อนเริ่มวางยา</small>
+      </div>
+
+      <div class="or-phase-steps" aria-label="Anesthesia workflow status">
+        <div class="or-phase-step" data-phase-step="setup"><span>1</span><b>Setup</b><small>เตรียมเคส</small></div>
+        <div class="or-phase-arrow">→</div>
+        <div class="or-phase-step" data-phase-step="induction"><span>2</span><b>Induction</b><small>เริ่มวางยา</small></div>
+        <div class="or-phase-arrow">→</div>
+        <div class="or-phase-step" data-phase-step="intraop"><span>3</span><b>Intraoperative</b><small>กำลังผ่าตัด</small></div>
+        <div class="or-phase-arrow">→</div>
+        <div class="or-phase-step" data-phase-step="emergence"><span>4</span><b>Surgery End</b><small>Emergence</small></div>
+        <div class="or-phase-arrow">→</div>
+        <div class="or-phase-step" data-phase-step="recovery"><span>5</span><b>Recovery</b><small>หลังถอดท่อ</small></div>
+      </div>
+
+      <div id="orPhaseActionHint" class="or-phase-action-hint">Next: กด Start case เพื่อเข้าสู่ Induction</div>
     </section>
 
     <section class="or-status-row">
@@ -1523,6 +1545,6 @@
 </dialog>
 
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
-<script src="./app.js?v=13.2"></script>
+<script src="./app.js?v=13.3"></script>
 </body>
 </html>

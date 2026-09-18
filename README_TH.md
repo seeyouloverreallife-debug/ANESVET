@@ -1,50 +1,27 @@
-# ANESVET V13.2 — Recovery Workflow
+# ANESVET V13.3 — OR Status Tracker
 
-## แก้ Navigation
-- เปลี่ยน page/step แล้ว scroll กลับด้านบนอัตโนมัติ
+แก้ปัญหา: หน้า OR LIVE มองสถานะ workflow ไม่ชัด
 
-## OR → Recovery
-- Surgery end → EMERGENCE
-- Extubation → auto-fill extubation time + เข้า Recovery อัตโนมัติ
-- หลังเข้า Recovery แล้ว OR LIVE ถูกล็อก ไม่ย้อนกลับไป INTRAOPERATIVE ตามปกติ
-- Fresh case เริ่มที่ SETUP
+## เพิ่ม Status Tracker ขนาดใหญ่บน OR LIVE
+แสดงลำดับ:
+1. Setup
+2. Induction
+3. Intraoperative
+4. Surgery End / Emergence
+5. Recovery
 
-## Emergency return
-หน้า Recovery มีปุ่ม:
-⚠ Emergency return to OR LIVE
+Current phase จะถูก highlight ชัดเจน และ phase ที่ผ่านแล้วแสดง completed
 
-ใช้กรณี post-extubation apnea / airway problem / re-intubation / resuscitation
-ระบบใช้ phase EMERGENCY RETURN ไม่เปลี่ยนกลับเป็น INTRAOPERATIVE
-ใน OR LIVE ปุ่ม Recovery จะใช้กลับเข้าสู่ Recovery อีกครั้ง
+## การเปลี่ยน status
+- ก่อนเริ่มเคส → SETUP
+- Start case → INDUCTION
+- Surgery start → INTRAOPERATIVE
+- Surgery end → SURGERY END / EMERGENCE
+- Extubation → RECOVERY อัตโนมัติ
+- Recovery complete → COMPLETE
+- Emergency return → EMERGENCY RETURN
 
-## Recovery serial monitoring
-บันทึกเป็นช่วงเวลา:
-- HR
-- RR
-- MAP (optional)
-- SpO2
-- Temperature
-- Oxygen support
-- Mentation
-- Pain/recovery note
-
-Interval 5 / 10 / 15 min พร้อม due badge
-
-## Recovery completeness
-Readiness ดู:
-- checklist
-- RR / SpO2 / Temp
-- mentation
-- extubation time
-- มี serial recovery record อย่างน้อย 1 ชุด
-- ไม่มี active Emergency Return
-
-## Timeline / PDF
-Recovery vital records รวมใน Timeline และ PDF report
-
-## Additional UX
-- Auto-seed recovery vitals จากค่าปัจจุบันใน OR ตอนเริ่ม recovery
-- ป้องกัน milestone ย้อนกลับจาก EMERGENCE / RECOVERY ไป Surgery start
+ใต้ tracker มีข้อความ Next: บอก action ถัดไป
 
 ## URL
-https://seeyouloverreallife-debug.github.io/ANESVET/?v=13.2
+https://seeyouloverreallife-debug.github.io/ANESVET/?v=13.3

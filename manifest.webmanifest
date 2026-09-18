@@ -1,8 +1,8 @@
 {
-  "name": "ANESVET V13.2 — Recovery Workflow",
+  "name": "ANESVET V13.3 — OR Status Tracker",
   "short_name": "ANESVET",
-  "description": "Veterinary anesthesia workstation with automatic OR-to-recovery transition, emergency OR return, and serial recovery vital-sign records",
-  "start_url": "./?v=13.2",
+  "description": "Veterinary anesthesia workstation with a prominent OR workflow status tracker",
+  "start_url": "./?v=13.3",
   "scope": "./",
   "display": "standalone",
   "background_color": "#f3f7f8",
