@@ -8,8 +8,8 @@
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" href="./icon-192.png">
   <link rel="apple-touch-icon" href="./icon-192.png">
-  <link rel="stylesheet" href="./style.css?v=10">
-  <title>ANESVET V10</title>
+  <link rel="stylesheet" href="./style.css?v=11">
+  <title>ANESVET V11</title>
 </head>
 <body>
 <header class="topbar">
@@ -17,7 +17,7 @@
     <div class="brand-mark">A</div>
     <div>
       <div class="eyebrow">GENOVI PET CARE • DIGITAL ANESTHESIA RECORD</div>
-      <h1>ANESVET <span>V10</span></h1>
+      <h1>ANESVET <span>V11</span></h1>
     </div>
   </div>
   <div class="top-actions">
@@ -53,21 +53,25 @@
     <span id="globalStatus" class="status-pill good">STABLE</span>
   </section>
 
-  <nav class="tabs" aria-label="เมนู">
-    <button class="tab active" data-tab="patient">Patient</button>
-    <button class="tab or-live-tab" data-tab="orlive">● OR LIVE</button>
-    <button class="tab" data-tab="preop">Pre-op</button>
-    <button class="tab" data-tab="plan">Plan</button>
-    <button class="tab" data-tab="dashboard">Dashboard</button>
-    <button class="tab" data-tab="record">Record</button>
-    <button class="tab" data-tab="trends">Trends</button>
-    <button class="tab" data-tab="timeline">Timeline</button>
-    <button class="tab" data-tab="drugs">Drug Calculator</button>
-    <button class="tab" data-tab="events">Events & Drugs</button>
-    <button class="tab" data-tab="recovery">Recovery</button>
-    <button class="tab" data-tab="cases">Cases</button>
-    <button class="tab" data-tab="settings">Settings</button>
+  <nav class="tabs workflow-tabs" aria-label="ขั้นตอนการวางยาสลบ">
+    <button class="tab active" data-tab="patient"><span class="step-no">1</span><span>ประวัติผู้ป่วย</span></button>
+    <button class="tab" data-tab="preop"><span class="step-no">2</span><span>Pre-check</span></button>
+    <button class="tab" data-tab="drugs"><span class="step-no">3</span><span>Drug Calculator</span></button>
+    <button class="tab or-live-tab" data-tab="orlive"><span class="step-no">4</span><span>ช่วงวางยา</span></button>
+    <button class="tab" data-tab="recovery"><span class="step-no">5</span><span>Recovery</span></button>
+    <button class="tab end-case-tab" data-tab="endcase"><span class="step-no">6</span><span>End Case</span></button>
+    <button id="moreMenuBtn" class="tab more-tab" type="button">⋯ เพิ่มเติม</button>
   </nav>
+  <div id="moreMenu" class="more-menu" hidden>
+    <button data-more-tab="plan">Anesthesia Plan</button>
+    <button data-more-tab="dashboard">Dashboard</button>
+    <button data-more-tab="record">Record</button>
+    <button data-more-tab="trends">Trends</button>
+    <button data-more-tab="timeline">Timeline</button>
+    <button data-more-tab="events">Events & Drugs</button>
+    <button data-more-tab="cases">Cases</button>
+    <button data-more-tab="settings">Settings</button>
+  </div>
 
   <section id="patient" class="tabpage active">
     <section class="patient-hero">
@@ -662,6 +666,45 @@
   </section>
 
   <section id="drugs" class="tabpage">
+    <section class="panel drug-workflow-head">
+      <div class="section-heading">
+        <div>
+          <div class="eyebrow">STEP 3</div>
+          <h2>Drug Calculator</h2>
+          <p>ตรวจน้ำหนัก → ตรวจ concentration → คำนวณ → ยืนยันปริมาณยาที่ให้จริง</p>
+        </div>
+        <div class="button-row">
+          <button id="toggleConcentrationBtn" class="btn">⚙ ปรับความเข้มข้นยา</button>
+          <button id="openSettingsFromDrugBtn" class="btn">Settings</button>
+        </div>
+      </div>
+      <div id="concentrationDrawer" class="concentration-drawer" hidden>
+        <div class="conc-grid">
+          <label>Diazepam (mg/mL)<input id="quickDiazepamConc" type="number" min="0.01" step="0.1"></label>
+          <label>Propofol (mg/mL)<input id="quickPropofolConc" type="number" min="0.01" step="0.1"></label>
+          <label>Tramadol (mg/mL)<input id="quickTramadolConc" type="number" min="0.01" step="0.1"></label>
+          <label>Carprofen (mg/mL)<input id="quickRimadylConc" type="number" min="0.01" step="0.1"></label>
+          <label>Meloxicam (mg/mL)<input id="quickMetacamConc" type="number" min="0.01" step="0.1"></label>
+          <label>Atropine (mg/mL)<input id="quickAtropineConc" type="number" min="0.01" step="0.1"></label>
+        </div>
+        <div class="drawer-actions">
+          <span class="small muted">ตั้งค่าให้ตรงกับยาที่โรงพยาบาลมีจริง</span>
+          <button id="saveQuickConcentrationBtn" class="btn primary">Save concentrations</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel dose-spotlight-panel">
+      <div class="dose-spotlight-title">Calculated injection volume</div>
+      <div class="dose-spotlight-grid">
+        <div><span>Diazepam</span><b id="spotDiazepam">—</b><small>mL</small></div>
+        <div><span>Propofol</span><b id="spotPropofol">—</b><small>mL</small></div>
+        <div><span>Tramadol</span><b id="spotTramadol">—</b><small>mL</small></div>
+        <div><span id="spotNsaidLabel">NSAID</span><b id="spotNsaid">—</b><small>mL</small></div>
+      </div>
+      <p class="small muted">ตัวเลขใหญ่คือปริมาตรที่คำนวณจากน้ำหนักและ concentration ปัจจุบัน ควรตรวจฉลากยาและยืนยัน actual administered volume ก่อนให้ทุกครั้ง</p>
+    </section>
+
     <section class="panel">
       <div class="section-heading">
         <div>
@@ -1012,6 +1055,38 @@
     </div>
   </section>
 
+  <section id="endcase" class="tabpage">
+    <section class="panel end-case-panel">
+      <div class="section-heading">
+        <div>
+          <div class="eyebrow">STEP 6</div>
+          <h2>End Case</h2>
+          <p>ตรวจความครบถ้วนก่อนปิดเคสและบันทึกเข้า Cases</p>
+        </div>
+        <span id="endCaseReadiness" class="status-pill warn">REVIEW</span>
+      </div>
+      <div class="end-case-summary">
+        <div><span>Patient</span><b id="endPatient">—</b></div>
+        <div><span>Procedure</span><b id="endProcedure">—</b></div>
+        <div><span>Total time</span><b id="endDuration">00:00:00</b></div>
+        <div><span>Records</span><b id="endRecordCount">0</b></div>
+        <div><span>Events / Drugs</span><b id="endEventCount">0</b></div>
+        <div><span>Recovery</span><b id="endRecoveryStatus">Not complete</b></div>
+      </div>
+      <div class="end-case-checklist">
+        <label><input id="endConfirmRecovery" type="checkbox"> ตรวจ Recovery แล้ว</label>
+        <label><input id="endConfirmRecord" type="checkbox"> ตรวจ Anesthesia record แล้ว</label>
+        <label><input id="endConfirmDrugs" type="checkbox"> ตรวจ Drug / Event แล้ว</label>
+        <label><input id="endConfirmPdf" type="checkbox"> พร้อม Archive / Export report</label>
+      </div>
+      <div class="end-case-actions">
+        <button id="endExportPdfBtn" class="btn">Export PDF Report</button>
+        <button id="endSaveArchiveBtn" class="btn primary">✓ End & Archive Case</button>
+      </div>
+      <div class="settings-note">End Case จะหยุด timer, archive เคส และกลับไปหน้าเริ่มเคสใหม่หลังยืนยัน</div>
+    </section>
+  </section>
+
   <section id="settings" class="tabpage"><section class="panel"><div class="section-heading"><div><h2>Hospital settings</h2><p>ปรับ default ของโรงพยาบาลโดยไม่ต้องแก้ code</p></div><button id="saveSettingsBtn" class="btn primary">Save settings</button></div><div class="settings-grid">
 <label>Default record interval<select id="settingInterval"><option value="5">5 min</option><option value="10">10 min</option></select></label>
 <label>Diazepam concentration (mg/mL)<input id="settingDiazepamConc" type="number" min="0.01" step="0.1" value="5"></label>
@@ -1029,6 +1104,6 @@
 </main>
 
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
-<script src="./app.js?v=10"></script>
+<script src="./app.js?v=11"></script>
 </body>
 </html>

@@ -1,21 +1,26 @@
-# ANESVET V10 — Clinical Polish & Safety
+# ANESVET V11 — Simplified Clinical Workflow
 
-V10 ยังคงเป็น single-user / local-first และเน้นความปลอดภัยกับ workflow ในห้องผ่าตัด มากกว่าการเพิ่มเมนูใหม่
+เมนูหลักเหลือ 6 ขั้นตอน:
+1. ประวัติผู้ป่วย
+2. Pre-check
+3. Drug Calculator
+4. ช่วงวางยา (OR LIVE)
+5. Recovery
+6. End Case
 
-## ใหม่ใน V10
-- แก้ timer runtime issue จาก V9
-- Autosave indicator: Saved locally + เวลา
-- OR LIVE จัด hierarchy ใหม่: HR / MAP / SpO2 / ETCO2 เด่นกว่า RR / Temp
-- Record countdown และปุ่ม RECORD DUE
-- Prioritized alerts: Immediate ก่อน Trend
-- Protection ก่อน reset/new case และ warning เมื่อปิดหน้าขณะ timer RUNNING
-- Record correction history: ค่าเดิม → ค่าใหม่ + reason
-- Drug administration confirmation ก่อนบันทึกยาที่ให้จริง
-- Recovery mode + recovery timer + recovery complete
-- Full backup / restore: current case + archives + settings
-- PDF เพิ่ม correction history และข้อมูล recovery phase
+เมนูรองถูกย้ายเข้า “เพิ่มเติม”: Plan, Dashboard, Record, Trends, Timeline, Events & Drugs, Cases, Settings
 
-## Update
-Upload ไฟล์ทั้งหมดทับเวอร์ชันเดิม แล้ว Commit
-เปิด:
-https://seeyouloverreallife-debug.github.io/ANESVET/?v=10
+Drug Calculator:
+- ปุ่มปรับ concentration ในหน้าเดียว
+- ปุ่มไป Settings
+- แสดง calculated injection volume ตัวเลขใหญ่
+- concentration sync กับ calculator/settings
+
+End Case:
+- สรุป patient / procedure / total time / records / events / recovery
+- checklist ก่อนปิดเคส
+- Export PDF
+- End & Archive Case
+
+เปิดหลัง deploy:
+https://seeyouloverreallife-debug.github.io/ANESVET/?v=11

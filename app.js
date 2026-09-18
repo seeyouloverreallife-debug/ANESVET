@@ -3,10 +3,10 @@
 
 const $ = id => document.getElementById(id);
 const $$ = sel => [...document.querySelectorAll(sel)];
-const CURRENT_KEY = 'anesvet_v10_current';
-const ARCHIVE_KEY = 'anesvet_v10_archive';
-const TAB_KEY = 'anesvet_v10_tab';
-const SETTINGS_KEY='anesvet_v10_settings';
+const CURRENT_KEY = 'anesvet_v11_current';
+const ARCHIVE_KEY = 'anesvet_v11_archive';
+const TAB_KEY = 'anesvet_v11_tab';
+const SETTINGS_KEY='anesvet_v11_settings';
 
 const numericFields = ['weight','hr','rr','sap','map','dap','spo2','etco2','temp','vaporizer','o2flow','fluidRateInput','fluidTotal','recRR','recSpO2','recTemp'];
 const dataFields = [
@@ -149,6 +149,7 @@ function load(){
   try{
     let raw=JSON.parse(localStorage.getItem(CURRENT_KEY)||'null');
     if(!raw){
+      const v10=JSON.parse(localStorage.getItem('anesvet_v10_current')||'null');
       const v9=JSON.parse(localStorage.getItem('anesvet_v9_current')||'null');
       const v8=JSON.parse(localStorage.getItem('anesvet_v8_current')||'null');
       const v7=JSON.parse(localStorage.getItem('anesvet_v7_current')||'null');
@@ -156,7 +157,8 @@ function load(){
       const v6=JSON.parse(localStorage.getItem('anesvet_v6_current')||'null');
       const v5=JSON.parse(localStorage.getItem('anesvet_v5_current')||'null');
       const v4=JSON.parse(localStorage.getItem('anesvet_v4_current')||'null');
-      if(v9){
+      if(v10){raw=v10;localStorage.setItem(CURRENT_KEY,JSON.stringify(raw));
+      }else if(v9){
         raw=v9;if(!Array.isArray(raw.responses))raw.responses=[];if(!Array.isArray(raw.corrections))raw.corrections=[];if(!raw.casePhase)raw.casePhase='intraop';localStorage.setItem(CURRENT_KEY,JSON.stringify(raw));
       }else if(v8){
         raw=v8;if(!Array.isArray(raw.responses))raw.responses=[];localStorage.setItem(CURRENT_KEY,JSON.stringify(raw));
@@ -304,13 +306,66 @@ $$('.or-milestone').forEach(btn=>btn.addEventListener('click',()=>{addEvent({cat
 $('orFullscreenBtn')?.addEventListener('click',async()=>{try{if(!document.fullscreenElement){if(document.documentElement.requestFullscreen)await document.documentElement.requestFullscreen();document.body.classList.add('or-fullscreen');$('orFullscreenBtn').textContent='Exit full screen'}else{if(document.exitFullscreen)await document.exitFullscreen();document.body.classList.remove('or-fullscreen');$('orFullscreenBtn').textContent='⛶ Full screen'}}catch(e){document.body.classList.toggle('or-fullscreen')}});document.addEventListener('fullscreenchange',()=>{if(!document.fullscreenElement){document.body.classList.remove('or-fullscreen');if($('orFullscreenBtn'))$('orFullscreenBtn').textContent='⛶ Full screen'}});
 $('orWakeBtn')?.addEventListener('click',async()=>{if(!('wakeLock' in navigator)){toast('Wake Lock ไม่รองรับใน browser นี้');return}try{if(wakeLock){await wakeLock.release();wakeLock=null;$('orWakeBtn').textContent='☀ Keep awake';toast('Screen wake lock off')}else{wakeLock=await navigator.wakeLock.request('screen');$('orWakeBtn').textContent='☀ Awake ON';wakeLock.addEventListener('release',()=>{wakeLock=null;if($('orWakeBtn'))$('orWakeBtn').textContent='☀ Keep awake'});toast('Screen will stay awake')}}catch(e){toast('ไม่สามารถเปิด screen wake lock ได้')}});
 
+
+function closeMoreMenu(){const m=$('moreMenu');if(m)m.hidden=true}
+$('moreMenuBtn')?.addEventListener('click',()=>{const m=$('moreMenu');if(m)m.hidden=!m.hidden});
+$$('[data-more-tab]').forEach(btn=>btn.addEventListener('click',()=>{closeMoreMenu();setTab(btn.dataset.moreTab)}));
+
+function syncQuickConcentrations(){
+  const pairs={quickDiazepamConc:'diazepamConc',quickPropofolConc:'propofolConc',quickTramadolConc:'tramadolConc',quickRimadylConc:'rimadylConc',quickMetacamConc:'metacamConc',quickAtropineConc:'atropineConc'};
+  Object.entries(pairs).forEach(([q,m])=>{if($(q)&&$(m))$(q).value=$(m).value});
+}
+$('toggleConcentrationBtn')?.addEventListener('click',()=>{const d=$('concentrationDrawer');if(!d)return;d.hidden=!d.hidden;if(!d.hidden)syncQuickConcentrations()});
+$('openSettingsFromDrugBtn')?.addEventListener('click',()=>setTab('settings'));
+$('saveQuickConcentrationBtn')?.addEventListener('click',()=>{
+  const pairs={quickDiazepamConc:'diazepamConc',quickPropofolConc:'propofolConc',quickTramadolConc:'tramadolConc',quickRimadylConc:'rimadylConc',quickMetacamConc:'metacamConc',quickAtropineConc:'atropineConc'};
+  Object.entries(pairs).forEach(([q,m])=>{if($(q)&&$(m)&&Number($(q).value)>0){$(m).value=$(q).value;$(m).dispatchEvent(new Event('input',{bubbles:true}))}});
+  const settingsPairs={settingDiazepamConc:'diazepamConc',settingPropofolConc:'propofolConc',settingTramadolConc:'tramadolConc',settingRimadylConc:'rimadylConc',settingMetacamConc:'metacamConc',settingAtropineConc:'atropineConc'};
+  Object.entries(settingsPairs).forEach(([s,m])=>{if($(s)&&$(m))$(s).value=$(m).value});
+  $('saveSettingsBtn')?.click();updateDoseSpotlights();toast('Drug concentrations updated');
+});
+function mlText(id){const t=$(id)?.textContent||'';const m=t.match(/([0-9]+(?:\.[0-9]+)?)\s*mL/i);return m?m[1]:'—'}
+function updateDoseSpotlights(){
+  if($('spotDiazepam'))$('spotDiazepam').textContent=mlText('diazepamMl');
+  if($('spotPropofol'))$('spotPropofol').textContent=mlText('propofolMl');
+  if($('spotTramadol'))$('spotTramadol').textContent=mlText('tramadolMl');
+  const cat=$('species')?.value==='cat';
+  if($('spotNsaid'))$('spotNsaid').textContent=mlText(cat?'metacamMl':'rimadylMl');
+  if($('spotNsaidLabel'))$('spotNsaidLabel').textContent=cat?'Meloxicam':'Carprofen';
+}
+function renderEndCase(){
+  if(!$('endcase'))return;
+  $('endPatient').textContent=`${$('patientName')?.value.trim()||'Unnamed'} • ${$('species')?.value==='cat'?'Cat':'Dog'} • ${$('weight')?.value||'—'} kg`;
+  $('endProcedure').textContent=$('procedure')?.value.trim()||'—';
+  $('endDuration').textContent=formatElapsed(currentElapsed());
+  $('endRecordCount').textContent=(state.records||[]).length;
+  $('endEventCount').textContent=(state.events||[]).length;
+  $('endRecoveryStatus').textContent=state.recoveryCompletedAt?'Complete':'Review recovery';
+  const ready=['endConfirmRecovery','endConfirmRecord','endConfirmDrugs','endConfirmPdf'].every(id=>!!$(id)?.checked);
+  $('endCaseReadiness').textContent=ready?'READY TO END':'REVIEW';
+  $('endCaseReadiness').className=`status-pill ${ready?'good':'warn'}`;
+}
+['endConfirmRecovery','endConfirmRecord','endConfirmDrugs','endConfirmPdf'].forEach(id=>$(id)?.addEventListener('change',renderEndCase));
+$('endExportPdfBtn')?.addEventListener('click',()=>exportPdfReport());
+$('endSaveArchiveBtn')?.addEventListener('click',()=>{
+  const ready=['endConfirmRecovery','endConfirmRecord','endConfirmDrugs','endConfirmPdf'].every(id=>!!$(id)?.checked);
+  if(!ready){toast('กรุณาตรวจ checklist ก่อน End Case');return}
+  if(!confirm('End & Archive this anesthesia case?'))return;
+  if(state.timer.running)pauseTimer();
+  archiveSnapshot();
+  setTimeout(()=>resetCurrent(),350);
+});
+
 function setTab(id){
+  closeMoreMenu();
   $$('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===id));
   $$('.tabpage').forEach(p=>p.classList.toggle('active',p.id===id));
   localStorage.setItem(TAB_KEY,id);
   if(id==='trends') renderTrends();
   if(id==='cases') renderArchives();
   if(id==='orlive') renderOrLive();
+  if(id==='drugs'){updateDoseSpotlights();syncQuickConcentrations();}
+  if(id==='endcase') renderEndCase();
 }
 $$('.tab').forEach(b=>b.addEventListener('click',()=>setTab(b.dataset.tab)));
 
@@ -790,6 +845,7 @@ function drugCalc(){
   const sp=$('species')?.value;
   if($('nsaidDogCard')) $('nsaidDogCard').style.display=sp==='dog'?'flex':'none';
   if($('nsaidCatCard')) $('nsaidCatCard').style.display=sp==='cat'?'flex':'none';
+  updateDoseSpotlights();
 }
 function fmtDose(n){
   if(!Number.isFinite(n))return '—';
@@ -1029,6 +1085,7 @@ function getArchive(){
   try{
     let a=JSON.parse(localStorage.getItem(ARCHIVE_KEY)||'null');
     if(!Array.isArray(a)){
+      const v10=JSON.parse(localStorage.getItem('anesvet_v10_archive')||'null');
       const v9=JSON.parse(localStorage.getItem('anesvet_v9_archive')||'null');
       const v8=JSON.parse(localStorage.getItem('anesvet_v8_archive')||'null');
       const v7=JSON.parse(localStorage.getItem('anesvet_v7_archive')||'null');
@@ -1036,7 +1093,7 @@ function getArchive(){
       const v6=JSON.parse(localStorage.getItem('anesvet_v6_archive')||'null');
       const v5=JSON.parse(localStorage.getItem('anesvet_v5_archive')||'null');
       const v4=JSON.parse(localStorage.getItem('anesvet_v4_archive')||'null');
-      if(Array.isArray(v9)){a=v9;}else if(Array.isArray(v8)){a=v8;}else if(Array.isArray(v7)){a=v7;}else if(Array.isArray(v61)){
+      if(Array.isArray(v10)){a=v10;}else if(Array.isArray(v9)){a=v9;}else if(Array.isArray(v8)){a=v8;}else if(Array.isArray(v7)){a=v7;}else if(Array.isArray(v61)){
         a=v61;
       }else if(Array.isArray(v6)){
         a=v6;
@@ -1088,7 +1145,7 @@ function appRootUrl(){
   let path=here.pathname;
   if(!path.endsWith('/')) path=path.replace(/\/[^/]*$/,'/');
   const url=new URL(path, here.origin);
-  url.searchParams.set('v','10');
+  url.searchParams.set('v','11');
   return url.href;
 }
 function restartAtAppRoot(){
@@ -1098,7 +1155,7 @@ function restartAtAppRoot(){
 }
 
 function defaultSettings(){return{interval:'5',diazepamConc:'5',propofolConc:'10',tramadolConc:'50',rimadylConc:'50',metacamConc:'5',atropineConc:'0.6'}}
-function loadSettings(){let s;try{s=JSON.parse(localStorage.getItem(SETTINGS_KEY)||'null')||JSON.parse(localStorage.getItem('anesvet_v9_settings')||'null')||JSON.parse(localStorage.getItem('anesvet_v8_settings')||'null')}catch(e){}s={...defaultSettings(),...(s||{})};if($('settingInterval'))$('settingInterval').value=s.interval;if($('settingDiazepamConc'))$('settingDiazepamConc').value=s.diazepamConc;if($('settingPropofolConc'))$('settingPropofolConc').value=s.propofolConc;if($('settingTramadolConc'))$('settingTramadolConc').value=s.tramadolConc;if($('settingRimadylConc'))$('settingRimadylConc').value=s.rimadylConc;if($('settingMetacamConc'))$('settingMetacamConc').value=s.metacamConc;if($('settingAtropineConc'))$('settingAtropineConc').value=s.atropineConc}
+function loadSettings(){let s;try{s=JSON.parse(localStorage.getItem(SETTINGS_KEY)||'null')||JSON.parse(localStorage.getItem('anesvet_v10_settings')||'null')||JSON.parse(localStorage.getItem('anesvet_v9_settings')||'null')||JSON.parse(localStorage.getItem('anesvet_v8_settings')||'null')}catch(e){}s={...defaultSettings(),...(s||{})};if($('settingInterval'))$('settingInterval').value=s.interval;if($('settingDiazepamConc'))$('settingDiazepamConc').value=s.diazepamConc;if($('settingPropofolConc'))$('settingPropofolConc').value=s.propofolConc;if($('settingTramadolConc'))$('settingTramadolConc').value=s.tramadolConc;if($('settingRimadylConc'))$('settingRimadylConc').value=s.rimadylConc;if($('settingMetacamConc'))$('settingMetacamConc').value=s.metacamConc;if($('settingAtropineConc'))$('settingAtropineConc').value=s.atropineConc}
 $('saveSettingsBtn')?.addEventListener('click',()=>{const s={interval:$('settingInterval').value,diazepamConc:$('settingDiazepamConc').value,propofolConc:$('settingPropofolConc').value,tramadolConc:$('settingTramadolConc').value,rimadylConc:$('settingRimadylConc').value,metacamConc:$('settingMetacamConc').value,atropineConc:$('settingAtropineConc').value};localStorage.setItem(SETTINGS_KEY,JSON.stringify(s));$('recordInterval').value=s.interval;$('diazepamConc').value=s.diazepamConc;$('propofolConc').value=s.propofolConc;$('tramadolConc').value=s.tramadolConc;$('rimadylConc').value=s.rimadylConc;$('metacamConc').value=s.metacamConc;$('atropineConc').value=s.atropineConc;updateDashboard();toast('Hospital settings saved')});
 function freshState(){
   return {
@@ -1155,6 +1212,6 @@ load();
 syncAsaCards();updatePatientSaveStatus();
 const initialTab=state.patientSaved?((state.timer.running||(state.timer.elapsedMs||0)>0)?'orlive':(localStorage.getItem(TAB_KEY)||'dashboard')):'patient';
 setTab(initialTab);
-updateDashboard();renderPreop();renderRecords();renderCorrections();renderEvents();renderTrends();renderProcedureTimeline();renderRecovery();renderRecoveryState();renderArchives();updateDue();renderTimerState();renderOrLive();renderSaveState();
+updateDashboard();renderPreop();renderRecords();renderCorrections();renderEvents();renderTrends();renderProcedureTimeline();renderRecovery();renderRecoveryState();renderArchives();updateDue();renderTimerState();updateDoseSpotlights();renderEndCase();renderOrLive();renderSaveState();
 if(state.timer.running && state.timer.startedEpoch) startTimerLoop();
 })();

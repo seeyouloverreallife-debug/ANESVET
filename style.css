@@ -146,3 +146,27 @@ body.or-fullscreen .topbar,body.or-fullscreen .case-strip,body.or-fullscreen .ta
 .report-correction{display:grid;grid-template-columns:70px 70px 1fr;gap:6px;font-size:8px;border-bottom:1px solid #ddd;padding:3px 0}.report-correction:last-child{border-bottom:0}
 @media(max-width:1000px){.correction-grid{grid-template-columns:1fr 1fr}.correction-grid .btn{min-height:45px}.or-vital-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.or-vital-card.secondary{grid-column:span 1}}
 @media(max-width:640px){.recovery-command{align-items:stretch;flex-direction:column}.recovery-command-actions{justify-content:flex-start}.correction-grid{grid-template-columns:1fr}.or-vital-grid{grid-template-columns:1fr 1fr}.or-vital-card.priority input{font-size:2rem!important}.backup-row{align-items:stretch}.backup-row .btn{width:100%}}
+
+/* V11 simplified workflow */
+.workflow-tabs{display:grid;grid-template-columns:repeat(6,minmax(0,1fr)) auto;gap:8px;overflow:visible;padding:8px 4px;background:#f4f8fa;border-bottom:1px solid var(--line)}
+.workflow-tabs .tab{display:flex;align-items:center;justify-content:center;gap:7px;min-width:0;padding:10px 8px;white-space:nowrap}
+.workflow-tabs .step-no{width:24px;height:24px;border-radius:50%;display:inline-grid;place-items:center;background:#e7eff2;color:#45616d;font-size:.72rem;font-weight:950}
+.workflow-tabs .tab.active .step-no{background:#fff;color:var(--primary)}
+.workflow-tabs .end-case-tab{border-color:#e7c6c3}.workflow-tabs .more-tab{font-weight:900}
+.more-menu{position:relative;z-index:40;background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);padding:8px;margin:0 4px 10px auto;width:min(330px,calc(100% - 8px));display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.more-menu[hidden]{display:none}.more-menu button{border:1px solid var(--line);background:#fff;border-radius:9px;padding:10px;text-align:left;font-weight:800;color:var(--ink);cursor:pointer}
+.drug-workflow-head{margin-bottom:10px}.concentration-drawer{margin-top:12px;border-top:1px solid var(--line);padding-top:12px}
+.conc-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.drawer-actions{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-top:10px}
+.dose-spotlight-panel{border:2px solid #b9dbe4;background:linear-gradient(180deg,#fbfeff,#f4fbfd)}
+.dose-spotlight-title{font-size:.76rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:900}
+.dose-spotlight-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:10px 0}
+.dose-spotlight-grid>div{border:1px solid #cfe0e5;background:#fff;border-radius:12px;padding:12px;text-align:center}
+.dose-spotlight-grid span{display:block;color:var(--muted);font-weight:800;font-size:.75rem}
+.dose-spotlight-grid b{display:inline-block;font-size:2.15rem;line-height:1;margin-top:6px;font-variant-numeric:tabular-nums;color:#0b5063}
+.dose-spotlight-grid small{display:inline-block;margin-left:4px;color:var(--muted);font-weight:800}
+.end-case-panel{max-width:1100px;margin:0 auto}.end-case-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:14px}
+.end-case-summary>div{border:1px solid var(--line);border-radius:11px;padding:11px}.end-case-summary span{display:block;color:var(--muted);font-size:.7rem;font-weight:850;text-transform:uppercase}.end-case-summary b{display:block;margin-top:3px}
+.end-case-checklist{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:14px}.end-case-checklist label{display:flex;align-items:center;gap:9px;border:1px solid var(--line);border-radius:10px;padding:11px;background:#fbfdfe;font-weight:750}.end-case-checklist input{width:19px;height:19px;accent-color:var(--primary)}
+.end-case-actions{display:flex;justify-content:flex-end;gap:9px;margin-top:14px}
+@media(max-width:1050px){.workflow-tabs{grid-template-columns:repeat(3,minmax(0,1fr))}.workflow-tabs .more-tab{grid-column:1/-1}.dose-spotlight-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:650px){.workflow-tabs{grid-template-columns:1fr 1fr}.workflow-tabs .tab{justify-content:flex-start}.conc-grid,.end-case-summary,.end-case-checklist{grid-template-columns:1fr}.drawer-actions,.end-case-actions{flex-direction:column;align-items:stretch}.dose-spotlight-grid{grid-template-columns:1fr 1fr}}

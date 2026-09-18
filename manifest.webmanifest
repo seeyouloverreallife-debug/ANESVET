@@ -1,8 +1,8 @@
 {
-  "name": "ANESVET V10 — Clinical Safety Anesthesia Workstation",
+  "name": "ANESVET V11 — Simplified Clinical Workflow",
   "short_name": "ANESVET",
-  "description": "Single-user veterinary anesthesia workstation with OR Live, autosave status, correction history, recovery mode and backup/restore",
-  "start_url": "./?v=10",
+  "description": "Veterinary anesthesia record with a simplified six-step clinical workflow",
+  "start_url": "./?v=11",
   "scope": "./",
   "display": "standalone",
   "background_color": "#f3f7f8",
