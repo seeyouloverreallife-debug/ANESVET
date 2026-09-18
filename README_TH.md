@@ -1,55 +1,35 @@
-# ANESVET V14.1 — Clinical Record Integrity & Archive UX
+# ANESVET V14.3 — Patient Master & Registration Upgrade
 
-## Archive Search / Filter
-- Search patient / HN / Record ID / procedure / surgeon / anesthetist
-- Date range
-- Locked / Voided / Working copy
-- Newest / Oldest / Patient / HN sort
+## Patient Master
+ค้นผู้ป่วยเดิมด้วย HN / ชื่อ / Microchip / Breed แล้วกด Use patient
+ระบบดึงข้อมูลประจำตัวและประวัติสำคัญ แต่ไม่ดึง procedure/team ของเคสเก่า
 
-## Void instead of Delete
-- LOCKED FINAL records cannot be permanently deleted from normal archive UI
-- Void requires reason + author + typed VOID confirmation
-- Original record, checksum, amendments and audit trail remain available
-- Working copies can still be deleted
+## Patient database
+- IndexedDB DB version 2
+- เพิ่ม store `patients`
+- seed Patient Master จาก archived cases เดิมเมื่อเปิด V14.3 ครั้งแรก
+- fallback เป็น localStorage หาก IndexedDB ใช้ไม่ได้
+- Save Patient & Case Setup จะ create/update Patient Master อัตโนมัติ
+- HN และ Microchip ช่วยจับคู่ผู้ป่วยเดิมเพื่อลด duplicate
 
-## Final Sign-off
-Before End, Lock & Archive:
-- Anesthetist signs
-- Surgeon signs
-- Signer name + timestamp stored
-- Both signatures are required for READY TO END
+## Registration fields
+เพิ่ม Sex / Reproductive status / Microchip
 
-## Record Identity & Integrity
-- Human Record ID: ANV-YYYYMMDD-XXXXX
-- Final SHA-256 checksum created at final lock
-- Archive shows short checksum
-- Verify integrity button recomputes checksum
-- Amendments / void metadata do not rewrite original clinical checksum
+## Estimated age
+ยังคงใช้ calendar anchor เพื่อให้อายุเดินตามเวลา แต่ไม่แสดง anchor เป็น exact DOB
+- อายุคร่าว ๆ เป็นปี → Estimated birth period ~YYYY
+- มีเดือน/สัปดาห์ → Estimated birth period ~YYYY-MM
+- UI ระบุว่า calendar date เป็น anchor
+- PDF แสดง Estimated birth period + Age source
 
-## Backup Health
-Cases page shows:
-- Database backend
-- Archived case count
-- Last backup age
-- Browser storage estimate
-- Backup now button
-- Backup age warning at 7+ days
+## Hospital Breed Aliases
+Settings สามารถเพิ่ม alias เช่น:
+- ปอมขาว → Pomeranian
+- บริติชช็อตแฮร์ → British Shorthair
+- แมวบ้าน → Domestic Shorthair
 
-## Sticky OR status
-While scrolling OR LIVE, a compact sticky bar keeps visible:
-- Case status
-- Case time
-- Next vital-sign due
-- Record now button
-
-## Preserved V14 hardening
-- IndexedDB archive
-- First-record reminder
-- Sound/vibration alert
-- Wake Lock
-- Plausibility validation
-- Protocol governance/versioning
-- Audit trail + amendments
+## Backup / Restore
+Backup V14.3 รวม Patient Master และ Breed aliases ด้วย
 
 ## URL
-https://seeyouloverreallife-debug.github.io/ANESVET/?v=14.1
+https://seeyouloverreallife-debug.github.io/ANESVET/?v=14.3

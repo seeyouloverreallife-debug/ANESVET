@@ -460,3 +460,83 @@ body.or-fullscreen .topbar,body.or-fullscreen .case-strip,body.or-fullscreen .ta
 .report-void-notice{border:2px solid #b1352d;background:#fff1f0;color:#8d251f;padding:10px 12px;margin:10px 0;font-weight:900;text-align:center}.report-integrity-value{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:8px;word-break:break-all}
 @media(max-width:1050px){.archive-filter-grid{grid-template-columns:1fr 1fr 1fr}.archive-search-wide{grid-column:1/-1}.data-health-grid{grid-template-columns:1fr 1fr}}
 @media(max-width:700px){.or-sticky-mini{grid-template-columns:1fr 1fr}.or-sticky-mini button{grid-column:1/-1}.archive-filter-grid,.data-health-grid,.final-signoff-grid{grid-template-columns:1fr}.archive-search-wide{grid-column:auto}}
+
+
+/* V14.2 — breed autocomplete + DOB/age workflow */
+.breed-autocomplete{position:relative}
+.breed-autocomplete>small,.age-entry-field small{display:block;margin-top:4px;color:var(--muted);font-size:.7rem;line-height:1.3}
+.breed-suggestions{
+  position:absolute;z-index:70;top:calc(100% - 18px);left:0;right:0;
+  max-height:310px;overflow:auto;background:#fff;border:1px solid #bcd0d6;
+  border-radius:11px;box-shadow:0 14px 34px rgba(18,53,65,.16);padding:5px
+}
+.breed-suggestions[hidden]{display:none}
+.breed-suggestion{
+  display:grid;grid-template-columns:1fr auto;gap:8px;width:100%;
+  text-align:left;border:0;background:#fff;border-radius:8px;padding:9px 10px;cursor:pointer
+}
+.breed-suggestion:hover,.breed-suggestion.active{background:#edf8fa}
+.breed-suggestion b{font-size:.82rem;color:#173f49}
+.breed-suggestion span{font-size:.72rem;color:var(--muted);align-self:center}
+.breed-suggestion-empty{padding:10px;color:var(--muted);font-size:.76rem}
+
+.age-entry-field{
+  grid-column:span 2;border:1px solid var(--line);border-radius:12px;padding:10px;
+  background:#fbfdfe
+}
+.age-primary-grid{display:grid;grid-template-columns:minmax(180px,1fr) minmax(180px,1fr);gap:10px;align-items:end}
+.age-result-card{
+  min-height:61px;border:1px solid #cfdee2;border-radius:10px;background:#fff;padding:8px 10px;
+  display:flex;flex-direction:column;justify-content:center
+}
+.age-result-card>span{font-size:.67rem;color:var(--muted);font-weight:850;text-transform:uppercase}
+.age-result-card>b{font-size:1.05rem;color:#0b5d70;margin-top:2px}
+.age-result-card small{margin-top:2px!important}
+.age-unknown-line{margin-top:8px}
+.approx-age-controls{
+  display:grid;grid-template-columns:90px 90px 90px minmax(190px,auto);gap:8px;
+  align-items:end;margin-top:8px;padding-top:8px;border-top:1px dashed #cddadd
+}
+.approx-age-controls[hidden]{display:none}
+.approx-age-controls input{text-align:center}
+#birthDate.estimated-dob{border-color:#d5ae61;background:#fffaf0}
+@media(max-width:800px){
+  .age-entry-field{grid-column:1/-1}
+  .age-primary-grid{grid-template-columns:1fr}
+  .approx-age-controls{grid-template-columns:repeat(3,1fr)}
+  .approx-age-controls .btn{grid-column:1/-1}
+}
+@media(max-width:520px){
+  .approx-age-controls{grid-template-columns:1fr 1fr 1fr}
+  .breed-suggestions{max-height:250px}
+}
+
+
+/* V14.3 — Patient Master & Registration */
+.patient-master-panel{border:2px solid #c5dce2;background:linear-gradient(180deg,#fbfeff,#f6fbfc)}
+.patient-master-heading-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.patient-master-search-row{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center}
+.patient-master-search-row input{font-size:1rem}
+.patient-master-results{display:grid;gap:7px;margin-top:10px;max-height:320px;overflow:auto}
+.patient-master-card{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;border:1px solid #d2e0e4;border-radius:11px;background:#fff;padding:10px 11px}
+.patient-master-card:hover{border-color:#8ebcc7;background:#fbfeff}
+.patient-master-card h3{margin:0 0 4px;font-size:.95rem;color:#164451}
+.patient-master-meta{display:flex;gap:7px;flex-wrap:wrap;color:var(--muted);font-size:.72rem}
+.patient-master-card .patient-use-btn{white-space:nowrap}
+.linked-patient-banner{margin-top:10px;padding:9px 10px;border-radius:10px;border:1px solid #b7d9c7;background:#f0faf5;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.linked-patient-banner[hidden]{display:none}
+.linked-patient-banner span{display:block;color:#55736a;font-size:.66rem;font-weight:850;text-transform:uppercase}
+.linked-patient-banner b{display:block;margin-top:2px;color:#225b45}
+.breed-alias-rows{display:grid;gap:7px}
+.breed-alias-row{display:grid;grid-template-columns:130px 1fr 1.3fr auto;gap:8px;align-items:end;border:1px solid var(--line);border-radius:10px;padding:8px;background:#fbfdfe}
+.breed-alias-row label{margin:0}
+.breed-alias-row .remove-breed-alias{min-width:38px;height:38px;border-radius:9px;border:1px solid #e0b2ad;background:#fff6f5;color:#9a2c25;font-weight:900}
+.age-result-card.estimated-age-card{border-color:#dbbc78;background:#fffbf1}
+.age-source-badge{display:inline-flex;padding:2px 6px;border-radius:999px;font-size:.62rem;font-weight:900;background:#fff1cf;color:#74520f;margin-left:5px}
+@media(max-width:760px){
+  .patient-master-card{grid-template-columns:1fr}
+  .patient-master-card .patient-use-btn{width:100%}
+  .patient-master-search-row{grid-template-columns:1fr}
+  .breed-alias-row{grid-template-columns:1fr 1fr}
+  .breed-alias-row label:nth-child(3){grid-column:1/-1}
+}

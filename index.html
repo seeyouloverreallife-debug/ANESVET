@@ -8,8 +8,8 @@
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" href="./icon-192.png">
   <link rel="apple-touch-icon" href="./icon-192.png">
-  <link rel="stylesheet" href="./style.css?v=14.1">
-  <title>ANESVET V14.1</title>
+  <link rel="stylesheet" href="./style.css?v=14.3">
+  <title>ANESVET V14.3</title>
 </head>
 <body>
 <header class="topbar">
@@ -17,7 +17,7 @@
     <div class="brand-mark">A</div>
     <div>
       <div class="eyebrow">GENOVI PET CARE • DIGITAL ANESTHESIA RECORD</div>
-      <h1>ANESVET <span>V14.1</span></h1>
+      <h1>ANESVET <span>V14.3</span></h1>
     </div>
   </div>
   <div class="top-actions">
@@ -94,6 +94,31 @@
       <span id="patientSaveStatus" class="status-pill warn">NOT SAVED</span>
     </section>
 
+    <section class="panel patient-master-panel">
+      <div class="section-heading">
+        <div>
+          <div class="eyebrow">PATIENT MASTER</div>
+          <h2>ค้นผู้ป่วยเดิมก่อนสร้างเคสใหม่</h2>
+          <p>ค้นด้วย HN, ชื่อสัตว์ หรือ Microchip แล้วดึงข้อมูลประจำตัว/ประวัติสำคัญมาใช้ โดยเคสเก่าจะไม่ถูกแก้ไข</p>
+        </div>
+        <div class="patient-master-heading-actions">
+          <span id="patientMasterCount" class="status-pill good">0 PATIENTS</span>
+          <button id="newPatientMasterBtn" class="btn" type="button">＋ New patient</button>
+        </div>
+      </div>
+      <div class="patient-master-search-row">
+        <input id="patientMasterSearch" type="search" placeholder="ค้น HN / ชื่อ / Microchip / Breed" autocomplete="off">
+        <span id="patientMasterSearchStatus" class="muted small">Recent patients</span>
+      </div>
+      <div id="patientMasterResults" class="patient-master-results">
+        <div class="empty-state">กำลังโหลด Patient Master…</div>
+      </div>
+      <div id="linkedPatientBanner" class="linked-patient-banner" hidden>
+        <div><span>Linked Patient Master</span><b id="linkedPatientText">—</b></div>
+        <button id="unlinkPatientBtn" class="btn" type="button">Unlink</button>
+      </div>
+    </section>
+
     <section class="panel patient-entry-panel">
       <div class="patient-form-grid">
         <label>ชื่อสัตว์ <span class="required">*</span>
@@ -108,12 +133,65 @@
             <option value="cat">Cat</option>
           </select>
         </label>
-        <label>พันธุ์
-          <input id="breed" type="text" placeholder="เช่น Poodle / DSH">
+        <label>Sex
+          <select id="sex">
+            <option value="">— Unknown —</option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+          </select>
         </label>
-        <label>อายุ
-          <input id="age" type="text" placeholder="เช่น 6 y / 8 mo">
+        <label>Reproductive status
+          <select id="reproductiveStatus">
+            <option value="">— Unknown —</option>
+            <option value="intact">Intact</option>
+            <option value="neutered">Neutered</option>
+            <option value="spayed">Spayed</option>
+          </select>
         </label>
+        <label>Microchip <span class="muted small">optional</span>
+          <input id="microchip" type="text" inputmode="numeric" autocomplete="off" placeholder="เลขไมโครชิป">
+        </label>
+        <input id="patientMasterId" type="hidden">
+        <label class="breed-autocomplete">พันธุ์
+          <input id="breed" type="text" autocomplete="off" placeholder="พิมพ์ไทยหรือ English เช่น ปอม / Pomeranian" aria-autocomplete="list" aria-controls="breedSuggestions" aria-expanded="false">
+          <div id="breedSuggestions" class="breed-suggestions" role="listbox" hidden></div>
+          <small>พิมพ์ไทย/English เพื่อค้นหา • ถ้าไม่มีในรายการสามารถพิมพ์เองได้</small>
+        </label>
+
+        <div class="age-entry-field">
+          <div class="age-primary-grid">
+            <label>วันเกิด / Date of birth
+              <input id="birthDate" type="date">
+            </label>
+            <div class="age-result-card">
+              <span>อายุปัจจุบัน</span>
+              <b id="ageDisplay">—</b>
+              <small id="birthDateStatus">เลือกวันเกิด หรือกรอกอายุโดยประมาณ</small>
+            </div>
+          </div>
+
+          <label class="checkline age-unknown-line">
+            <input id="birthDateUnknown" type="checkbox"> ไม่ทราบวันเกิด — กรอกอายุโดยประมาณ
+          </label>
+
+          <div id="approxAgeControls" class="approx-age-controls" hidden>
+            <label>ปี
+              <input id="approxAgeYears" type="number" min="0" max="40" step="1" inputmode="numeric" value="0">
+            </label>
+            <label>เดือน
+              <input id="approxAgeMonths" type="number" min="0" max="11" step="1" inputmode="numeric" value="0">
+            </label>
+            <label>สัปดาห์
+              <input id="approxAgeWeeks" type="number" min="0" max="52" step="1" inputmode="numeric" value="0">
+            </label>
+            <button id="applyApproxAgeBtn" class="btn" type="button">คำนวณวันเกิดโดยประมาณ</button>
+          </div>
+
+          <input id="age" type="hidden">
+          <input id="birthDateEstimated" type="checkbox" hidden>
+          <input id="ageSource" type="hidden" value="">
+          <input id="estimatedBirthPeriod" type="hidden">
+        </div>
         <label>น้ำหนัก (kg) <span class="required">*</span>
           <input id="weight" type="number" min="0.1" step="0.1" value="10">
         </label>
@@ -1564,6 +1642,21 @@
   </div>
 </section>
 
+<section class="panel breed-alias-panel">
+  <div class="section-heading">
+    <div>
+      <h2>Hospital Breed Aliases</h2>
+      <p>เพิ่มคำเรียก/การสะกดที่โรงพยาบาลใช้บ่อย ให้ค้นแล้วชี้ไปยังชื่อพันธุ์มาตรฐาน เช่น “ปอมขาว” → Pomeranian</p>
+    </div>
+    <div class="button-row">
+      <button id="addBreedAliasBtn" class="btn" type="button">＋ Add alias</button>
+      <button id="saveBreedAliasesBtn" class="btn primary" type="button">Save aliases</button>
+    </div>
+  </div>
+  <div id="breedAliasRows" class="breed-alias-rows"></div>
+  <div class="settings-note">Alias ใช้เฉพาะช่วยค้นหา ไม่เปลี่ยนข้อมูลในเคสเก่าหรือชื่อพันธุ์ที่บันทึกไว้แล้ว</div>
+</section>
+
 <section class="panel quick-preset-settings-panel">
   <div class="section-heading">
     <div>
@@ -1672,6 +1765,6 @@
 </dialog>
 
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
-<script src="./app.js?v=14.1"></script>
+<script src="./app.js?v=14.3"></script>
 </body>
 </html>

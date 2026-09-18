@@ -3,21 +3,23 @@
 
 const $ = id => document.getElementById(id);
 const $$ = sel => [...document.querySelectorAll(sel)];
-const CURRENT_KEY = 'anesvet_v14_1_current';
-const ARCHIVE_KEY = 'anesvet_v14_1_archive_legacy';
-const TAB_KEY = 'anesvet_v14_1_tab';
-const SETTINGS_KEY='anesvet_v14_1_settings';
-const DRUG_LIBRARY_KEY='anesvet_v14_1_drug_library';
-const QUICK_PRESET_KEY='anesvet_v14_1_quick_presets';
+const CURRENT_KEY = 'anesvet_v14_3_current';
+const ARCHIVE_KEY = 'anesvet_v14_3_archive_legacy';
+const TAB_KEY = 'anesvet_v14_3_tab';
+const SETTINGS_KEY='anesvet_v14_3_settings';
+const DRUG_LIBRARY_KEY='anesvet_v14_3_drug_library';
+const QUICK_PRESET_KEY='anesvet_v14_3_quick_presets';
 const ALERT_PREF_KEY='anesvet_due_alert_feedback';
-const PROTOCOL_AUDIT_KEY='anesvet_v14_1_protocol_audit';
-const LAST_BACKUP_KEY='anesvet_v14_1_last_backup';
+const PROTOCOL_AUDIT_KEY='anesvet_v14_3_protocol_audit';
+const LAST_BACKUP_KEY='anesvet_v14_3_last_backup';
+const BREED_ALIAS_KEY='anesvet_v14_3_breed_aliases';
+const PATIENT_FALLBACK_KEY='anesvet_v14_3_patients_fallback';
 const DB_NAME='ANESVET_DB';
-const DB_VERSION=1;
+const DB_VERSION=2;
 
 const numericFields = ['weight','hr','rr','sap','map','dap','spo2','etco2','temp','vaporizer','o2flow','fluidRateInput','fluidTotal','recHR','recRR','recMAP','recSpO2','recTemp'];
 const dataFields = [
-  'patientName','hospitalId','species','breed','weight','age','bcs','asa','emergency','patientProcedure','patientAllergies','patientComorbidities','patientPrecautions','procedure','surgeon','anesthetist','surgicalAssistant',
+  'patientName','hospitalId','patientMasterId','species','sex','reproductiveStatus','microchip','breed','weight','age','birthDate','birthDateEstimated','ageSource','estimatedBirthPeriod','approxAgeYears','approxAgeMonths','approxAgeWeeks','bcs','asa','emergency','patientProcedure','patientAllergies','patientComorbidities','patientPrecautions','procedure','surgeon','anesthetist','surgicalAssistant',
   'hr','rr','sap','map','dap','spo2','etco2','temp','vaporizer','o2flow','fluidRateInput','fluidTotal',
   'depth','ventilation','bradyPoorPerf','bloodLoss','cardiacRisk','respRisk','recordInterval','reminderOn',
   'recordNote','recHR','recRR','recMAP','recSpO2','recTemp','recExtubation','recOxygen','recMentation','recPain','recRecordInterval','planPremed','planInduction','planMaintenance','planAnalgesia','planAntibiotic','planNSAID','planBlock','planNote','actualDiazepamMl','actualPropofolMl','actualTramadolMl','balanceCrystalloid','balanceBolus','balanceBloodIn','balanceBloodLoss','balanceUrine','fluidActualTotal','airwayEttSize','airwayEttDepth','airwayCuff','airwayDifficulty','airwayCircuit','airwayVentMode','airwayVt','airwayPip','airwayPeep','airwayVentRr','diazepamConc','propofolConc','tramadolConc','rimadylConc','metacamConc','adrenalineConc','atropineConc','atropineMode','dopamineDose','dopamineConc'
@@ -32,6 +34,17 @@ let state = {
   events: [],
   recoveryChecks: [false,false,false,false,false,false],
   patientSaved:false,
+  patientMasterId:'',
+  sex:'',
+  reproductiveStatus:'',
+  microchip:'',
+  birthDate:'',
+  birthDateEstimated:false,
+  ageSource:'',
+  estimatedBirthPeriod:'',
+  approxAgeYears:'0',
+  approxAgeMonths:'0',
+  approxAgeWeeks:'0',
   preopChecks:{},preopNA:{},
   caseStartedAt:null,
   responses:[],
@@ -320,7 +333,18 @@ function openAnesvetDb(){
   archiveDbPromise=new Promise((resolve,reject)=>{
     if(!('indexedDB' in window)){reject(new Error('IndexedDB unavailable'));return}
     const req=indexedDB.open(DB_NAME,DB_VERSION);
-    req.onupgradeneeded=()=>{const db=req.result;if(!db.objectStoreNames.contains('cases')){const s=db.createObjectStore('cases',{keyPath:'caseId'});s.createIndex('archivedAt','archivedAt',{unique:false})}if(!db.objectStoreNames.contains('meta'))db.createObjectStore('meta',{keyPath:'key'})};
+    req.onupgradeneeded=()=>{
+      const db=req.result;
+      if(!db.objectStoreNames.contains('cases')){const s=db.createObjectStore('cases',{keyPath:'caseId'});s.createIndex('archivedAt','archivedAt',{unique:false})}
+      if(!db.objectStoreNames.contains('meta'))db.createObjectStore('meta',{keyPath:'key'});
+      if(!db.objectStoreNames.contains('patients')){
+        const p=db.createObjectStore('patients',{keyPath:'patientId'});
+        p.createIndex('hospitalId','hospitalId',{unique:false});
+        p.createIndex('patientNameLower','patientNameLower',{unique:false});
+        p.createIndex('microchip','microchip',{unique:false});
+        p.createIndex('updatedAt','updatedAt',{unique:false});
+      }
+    };
     req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error||new Error('IndexedDB failed'));
   });
   return archiveDbPromise;
@@ -329,10 +353,52 @@ async function idbGetAllCases(){const db=await openAnesvetDb();return await new 
 async function idbPutCase(c){const db=await openAnesvetDb(),copy=JSON.parse(JSON.stringify(c));if(!copy.caseId)copy.caseId=crypto.randomUUID?crypto.randomUUID():String(Date.now()+Math.random());return await new Promise((resolve,reject)=>{const r=db.transaction('cases','readwrite').objectStore('cases').put(copy);r.onsuccess=()=>resolve(copy);r.onerror=()=>reject(r.error)})}
 async function idbDeleteCase(id){const db=await openAnesvetDb();return await new Promise((resolve,reject)=>{const r=db.transaction('cases','readwrite').objectStore('cases').delete(id);r.onsuccess=()=>resolve();r.onerror=()=>reject(r.error)})}
 async function idbClearCases(){const db=await openAnesvetDb();return await new Promise((resolve,reject)=>{const r=db.transaction('cases','readwrite').objectStore('cases').clear();r.onsuccess=()=>resolve();r.onerror=()=>reject(r.error)})}
+
+let patientCache=[];
+let patientBackend='initializing';
+async function idbGetAllPatients(){
+  const db=await openAnesvetDb();
+  return await new Promise((resolve,reject)=>{const r=db.transaction('patients','readonly').objectStore('patients').getAll();r.onsuccess=()=>resolve((r.result||[]).sort((a,b)=>(b.updatedAt||0)-(a.updatedAt||0)));r.onerror=()=>reject(r.error)});
+}
+async function idbPutPatient(p){
+  const db=await openAnesvetDb(),copy=JSON.parse(JSON.stringify(p));
+  if(!copy.patientId)copy.patientId=crypto.randomUUID?crypto.randomUUID():String(Date.now()+Math.random());
+  copy.patientNameLower=String(copy.patientName||'').toLowerCase();copy.updatedAt=copy.updatedAt||Date.now();
+  return await new Promise((resolve,reject)=>{const r=db.transaction('patients','readwrite').objectStore('patients').put(copy);r.onsuccess=()=>resolve(copy);r.onerror=()=>reject(r.error)});
+}
+async function idbClearPatients(){const db=await openAnesvetDb();return await new Promise((resolve,reject)=>{const r=db.transaction('patients','readwrite').objectStore('patients').clear();r.onsuccess=()=>resolve();r.onerror=()=>reject(r.error)})}
+function loadFallbackPatients(){try{const p=JSON.parse(localStorage.getItem(PATIENT_FALLBACK_KEY)||'[]');return Array.isArray(p)?p:[]}catch(e){return[]}}
+function saveFallbackPatients(){localStorage.setItem(PATIENT_FALLBACK_KEY,JSON.stringify(patientCache))}
+function normalizePatientKey(v){return String(v||'').toLowerCase().trim().replace(/\s+/g,' ')}
+function patientFromCase(c){
+  if(!c?.patientName)return null;
+  return {patientId:c.patientMasterId||crypto.randomUUID?.()||String(Date.now()+Math.random()),hospitalId:c.hospitalId||'',patientName:c.patientName||'',species:c.species||'dog',sex:c.sex||'',reproductiveStatus:c.reproductiveStatus||'',microchip:c.microchip||'',breed:c.breed||'',birthDate:c.birthDate||'',birthDateEstimated:!!c.birthDateEstimated,ageSource:c.ageSource||(c.birthDateEstimated?'estimated':c.birthDate?'dob':''),estimatedBirthPeriod:c.estimatedBirthPeriod||'',approxAgeYears:c.approxAgeYears||'0',approxAgeMonths:c.approxAgeMonths||'0',approxAgeWeeks:c.approxAgeWeeks||'0',lastWeight:c.weight||'',lastBcs:c.bcs||'',allergies:c.patientAllergies||'',comorbidities:c.patientComorbidities||'',precautions:c.patientPrecautions||'',createdAt:c.createdAt||Date.now(),updatedAt:c.archivedAt||c.lastSavedAt||c.createdAt||Date.now()};
+}
+function patientIdentityKey(p){
+  const hn=normalizePatientKey(p.hospitalId),chip=normalizePatientKey(p.microchip);
+  if(hn)return `hn:${hn}`;if(chip)return `chip:${chip}`;
+  return `name:${normalizePatientKey(p.patientName)}|${p.species||''}|${normalizePatientKey(p.birthDate||p.estimatedBirthPeriod||p.breed)}`;
+}
+async function initPatientMaster(){
+  try{
+    patientCache=await idbGetAllPatients();patientBackend='IndexedDB';
+    if(!patientCache.length){
+      const seen=new Map();
+      [...archiveCache].sort((a,b)=>(b.archivedAt||b.createdAt||0)-(a.archivedAt||a.createdAt||0)).forEach(c=>{const p=patientFromCase(c);if(!p)return;const k=patientIdentityKey(p);if(!seen.has(k))seen.set(k,p)});
+      patientCache=[...seen.values()];for(const p of patientCache)await idbPutPatient(p);
+    }
+  }catch(e){
+    patientBackend='localStorage fallback';patientCache=loadFallbackPatients();
+    if(!patientCache.length){const seen=new Map();archiveCache.forEach(c=>{const p=patientFromCase(c);if(p&&!seen.has(patientIdentityKey(p)))seen.set(patientIdentityKey(p),p)});patientCache=[...seen.values()];saveFallbackPatients()}
+  }
+  patientCache.sort((a,b)=>(b.updatedAt||0)-(a.updatedAt||0));renderPatientMaster();return patientCache;
+}
+function getPatients(){return patientCache||[]}
+
 async function idbPutMeta(key,value){try{const db=await openAnesvetDb();await new Promise((resolve,reject)=>{const r=db.transaction('meta','readwrite').objectStore('meta').put({key,value,updatedAt:Date.now()});r.onsuccess=()=>resolve();r.onerror=()=>reject(r.error)})}catch(e){}}
 function queueCurrentMirror(){clearTimeout(currentMirrorTimer);const copy=JSON.parse(JSON.stringify(state));currentMirrorTimer=setTimeout(()=>idbPutMeta('current',copy),180)}
 function getLegacyArchiveSeed(){
-  const keys=['anesvet_v14_archive_legacy','anesvet_v13_4_archive','anesvet_v13_3_archive','anesvet_v13_2_archive','anesvet_v13_1_archive','anesvet_v13_archive','anesvet_v12_1_archive','anesvet_v12_archive','anesvet_v11_archive','anesvet_v10_archive','anesvet_v9_archive','anesvet_v8_archive','anesvet_v7_archive','anesvet_v6_1_archive','anesvet_v6_archive','anesvet_v5_archive','anesvet_v4_archive','anesvet_v3_archive'];
+  const keys=['anesvet_v14_2_archive_legacy','anesvet_v14_1_archive_legacy','anesvet_v14_archive_legacy','anesvet_v13_4_archive','anesvet_v13_3_archive','anesvet_v13_2_archive','anesvet_v13_1_archive','anesvet_v13_archive','anesvet_v12_1_archive','anesvet_v12_archive','anesvet_v11_archive','anesvet_v10_archive','anesvet_v9_archive','anesvet_v8_archive','anesvet_v7_archive','anesvet_v6_1_archive','anesvet_v6_archive','anesvet_v5_archive','anesvet_v4_archive','anesvet_v3_archive'];
   for(const key of keys){try{const a=JSON.parse(localStorage.getItem(key)||'null');if(Array.isArray(a)&&a.length)return a.map(c=>{const x=JSON.parse(JSON.stringify(c));if(!x.caseId)x.caseId=crypto.randomUUID?crypto.randomUUID():String((x.createdAt||Date.now())+Math.random());if(!x.humanRecordId)x.humanRecordId=makeHumanRecordId(x.createdAt||Date.now());if(!Array.isArray(x.auditTrail))x.auditTrail=[];if(!Array.isArray(x.amendments))x.amendments=[];if(!x.finalSignoff)x.finalSignoff={anesthetist:null,surgeon:null};if(!('voidedAt' in x))x.voidedAt=null;return x})}catch(e){}}
   return [];
 }
@@ -352,7 +418,7 @@ async function initArchiveDb(){
     }
     archiveCache=dbCases;archiveBackend='IndexedDB';
   }catch(e){archiveCache=getLegacyArchiveSeed();archiveBackend='localStorage fallback'}
-  renderStorageStatus();renderArchives();queueCurrentMirror();return archiveCache;
+  await initPatientMaster();renderStorageStatus();renderArchives();queueCurrentMirror();return archiveCache;
 }
 function renderStorageStatus(){const el=$('storageStatus');if(el)el.textContent=`Storage: ${archiveBackend} • ${archiveCache.length} archived case${archiveCache.length===1?'':'s'} • no 50-case cap`}
 
@@ -386,6 +452,8 @@ function migrateV3Case(raw){
 function load(){
   try{
     let raw=JSON.parse(localStorage.getItem(CURRENT_KEY)||'null');
+    if(!raw){const p143=JSON.parse(localStorage.getItem('anesvet_v14_2_current')||'null');if(p143){raw=p143;localStorage.setItem(CURRENT_KEY,JSON.stringify(raw));}}
+    if(!raw){const p142=JSON.parse(localStorage.getItem('anesvet_v14_1_current')||'null');if(p142){raw=p142;localStorage.setItem(CURRENT_KEY,JSON.stringify(raw));}}
     if(!raw){const p141=JSON.parse(localStorage.getItem('anesvet_v14_current')||'null');if(p141){raw=p141;localStorage.setItem(CURRENT_KEY,JSON.stringify(raw));}}
     if(!raw){const prev134=JSON.parse(localStorage.getItem('anesvet_v13_4_current')||'null');if(prev134){raw=prev134;localStorage.setItem(CURRENT_KEY,JSON.stringify(raw));}}
     if(!raw){const prev133=JSON.parse(localStorage.getItem('anesvet_v13_3_current')||'null');if(prev133){raw=prev133;localStorage.setItem(CURRENT_KEY,JSON.stringify(raw));}}
@@ -476,6 +544,329 @@ if((state.timer.running||state.casePhase==='recovery')&&autoWakeEnabled())reques
   $('caseClock').textContent=formatElapsed(currentElapsed());
 }
 
+
+const BREED_CATALOG=[
+  // Dogs
+  {s:'dog',en:'Mixed Breed',th:'พันธุ์ผสม',a:['mixed','crossbreed','ลูกผสม','หมาพันธุ์ผสม']},
+  {s:'dog',en:'Thai Ridgeback',th:'ไทยหลังอาน',a:['thai ridgeback dog','หลังอาน']},
+  {s:'dog',en:'Thai Bangkaew Dog',th:'บางแก้ว',a:['bangkaew','บางแก้วไทย']},
+  {s:'dog',en:'Pomeranian',th:'ปอมเมอเรเนียน',a:['pom','ปอม']},
+  {s:'dog',en:'Chihuahua',th:'ชิวาวา',a:['chiwawa','ชิวาว่า']},
+  {s:'dog',en:'Shih Tzu',th:'ชิสุ',a:['shihtzu','ชิห์สุ','ชิห์ซู']},
+  {s:'dog',en:'Poodle',th:'พุดเดิ้ล',a:['พุดเดิล']},
+  {s:'dog',en:'Toy Poodle',th:'ทอยพุดเดิ้ล',a:['toy poodle','พุดเดิ้ลทอย']},
+  {s:'dog',en:'Miniature Poodle',th:'มินิเอเจอร์พุดเดิ้ล',a:['mini poodle','พุดเดิ้ลมินิ']},
+  {s:'dog',en:'Yorkshire Terrier',th:'ยอร์กเชียร์ เทอร์เรีย',a:['yorkie','ยอร์คเชียร์','ยอร์กกี้']},
+  {s:'dog',en:'Maltese',th:'มอลทีส',a:['มอลทิส']},
+  {s:'dog',en:'Pug',th:'ปั๊ก',a:['ปั๊ก']},
+  {s:'dog',en:'French Bulldog',th:'เฟรนช์ บูลด็อก',a:['frenchie','เฟรนช์บูลด็อก','เฟรนบูลด็อก']},
+  {s:'dog',en:'English Bulldog',th:'อิงลิช บูลด็อก',a:['bulldog','บูลด็อก']},
+  {s:'dog',en:'Boston Terrier',th:'บอสตัน เทอร์เรีย',a:['บอสตัน']},
+  {s:'dog',en:'Beagle',th:'บีเกิล',a:['บีเกิ้ล']},
+  {s:'dog',en:'Dachshund',th:'ดัชชุน',a:['sausage dog','ดัชชุนด์','ไส้กรอก']},
+  {s:'dog',en:'Miniature Schnauzer',th:'มินิเอเจอร์ ชเนาเซอร์',a:['mini schnauzer','ชเนาเซอร์']},
+  {s:'dog',en:'Cocker Spaniel',th:'ค็อกเกอร์ สแปเนียล',a:['cocker','ค็อกเกอร์']},
+  {s:'dog',en:'Cavalier King Charles Spaniel',th:'คาวาเลียร์ คิง ชาร์ลส์ สแปเนียล',a:['cavalier','คาวาเลียร์']},
+  {s:'dog',en:'Golden Retriever',th:'โกลเด้น รีทรีฟเวอร์',a:['golden','โกลเด้น']},
+  {s:'dog',en:'Labrador Retriever',th:'ลาบราดอร์ รีทรีฟเวอร์',a:['labrador','lab','ลาบราดอร์']},
+  {s:'dog',en:'German Shepherd Dog',th:'เยอรมัน เชพเพิร์ด',a:['gsd','german shepherd','อัลเซเชียน','เยอรมันเชพเพิร์ด']},
+  {s:'dog',en:'Belgian Malinois',th:'เบลเยียน มาลินอยส์',a:['malinois','มาลินอยส์']},
+  {s:'dog',en:'Siberian Husky',th:'ไซบีเรียน ฮัสกี',a:['husky','ฮัสกี้','ไซบีเรียน']},
+  {s:'dog',en:'Alaskan Malamute',th:'อลาสกัน มาลามิวท์',a:['malamute','มาลามิวท์']},
+  {s:'dog',en:'Samoyed',th:'ซามอยด์',a:['samoyed','ซามอย']},
+  {s:'dog',en:'Chow Chow',th:'เชาเชา',a:['chow','เชาเชา']},
+  {s:'dog',en:'Shiba Inu',th:'ชิบะ อินุ',a:['shiba','ชิบะ']},
+  {s:'dog',en:'Akita Inu',th:'อากิตะ อินุ',a:['akita','อากิตะ']},
+  {s:'dog',en:'Border Collie',th:'บอร์เดอร์ คอลลี่',a:['border','บอร์เดอร์']},
+  {s:'dog',en:'Shetland Sheepdog',th:'เชทแลนด์ ชีพด็อก',a:['sheltie','เชลตี้']},
+  {s:'dog',en:'Pembroke Welsh Corgi',th:'เพมโบรค เวลช์ คอร์กี้',a:['corgi','คอร์กี้']},
+  {s:'dog',en:'Australian Shepherd',th:'ออสเตรเลียน เชพเพิร์ด',a:['aussie','ออสซี่']},
+  {s:'dog',en:'Jack Russell Terrier',th:'แจ็ครัสเซล เทอร์เรีย',a:['jack russell','แจ็ครัสเซล']},
+  {s:'dog',en:'American Pit Bull Terrier',th:'อเมริกัน พิตบูล เทอร์เรีย',a:['pit bull','pitbull','พิตบูล']},
+  {s:'dog',en:'American Bully',th:'อเมริกัน บูลลี่',a:['bully','บูลลี่']},
+  {s:'dog',en:'Bull Terrier',th:'บูล เทอร์เรีย',a:['bull terrier','บูลเทอร์เรีย']},
+  {s:'dog',en:'Rottweiler',th:'ร็อตไวเลอร์',a:['rottweiler','ร็อตไวเลอร์']},
+  {s:'dog',en:'Doberman Pinscher',th:'โดเบอร์แมน',a:['doberman','โดเบอร์แมน']},
+  {s:'dog',en:'Great Dane',th:'เกรทเดน',a:['great dane','เกรทเดน']},
+  {s:'dog',en:'Cane Corso',th:'คาเน คอร์โซ',a:['cane corso','คอร์โซ']},
+  {s:'dog',en:'Boxer',th:'บ็อกเซอร์',a:['boxer','บ็อกเซอร์']},
+  {s:'dog',en:'Bichon Frise',th:'บิชอง ฟริเซ่',a:['bichon','บิชอง']},
+  {s:'dog',en:'Pekingese',th:'ปักกิ่ง',a:['pekingese','ปักกิ่ง']},
+  {s:'dog',en:'Japanese Spitz',th:'เจแปนนิส สปิตซ์',a:['japanese spitz','สปิตซ์ญี่ปุ่น']},
+  {s:'dog',en:'Papillon',th:'ปาปิยอง',a:['papillon','ปาปิยอง']},
+  {s:'dog',en:'Bernese Mountain Dog',th:'เบอร์นีส เมาน์เทนด็อก',a:['bernese','เบอร์นีส']},
+  {s:'dog',en:'Saint Bernard',th:'เซนต์ เบอร์นาร์ด',a:['st bernard','เซนต์เบอร์นาร์ด']},
+  {s:'dog',en:'Weimaraner',th:'ไวมาราเนอร์',a:['weimaraner','ไวมา']},
+  {s:'dog',en:'Vizsla',th:'วิซสลา',a:['vizsla','วิซลา']},
+
+  // Cats
+  {s:'cat',en:'Domestic Shorthair',th:'แมวบ้านขนสั้น',a:['dsh','domestic short hair','แมวบ้าน','แมวไทยผสม']},
+  {s:'cat',en:'Domestic Longhair',th:'แมวบ้านขนยาว',a:['dlh','domestic long hair']},
+  {s:'cat',en:'Siamese',th:'วิเชียรมาศ',a:['siamese cat','แมวสยาม','วิเชียรมาศ']},
+  {s:'cat',en:'Korat',th:'สีสวาด',a:['korat cat','โคราช','แมวโคราช']},
+  {s:'cat',en:'Khao Manee',th:'ขาวมณี',a:['khao manee','ขาวมณี']},
+  {s:'cat',en:'Suphalak',th:'ศุภลักษณ์',a:['suphalak','ศุภลักษณ์']},
+  {s:'cat',en:'Persian',th:'เปอร์เซีย',a:['persian cat','เปอร์เซีย']},
+  {s:'cat',en:'Exotic Shorthair',th:'เอ็กโซติก ชอร์ตแฮร์',a:['exotic','เอ็กโซติก']},
+  {s:'cat',en:'British Shorthair',th:'บริติช ชอร์ตแฮร์',a:['bsh','british','บริติช']},
+  {s:'cat',en:'Scottish Fold',th:'สก็อตติช โฟลด์',a:['scottish','สก็อตติช','สก๊อตติช']},
+  {s:'cat',en:'American Shorthair',th:'อเมริกัน ชอร์ตแฮร์',a:['ash','american shorthair','อเมริกันชอร์ตแฮร์']},
+  {s:'cat',en:'Maine Coon',th:'เมนคูน',a:['mainecoon','เมนคูน']},
+  {s:'cat',en:'Ragdoll',th:'แร็กดอลล์',a:['rag doll','แร็กดอล']},
+  {s:'cat',en:'Bengal',th:'เบงกอล',a:['bengal cat','เบงกอล']},
+  {s:'cat',en:'Sphynx',th:'สฟิงซ์',a:['sphinx','สฟิงซ์']},
+  {s:'cat',en:'Russian Blue',th:'รัสเซียน บลู',a:['russianblue','รัสเซียนบลู']},
+  {s:'cat',en:'Burmese',th:'เบอร์มีส',a:['burmese cat','เบอร์มีส']},
+  {s:'cat',en:'Birman',th:'เบอร์แมน',a:['birman cat','เบอร์แมน']},
+  {s:'cat',en:'Abyssinian',th:'อะบิสซิเนียน',a:['abyssinian','อะบิสซิเนียน']},
+  {s:'cat',en:'Oriental Shorthair',th:'โอเรียนทัล ชอร์ตแฮร์',a:['oriental','โอเรียนทัล']},
+  {s:'cat',en:'Norwegian Forest Cat',th:'นอร์วีเจียน ฟอเรสต์',a:['norwegian forest','นอร์วีเจียน']},
+  {s:'cat',en:'Siberian Cat',th:'ไซบีเรียน',a:['siberian cat','ไซบีเรียนแมว']},
+  {s:'cat',en:'Devon Rex',th:'เดวอน เร็กซ์',a:['devon rex','เดวอน']},
+  {s:'cat',en:'Cornish Rex',th:'คอร์นิช เร็กซ์',a:['cornish rex','คอร์นิช']},
+  {s:'cat',en:'Munchkin',th:'มันช์กิ้น',a:['munchkin','มันช์กิ้น']},
+  {s:'cat',en:'Himalayan',th:'หิมาลายัน',a:['himalayan cat','หิมาลายัน']},
+  {s:'cat',en:'Turkish Angora',th:'เตอร์กิช แองโกรา',a:['angora','แองโกรา']},
+  {s:'cat',en:'Manx',th:'แมนซ์',a:['manx cat','แมนซ์']},
+  {s:'cat',en:'Savannah',th:'ซาวันนาห์',a:['savannah cat','ซาวันนาห์']}
+];
+
+
+function loadBreedAliases(){try{const a=JSON.parse(localStorage.getItem(BREED_ALIAS_KEY)||'[]');return Array.isArray(a)?a:[]}catch(e){return[]}}
+let breedAliases=loadBreedAliases();
+function saveBreedAliases(){localStorage.setItem(BREED_ALIAS_KEY,JSON.stringify(breedAliases))}
+function effectiveBreedCatalog(){
+  const list=BREED_CATALOG.map(b=>({...b,a:[...(b.a||[])]}));
+  breedAliases.forEach(x=>{
+    if(!x?.alias||!x?.canonical)return;
+    const canon=normalizeBreedSearch(x.canonical);
+    let target=list.find(b=>b.s===x.species&&[b.en,b.th,breedDisplay(b)].some(v=>normalizeBreedSearch(v)===canon));
+    if(target)target.a=[...(target.a||[]),x.alias];else list.push({s:x.species||'dog',en:x.canonical,th:'',a:[x.alias],customAlias:true});
+  });
+  return list;
+}
+function renderBreedAliasSettings(){
+  const box=$('breedAliasRows');if(!box)return;
+  box.innerHTML=breedAliases.length?breedAliases.map((a,i)=>`<div class="breed-alias-row" data-alias-i="${i}">
+    <label>Species<select data-alias-field="species"><option value="dog" ${a.species==='dog'?'selected':''}>Dog</option><option value="cat" ${a.species==='cat'?'selected':''}>Cat</option></select></label>
+    <label>Alias<input data-alias-field="alias" type="text" value="${escapeHtml(a.alias||'')}" placeholder="เช่น ปอมขาว"></label>
+    <label>Canonical breed<input data-alias-field="canonical" type="text" value="${escapeHtml(a.canonical||'')}" placeholder="Pomeranian / ปอมเมอเรเนียน"></label>
+    <button type="button" class="remove-breed-alias" data-remove-alias="${i}">×</button></div>`).join(''):'<div class="empty-state">ยังไม่มี custom breed aliases</div>';
+}
+function readBreedAliasSettings(){breedAliases=$$('.breed-alias-row').map((row,i)=>({id:breedAliases[i]?.id||(crypto.randomUUID?crypto.randomUUID():String(Date.now()+i)),species:row.querySelector('[data-alias-field="species"]')?.value||'dog',alias:row.querySelector('[data-alias-field="alias"]')?.value.trim()||'',canonical:row.querySelector('[data-alias-field="canonical"]')?.value.trim()||''})).filter(x=>x.alias&&x.canonical)}
+$('addBreedAliasBtn')?.addEventListener('click',()=>{readBreedAliasSettings();breedAliases.push({id:crypto.randomUUID?crypto.randomUUID():String(Date.now()),species:'dog',alias:'',canonical:''});renderBreedAliasSettings()});
+$('breedAliasRows')?.addEventListener('click',e=>{const b=e.target.closest('[data-remove-alias]');if(!b)return;readBreedAliasSettings();breedAliases.splice(Number(b.dataset.removeAlias),1);renderBreedAliasSettings()});
+$('saveBreedAliasesBtn')?.addEventListener('click',()=>{readBreedAliasSettings();saveBreedAliases();renderBreedAliasSettings();toast(`Saved ${breedAliases.length} breed aliases`)});
+
+function normalizeBreedSearch(v){
+  return String(v||'').toLowerCase().normalize('NFKC').replace(/[\s._\-\/]+/g,' ').trim();
+}
+function breedDisplay(b){return b.th?`${b.en} / ${b.th}`:b.en}
+function breedHaystack(b){return normalizeBreedSearch([b.en,b.th,...(b.a||[])].join(' '))}
+let breedSuggestionIndex=-1;
+
+function matchingBreeds(q){
+  const species=$('species')?.value||'dog',query=normalizeBreedSearch(q);
+  const list=effectiveBreedCatalog().filter(b=>b.s===species);
+  if(!query)return list.slice(0,10);
+  return list
+    .map(b=>({b,score:(normalizeBreedSearch(b.en).startsWith(query)||normalizeBreedSearch(b.th).startsWith(query))?0:breedHaystack(b).includes(query)?1:99}))
+    .filter(x=>x.score<99).sort((a,b)=>a.score-b.score||a.b.en.localeCompare(b.b.en)).slice(0,10).map(x=>x.b);
+}
+function renderBreedSuggestions(){
+  const input=$('breed'),box=$('breedSuggestions');if(!input||!box)return;
+  const list=matchingBreeds(input.value);breedSuggestionIndex=-1;
+  if(!document.activeElement||document.activeElement!==input){box.hidden=true;input.setAttribute('aria-expanded','false');return}
+  box.hidden=false;input.setAttribute('aria-expanded','true');
+  if(!list.length){box.innerHTML='<div class="breed-suggestion-empty">ไม่พบในรายการ — สามารถพิมพ์ชื่อพันธุ์เองแล้วบันทึกได้</div>';return}
+  box.innerHTML=list.map((b,i)=>`<button type="button" class="breed-suggestion" role="option" data-breed-i="${i}"><b>${escapeHtml(b.en)}</b><span>${escapeHtml(b.th||'')}</span></button>`).join('');
+  $$('.breed-suggestion').forEach((btn,i)=>btn.addEventListener('mousedown',e=>{e.preventDefault();selectBreed(list[i])}));
+}
+function selectBreed(b){
+  if(!$('breed')||!b)return;$('breed').value=breedDisplay(b);
+  $('breedSuggestions').hidden=true;$('breed').setAttribute('aria-expanded','false');
+  state.patientSaved=false;updatePatientSaveStatus();updateDashboard();
+}
+$('breed')?.addEventListener('focus',renderBreedSuggestions);
+$('breed')?.addEventListener('input',renderBreedSuggestions);
+$('breed')?.addEventListener('keydown',e=>{
+  const box=$('breedSuggestions');if(!box||box.hidden)return;
+  const items=$$('.breed-suggestion');if(!items.length)return;
+  if(e.key==='ArrowDown'){e.preventDefault();breedSuggestionIndex=Math.min(items.length-1,breedSuggestionIndex+1)}
+  else if(e.key==='ArrowUp'){e.preventDefault();breedSuggestionIndex=Math.max(0,breedSuggestionIndex-1)}
+  else if(e.key==='Enter'&&breedSuggestionIndex>=0){e.preventDefault();items[breedSuggestionIndex].dispatchEvent(new MouseEvent('mousedown',{bubbles:true}));return}
+  else if(e.key==='Escape'){box.hidden=true;return}
+  else return;
+  items.forEach((x,i)=>x.classList.toggle('active',i===breedSuggestionIndex));
+  items[breedSuggestionIndex]?.scrollIntoView({block:'nearest'});
+});
+$('breed')?.addEventListener('blur',()=>setTimeout(()=>{if($('breedSuggestions'))$('breedSuggestions').hidden=true},120));
+$('species')?.addEventListener('change',()=>{
+  const current=$('breed')?.value||'',norm=normalizeBreedSearch(current);
+  if(norm){
+    const exact=effectiveBreedCatalog().find(b=>normalizeBreedSearch(breedDisplay(b))===norm||normalizeBreedSearch(b.en)===norm||normalizeBreedSearch(b.th)===norm);
+    if(exact&&exact.s!==$('species').value)$('breed').value='';
+  }
+  renderBreedSuggestions();state.patientSaved=false;updatePatientSaveStatus();updateDashboard();
+});
+
+function isoDateLocal(d){
+  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+}
+function dateFromIso(v){
+  if(!v)return null;const [y,m,d]=String(v).split('-').map(Number);
+  if(!y||!m||!d)return null;const x=new Date(y,m-1,d);return Number.isNaN(x.getTime())?null:x;
+}
+function agePartsFromDob(dob,today=new Date()){
+  if(!dob)return null;
+  const start=new Date(dob.getFullYear(),dob.getMonth(),dob.getDate());
+  const end=new Date(today.getFullYear(),today.getMonth(),today.getDate());
+  if(start>end)return null;
+  let years=end.getFullYear()-start.getFullYear();
+  let months=end.getMonth()-start.getMonth();
+  let days=end.getDate()-start.getDate();
+  if(days<0){
+    const prevMonthDays=new Date(end.getFullYear(),end.getMonth(),0).getDate();
+    days+=prevMonthDays;months-=1;
+  }
+  if(months<0){months+=12;years-=1}
+  const totalDays=Math.floor((end-start)/86400000);
+  return {years,months,days,totalDays};
+}
+function formatAgeThai(parts,estimated=false){
+  if(!parts)return '—';let text='';
+  if(parts.totalDays<56){
+    const weeks=Math.floor(parts.totalDays/7),days=parts.totalDays%7;
+    text=`${weeks} สัปดาห์${days?` ${days} วัน`:''}`;
+  }else if(parts.years<1){
+    text=`${parts.months} เดือน${parts.days?` ${parts.days} วัน`:''}`;
+  }else{
+    text=`${parts.years} ปี${parts.months?` ${parts.months} เดือน`:''}`;
+  }
+  return estimated?`ประมาณ ${text}`:text;
+}
+function formatAgeCanonical(parts,estimated=false){
+  if(!parts)return '';
+  let text;
+  if(parts.totalDays<56){
+    const w=Math.floor(parts.totalDays/7),d=parts.totalDays%7;text=`${w} wk${d?` ${d} d`:''}`;
+  }else if(parts.years<1){
+    text=`${parts.months} mo${parts.days?` ${parts.days} d`:''}`;
+  }else{
+    text=`${parts.years} y${parts.months?` ${parts.months} mo`:''}`;
+  }
+  return estimated?`≈ ${text}`:text;
+}
+function estimatedBirthPeriodFor(anchor,y,m,w){
+  if(!anchor)return '';
+  if(y>0&&m===0&&w===0)return `~${anchor.getFullYear()}`;
+  return `~${anchor.getFullYear()}-${pad(anchor.getMonth()+1)}`;
+}
+function renderAgeUI(){
+  const dob=dateFromIso($('birthDate')?.value);
+  const source=$('ageSource')?.value||($('birthDateEstimated')?.checked?'estimated':dob?'dob':'');
+  const estimated=source==='estimated'||!!$('birthDateEstimated')?.checked,parts=agePartsFromDob(dob);
+  if($('ageDisplay'))$('ageDisplay').textContent=parts?formatAgeThai(parts,estimated):($('age')?.value||'—');
+  if(parts&&$('age'))$('age').value=formatAgeCanonical(parts,estimated);
+  if($('birthDate'))$('birthDate').classList.toggle('estimated-dob',estimated&&!!dob);
+  document.querySelector('.age-result-card')?.classList.toggle('estimated-age-card',estimated);
+  if($('birthDateStatus')){
+    if(dob&&estimated){
+      const period=$('estimatedBirthPeriod')?.value||`~${dob.getFullYear()}-${pad(dob.getMonth()+1)}`;
+      $('birthDateStatus').innerHTML=`อายุเป็นค่าประมาณ <span class="age-source-badge">ESTIMATED</span> • ช่วงเกิด ${escapeHtml(period)} • วันที่ในปฏิทินเป็น anchor สำหรับคำนวณอายุ`;
+    }else if(dob)$('birthDateStatus').textContent=`วันเกิดที่ระบุ ${isoDateLocal(dob)} • Exact DOB`;
+    else $('birthDateStatus').textContent='เลือกวันเกิด หรือกรอกอายุโดยประมาณ';
+  }
+  if($('birthDateUnknown'))$('birthDateUnknown').checked=estimated||(!$('birthDate')?.value&&!!$('birthDateUnknown').checked);
+  if($('approxAgeControls'))$('approxAgeControls').hidden=!$('birthDateUnknown')?.checked;
+}
+function markPatientUnsaved(){state.patientSaved=false;updatePatientSaveStatus()}
+function applyApproximateAge(){
+  const y=Math.max(0,Number($('approxAgeYears')?.value||0)||0),m=Math.max(0,Number($('approxAgeMonths')?.value||0)||0),w=Math.max(0,Number($('approxAgeWeeks')?.value||0)||0);
+  if(!(y||m||w)){toast('กรอกอายุโดยประมาณอย่างน้อย 1 ช่อง');return}
+  const d=new Date();d.setHours(12,0,0,0);const originalDay=d.getDate();d.setDate(1);d.setFullYear(d.getFullYear()-y);d.setMonth(d.getMonth()-m);
+  const lastDay=new Date(d.getFullYear(),d.getMonth()+1,0).getDate();d.setDate(Math.min(originalDay,lastDay));d.setDate(d.getDate()-(w*7));
+  $('birthDate').value=isoDateLocal(d);$('birthDateEstimated').checked=true;$('ageSource').value='estimated';$('estimatedBirthPeriod').value=estimatedBirthPeriodFor(d,y,m,w);$('birthDateUnknown').checked=true;
+  renderAgeUI();markPatientUnsaved();save();toast(`ตั้งอายุโดยประมาณ • ช่วงเกิด ${$('estimatedBirthPeriod').value}`);
+}
+$('applyApproxAgeBtn')?.addEventListener('click',applyApproximateAge);
+$('birthDateUnknown')?.addEventListener('change',()=>{
+  $('approxAgeControls').hidden=!$('birthDateUnknown').checked;
+  if(!$('birthDateUnknown').checked&&$('birthDateEstimated').checked){$('birthDateUnknown').checked=true;$('approxAgeControls').hidden=false;toast('ข้อมูลนี้เป็น estimated age หากทราบวันเกิดจริงให้เลือกวันที่จากปฏิทิน')}
+});
+$('birthDate')?.addEventListener('change',()=>{
+  const d=dateFromIso($('birthDate').value);
+  if(d&&d>new Date()){toast('วันเกิดต้องไม่เป็นวันที่ในอนาคต');$('birthDate').value='';return}
+  $('birthDateEstimated').checked=false;$('ageSource').value=d?'dob':'';$('estimatedBirthPeriod').value='';
+  if($('birthDateUnknown'))$('birthDateUnknown').checked=false;if($('approxAgeControls'))$('approxAgeControls').hidden=true;
+  if(d){$('approxAgeYears').value='0';$('approxAgeMonths').value='0';$('approxAgeWeeks').value='0'}
+  renderAgeUI();markPatientUnsaved();updateDashboard();
+});
+function parseLegacyAge(text){
+  const s=String(text||'').toLowerCase();
+  const pick=(patterns)=>{for(const p of patterns){const m=s.match(p);if(m)return Number(m[1])||0}return 0};
+  const years=pick([/(\d+(?:\.\d+)?)\s*(?:y|yr|yrs|year|years|ปี)/]);
+  const months=pick([/(\d+(?:\.\d+)?)\s*(?:mo|mos|month|months|เดือน)/]);
+  const weeks=pick([/(\d+(?:\.\d+)?)\s*(?:wk|wks|week|weeks|สัปดาห์)/]);
+  return (years||months||weeks)?{years,months,weeks}:null;
+}
+function migrateLegacyAgeUi(){
+  if($('birthDate')?.value){renderAgeUI();return}
+  const legacy=$('age')?.value||state.age||'',parsed=parseLegacyAge(legacy);
+  if(!parsed){renderAgeUI();return}
+  $('approxAgeYears').value=parsed.years||0;$('approxAgeMonths').value=parsed.months||0;$('approxAgeWeeks').value=parsed.weeks||0;
+  const d=new Date();d.setHours(12,0,0,0);const originalDay=d.getDate();d.setDate(1);d.setFullYear(d.getFullYear()-(parsed.years||0));d.setMonth(d.getMonth()-(parsed.months||0));const lastDay=new Date(d.getFullYear(),d.getMonth()+1,0).getDate();d.setDate(Math.min(originalDay,lastDay));d.setDate(d.getDate()-((parsed.weeks||0)*7));
+  $('birthDate').value=isoDateLocal(d);$('birthDateEstimated').checked=true;$('ageSource').value='estimated';$('estimatedBirthPeriod').value=estimatedBirthPeriodFor(d,parsed.years||0,parsed.months||0,parsed.weeks||0);$('birthDateUnknown').checked=true;
+  renderAgeUI();
+}
+
+
+function sexReproText(p){const sex=({male:'Male',female:'Female'})[p.sex]||'Sex unknown',repro=({intact:'Intact',neutered:'Neutered',spayed:'Spayed'})[p.reproductiveStatus]||'status unknown';return `${sex} • ${repro}`}
+function patientAgeText(p){const d=dateFromIso(p.birthDate||''),parts=agePartsFromDob(d);return parts?formatAgeThai(parts,!!p.birthDateEstimated):'Age —'}
+function renderLinkedPatient(){
+  const box=$('linkedPatientBanner'),id=$('patientMasterId')?.value||state.patientMasterId||'',p=patientCache.find(x=>x.patientId===id);
+  if(!box)return;box.hidden=!p;if(p&&$('linkedPatientText'))$('linkedPatientText').textContent=`${p.patientName}${p.hospitalId?' • HN '+p.hospitalId:''} • ${p.species==='cat'?'Cat':'Dog'}${p.breed?' • '+p.breed:''}`;
+}
+function patientSearchMatches(p,q){if(!q)return true;const s=normalizePatientKey(q);return[p.patientName,p.hospitalId,p.microchip,p.breed,p.sex,p.reproductiveStatus].some(v=>normalizePatientKey(v).includes(s))}
+function renderPatientMaster(){
+  const box=$('patientMasterResults');if(!box)return;const q=$('patientMasterSearch')?.value||'',list=patientCache.filter(p=>patientSearchMatches(p,q)).sort((a,b)=>(b.updatedAt||0)-(a.updatedAt||0)).slice(0,q?30:8);
+  if($('patientMasterCount'))$('patientMasterCount').textContent=`${patientCache.length} PATIENT${patientCache.length===1?'':'S'}`;
+  if($('patientMasterSearchStatus'))$('patientMasterSearchStatus').textContent=q?`${list.length} matches`:`Recent ${Math.min(list.length,8)} patients`;
+  if(!list.length){box.innerHTML='<div class="empty-state">ไม่พบผู้ป่วย • สามารถสร้าง New patient ได้</div>';renderLinkedPatient();return}
+  box.innerHTML=list.map(p=>`<div class="patient-master-card"><div><h3>${escapeHtml(p.patientName||'Unnamed')} ${p.hospitalId?`<span class="muted">• HN ${escapeHtml(p.hospitalId)}</span>`:''}</h3><div class="patient-master-meta"><span>${p.species==='cat'?'Cat':'Dog'}</span><span>${escapeHtml(p.breed||'Breed —')}</span><span>${escapeHtml(sexReproText(p))}</span><span>${escapeHtml(patientAgeText(p))}</span>${p.lastWeight?`<span>Last BW ${escapeHtml(p.lastWeight)} kg</span>`:''}${p.microchip?`<span>Chip ${escapeHtml(p.microchip)}</span>`:''}</div></div><button type="button" class="btn primary patient-use-btn" data-use-patient="${escapeHtml(p.patientId)}">Use patient</button></div>`).join('');
+  $$('.patient-use-btn').forEach(b=>b.addEventListener('click',()=>usePatientMaster(b.dataset.usePatient)));renderLinkedPatient();
+}
+$('patientMasterSearch')?.addEventListener('input',renderPatientMaster);
+function setPatientField(id,value){const el=$(id);if(!el)return;if(el.type==='checkbox')el.checked=!!value;else el.value=value??''}
+function usePatientMaster(id){
+  const p=patientCache.find(x=>x.patientId===id);if(!p)return;
+  if(state.timer.running||(state.timer.elapsedMs||0)>0||(state.records||[]).length){toast('เคสเริ่มแล้ว ไม่สามารถเปลี่ยน Patient Master ได้');return}
+  setPatientField('patientMasterId',p.patientId);state.patientMasterId=p.patientId;setPatientField('patientName',p.patientName);setPatientField('hospitalId',p.hospitalId);setPatientField('species',p.species);setPatientField('sex',p.sex);setPatientField('reproductiveStatus',p.reproductiveStatus);setPatientField('microchip',p.microchip);setPatientField('breed',p.breed);setPatientField('birthDate',p.birthDate);setPatientField('birthDateEstimated',p.birthDateEstimated);setPatientField('ageSource',p.ageSource);setPatientField('estimatedBirthPeriod',p.estimatedBirthPeriod);setPatientField('approxAgeYears',p.approxAgeYears||0);setPatientField('approxAgeMonths',p.approxAgeMonths||0);setPatientField('approxAgeWeeks',p.approxAgeWeeks||0);setPatientField('weight',p.lastWeight||$('weight')?.value||'');setPatientField('bcs',p.lastBcs||'5');setPatientField('patientAllergies',p.allergies);setPatientField('patientComorbidities',p.comorbidities);setPatientField('patientPrecautions',p.precautions);
+  if($('birthDateUnknown'))$('birthDateUnknown').checked=!!p.birthDateEstimated;renderAgeUI();syncAsaCards();state.patientSaved=false;updatePatientSaveStatus();renderLinkedPatient();updateDashboard();toast(`ใช้ Patient Master: ${p.patientName}`);
+}
+function clearPatientRegistration(){
+  if(state.timer.running||(state.timer.elapsedMs||0)>0||(state.records||[]).length){toast('เคสเริ่มแล้ว ไม่สามารถเปลี่ยนผู้ป่วยได้');return}
+  ['patientMasterId','patientName','hospitalId','microchip','breed','birthDate','age','ageSource','estimatedBirthPeriod','patientAllergies','patientComorbidities','patientPrecautions'].forEach(id=>setPatientField(id,''));
+  setPatientField('species','dog');setPatientField('sex','');setPatientField('reproductiveStatus','');setPatientField('birthDateEstimated',false);setPatientField('approxAgeYears','0');setPatientField('approxAgeMonths','0');setPatientField('approxAgeWeeks','0');setPatientField('weight','10');setPatientField('bcs','5');
+  if($('birthDateUnknown'))$('birthDateUnknown').checked=false;if($('approxAgeControls'))$('approxAgeControls').hidden=true;state.patientMasterId='';state.patientSaved=false;renderAgeUI();updatePatientSaveStatus();renderLinkedPatient();updateDashboard();$('patientName')?.focus();
+}
+$('newPatientMasterBtn')?.addEventListener('click',clearPatientRegistration);
+$('unlinkPatientBtn')?.addEventListener('click',()=>{setPatientField('patientMasterId','');state.patientMasterId='';renderLinkedPatient();toast('Unlinked from Patient Master')});
+function currentPatientMasterObject(){
+  const id=$('patientMasterId')?.value||state.patientMasterId||'';
+  return {patientId:id||crypto.randomUUID?.()||String(Date.now()+Math.random()),hospitalId:$('hospitalId')?.value.trim()||'',patientName:$('patientName')?.value.trim()||'',species:$('species')?.value||'dog',sex:$('sex')?.value||'',reproductiveStatus:$('reproductiveStatus')?.value||'',microchip:$('microchip')?.value.trim()||'',breed:$('breed')?.value.trim()||'',birthDate:$('birthDate')?.value||'',birthDateEstimated:!!$('birthDateEstimated')?.checked,ageSource:$('ageSource')?.value||'',estimatedBirthPeriod:$('estimatedBirthPeriod')?.value||'',approxAgeYears:$('approxAgeYears')?.value||'0',approxAgeMonths:$('approxAgeMonths')?.value||'0',approxAgeWeeks:$('approxAgeWeeks')?.value||'0',lastWeight:$('weight')?.value||'',lastBcs:$('bcs')?.value||'',allergies:$('patientAllergies')?.value.trim()||'',comorbidities:$('patientComorbidities')?.value.trim()||'',precautions:$('patientPrecautions')?.value.trim()||'',createdAt:Date.now(),updatedAt:Date.now()};
+}
+async function upsertPatientMasterFromCurrent(){
+  if(!$('patientName')?.value.trim())return null;
+  let p=currentPatientMasterObject(),existing=patientCache.find(x=>x.patientId===p.patientId);
+  if(!existing&&p.hospitalId)existing=patientCache.find(x=>normalizePatientKey(x.hospitalId)===normalizePatientKey(p.hospitalId));
+  if(!existing&&p.microchip)existing=patientCache.find(x=>normalizePatientKey(x.microchip)===normalizePatientKey(p.microchip));
+  if(existing){p.patientId=existing.patientId;p.createdAt=existing.createdAt||p.createdAt}
+  try{if(patientBackend==='IndexedDB')p=await idbPutPatient(p);else{patientCache=patientCache.filter(x=>x.patientId!==p.patientId);patientCache.unshift(p);saveFallbackPatients()}}
+  catch(e){patientBackend='localStorage fallback';patientCache=patientCache.filter(x=>x.patientId!==p.patientId);patientCache.unshift(p);saveFallbackPatients()}
+  patientCache=patientCache.filter(x=>x.patientId!==p.patientId);patientCache.unshift(p);setPatientField('patientMasterId',p.patientId);state.patientMasterId=p.patientId;renderPatientMaster();renderLinkedPatient();return p;
+}
+
 function syncAsaCards(){
   const selected=$('asa').value||'II';
   $$('.asa-card').forEach(c=>c.classList.toggle('selected',c.dataset.asa===selected));
@@ -519,16 +910,16 @@ function syncCaseProcedureToPatient(){
 $('patientProcedure')?.addEventListener('input',()=>{syncPatientProcedureToCase();state.patientSaved=false;updatePatientSaveStatus();updateDashboard()});
 $('procedure')?.addEventListener('input',()=>{syncCaseProcedureToPatient();updateDashboard()});
 
-$('savePatientBtn').addEventListener('click',()=>{
+$('savePatientBtn').addEventListener('click',async()=>{
+  renderAgeUI();
   const name=$('patientName').value.trim(),weight=Number($('weight').value);
   if(!name){toast('กรุณาใส่ชื่อสัตว์');$('patientName').focus();return}
   if(!Number.isFinite(weight)||weight<=0){toast('กรุณาใส่น้ำหนักที่ถูกต้อง');$('weight').focus();return}
-  syncPatientProcedureToCase();state.patientSaved=true;save();syncAsaCards();updatePatientSaveStatus();
-  toast('บันทึกข้อมูลผู้ป่วยแล้ว');
-  setTab('preop');
+  syncPatientProcedureToCase();await upsertPatientMasterFromCurrent();state.patientSaved=true;save();syncAsaCards();updatePatientSaveStatus();
+  toast('บันทึก Patient Master + Case Setup แล้ว');setTab('preop');
 });
 $('editPatientBtn').addEventListener('click',()=>setTab('patient'));
-['patientName','hospitalId','species','breed','age','weight','bcs','emergency','patientProcedure','patientAllergies','patientComorbidities','patientPrecautions','surgeon','anesthetist','surgicalAssistant'].forEach(id=>{
+['patientName','hospitalId','species','sex','reproductiveStatus','microchip','breed','birthDate','approxAgeYears','approxAgeMonths','approxAgeWeeks','weight','bcs','emergency','patientProcedure','patientAllergies','patientComorbidities','patientPrecautions','surgeon','anesthetist','surgicalAssistant'].forEach(id=>{
   const el=$(id);if(!el)return;
   el.addEventListener(el.type==='checkbox'||el.tagName==='SELECT'?'change':'input',()=>{
     state.patientSaved=false;updatePatientSaveStatus();
@@ -593,7 +984,7 @@ function renderOrLive(){
   renderOrPhaseTracker();
   syncOrFromMain();
   const st=thresholds(),species=$('species').value,name=$('patientName').value.trim()||'Unnamed patient',breed=$('breed').value.trim(),weight=getVal('weight',0);
-  $('orPatientName').textContent=name;$('orPatientMeta').textContent=`${species==='cat'?'Cat':'Dog'}${breed?' • '+breed:''} • ${weight||'—'} kg`;
+  $('orPatientName').textContent=name;$('orPatientMeta').textContent=`${species==='cat'?'Cat':'Dog'}${$('sex')?.value?' • '+({male:'M',female:'F'}[$('sex').value]||''):''}${$('reproductiveStatus')?.value?' '+({intact:'intact',neutered:'neutered',spayed:'spayed'}[$('reproductiveStatus').value]||''):''}${breed?' • '+breed:''}${$('age')?.value?' • '+$('age').value:''} • ${weight||'—'} kg`;
   $('orAsaBadge').textContent=`ASA ${$('asa').value}${$('emergency').checked?'-E':''}`;
   $('orProcedureLine').textContent=`Procedure: ${$('procedure').value.trim()||$('patientProcedure')?.value.trim()||'—'}`;
   if($('orTeamLine'))$('orTeamLine').textContent=`Team: Surgeon ${$('surgeon')?.value.trim()||'—'} • Anesthetist ${$('anesthetist')?.value.trim()||'—'} • Assistant ${$('surgicalAssistant')?.value.trim()||'—'}`;
@@ -642,7 +1033,7 @@ function startCaseFromOr(){if(state.timer.running)return true;const preopTotal=$
 $('orStartBtn')?.addEventListener('click',startCaseFromOr);$('orPauseBtn')?.addEventListener('click',()=>{pauseTimer();renderOrLive()});$('orRecordNowBtn')?.addEventListener('click',()=>{if(!state.timer.running&&(state.timer.elapsedMs||0)===0){if(!startCaseFromOr())return}addRecord('');renderOrLive()});$('openOrLiveBtn')?.addEventListener('click',()=>setTab('orlive'));$('orOpenDrugBtn')?.addEventListener('click',()=>setTab('drugs'));$('orOpenTrendsBtn')?.addEventListener('click',()=>setTab('trends'));$('orOpenTimelineBtn')?.addEventListener('click',()=>setTab('timeline'));
 $$('.or-milestone').forEach(btn=>btn.addEventListener('click',()=>{markMilestone(btn);renderOrLive()}));$$('.or-event').forEach(btn=>btn.addEventListener('click',()=>{addEvent({category:btn.dataset.cat,name:btn.dataset.label});renderOrLive()}));
 $('orFullscreenBtn')?.addEventListener('click',async()=>{try{if(!document.fullscreenElement){if(document.documentElement.requestFullscreen)await document.documentElement.requestFullscreen();document.body.classList.add('or-fullscreen');$('orFullscreenBtn').textContent='Exit full screen'}else{if(document.exitFullscreen)await document.exitFullscreen();document.body.classList.remove('or-fullscreen');$('orFullscreenBtn').textContent='⛶ Full screen'}}catch(e){document.body.classList.toggle('or-fullscreen')}});document.addEventListener('fullscreenchange',()=>{if(!document.fullscreenElement){document.body.classList.remove('or-fullscreen');if($('orFullscreenBtn'))$('orFullscreenBtn').textContent='⛶ Full screen'}});
-function currentSettingsObject(){try{const x=JSON.parse(localStorage.getItem(SETTINGS_KEY)||'null')||JSON.parse(localStorage.getItem('anesvet_v14_settings')||'null')||JSON.parse(localStorage.getItem('anesvet_v13_4_settings')||'null');return {...defaultSettings(),...(x||{})}}catch(e){return defaultSettings()}}
+function currentSettingsObject(){try{const x=JSON.parse(localStorage.getItem(SETTINGS_KEY)||'null')||JSON.parse(localStorage.getItem('anesvet_v14_2_settings')||'null')||JSON.parse(localStorage.getItem('anesvet_v14_1_settings')||'null')||JSON.parse(localStorage.getItem('anesvet_v14_settings')||'null')||JSON.parse(localStorage.getItem('anesvet_v13_4_settings')||'null');return {...defaultSettings(),...(x||{})}}catch(e){return defaultSettings()}}
 async function requestScreenWakeLock(silent=true){if(!('wakeLock' in navigator))return false;try{if(wakeLock)return true;wakeLock=await navigator.wakeLock.request('screen');if($('orWakeBtn'))$('orWakeBtn').textContent='☀ Awake ON';wakeLock.addEventListener('release',()=>{wakeLock=null;if($('orWakeBtn'))$('orWakeBtn').textContent='☀ Keep awake'});if(!silent)toast('Screen will stay awake');return true}catch(e){if(!silent)toast('ไม่สามารถเปิด screen wake lock ได้');return false}}
 async function releaseScreenWakeLock(silent=true){try{if(wakeLock)await wakeLock.release()}catch(e){}finally{wakeLock=null;if($('orWakeBtn'))$('orWakeBtn').textContent='☀ Keep awake'}if(!silent)toast('Screen wake lock off')}
 function autoWakeEnabled(){return currentSettingsObject().autoWakeLock!==false}
@@ -781,7 +1172,7 @@ function setTab(id,opts={}){
   if(id==='drugs'){updateDoseSpotlights();syncQuickConcentrations();}
   if(id==='recovery'){renderRecovery();renderRecoveryRecords();updateRecoveryDue();}
   if(id==='endcase') renderEndCase();
-  if(id==='settings'){renderDrugLibrarySettings();renderQuickPresetSettings();setTimeout(renderProtocolGovernance,0);}
+  if(id==='settings'){renderDrugLibrarySettings();renderQuickPresetSettings();renderBreedAliasSettings();setTimeout(renderProtocolGovernance,0);}
   renderWorkflowLocks();
   scrollAppTop();
 }
@@ -903,7 +1294,7 @@ function updateDashboard(){
 
   const name=$('patientName').value.trim()||'ยังไม่ได้ระบุชื่อ';
   const breed=$('breed')?.value.trim();
-  $('caseStripPatient').textContent=`${name} • ${species==='cat'?'Cat':'Dog'}${breed?' • '+breed:''} • ${weight||'—'} kg`;
+  $('caseStripPatient').textContent=`${name} • ${species==='cat'?'Cat':'Dog'}${$('sex')?.value?' • '+({male:'M',female:'F'}[$('sex').value]||''):''}${breed?' • '+breed:''}${$('age')?.value?' • '+$('age').value:''} • ${weight||'—'} kg`;
   $('caseStripAsa').textContent=`ASA ${$('asa').value}${$('emergency').checked?'-E':''}`;
   $('caseStripProcedure').textContent=$('procedure').value.trim()||$('patientProcedure')?.value.trim()||'—';
   $('caseStripInterval').textContent=`${$('recordInterval').value} min`;
@@ -1633,7 +2024,11 @@ function buildPdfReport(){
     reportInfoItem('HN / Case ID',$('hospitalId').value||'—'),
     reportInfoItem('Species',species),
     reportInfoItem('Breed',$('breed').value||'—'),
+    reportInfoItem('Sex / reproductive status',`${({male:'Male',female:'Female'})[$('sex')?.value]||'Unknown'} / ${({intact:'Intact',neutered:'Neutered',spayed:'Spayed'})[$('reproductiveStatus')?.value]||'Unknown'}`),
+    reportInfoItem('Microchip',$('microchip')?.value||'—'),
     reportInfoItem('Age',$('age').value||'—'),
+    reportInfoItem($('birthDateEstimated')?.checked?'Estimated birth period':'Date of birth',$('birthDateEstimated')?.checked?($('estimatedBirthPeriod')?.value||'Estimated'):($('birthDate')?.value||'—')),
+    reportInfoItem('Age source',$('birthDateEstimated')?.checked?'Owner-reported / estimated age':'Date of birth'),
     reportInfoItem('Body weight',`${$('weight').value||'—'} kg`),
     reportInfoItem('BCS',$('bcs').value?`${$('bcs').value}/9`:'—'),
     reportInfoItem('ASA',`${asa} — ${asaDescription($('asa').value)}`),
@@ -1789,10 +2184,43 @@ async function renderBackupHealth(){
 }
 $('backupNowHealthBtn')?.addEventListener('click',()=>backupAllData());
 
-async function backupAllData(){save();await initArchiveDb();const payload={format:'ANESVET_BACKUP',version:14.1,exportedAt:Date.now(),current:state,archive:getArchive(),settings:(()=>{try{return JSON.parse(localStorage.getItem(SETTINGS_KEY)||'null')}catch(e){return null}})(),drugLibrary:loadDrugLibraryData(),quickPresets:loadQuickPresets(),protocolAudit:getProtocolAudit()};downloadBlob(JSON.stringify(payload,null,2),'application/json',`ANESVET_BACKUP_${formatDate(Date.now())}.json`);const backupEpoch=Date.now();localStorage.setItem(LAST_BACKUP_KEY,String(backupEpoch));if($('backupStatus'))$('backupStatus').textContent=`Backup created ${formatClock(backupEpoch)} • ${payload.archive.length} archived cases`;renderBackupHealth();toast('Full backup created')}
+async function backupAllData(){
+  save();await initArchiveDb();await initPatientMaster();
+  const payload={format:'ANESVET_BACKUP',version:14.3,exportedAt:Date.now(),current:state,archive:getArchive(),patients:getPatients(),breedAliases:loadBreedAliases(),settings:(()=>{try{return JSON.parse(localStorage.getItem(SETTINGS_KEY)||'null')}catch(e){return null}})(),drugLibrary:loadDrugLibraryData(),quickPresets:loadQuickPresets(),protocolAudit:getProtocolAudit()};
+  downloadBlob(JSON.stringify(payload,null,2),'application/json',`ANESVET_BACKUP_${formatDate(Date.now())}.json`);
+  const backupEpoch=Date.now();localStorage.setItem(LAST_BACKUP_KEY,String(backupEpoch));
+  if($('backupStatus'))$('backupStatus').textContent=`Backup created ${formatClock(backupEpoch)} • ${payload.archive.length} cases • ${payload.patients.length} patients`;
+  renderBackupHealth();toast('Full backup created');
+}
 $('backupAllBtn')?.addEventListener('click',backupAllData);
 $('restoreBackupBtn')?.addEventListener('click',()=>$('restoreBackupInput')?.click());
-$('restoreBackupInput')?.addEventListener('change',async e=>{const file=e.target.files?.[0];if(!file)return;try{const raw=JSON.parse(await file.text());if(raw.format!=='ANESVET_BACKUP'||!raw.current||!Array.isArray(raw.archive))throw new Error('Invalid backup');if(!confirm(`Restore ANESVET backup?\nExported: ${new Date(raw.exportedAt||Date.now()).toLocaleString()}\nArchived cases: ${raw.archive.length}\n\nCurrent browser data will be replaced.`))return;localStorage.setItem(CURRENT_KEY,JSON.stringify(raw.current));if(raw.settings)localStorage.setItem(SETTINGS_KEY,JSON.stringify(raw.settings));if(Array.isArray(raw.drugLibrary))localStorage.setItem(DRUG_LIBRARY_KEY,JSON.stringify(raw.drugLibrary));if(raw.quickPresets)localStorage.setItem(QUICK_PRESET_KEY,JSON.stringify(raw.quickPresets));if(Array.isArray(raw.protocolAudit))localStorage.setItem(PROTOCOL_AUDIT_KEY,JSON.stringify(raw.protocolAudit));await initArchiveDb();archiveCache=[];if(archiveBackend==='IndexedDB'){await idbClearCases();for(const c0 of raw.archive){const c={...c0};if(!c.caseId)c.caseId=crypto.randomUUID?crypto.randomUUID():String(Date.now()+Math.random());await idbPutCase(c);archiveCache.push(c)}await idbPutMeta('current',raw.current)}else{archiveCache=raw.archive.map(c=>({...c,caseId:c.caseId||(crypto.randomUUID?crypto.randomUUID():String(Date.now()+Math.random()))}));localStorage.setItem(ARCHIVE_KEY,JSON.stringify(archiveCache))}archiveCache.sort((a,b)=>(b.archivedAt||b.createdAt||0)-(a.archivedAt||a.createdAt||0));restartAtAppRoot()}catch(err){console.error(err);toast('Restore failed: invalid backup file')}finally{e.target.value=''}});
+$('restoreBackupInput')?.addEventListener('change',async e=>{
+  const file=e.target.files?.[0];if(!file)return;
+  try{
+    const raw=JSON.parse(await file.text());
+    if(raw.format!=='ANESVET_BACKUP'||!raw.current||!Array.isArray(raw.archive))throw new Error('Invalid backup');
+    if(!confirm(`Restore ANESVET backup?\nExported: ${new Date(raw.exportedAt||Date.now()).toLocaleString()}\nCases: ${raw.archive.length}\nPatients: ${Array.isArray(raw.patients)?raw.patients.length:'derive from cases'}\n\nCurrent browser data will be replaced.`))return;
+    localStorage.setItem(CURRENT_KEY,JSON.stringify(raw.current));
+    if(raw.settings)localStorage.setItem(SETTINGS_KEY,JSON.stringify(raw.settings));
+    if(Array.isArray(raw.drugLibrary))localStorage.setItem(DRUG_LIBRARY_KEY,JSON.stringify(raw.drugLibrary));
+    if(raw.quickPresets)localStorage.setItem(QUICK_PRESET_KEY,JSON.stringify(raw.quickPresets));
+    if(Array.isArray(raw.protocolAudit))localStorage.setItem(PROTOCOL_AUDIT_KEY,JSON.stringify(raw.protocolAudit));
+    if(Array.isArray(raw.breedAliases))localStorage.setItem(BREED_ALIAS_KEY,JSON.stringify(raw.breedAliases));
+    await initArchiveDb();archiveCache=[];
+    if(archiveBackend==='IndexedDB'){
+      await idbClearCases();
+      for(const c0 of raw.archive){const c={...c0};if(!c.caseId)c.caseId=crypto.randomUUID?crypto.randomUUID():String(Date.now()+Math.random());await idbPutCase(c);archiveCache.push(c)}
+      await idbClearPatients();patientCache=[];
+      if(Array.isArray(raw.patients)){for(const p0 of raw.patients){const p={...p0};if(!p.patientId)p.patientId=crypto.randomUUID?crypto.randomUUID():String(Date.now()+Math.random());await idbPutPatient(p);patientCache.push(p)}}
+      await idbPutMeta('current',raw.current);
+    }else{
+      archiveCache=raw.archive.map(c=>({...c,caseId:c.caseId||(crypto.randomUUID?crypto.randomUUID():String(Date.now()+Math.random()))}));localStorage.setItem(ARCHIVE_KEY,JSON.stringify(archiveCache));
+      patientCache=Array.isArray(raw.patients)?raw.patients:[];saveFallbackPatients();
+    }
+    archiveCache.sort((a,b)=>(b.archivedAt||b.createdAt||0)-(a.archivedAt||a.createdAt||0));restartAtAppRoot();
+  }catch(err){console.error(err);toast('Restore failed: invalid backup file')}
+  finally{e.target.value=''}
+});
 $('printBtn').addEventListener('click',exportPdfReport);
 $('printCaseBtn').addEventListener('click',exportPdfReport);
 
@@ -1827,6 +2255,7 @@ function applyCaseToDomForReport(caseObj){
     const cb=btn.closest('.preop-item')?.querySelector('.preop-check');if(na&&cb)cb.checked=false;
   });
   syncAsaCards();
+  renderAgeUI();
 }
 function exportArchivedPdf(i){
   const list=getArchive(),archived=list[i];if(!archived){toast('Archived case not found');return}
@@ -1854,7 +2283,7 @@ function exportArchivedPdf(i){
 
 function archiveFilteredList(){
   let list=getArchive().slice(),q=$('archiveSearch')?.value.trim().toLowerCase()||'',from=$('archiveDateFrom')?.value||'',to=$('archiveDateTo')?.value||'',status=$('archiveStatusFilter')?.value||'all',sort=$('archiveSort')?.value||'newest';
-  if(q)list=list.filter(c=>[c.patientName,c.hospitalId,c.humanRecordId,c.procedure,c.patientProcedure,c.surgeon,c.anesthetist].some(v=>String(v||'').toLowerCase().includes(q)));
+  if(q)list=list.filter(c=>[c.patientName,c.hospitalId,c.microchip,c.humanRecordId,c.procedure,c.patientProcedure,c.surgeon,c.anesthetist].some(v=>String(v||'').toLowerCase().includes(q)));
   if(from)list=list.filter(c=>formatDate(c.archivedAt||c.createdAt||0)>=from);
   if(to)list=list.filter(c=>formatDate(c.archivedAt||c.createdAt||0)<=to);
   if(status==='locked')list=list.filter(c=>c.caseLocked&&!c.voidedAt);if(status==='voided')list=list.filter(c=>!!c.voidedAt);if(status==='working')list=list.filter(c=>!c.caseLocked);
@@ -1890,7 +2319,7 @@ function appRootUrl(){
   let path=here.pathname;
   if(!path.endsWith('/')) path=path.replace(/\/[^/]*$/,'/');
   const url=new URL(path, here.origin);
-  url.searchParams.set('v','14.1');
+  url.searchParams.set('v','14.3');
   return url.href;
 }
 function restartAtAppRoot(){
@@ -1911,6 +2340,8 @@ function defaultQuickPresets(){
 function loadQuickPresets(){
   try{
     let x=JSON.parse(localStorage.getItem(QUICK_PRESET_KEY)||'null');
+    if(!x){const p142=JSON.parse(localStorage.getItem('anesvet_v14_2_quick_presets')||'null');if(p142){x=p142;localStorage.setItem(QUICK_PRESET_KEY,JSON.stringify(p142));}}
+    if(!x){const p141=JSON.parse(localStorage.getItem('anesvet_v14_1_quick_presets')||'null');if(p141){x=p141;localStorage.setItem(QUICK_PRESET_KEY,JSON.stringify(p141));}}
     if(!x){const p14=JSON.parse(localStorage.getItem('anesvet_v14_quick_presets')||'null');if(p14){x=p14;localStorage.setItem(QUICK_PRESET_KEY,JSON.stringify(p14));}}
     if(!x){const p134=JSON.parse(localStorage.getItem('anesvet_v13_4_quick_presets')||'null');if(p134){x=p134;localStorage.setItem(QUICK_PRESET_KEY,JSON.stringify(p134));}}
     if(!x){const p133=JSON.parse(localStorage.getItem('anesvet_v13_3_quick_presets')||'null');if(p133){x=p133;localStorage.setItem(QUICK_PRESET_KEY,JSON.stringify(p133));}}
@@ -2014,6 +2445,8 @@ function loadDrugLibraryData(){
     const own=JSON.parse(localStorage.getItem(DRUG_LIBRARY_KEY)||'null');
     if(Array.isArray(own))return own;
     const prev14=JSON.parse(localStorage.getItem('anesvet_v14_drug_library')||'null');if(Array.isArray(prev14)){localStorage.setItem(DRUG_LIBRARY_KEY,JSON.stringify(prev14));return prev14}
+    const prev142=JSON.parse(localStorage.getItem('anesvet_v14_2_drug_library')||'null');if(Array.isArray(prev142)){localStorage.setItem(DRUG_LIBRARY_KEY,JSON.stringify(prev142));return prev142}
+    const prev141=JSON.parse(localStorage.getItem('anesvet_v14_1_drug_library')||'null');if(Array.isArray(prev141)){localStorage.setItem(DRUG_LIBRARY_KEY,JSON.stringify(prev141));return prev141}
     const prev134=JSON.parse(localStorage.getItem('anesvet_v13_4_drug_library')||'null');if(Array.isArray(prev134)){localStorage.setItem(DRUG_LIBRARY_KEY,JSON.stringify(prev134));return prev134}
     const prev133=JSON.parse(localStorage.getItem('anesvet_v13_3_drug_library')||'null');if(Array.isArray(prev133)){localStorage.setItem(DRUG_LIBRARY_KEY,JSON.stringify(prev133));return prev133}
     const prev132=JSON.parse(localStorage.getItem('anesvet_v13_2_drug_library')||'null');if(Array.isArray(prev132)){localStorage.setItem(DRUG_LIBRARY_KEY,JSON.stringify(prev132));return prev132}
@@ -2232,7 +2665,7 @@ function freshState(){
     records:[],events:[],recoveryChecks:[false,false,false,false,false,false],
     patientSaved:false,
   preopChecks:{},preopNA:{},
-  caseStartedAt:null,responses:[],corrections:[],casePhase:'setup',recoveryStartedAt:null,recoveryCompletedAt:null,recoveryRecords:[],emergencyReturnActive:false,surgeryEndedAt:null,extubatedAt:null,lastSavedAt:null,fluidRateHistory:[],caseLocked:false,lockedAt:null,protocolSnapshot:null,auditTrail:[],amendments:[],finalSignoff:{anesthetist:null,surgeon:null},finalChecksum:null,checksumAlgorithm:null,checksumCreatedAt:null,voidedAt:null,voidedBy:'',voidReason:'',bcs:'5',breed:''
+  caseStartedAt:null,responses:[],corrections:[],casePhase:'setup',recoveryStartedAt:null,recoveryCompletedAt:null,recoveryRecords:[],emergencyReturnActive:false,surgeryEndedAt:null,extubatedAt:null,lastSavedAt:null,fluidRateHistory:[],caseLocked:false,lockedAt:null,protocolSnapshot:null,auditTrail:[],amendments:[],finalSignoff:{anesthetist:null,surgeon:null},finalChecksum:null,checksumAlgorithm:null,checksumCreatedAt:null,voidedAt:null,voidedBy:'',voidReason:'',bcs:'5',breed:'',age:'',birthDate:'',birthDateEstimated:false,ageSource:'',estimatedBirthPeriod:'',approxAgeYears:'0',approxAgeMonths:'0',approxAgeWeeks:'0',patientMasterId:'',sex:'',reproductiveStatus:'',microchip:''
   };
 }
 function resetCurrent(){state=freshState();localStorage.setItem(CURRENT_KEY,JSON.stringify(state));idbPutMeta('current',state);localStorage.setItem(TAB_KEY,'patient');releaseScreenWakeLock(true);restartAtAppRoot()}
@@ -2278,15 +2711,17 @@ window.addEventListener('appinstalled',()=>{$('installBtn').hidden=true});
 if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js').catch(()=>{}));
 
 load();
+migrateLegacyAgeUi();
 archiveCache=getLegacyArchiveSeed();
 syncPatientProcedureToCase();
+breedAliases=loadBreedAliases();renderBreedAliasSettings();
 loadSettings();hospitalDrugLibrary=loadDrugLibraryData();renderDrugLibrarySettings();renderPhaseDrugSelectors();setTimeout(renderProtocolGovernance,0);
 syncAsaCards();updatePatientSaveStatus();
 let storedTab=localStorage.getItem(TAB_KEY)||'casesummary';
 if(storedTab==='dashboard')storedTab='casesummary';
 const initialTab=state.patientSaved?((state.timer.running||(state.timer.elapsedMs||0)>0)?'orlive':storedTab):'patient';
 setTab(initialTab);
-renderPatientRiskBanner();renderAirwayPanel();renderFavoriteDrugButtons();renderQuickPresetSettings();renderQuickPresetSummary();renderOrFluidPanel();renderCaseSummary();renderCasePhase();renderOrPhaseTracker();renderRecoveryRecords();renderWorkflowLocks();renderAlertFeedbackState();renderProtocolGovernance();renderStorageStatus();renderFinalSignoff();renderBackupHealth();
+renderPatientRiskBanner();renderAirwayPanel();renderFavoriteDrugButtons();renderQuickPresetSettings();renderQuickPresetSummary();renderOrFluidPanel();renderCaseSummary();renderCasePhase();renderOrPhaseTracker();renderRecoveryRecords();renderWorkflowLocks();renderAlertFeedbackState();renderProtocolGovernance();renderStorageStatus();renderFinalSignoff();renderBackupHealth();renderLinkedPatient();renderPatientMaster();
 updateDashboard();renderPreop();renderRecords();renderCorrections();renderEvents();renderTrends();renderProcedureTimeline();renderRecovery();renderRecoveryState();renderArchives();updateDue();renderTimerState();updateDoseSpotlights();renderEndCase();renderOrLive();renderSaveState();
 if(state.timer.running && state.timer.startedEpoch) startTimerLoop();
 })();
