@@ -1,8 +1,8 @@
 {
-  "name": "ANESVET V11 — Simplified Clinical Workflow",
+  "name": "ANESVET V11.1 — Simplified Clinical Workflow",
   "short_name": "ANESVET",
-  "description": "Veterinary anesthesia record with a simplified six-step clinical workflow",
-  "start_url": "./?v=11",
+  "description": "V11.1 hotfix: improved pre-check navigation, Cefazolin/Convenia spotlight, and fixed More menu",
+  "start_url": "./?v=11.1",
   "scope": "./",
   "display": "standalone",
   "background_color": "#f3f7f8",

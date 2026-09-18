@@ -8,8 +8,8 @@
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" href="./icon-192.png">
   <link rel="apple-touch-icon" href="./icon-192.png">
-  <link rel="stylesheet" href="./style.css?v=11">
-  <title>ANESVET V11</title>
+  <link rel="stylesheet" href="./style.css?v=11.1">
+  <title>ANESVET V11.1</title>
 </head>
 <body>
 <header class="topbar">
@@ -17,7 +17,7 @@
     <div class="brand-mark">A</div>
     <div>
       <div class="eyebrow">GENOVI PET CARE • DIGITAL ANESTHESIA RECORD</div>
-      <h1>ANESVET <span>V11</span></h1>
+      <h1>ANESVET <span>V11.1</span></h1>
     </div>
   </div>
   <div class="top-actions">
@@ -299,7 +299,10 @@
 
       <div class="preop-footer">
         <div id="preopWarning" class="info-line">Checklist ยังไม่ครบ</div>
-        <button id="goDashboardBtn" class="btn primary">ไป Dashboard →</button>
+        <div class="preop-next-actions">
+          <button id="goDrugCalculatorBtn" class="btn primary">ไป Drug Calculator →</button>
+          <button id="goOrLiveFromPreopBtn" class="btn">ข้ามไปช่วงวางยา / OR LIVE</button>
+        </div>
       </div>
     </section>
   </section>
@@ -700,6 +703,8 @@
         <div><span>Diazepam</span><b id="spotDiazepam">—</b><small>mL</small></div>
         <div><span>Propofol</span><b id="spotPropofol">—</b><small>mL</small></div>
         <div><span>Tramadol</span><b id="spotTramadol">—</b><small>mL</small></div>
+        <div class="antibiotic-spot"><span>Cefazolin (ABO)</span><b id="spotCefazolin">—</b><small>mL</small></div>
+        <div class="antibiotic-spot"><span>Convenia</span><b id="spotConvenia">—</b><small>mL</small></div>
         <div><span id="spotNsaidLabel">NSAID</span><b id="spotNsaid">—</b><small>mL</small></div>
       </div>
       <p class="small muted">ตัวเลขใหญ่คือปริมาตรที่คำนวณจากน้ำหนักและ concentration ปัจจุบัน ควรตรวจฉลากยาและยืนยัน actual administered volume ก่อนให้ทุกครั้ง</p>
@@ -745,7 +750,7 @@
         </article>
 
         <article class="drug-card special-formula">
-          <div class="drug-card-head"><h3>Cefazolin</h3><span class="protocol-chip">BW ÷ 10 mL</span></div>
+          <div class="drug-card-head"><h3>Cefazolin (ABO)</h3><span class="protocol-chip">BW ÷ 10 mL</span></div>
           <div class="drug-result"><b id="cefazolinMl">— mL</b><span>Hospital preset formula</span></div>
           <p class="drug-note">สูตรนี้ขึ้นกับ dilution ที่โรงพยาบาลใช้ จึงแสดงตามสูตรที่กำหนด ไม่แปลงเป็น mg/kg</p>
           <button class="btn drug-event-btn" data-drug="Cefazolin" data-volid="cefazolinMl">Add to Event</button>
@@ -1104,6 +1109,6 @@
 </main>
 
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
-<script src="./app.js?v=11"></script>
+<script src="./app.js?v=11.1"></script>
 </body>
 </html>

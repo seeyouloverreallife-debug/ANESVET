@@ -253,7 +253,8 @@ function renderPreop(){
   save();
 }
 $$('.preop-check').forEach(el=>el.addEventListener('change',renderPreop));
-$('goDashboardBtn')?.addEventListener('click',()=>setTab('dashboard'));
+$('goDrugCalculatorBtn')?.addEventListener('click',()=>setTab('drugs'));
+$('goOrLiveFromPreopBtn')?.addEventListener('click',()=>setTab('orlive'));
 $('openPreopBtn')?.addEventListener('click',()=>setTab('preop'));
 
 
@@ -308,7 +309,10 @@ $('orWakeBtn')?.addEventListener('click',async()=>{if(!('wakeLock' in navigator)
 
 
 function closeMoreMenu(){const m=$('moreMenu');if(m)m.hidden=true}
-$('moreMenuBtn')?.addEventListener('click',()=>{const m=$('moreMenu');if(m)m.hidden=!m.hidden});
+$('moreMenuBtn')?.addEventListener('click',(e)=>{
+  e.preventDefault();e.stopPropagation();
+  const m=$('moreMenu');if(m)m.hidden=!m.hidden;
+});
 $$('[data-more-tab]').forEach(btn=>btn.addEventListener('click',()=>{closeMoreMenu();setTab(btn.dataset.moreTab)}));
 
 function syncQuickConcentrations(){
@@ -329,6 +333,8 @@ function updateDoseSpotlights(){
   if($('spotDiazepam'))$('spotDiazepam').textContent=mlText('diazepamMl');
   if($('spotPropofol'))$('spotPropofol').textContent=mlText('propofolMl');
   if($('spotTramadol'))$('spotTramadol').textContent=mlText('tramadolMl');
+  if($('spotCefazolin'))$('spotCefazolin').textContent=mlText('cefazolinMl');
+  if($('spotConvenia'))$('spotConvenia').textContent=mlText('conveniaMl');
   const cat=$('species')?.value==='cat';
   if($('spotNsaid'))$('spotNsaid').textContent=mlText(cat?'metacamMl':'rimadylMl');
   if($('spotNsaidLabel'))$('spotNsaidLabel').textContent=cat?'Meloxicam':'Carprofen';
@@ -357,6 +363,7 @@ $('endSaveArchiveBtn')?.addEventListener('click',()=>{
 });
 
 function setTab(id){
+  if(!id || !document.getElementById(id)) return;
   closeMoreMenu();
   $$('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===id));
   $$('.tabpage').forEach(p=>p.classList.toggle('active',p.id===id));
@@ -367,7 +374,7 @@ function setTab(id){
   if(id==='drugs'){updateDoseSpotlights();syncQuickConcentrations();}
   if(id==='endcase') renderEndCase();
 }
-$$('.tab').forEach(b=>b.addEventListener('click',()=>setTab(b.dataset.tab)));
+$$('.tab[data-tab]').forEach(b=>b.addEventListener('click',()=>setTab(b.dataset.tab)));
 
 function getVal(id, fallback=null){
   const el=$(id); if(!el) return fallback;
@@ -1145,7 +1152,7 @@ function appRootUrl(){
   let path=here.pathname;
   if(!path.endsWith('/')) path=path.replace(/\/[^/]*$/,'/');
   const url=new URL(path, here.origin);
-  url.searchParams.set('v','11');
+  url.searchParams.set('v','11.1');
   return url.href;
 }
 function restartAtAppRoot(){

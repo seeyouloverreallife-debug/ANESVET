@@ -170,3 +170,18 @@ body.or-fullscreen .topbar,body.or-fullscreen .case-strip,body.or-fullscreen .ta
 .end-case-actions{display:flex;justify-content:flex-end;gap:9px;margin-top:14px}
 @media(max-width:1050px){.workflow-tabs{grid-template-columns:repeat(3,minmax(0,1fr))}.workflow-tabs .more-tab{grid-column:1/-1}.dose-spotlight-grid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:650px){.workflow-tabs{grid-template-columns:1fr 1fr}.workflow-tabs .tab{justify-content:flex-start}.conc-grid,.end-case-summary,.end-case-checklist{grid-template-columns:1fr}.drawer-actions,.end-case-actions{flex-direction:column;align-items:stretch}.dose-spotlight-grid{grid-template-columns:1fr 1fr}}
+
+
+/* V11.1 hotfix */
+.preop-next-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.dose-spotlight-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+.dose-spotlight-grid .antibiotic-spot{border-color:#c6d9ef;background:#f8fbff}
+.dose-spotlight-grid .antibiotic-spot b{color:#235d88}
+@media(max-width:850px){
+  .dose-spotlight-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:560px){
+  .preop-next-actions{width:100%;display:grid;grid-template-columns:1fr}
+  .preop-next-actions .btn{width:100%}
+  .dose-spotlight-grid{grid-template-columns:1fr 1fr}
+}
