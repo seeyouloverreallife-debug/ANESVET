@@ -299,3 +299,29 @@ body.or-fullscreen .topbar,body.or-fullscreen .case-strip,body.or-fullscreen .ta
   .case-team-grid,.case-summary-grid,.fluid-rate-hero,.fluid-quick-grid,.fluid-running-summary{grid-template-columns:1fr}
   .fluid-rate-entry{grid-column:auto}
 }
+
+
+/* V13.1 — Validation & Safety + configurable quick presets */
+.case-strip-status{display:flex;align-items:center;gap:7px}
+.status-pill.phase.setup{background:#eef3f5;color:#5a6970}
+.status-pill.phase.induction{background:#eaf3ff;color:#205c95}
+.status-pill.phase.intraop{background:#e8f7ef;color:#14704d}
+.status-pill.phase.recovery{background:#fff2d8;color:#8a5a00}
+.status-pill.phase.complete{background:#e8f7ef;color:#14704d}
+.status-pill.phase.locked{background:#eceff1;color:#3f4a50}
+.section-heading.compact{margin-bottom:5px}
+.quick-preset-row{display:grid!important;grid-template-columns:1fr auto auto!important}
+.quick-preset-settings-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:12px}
+.drug-admin-dialog{border:0;border-radius:16px;padding:0;width:min(680px,calc(100vw - 28px));box-shadow:0 22px 70px rgba(0,0,0,.28)}
+.drug-admin-dialog::backdrop{background:rgba(0,25,35,.48)}
+.drug-admin-card{padding:18px;background:#fff}
+.drug-admin-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.drug-admin-safety{margin-top:10px;padding:9px 10px;border-radius:9px;background:#fff8e8;border:1px solid #ecd59b;color:#6e5110;font-size:.8rem}
+.dialog-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:13px}
+.recovery-readiness{margin-top:10px;padding:9px 10px;border-radius:9px;font-weight:900;text-align:center}
+.recovery-readiness.warn{background:var(--warn-bg);color:var(--warn)}
+.recovery-readiness.good{background:var(--good-bg);color:var(--good)}
+@media(max-width:760px){
+  .quick-preset-settings-grid,.drug-admin-grid{grid-template-columns:1fr}
+  .drug-admin-grid .span2{grid-column:auto}
+}

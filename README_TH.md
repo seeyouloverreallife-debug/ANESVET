@@ -1,50 +1,62 @@
-# ANESVET V13 — OR Workflow & Fluid Management
+# ANESVET V13.1 — Validation & Safety
 
-## Step 1 — Patient & Case Setup
-หน้าแรกมี:
-- Patient / HN / species / breed / age / BW / BCS / ASA
-- Procedure
-- Surgeon
-- Anesthetist
-- Surgical assistant
-- Allergy
-- Underlying disease
-- Anesthetic cautions
+## Hospital Quick Presets
+กล่องยาด้านบนของ Drug Calculator ไม่ hard-code แล้ว
+โรงพยาบาลเลือกยาได้เอง 2 รายการต่อ phase:
+- Induction
+- Pre-anesthetic
+- Post-anesthetic
 
-ข้อมูลทีมใช้ต่อใน OR LIVE และ PDF โดยไม่ต้องเข้า Dashboard ไปกรอกซ้ำ
+เลือกได้จาก:
+- Built-in calculators ที่มีอยู่
+- Hospital Drug Library
 
-## Case Summary
-Dashboard ถูกถอดออกจากเมนูหลัก
-ใน “เพิ่มเติม” เปลี่ยนเป็น Case Summary แบบ read-only
-Legacy Dashboard เดิมยังคงอยู่ใน DOM เพื่อ compatibility ของระบบเดิม
+ถ้าต้องการยาอื่น ให้เพิ่มยา + formula + concentration ใน Hospital Drug Library ก่อน แล้วเลือกเป็น Quick Preset
 
-## OR LIVE — Fluid / Blood Loss Cockpit
-- Current crystalloid rate (mL/hr)
-- mL/kg/hr
-- Auto calculated crystalloid จาก rate × anesthesia elapsed time
-- Actual/corrected crystalloid (optional)
-- Bolus +5 / +10 / +20 / Custom
-- Estimated blood loss +5 / +10 / +20 / Custom
-- Urine +5 / +10 / +20 / Custom
-- Blood product given
-- Total fluid in + mL/kg
-- Net estimate
-- Rate history
-- rate change / bolus / blood loss / urine ถูกบันทึกใน Event/Timeline
+## Actual Drug Administration
+ปุ่มยาใน Drug Calculator จะเปิดหน้าต่างยืนยัน:
+- calculated dose/volume
+- actual administered volume
+- route
+- note
 
-## End Case / PDF
-เพิ่ม fluid summary:
-- calculated crystalloid
-- effective/actual crystalloid
-- bolus
-- blood product
-- total fluid
-- estimated blood loss
-- urine
-- net estimate
+Event log จะบันทึก actual volume แยกจาก calculated value
 
-## Icon
-รวมไอคอน ANESVET dog + cat + anesthesia monitor ที่ผู้ใช้เลือกไว้แล้ว
+## Case Phase
+แสดงสถานะ:
+SETUP → INDUCTION → INTRAOPERATIVE → RECOVERY → COMPLETE → LOCKED
 
-## URL
-https://seeyouloverreallife-debug.github.io/ANESVET/?v=13
+Milestones:
+- Induction → INDUCTION
+- Surgery start → INTRAOPERATIVE
+- Surgery end / Begin recovery → RECOVERY
+- Recovery complete → COMPLETE
+
+## Recovery Readiness
+Recovery page แสดง readiness จาก:
+- recovery checklist
+- RR
+- SpO2
+- temperature
+- mentation
+- extubation time
+
+## End Case Lock
+End Case:
+- หยุด timer
+- phase = COMPLETE
+- mark caseLocked = true
+- timestamp lockedAt
+- archive เป็น final record
+- reset ไปเคสใหม่
+
+## Backup
+ปุ่ม Backup แสดงใน End Case และ backup รวม:
+- current case
+- archived cases
+- hospital settings
+- drug library
+- quick presets
+
+## Update
+https://seeyouloverreallife-debug.github.io/ANESVET/?v=13.1

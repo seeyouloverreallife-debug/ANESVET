@@ -8,8 +8,8 @@
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" href="./icon-192.png">
   <link rel="apple-touch-icon" href="./icon-192.png">
-  <link rel="stylesheet" href="./style.css?v=13">
-  <title>ANESVET V13</title>
+  <link rel="stylesheet" href="./style.css?v=13.1">
+  <title>ANESVET V13.1</title>
 </head>
 <body>
 <header class="topbar">
@@ -17,7 +17,7 @@
     <div class="brand-mark">A</div>
     <div>
       <div class="eyebrow">GENOVI PET CARE • DIGITAL ANESTHESIA RECORD</div>
-      <h1>ANESVET <span>V13</span></h1>
+      <h1>ANESVET <span>V13.1</span></h1>
     </div>
   </div>
   <div class="top-actions">
@@ -50,7 +50,7 @@
         <strong id="caseStripInterval">5 min</strong>
       </div>
     </div>
-    <span id="globalStatus" class="status-pill good">STABLE</span>
+    <div class="case-strip-status"><span id="casePhaseBadge" class="status-pill phase setup">SETUP</span><span id="globalStatus" class="status-pill good">STABLE</span></div>
   </section>
 
 
@@ -236,7 +236,7 @@
         <div id="orRiskLine" class="or-risk-line" hidden></div>
       </div>
       <div class="or-timer-block">
-        <span id="orTimerState" class="timer-state ready">READY</span>
+        <span id="orCasePhaseBadge" class="status-pill phase setup">SETUP</span><span id="orTimerState" class="timer-state ready">READY</span>
         <strong id="orCaseClock" class="or-case-clock">00:00:00</strong>
         <div class="button-row">
           <button id="orStartBtn" class="btn primary">▶ Start case</button>
@@ -921,25 +921,31 @@
     </section>
 
     <section class="panel dose-spotlight-panel">
-      <div class="dose-spotlight-title">Calculated injection volume — grouped by phase</div>
+      <div class="section-heading compact">
+        <div>
+          <div class="dose-spotlight-title">Hospital Quick Presets — calculated injection volume</div>
+          <p>รายการด้านบนปรับเปลี่ยนได้ตาม protocol ของแต่ละโรงพยาบาลจาก Settings → Hospital Quick Presets</p>
+        </div>
+        <button id="editQuickPresetsBtn" class="btn">⚙ เปลี่ยน Quick Presets</button>
+      </div>
       <div class="dose-phase-summary">
         <div class="dose-phase-box">
           <h3>Induction</h3>
-          <div><span>Diazepam</span><b id="spotDiazepam">—</b><small>mL</small></div>
-          <div><span>Propofol</span><b id="spotPropofol">—</b><small>mL</small></div>
+          <div class="quick-preset-row"><span id="qpInd1Label">—</span><b id="qpInd1Vol">—</b><small>mL</small></div>
+          <div class="quick-preset-row"><span id="qpInd2Label">—</span><b id="qpInd2Vol">—</b><small>mL</small></div>
         </div>
         <div class="dose-phase-box">
           <h3>Pre-anesthetic</h3>
-          <div><span>Cefazolin (ABO)</span><b id="spotCefazolin">—</b><small>mL</small></div>
-          <div><span>Tramadol</span><b id="spotTramadol">—</b><small>mL</small></div>
+          <div class="quick-preset-row"><span id="qpPre1Label">—</span><b id="qpPre1Vol">—</b><small>mL</small></div>
+          <div class="quick-preset-row"><span id="qpPre2Label">—</span><b id="qpPre2Vol">—</b><small>mL</small></div>
         </div>
         <div class="dose-phase-box">
           <h3>Post-anesthetic</h3>
-          <div><span>Convenia</span><b id="spotConvenia">—</b><small>mL</small></div>
-          <div><span id="spotNsaidLabel">NSAID</span><b id="spotNsaid">—</b><small>mL</small></div>
+          <div class="quick-preset-row"><span id="qpPost1Label">—</span><b id="qpPost1Vol">—</b><small>mL</small></div>
+          <div class="quick-preset-row"><span id="qpPost2Label">—</span><b id="qpPost2Vol">—</b><small>mL</small></div>
         </div>
       </div>
-      <p class="small muted">Built-in presets ด้านบนเป็น protocol ของโรงพยาบาล/ผู้ใช้เดิม ส่วนยาเพิ่มเติมให้ตั้งสูตรใน Hospital Drug Library ก่อนใช้งาน</p>
+      <p class="small muted">Quick Presets เป็น “ตัวลัด” เท่านั้น สูตรและ concentration ต้องตั้งให้ตรงกับ protocol ของโรงพยาบาล และตรวจฉลากยาก่อนให้จริงทุกครั้ง</p>
     </section>
 
     <section class="panel">
@@ -1242,7 +1248,7 @@
         <label class="switchline"><input class="recovery-check" type="checkbox"> Temperature acceptable / warming continued</label>
         <label class="switchline"><input class="recovery-check" type="checkbox"> Pain / nausea controlled</label>
         <label class="switchline"><input class="recovery-check" type="checkbox"> Mentation improving / sternal when appropriate</label>
-        <div id="recoveryStatus" class="recovery-status warn">Checklist 0/6</div>
+        <div id="recoveryReadiness" class="recovery-readiness warn">NOT READY</div><div id="recoveryStatus" class="recovery-status warn">Checklist 0/6</div>
       </section>
     </div>
   </section>
@@ -1385,10 +1391,11 @@
         <label><input id="endConfirmPdf" type="checkbox"> พร้อม Archive / Export report</label>
       </div>
       <div class="end-case-actions">
+        <button id="endBackupBtn" class="btn">⬇ Backup all data</button>
         <button id="endExportPdfBtn" class="btn">Export PDF Report</button>
-        <button id="endSaveArchiveBtn" class="btn primary">✓ End & Archive Case</button>
+        <button id="endSaveArchiveBtn" class="btn primary">✓ End, Lock & Archive Case</button>
       </div>
-      <div class="settings-note">End Case จะหยุด timer, archive เคส และกลับไปหน้าเริ่มเคสใหม่หลังยืนยัน</div>
+      <div class="settings-note">End Case จะหยุด timer, mark เคสเป็น COMPLETE + LOCKED, archive เคส และกลับไปหน้าเริ่มเคสใหม่หลังยืนยัน</div>
     </section>
   </section>
 
@@ -1401,6 +1408,25 @@
 <label>Meloxicam concentration (mg/mL)<input id="settingMetacamConc" type="number" min="0.01" step="0.1" value="5"></label>
 <label>Atropine concentration (mg/mL)<input id="settingAtropineConc" type="number" min="0.01" step="0.1" value="0.6"></label>
 </div><div class="settings-note">บันทึกแล้วจะใช้กับ Drug Calculator และ default ของเคสใหม่</div></section>
+
+<section class="panel quick-preset-settings-panel">
+  <div class="section-heading">
+    <div>
+      <h2>Hospital Quick Presets</h2>
+      <p>เลือกยาที่จะแสดงในกล่องสรุปด้านบนของ Drug Calculator ได้ 2 รายการต่อ phase โดยเลือกจาก built-in calculator หรือ Hospital Drug Library</p>
+    </div>
+    <button id="saveQuickPresetsBtn" class="btn primary">Save quick presets</button>
+  </div>
+  <div class="quick-preset-settings-grid">
+    <label>Induction slot 1<select id="quickPresetInd1"></select></label>
+    <label>Induction slot 2<select id="quickPresetInd2"></select></label>
+    <label>Pre-anes slot 1<select id="quickPresetPre1"></select></label>
+    <label>Pre-anes slot 2<select id="quickPresetPre2"></select></label>
+    <label>Post-anes slot 1<select id="quickPresetPost1"></select></label>
+    <label>Post-anes slot 2<select id="quickPresetPost2"></select></label>
+  </div>
+  <div class="settings-note">ถ้าต้องการใช้ยาอื่น ให้เพิ่มยาและสูตรใน Hospital Drug Library ก่อน แล้วกลับมาเลือกยาใน slot นี้</div>
+</section>
 
 <section class="panel drug-library-panel">
   <div class="section-heading">
@@ -1430,7 +1456,37 @@
   </section>
 </main>
 
+
+<dialog id="drugAdminDialog" class="drug-admin-dialog">
+  <form method="dialog" class="drug-admin-card" onsubmit="return false;">
+    <div class="section-heading">
+      <div>
+        <div class="eyebrow">DRUG ADMINISTRATION</div>
+        <h2 id="drugAdminName">—</h2>
+        <p id="drugAdminCalculated">Calculated: —</p>
+      </div>
+      <button id="drugAdminCloseBtn" class="btn" type="button">✕</button>
+    </div>
+    <div class="drug-admin-grid">
+      <label>Actual administered volume (mL)
+        <input id="drugAdminActualMl" type="number" min="0" step="0.01" inputmode="decimal">
+      </label>
+      <label>Route
+        <input id="drugAdminRoute" type="text" placeholder="IV / IM / SC / PO ...">
+      </label>
+      <label class="span2">Administration note
+        <input id="drugAdminNote" type="text" placeholder="optional">
+      </label>
+    </div>
+    <div class="drug-admin-safety">Calculated volume ≠ actual administered dose เสมอ โดยเฉพาะ induction drugs ควรบันทึก volume ที่ให้จริง</div>
+    <div class="dialog-actions">
+      <button id="drugAdminCancelBtn" class="btn" type="button">Cancel</button>
+      <button id="drugAdminConfirmBtn" class="btn primary" type="button">✓ Confirm administration</button>
+    </div>
+  </form>
+</dialog>
+
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
-<script src="./app.js?v=13"></script>
+<script src="./app.js?v=13.1"></script>
 </body>
 </html>

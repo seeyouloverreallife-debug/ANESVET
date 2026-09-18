@@ -1,8 +1,8 @@
 {
-  "name": "ANESVET V13 — OR Workflow & Fluid Management",
+  "name": "ANESVET V13.1 — Validation & Safety",
   "short_name": "ANESVET",
-  "description": "Single-user veterinary anesthesia workstation with Patient & Case Setup and OR-centered fluid management",
-  "start_url": "./?v=13",
+  "description": "Veterinary anesthesia workstation with configurable hospital quick presets, actual drug administration capture, case phase status, recovery readiness and final record locking",
+  "start_url": "./?v=13.1",
   "scope": "./",
   "display": "standalone",
   "background_color": "#f3f7f8",
