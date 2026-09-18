@@ -4,12 +4,12 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#0d5265">
-  <meta name="description" content="ANESVET V14.4 — veterinary anesthesia workstation with patient history and data-integrity safeguards">
+  <meta name="description" content="ANESVET V14.5 — veterinary anesthesia workstation with clinical UX, temperature-unit and recovery N/A safeguards">
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" href="./icon-192.png">
   <link rel="apple-touch-icon" href="./icon-192.png">
-  <link rel="stylesheet" href="./style.css?v=14.4">
-  <title>ANESVET V14.4</title>
+  <link rel="stylesheet" href="./style.css?v=14.5">
+  <title>ANESVET V14.5</title>
 </head>
 <body>
 <header class="topbar">
@@ -17,7 +17,7 @@
     <div class="brand-mark">A</div>
     <div>
       <div class="eyebrow">GENOVI PET CARE • DIGITAL ANESTHESIA RECORD</div>
-      <h1>ANESVET <span>V14.4</span></h1>
+      <h1>ANESVET <span>V14.5</span></h1>
     </div>
   </div>
   <div class="top-actions">
@@ -399,7 +399,7 @@
       <article class="or-vital-card priority" data-vital="spo2"><div><span>SpO₂</span><small>%</small></div><input id="orSpo2" inputmode="numeric" type="number" min="0" max="100"><footer id="orSpo2Hint">—</footer></article>
       <article class="or-vital-card priority" data-vital="etco2"><div><span>ETCO₂</span><small>mmHg</small></div><input id="orEtco2" inputmode="numeric" type="number" min="0" max="150"><footer id="orEtco2Hint">—</footer></article>
       <article class="or-vital-card secondary" data-vital="rr"><div><span>RR</span><small>/min</small></div><input id="orRr" inputmode="numeric" type="number" min="0" max="200"><footer id="orRrHint">—</footer></article>
-      <article class="or-vital-card secondary" data-vital="temp"><div><span>Temp</span><small>°F</small></div><input id="orTemp" inputmode="decimal" type="number" min="77" max="113" step="0.1"><footer id="orTempHint">—</footer></article>
+      <article class="or-vital-card secondary" data-vital="temp"><div><span>Temp</span><small id="orTempUnit">°F</small></div><input id="orTemp" inputmode="decimal" type="number" min="77" max="113" step="0.1"><footer id="orTempHint">—</footer></article>
     </section>
 
     <section class="or-secondary-grid">
@@ -790,7 +790,7 @@
       </article>
 
       <article class="vital-card">
-        <div class="vital-title"><span>Temp</span><span class="unit">°F</span></div>
+        <div class="vital-title"><span>Temp</span><span id="tempUnitLabel" class="unit">°F</span></div>
         <input id="temp" class="vital-input" type="number" min="77" max="113" step="0.1" placeholder="—">
         <div id="tempHint" class="vital-foot good">warming early</div>
       </article>
@@ -922,7 +922,7 @@
             <tr>
               <th>#</th><th>Elapsed</th><th>Clock</th><th>HR</th><th>RR</th>
               <th>SAP</th><th>MAP</th><th>DAP</th><th>SpO₂</th><th>ETCO₂</th>
-              <th>Temp °F</th><th>Vap%</th><th>Fluid</th><th>Note</th><th></th>
+              <th id="recordTempHeader">Temp °F</th><th>Vap%</th><th>Fluid</th><th>Note</th><th></th>
             </tr>
           </thead>
           <tbody id="recordBody"></tbody>
@@ -996,7 +996,7 @@
         <svg id="chartRR" class="trend-chart" viewBox="0 0 760 300"></svg>
       </section>
       <section class="panel chart-card temp-chart">
-        <div class="chart-heading"><h3>Temperature</h3><span>°F</span></div>
+        <div class="chart-heading"><h3>Temperature</h3><span id="chartTempUnit">°F</span></div>
         <svg id="chartTemp" class="trend-chart" viewBox="0 0 760 300"></svg>
       </section>
     </div>
@@ -1366,15 +1366,24 @@
           <label>MAP (mmHg) <span class="muted small">optional</span>
             <input id="recMAP" type="number" min="0" max="250" placeholder="optional">
           </label>
-          <label>SpO₂ (%)
-            <input id="recSpO2" type="number" min="0" max="100" placeholder="—">
-          </label>
-          <label>Temp (°F)
-            <input id="recTemp" type="number" min="77" max="113" step="0.1" placeholder="—">
-          </label>
-          <label>Extubation time
-            <input id="recExtubation" type="text" placeholder="HH:MM or auto from event">
-          </label>
+          <div class="recovery-field-na" data-recovery-observation="spo2">
+            <label>SpO₂ (%)
+              <input id="recSpO2" type="number" min="0" max="100" placeholder="—">
+            </label>
+            <button type="button" class="recovery-observation-na-btn" data-key="spo2">N/A</button>
+          </div>
+          <div class="recovery-field-na" data-recovery-observation="temp">
+            <label>Temp (<span id="recTempUnitLabel">°F</span>)
+              <input id="recTemp" type="number" min="77" max="113" step="0.1" placeholder="—">
+            </label>
+            <button type="button" class="recovery-observation-na-btn" data-key="temp">N/A</button>
+          </div>
+          <div class="recovery-field-na" data-recovery-observation="extubation">
+            <label>Extubation time
+              <input id="recExtubation" type="text" placeholder="HH:MM or auto from event">
+            </label>
+            <button type="button" class="recovery-observation-na-btn" data-key="extubation">N/A</button>
+          </div>
           <label>O₂ support
             <select id="recOxygen"><option value="">—</option><option>Room air</option><option>Flow-by oxygen</option><option>Mask oxygen</option><option>Oxygen cage</option><option>Intubated</option></select>
           </label>
@@ -1392,12 +1401,13 @@
 
       <section class="panel">
         <h2>Recovery checklist</h2>
-        <label class="switchline"><input class="recovery-check" type="checkbox"> Airway patent / breathing adequate</label>
-        <label class="switchline"><input class="recovery-check" type="checkbox"> SpO₂ acceptable</label>
-        <label class="switchline"><input class="recovery-check" type="checkbox"> Swallow / airway protection adequate</label>
-        <label class="switchline"><input class="recovery-check" type="checkbox"> Temperature acceptable / warming continued</label>
-        <label class="switchline"><input class="recovery-check" type="checkbox"> Pain / nausea controlled</label>
-        <label class="switchline"><input class="recovery-check" type="checkbox"> Mentation improving / sternal when appropriate</label>
+        <div class="recovery-check-item"><label class="switchline"><input class="recovery-check" type="checkbox" data-index="0"> Airway patent / breathing adequate</label><button type="button" class="recovery-check-na-btn" data-index="0">N/A</button></div>
+        <div class="recovery-check-item"><label class="switchline"><input class="recovery-check" type="checkbox" data-index="1"> SpO₂ acceptable</label><button type="button" class="recovery-check-na-btn" data-index="1">N/A</button></div>
+        <div class="recovery-check-item"><label class="switchline"><input class="recovery-check" type="checkbox" data-index="2"> Swallow / airway protection adequate</label><button type="button" class="recovery-check-na-btn" data-index="2">N/A</button></div>
+        <div class="recovery-check-item"><label class="switchline"><input class="recovery-check" type="checkbox" data-index="3"> Temperature acceptable / warming continued</label><button type="button" class="recovery-check-na-btn" data-index="3">N/A</button></div>
+        <div class="recovery-check-item"><label class="switchline"><input class="recovery-check" type="checkbox" data-index="4"> Pain / nausea controlled</label><button type="button" class="recovery-check-na-btn" data-index="4">N/A</button></div>
+        <div class="recovery-check-item"><label class="switchline"><input class="recovery-check" type="checkbox" data-index="5"> Mentation improving / sternal when appropriate</label><button type="button" class="recovery-check-na-btn" data-index="5">N/A</button></div>
+        <label class="recovery-na-reason">N/A reason <span class="muted small">required when any Recovery item is N/A</span><input id="recNaReason" type="text" placeholder="เช่น non-intubated patient / probe unavailable despite troubleshooting"></label>
         <div id="recoveryReadiness" class="recovery-readiness warn">NOT READY</div><div id="recoveryStatus" class="recovery-status warn">Checklist 0/6</div>
       </section>
     </div>
@@ -1420,11 +1430,11 @@
       </div>
       <div class="table-wrap">
         <table class="data-table recovery-data-table">
-          <thead><tr><th>#</th><th>Recovery</th><th>Clock</th><th>HR</th><th>RR</th><th>MAP</th><th>SpO₂</th><th>Temp °F</th><th>O₂</th><th>Mentation</th><th>Note</th></tr></thead>
+          <thead><tr><th>#</th><th>Recovery</th><th>Clock</th><th>HR</th><th>RR</th><th>MAP</th><th>SpO₂</th><th id="recoveryTempHeader">Temp °F</th><th>O₂</th><th>Mentation</th><th>Note</th></tr></thead>
           <tbody id="recoveryRecordBody"><tr><td colspan="11" class="empty-state">ยังไม่มี Recovery record</td></tr></tbody>
         </table>
       </div>
-      <div class="settings-note">ใช้ค่าปัจจุบันจาก Recovery observations ด้านบน แล้วบันทึก snapshot เมื่อกด Record recovery vitals</div>
+      <div class="settings-note">ใช้ค่าปัจจุบันจาก Recovery observations ด้านบน แล้วบันทึก snapshot เมื่อกด Record recovery vitals • ถ้าค่า SpO₂/Temp ใช้ไม่ได้จริง ให้ mark N/A พร้อมเหตุผล แทนการใส่ค่าเดา</div>
     </section>
   </section>
 
@@ -1635,13 +1645,14 @@
 
   <section id="settings" class="tabpage"><section class="panel"><div class="section-heading"><div><h2>Hospital settings</h2><p>ปรับ default ของโรงพยาบาลโดยไม่ต้องแก้ code</p></div><button id="saveSettingsBtn" class="btn primary">Save settings</button></div><div class="settings-grid">
 <label>Default record interval<select id="settingInterval"><option value="5">5 min</option><option value="10">10 min</option></select></label>
+<label>Temperature unit<select id="settingTemperatureUnit"><option value="C">°C (recommended for Thailand)</option><option value="F">°F</option></select></label>
 <label>Diazepam concentration (mg/mL)<input id="settingDiazepamConc" type="number" min="0.01" step="0.1" value="5"></label>
 <label>Propofol concentration (mg/mL)<input id="settingPropofolConc" type="number" min="0.01" step="0.1" value="10"></label>
 <label>Tramadol concentration (mg/mL)<input id="settingTramadolConc" type="number" min="0.01" step="0.1" value="50"></label>
 <label>Carprofen concentration (mg/mL)<input id="settingRimadylConc" type="number" min="0.01" step="0.1" value="50"></label>
 <label>Meloxicam concentration (mg/mL)<input id="settingMetacamConc" type="number" min="0.01" step="0.1" value="5"></label>
 <label>Atropine concentration (mg/mL)<input id="settingAtropineConc" type="number" min="0.01" step="0.1" value="0.6"></label>
-</div><div class="settings-note">บันทึกแล้วจะใช้กับ Drug Calculator และ default ของเคสใหม่</div></section>
+</div><div class="settings-note">บันทึกแล้วจะใช้กับ Drug Calculator, temperature display และ default ของเคสใหม่ • Temperature ถูกเก็บภายในเป็น °F canonical เพื่อรักษาความต่อเนื่องและ checksum ของ record รุ่นก่อน</div></section>
 
 <section class="panel protocol-governance-panel">
   <div class="section-heading">
@@ -1813,6 +1824,6 @@
 </dialog>
 
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
-<script src="./app.js?v=14.4"></script>
+<script src="./app.js?v=14.5"></script>
 </body>
 </html>

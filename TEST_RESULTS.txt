@@ -1,0 +1,26 @@
+ANESVET V14.5 validation run - 2026-09-18
+
+1) JavaScript syntax
+   node --check app.js
+   PASS
+
+2) Automated regression
+   node tests/regression.mjs
+   PASS
+   Includes: unique IDs, duplicate phaseLabel protection, blank fresh BW/vitals,
+   temperature canonicalization anchors, Recovery N/A/reason safeguards,
+   HN vs Visit separation, Patient Master lifecycle, multi-tab lock,
+   case start/weight guards, dose/age/fluid anchors, checksum, backup/restore,
+   reset persistence and print CSS hardening.
+
+3) PDF stress fixture
+   Synthetic fixture: 120 anesthesia rows + 60 long events
+   Engine: WeasyPrint 68.0
+   Output: A4, 16 pages, not encrypted
+   Render verification: 16/16 pages rendered at 110 DPI
+   Visual spot checks: page 1, page 2 and page 16
+   Result: table header repeats; rows do not split; long text wraps; final events remain readable.
+
+4) Static structure
+   Named function declarations: 283; duplicate names: 0
+   HTML IDs: 548; duplicate IDs: 0

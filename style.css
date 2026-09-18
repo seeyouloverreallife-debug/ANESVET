@@ -559,3 +559,28 @@ body.session-readonly .tabpage button:not(.session-safe):not(.archive-pdf):not(.
 .patient-master-card.retired{opacity:.72;background:#f4f6f7}.patient-master-card.merged{border-style:dashed}.patient-master-actions{display:flex;gap:7px;align-items:center;flex-wrap:wrap;justify-content:flex-end}.patient-retired-badge,.patient-merged-badge{display:inline-block;border-radius:999px;padding:2px 6px;font-size:.62rem;font-weight:900;margin-left:5px}.patient-retired-badge{background:#eceff1;color:#54636a}.patient-merged-badge{background:#e8f1ff;color:#2d5f98}
 .patient-history-panel{margin-top:10px;border:1px solid #c7dce5;border-radius:11px;background:#f8fcfd;padding:10px}.patient-history-panel[hidden]{display:none}.patient-history-head{display:flex;justify-content:space-between;gap:10px;align-items:center}.patient-history-head span{display:block;color:#54727c;font-size:.65rem;font-weight:900;letter-spacing:.04em}.patient-history-head b{display:block;color:#173f4a;margin-top:2px}.patient-history-list{display:grid;gap:6px;margin-top:8px}.patient-history-item{display:grid;grid-template-columns:auto 1fr auto;gap:9px;align-items:center;background:#fff;border:1px solid #dbe7eb;border-radius:8px;padding:7px 8px;font-size:.73rem}.patient-history-item strong{color:#173f4a}.patient-history-item span{color:var(--muted)}.patient-history-concerns{margin-top:8px;padding:7px 8px;border-radius:8px;background:#fff4e6;border:1px solid #f1d1a3;color:#72480e;font-size:.72rem}.patient-history-concerns[hidden]{display:none}
 @media(max-width:650px){.session-banner{align-items:flex-start;flex-direction:column}.session-choice-grid{grid-template-columns:1fr}.patient-history-head{align-items:flex-start;flex-direction:column}.patient-history-item{grid-template-columns:1fr}.patient-master-actions{justify-content:flex-start}}
+
+
+/* V14.5 — Clinical UX Polish */
+.recovery-field-na{display:grid;grid-template-columns:1fr auto;gap:7px;align-items:end;min-width:0}
+.recovery-field-na>label{min-width:0}
+.recovery-observation-na-btn,.recovery-check-na-btn{border:1px solid #c8d5da;background:#fff;color:#52636e;border-radius:8px;padding:8px 10px;font-weight:850;cursor:pointer;white-space:nowrap}
+.recovery-observation-na-btn.active,.recovery-check-na-btn.active{background:#eef3f5;border-color:#7f969f;color:#344852;box-shadow:inset 0 0 0 1px #7f969f}
+.recovery-field-na:has(.recovery-observation-na-btn.active) label{opacity:.58}
+.recovery-check-item{display:grid;grid-template-columns:1fr auto;gap:7px;align-items:center;margin-bottom:7px}
+.recovery-check-item .switchline{margin:0}
+.recovery-check-item:has(.recovery-check-na-btn.active) .switchline{opacity:.62}
+.recovery-na-reason{display:block;margin-top:10px}
+@media(max-width:520px){.recovery-field-na{grid-template-columns:1fr}.recovery-observation-na-btn{justify-self:start}.recovery-check-item{grid-template-columns:1fr auto}}
+
+@media print{
+  body.report-mode .report-table,body.report-mode .report-recovery-table{table-layout:fixed;width:100%}
+  body.report-mode .report-table thead,body.report-mode .report-recovery-table thead{display:table-header-group}
+  body.report-mode .report-table tr,body.report-mode .report-recovery-table tr{break-inside:avoid;page-break-inside:avoid}
+  body.report-mode .report-table td,body.report-mode .report-recovery-table td{overflow-wrap:anywhere;word-break:break-word}
+  body.report-mode .report-section h2{break-after:avoid;page-break-after:avoid}
+  body.report-mode .report-summary-item,body.report-mode .report-event,body.report-mode .report-correction,body.report-mode .report-amendment,body.report-mode .report-audit,body.report-mode .report-chart{break-inside:avoid;page-break-inside:avoid}
+  body.report-mode .report-charts{grid-template-columns:1fr 1fr}
+  body.report-mode .report-chart svg{max-height:70mm}
+  body.report-mode .report-disclaimer{break-inside:avoid}
+}

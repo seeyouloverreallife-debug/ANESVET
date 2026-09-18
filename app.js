@@ -26,7 +26,7 @@ const dataFields = [
   'patientName','hospitalId','visitId','patientMasterId','species','sex','reproductiveStatus','microchip','breed','weight','age','birthDate','birthDateEstimated','ageSource','estimatedBirthPeriod','approxAgeYears','approxAgeMonths','approxAgeWeeks','bcs','asa','emergency','patientProcedure','patientAllergies','patientComorbidities','patientPrecautions','procedure','surgeon','anesthetist','surgicalAssistant',
   'hr','rr','sap','map','dap','spo2','etco2','temp','vaporizer','o2flow','fluidRateInput','fluidTotal',
   'depth','ventilation','bradyPoorPerf','bloodLoss','cardiacRisk','respRisk','recordInterval','reminderOn',
-  'recordNote','recHR','recRR','recMAP','recSpO2','recTemp','recExtubation','recOxygen','recMentation','recPain','recRecordInterval','planPremed','planInduction','planMaintenance','planAnalgesia','planAntibiotic','planNSAID','planBlock','planNote','actualDiazepamMl','actualPropofolMl','actualTramadolMl','balanceCrystalloid','balanceBolus','balanceBloodIn','balanceBloodLoss','balanceUrine','fluidActualTotal','airwayEttSize','airwayEttDepth','airwayCuff','airwayDifficulty','airwayCircuit','airwayVentMode','airwayVt','airwayPip','airwayPeep','airwayVentRr','diazepamConc','propofolConc','tramadolConc','rimadylConc','metacamConc','adrenalineConc','atropineConc','atropineMode','dopamineDose','dopamineConc'
+  'recordNote','recHR','recRR','recMAP','recSpO2','recTemp','recExtubation','recOxygen','recMentation','recPain','recNaReason','recRecordInterval','planPremed','planInduction','planMaintenance','planAnalgesia','planAntibiotic','planNSAID','planBlock','planNote','actualDiazepamMl','actualPropofolMl','actualTramadolMl','balanceCrystalloid','balanceBolus','balanceBloodIn','balanceBloodLoss','balanceUrine','fluidActualTotal','airwayEttSize','airwayEttDepth','airwayCuff','airwayDifficulty','airwayCircuit','airwayVentMode','airwayVt','airwayPip','airwayPeep','airwayVentRr','diazepamConc','propofolConc','tramadolConc','rimadylConc','metacamConc','adrenalineConc','atropineConc','atropineMode','dopamineDose','dopamineConc'
 ];
 
 let state = {
@@ -37,6 +37,8 @@ let state = {
   records: [],
   events: [],
   recoveryChecks: [false,false,false,false,false,false],
+  recoveryNA: [false,false,false,false,false,false],
+  recoveryObservationNA:{spo2:false,temp:false,extubation:false},
   patientSaved:false,
   patientMasterId:'',
   visitId:'',
@@ -133,7 +135,7 @@ function toast(msg){
 }
 function readSessionLock(){try{const x=JSON.parse(localStorage.getItem(SESSION_LOCK_KEY)||'null');return x&&x.tabId?x:null}catch(e){return null}}
 function sessionLockIsFresh(lock){return !!(lock&&lock.tabId&&Number(lock.heartbeatAt)>0&&(Date.now()-Number(lock.heartbeatAt))<SESSION_TTL_MS)}
-function writeSessionLock(){if(sessionMode!=='active')return;const lock={tabId:sessionTabId,heartbeatAt:Date.now(),caseId:state?.caseId||'',patientName:state?.patientName||'',version:'14.4'};try{localStorage.setItem(SESSION_LOCK_KEY,JSON.stringify(lock))}catch(e){};try{sessionChannel?.postMessage({type:'HEARTBEAT',...lock})}catch(e){}}
+function writeSessionLock(){if(sessionMode!=='active')return;const lock={tabId:sessionTabId,heartbeatAt:Date.now(),caseId:state?.caseId||'',patientName:state?.patientName||'',version:'14.5'};try{localStorage.setItem(SESSION_LOCK_KEY,JSON.stringify(lock))}catch(e){};try{sessionChannel?.postMessage({type:'HEARTBEAT',...lock})}catch(e){}}
 function releaseSessionLock(){const lock=readSessionLock();if(lock?.tabId===sessionTabId){try{localStorage.removeItem(SESSION_LOCK_KEY)}catch(e){};try{sessionChannel?.postMessage({type:'RELEASE',tabId:sessionTabId})}catch(e){}}}
 function sessionSafeTarget(target){return !!target?.closest?.('.session-safe,[data-tab],[data-more-tab],#moreMenuBtn,.archive-pdf,.verify-integrity')}
 function renderSessionMode(){
@@ -501,9 +503,12 @@ function save(){
   try{
     dataFields.forEach(id=>{
       const el=$(id);if(!el)return;
-      state[id]=el.type==='checkbox'?el.checked:el.value;
+      if(id==='temp'||id==='recTemp') state[id]=el.value===''?'':(tempDisplayToStoredF(el.value)??'');
+      else state[id]=el.type==='checkbox'?el.checked:el.value;
     });
     state.recoveryChecks=$$('.recovery-check').map(x=>x.checked);
+    state.recoveryNA=$$('.recovery-check-na-btn').map(x=>x.classList.contains('active'));
+    state.recoveryObservationNA={};$$('.recovery-observation-na-btn').forEach(x=>state.recoveryObservationNA[x.dataset.key]=x.classList.contains('active'));
     state.preopChecks={};$$('.preop-check').forEach(x=>state.preopChecks[x.dataset.key]=x.checked);
     state.preopNA={};$$('.preop-na-btn').forEach(x=>state.preopNA[x.dataset.key]=x.closest('.preop-item')?.classList.contains('na')||false);
     state.lastSavedAt=Date.now();
@@ -514,12 +519,35 @@ function save(){
   }catch(e){renderSaveState('error');return false}
 }
 function cToF(c){return (Number(c)*9/5)+32}
+function fToC(f){return (Number(f)-32)*5/9}
+let activeTempDisplayUnit='F';
+function normalizeTempUnit(u){return String(u||'').toUpperCase()==='C'?'C':'F'}
+function tempSymbol(unit=activeTempDisplayUnit){return `°${normalizeTempUnit(unit)}`}
+function tempStoredFToDisplay(v,unit=activeTempDisplayUnit){if(v===''||v===null||v===undefined)return '';const n=Number(v);if(!Number.isFinite(n))return '';return normalizeTempUnit(unit)==='C'?Number(fToC(n).toFixed(1)):Number(n.toFixed(1))}
+function tempDisplayToStoredF(v,unit=activeTempDisplayUnit){if(v===''||v===null||v===undefined)return null;const n=Number(v);if(!Number.isFinite(n))return null;return normalizeTempUnit(unit)==='C'?Number(cToF(n).toFixed(1)):Number(n.toFixed(1))}
+function tempInputStoredF(id){const el=$(id);return el?tempDisplayToStoredF(el.value):null}
+function tempTextF(v,dec=1){if(v===''||v===null||v===undefined||!Number.isFinite(Number(v)))return '—';const d=tempStoredFToDisplay(Number(v));return `${Number(d).toFixed(dec)}${tempSymbol()}`}
+function tempDeltaTextF(deltaF){const n=Number(deltaF);if(!Number.isFinite(n))return '—';const d=activeTempDisplayUnit==='C'?n*5/9:n;return `${d.toFixed(1)}${tempSymbol()}`}
+function setTemperatureDisplayUnit(unit,{convertInputs=true,rerender=true}={}){
+  const next=normalizeTempUnit(unit),prev=activeTempDisplayUnit;
+  const ids=['temp','orTemp','recTemp'];
+  if(convertInputs&&next!==prev){ids.forEach(id=>{const el=$(id);if(!el||el.value==='')return;const n=Number(el.value);if(!Number.isFinite(n))return;const storedF=prev==='C'?cToF(n):n;el.value=next==='C'?fToC(storedF).toFixed(1):Number(storedF).toFixed(1)});}
+  activeTempDisplayUnit=next;
+  ids.forEach(id=>{const el=$(id);if(!el)return;el.min=next==='C'?'25':'77';el.max=next==='C'?'45':'113';el.step='0.1'});
+  if($('orTempUnit'))$('orTempUnit').textContent=tempSymbol();
+  if($('tempUnitLabel'))$('tempUnitLabel').textContent=tempSymbol();
+  if($('recTempUnitLabel'))$('recTempUnitLabel').textContent=tempSymbol();
+  if($('chartTempUnit'))$('chartTempUnit').textContent=tempSymbol();
+  if($('recordTempHeader'))$('recordTempHeader').textContent=`Temp ${tempSymbol()}`;
+  if($('recoveryTempHeader'))$('recoveryTempHeader').textContent=`Temp ${tempSymbol()}`;
+  if(rerender){renderRecords();renderRecoveryRecords();renderTrends();renderProcedureTimeline();renderResponses();renderOrLive();updateDashboard();}
+}
 function migrateV3Case(raw){
   if(!raw || typeof raw!=='object') return raw;
   const x=JSON.parse(JSON.stringify(raw));
-  if(Number(x.temp)<60) x.temp=Number(cToF(x.temp).toFixed(1));
-  if(Number(x.recTemp)<60) x.recTemp=Number(cToF(x.recTemp).toFixed(1));
-  if(Array.isArray(x.records)) x.records=x.records.map(r=>({...r,temp:Number(r.temp)<60?Number(cToF(r.temp).toFixed(1)):r.temp}));
+  if(x.temp!==''&&x.temp!==null&&x.temp!==undefined&&Number.isFinite(Number(x.temp))&&Number(x.temp)<60) x.temp=Number(cToF(x.temp).toFixed(1));
+  if(x.recTemp!==''&&x.recTemp!==null&&x.recTemp!==undefined&&Number.isFinite(Number(x.recTemp))&&Number(x.recTemp)<60) x.recTemp=Number(cToF(x.recTemp).toFixed(1));
+  if(Array.isArray(x.records)) x.records=x.records.map(r=>({...r,temp:r.temp!==''&&r.temp!==null&&r.temp!==undefined&&Number.isFinite(Number(r.temp))&&Number(r.temp)<60?Number(cToF(r.temp).toFixed(1)):r.temp}));
   x.migratedFromV3=true;
   return x;
 }
@@ -593,6 +621,8 @@ function load(){
     }
     if(!('caseLocked' in state))state.caseLocked=false;
     if(!Array.isArray(state.recoveryRecords))state.recoveryRecords=[];
+    if(!Array.isArray(state.recoveryNA))state.recoveryNA=[false,false,false,false,false,false];
+    if(!state.recoveryObservationNA||typeof state.recoveryObservationNA!=='object')state.recoveryObservationNA={spo2:false,temp:false,extubation:false};
     if(!('emergencyReturnActive' in state))state.emergencyReturnActive=false;
     if(!('surgeryEndedAt' in state))state.surgeryEndedAt=null;
     if(!('extubatedAt' in state))state.extubatedAt=null;
@@ -611,6 +641,8 @@ function load(){
     if(el.type==='checkbox') el.checked=!!state[id]; else el.value=state[id] ?? '';
   });
   $$('.recovery-check').forEach((el,i)=>el.checked=!!(state.recoveryChecks||[])[i]);
+  $$('.recovery-check-na-btn').forEach((btn,i)=>{const na=!!(state.recoveryNA||[])[i];btn.classList.toggle('active',na);const cb=$$('.recovery-check')[i];if(cb){cb.disabled=na;if(na)cb.checked=false}});
+  $$('.recovery-observation-na-btn').forEach(btn=>{const na=!!(state.recoveryObservationNA||{})[btn.dataset.key];btn.classList.toggle('active',na);const input=btn.closest('.recovery-field-na')?.querySelector('input');if(input){input.disabled=na;if(na)input.value=''}});
   $$('.preop-check').forEach(el=>el.checked=!!(state.preopChecks||{})[el.dataset.key]);
   $$('.preop-na-btn').forEach(btn=>{const na=!!(state.preopNA||{})[btn.dataset.key];btn.closest('.preop-item')?.classList.toggle('na',na);if(na){const cb=btn.closest('.preop-item')?.querySelector('.preop-check');if(cb)cb.checked=false;}});
   if(state.timer.running && state.timer.startedEpoch && sessionMode==='active') startTimerLoop();
@@ -903,7 +935,7 @@ function patientChipKeys(p){return new Set([p?.microchip,...(Array.isArray(p?.mi
 function caseMatchesPatient(c,p){if(!c||!p)return false;const ids=patientAliasIds(p);if(c.patientMasterId&&ids.has(c.patientMasterId))return true;const hn=normalizePatientKey(c.hospitalId),chip=normalizePatientKey(c.microchip);if(hn&&patientHnKeys(p).has(hn))return true;if(chip&&patientChipKeys(p).has(chip))return true;return false}
 function patientAnesthesiaHistory(p){return getArchive().filter(c=>caseMatchesPatient(c,p)).sort((a,b)=>(b.archivedAt||b.createdAt||0)-(a.archivedAt||a.createdAt||0))}
 function caseLowestTemp(c){const vals=(c.records||[]).map(r=>Number(r.temp)).filter(Number.isFinite);return vals.length?Math.min(...vals):null}
-function caseHistoryConcern(c){const parts=[];const diff=String(c.airwayDifficulty||'').trim();if(diff&&!/^(none|easy|normal|no)$/i.test(diff))parts.push(`Airway: ${diff}`);const low=caseLowestTemp(c);if(low!==null&&low<98)parts.push(`Lowest temp ${low.toFixed(1)}°F`);if(c.recoveryStartedAt&&!c.recoveryCompletedAt)parts.push('Recovery not marked complete');if(c.voidedAt)parts.push('Record voided');return parts}
+function caseHistoryConcern(c){const parts=[];const diff=String(c.airwayDifficulty||'').trim();if(diff&&!/^(none|easy|normal|no)$/i.test(diff))parts.push(`Airway: ${diff}`);const low=caseLowestTemp(c);if(low!==null&&low<98)parts.push(`Lowest temp ${tempTextF(low)}`);if(c.recoveryStartedAt&&!c.recoveryCompletedAt)parts.push('Recovery not marked complete');if(c.voidedAt)parts.push('Record voided');return parts}
 function renderPatientHistory(p=null){
   const panel=$('patientHistoryPanel'),list=$('patientHistoryList'),summary=$('patientHistorySummary'),concerns=$('patientHistoryConcerns');if(!panel||!list||!summary)return;
   if(!p){panel.hidden=true;list.innerHTML='';if(concerns)concerns.hidden=true;return}
@@ -1102,8 +1134,8 @@ function syncMainFromOr(orId){const mainId=OR_SYNC[orId],a=$(orId),b=$(mainId);i
 Object.keys(OR_SYNC).forEach(id=>{const el=$(id);if(el)el.addEventListener(el.tagName==='SELECT'?'change':'input',()=>syncMainFromOr(id))});
 function orStatusText(level,good,warn,danger){return level==='neutral'?'No measurement entered':level==='danger'?danger:level==='warn'?warn:good}
 function sparkSvg(values,minHint=null,maxHint=null){const vals=values.filter(v=>v!==null&&v!==''&&v!==undefined).map(Number).filter(Number.isFinite);if(vals.length<2)return '<div class="or-spark-empty">Need ≥2 records</div>';let min=Math.min(...vals),max=Math.max(...vals);if(Number.isFinite(minHint))min=Math.min(min,minHint);if(Number.isFinite(maxHint))max=Math.max(max,maxHint);if(max===min){max+=1;min-=1}const w=220,h=70,p=7;const coords=vals.map((v,i)=>{const x=p+(i/(vals.length-1))*(w-p*2),y=h-p-((v-min)/(max-min))*(h-p*2);return [x.toFixed(1),y.toFixed(1)]});const pts=coords.map(x=>x.join(',')).join(' '),last=coords[coords.length-1],lastVal=vals[vals.length-1];return `<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" aria-hidden="true"><polyline points="${pts}" fill="none" stroke="#14758c" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="${last[0]}" cy="${last[1]}" r="3.5" fill="#0d5265"/><text x="${w-p}" y="${p+7}" text-anchor="end" font-size="10" fill="#54656f">${escapeHtml(lastVal)}</text></svg>`}
-function renderOrMiniTrends(){const r=(state.records||[]).slice(-6),m={orSparkMap:['map',55,80],orSparkSpo2:['spo2',90,100],orSparkEtco2:['etco2',30,60],orSparkTemp:['temp',98,100]};Object.entries(m).forEach(([id,[key,min,max]])=>{if($(id))$(id).innerHTML=sparkSvg(r.map(x=>x[key]),min,max)})}
-function renderOrRecent(){const items=[...(state.records||[]).slice(-5).map(r=>({epoch:r.epoch,elapsedMs:r.elapsedMs,kind:'Record',desc:`HR ${r.hr??'—'} • MAP ${r.map??'—'} • SpO₂ ${r.spo2??'—'} • ETCO₂ ${r.etco2??'—'} • Temp ${r.temp??'—'}°F`})),...(state.events||[]).slice(-5).map(e=>({epoch:e.epoch,elapsedMs:e.elapsedMs,kind:e.category,desc:`${e.name}${e.dose?' • '+e.dose:''}`}))].sort((a,b)=>b.epoch-a.epoch).slice(0,7);const box=$('orRecentActivity');if(!box)return;if(!items.length){box.className='or-recent-list empty-state compact';box.textContent='ยังไม่มีข้อมูล';return}box.className='or-recent-list';box.innerHTML=items.map(i=>`<div class="or-recent-item"><span class="t">${escapeHtml(formatShortElapsed(i.elapsedMs))}</span><span class="kind">${escapeHtml(i.kind)}</span><span class="desc">${escapeHtml(i.desc)}</span></div>`).join('')}
+function renderOrMiniTrends(){const r=(state.records||[]).slice(-6),isC=activeTempDisplayUnit==='C',m={orSparkMap:['map',55,80],orSparkSpo2:['spo2',90,100],orSparkEtco2:['etco2',30,60],orSparkTemp:['temp',isC?tempStoredFToDisplay(98):98,isC?tempStoredFToDisplay(100):100]};Object.entries(m).forEach(([id,[key,min,max]])=>{if(!$(id))return;const vals=r.map(x=>key==='temp'&&x[key]!==null&&x[key]!==''&&x[key]!==undefined?tempStoredFToDisplay(x[key]):x[key]);$(id).innerHTML=sparkSvg(vals,min,max)})}
+function renderOrRecent(){const items=[...(state.records||[]).slice(-5).map(r=>({epoch:r.epoch,elapsedMs:r.elapsedMs,kind:'Record',desc:`HR ${r.hr??'—'} • MAP ${r.map??'—'} • SpO₂ ${r.spo2??'—'} • ETCO₂ ${r.etco2??'—'} • Temp ${r.temp==null?'—':tempTextF(r.temp)}`})),...(state.events||[]).slice(-5).map(e=>({epoch:e.epoch,elapsedMs:e.elapsedMs,kind:e.category,desc:`${e.name}${e.dose?' • '+e.dose:''}`}))].sort((a,b)=>b.epoch-a.epoch).slice(0,7);const box=$('orRecentActivity');if(!box)return;if(!items.length){box.className='or-recent-list empty-state compact';box.textContent='ยังไม่มีข้อมูล';return}box.className='or-recent-list';box.innerHTML=items.map(i=>`<div class="or-recent-item"><span class="t">${escapeHtml(formatShortElapsed(i.elapsedMs))}</span><span class="kind">${escapeHtml(i.kind)}</span><span class="desc">${escapeHtml(i.desc)}</span></div>`).join('')}
 function renderOrTimerState(){if(!$('orTimerState'))return;if(state.timer.running){$('orTimerState').className='timer-state running';$('orTimerState').textContent='● RUNNING';$('orStartBtn').textContent='Running';$('orStartBtn').disabled=true;$('orPauseBtn').disabled=false;$('orPauseBtn').textContent='Pause case'}else if((state.timer.elapsedMs||0)>0){$('orTimerState').className='timer-state paused';$('orTimerState').textContent='PAUSED';$('orStartBtn').textContent='▶ Resume';$('orStartBtn').disabled=false;$('orPauseBtn').disabled=true;$('orPauseBtn').textContent='Paused'}else{$('orTimerState').className='timer-state ready';$('orTimerState').textContent='READY';$('orStartBtn').textContent='▶ Start case';$('orStartBtn').disabled=false;$('orPauseBtn').disabled=true;$('orPauseBtn').textContent='Pause'}$('orCaseClock').textContent=formatElapsed(currentElapsed())}
 
 function renderAirwayPanel(){
@@ -1161,7 +1193,7 @@ $('orStickyRecordBtn')?.addEventListener('click',()=>$('orRecordNowBtn')?.click(
     }else{$('orNextDue').textContent='Starts with case';$('orNextDueClock').textContent='—';$('orRecordNowBtn').classList.remove('due');$('orRecordNowBtn').textContent='＋ RECORD FIRST SET'}
   }
   if($('orStickyDue')){$('orStickyDue').textContent=$('orNextDue')?.textContent||'—';$('orStickyDue').classList.toggle('due',$('orRecordNowBtn')?.classList.contains('due'))}
-  const hints={hr:orStatusText(st.hr,species==='cat'?'100–180 screening':'60–150 screening','Reassess HR','Critical HR alert'),rr:orStatusText(st.rr,species==='cat'?'10–28 screening':'8–20 screening','Reassess RR','Critical RR / apnea risk'),map:orStatusText(st.map,'MAP acceptable','MAP 60–69','MAP <60'),spo2:orStatusText(st.spo2,'≥95%','SpO₂ <95%','SpO₂ <90%'),etco2:orStatusText(st.etco2,'40–55','Outside usual range','Critical ETCO₂ range'),temp:orStatusText(st.temp,'Temp acceptable','Warming indicated','<98°F')};
+  const hints={hr:orStatusText(st.hr,species==='cat'?'100–180 screening':'60–150 screening','Reassess HR','Critical HR alert'),rr:orStatusText(st.rr,species==='cat'?'10–28 screening':'8–20 screening','Reassess RR','Critical RR / apnea risk'),map:orStatusText(st.map,'MAP acceptable','MAP 60–69','MAP <60'),spo2:orStatusText(st.spo2,'≥95%','SpO₂ <95%','SpO₂ <90%'),etco2:orStatusText(st.etco2,'40–55','Outside usual range','Critical ETCO₂ range'),temp:orStatusText(st.temp,'Temp acceptable','Warming indicated',`<${tempTextF(98)}`)};
   const cap={hr:'Hr',rr:'Rr',map:'Map',spo2:'Spo2',etco2:'Etco2',temp:'Temp'};
   ['hr','rr','map','spo2','etco2','temp'].forEach(k=>{const card=document.querySelector(`.or-vital-card[data-vital="${k}"]`);if(card){card.classList.remove('good','warn','danger','neutral');card.classList.add(st[k])}const h=$('or'+cap[k]+'Hint');if(h)h.textContent=hints[k]});
   const immediate=[];
@@ -1356,7 +1388,7 @@ function currentSnapshot(note=''){
     elapsedMs: currentElapsed(),
     clock: formatClock(),
     hr:getVal('hr'), rr:getVal('rr'), sap:getVal('sap'), map:getVal('map'), dap:getVal('dap'),
-    spo2:getVal('spo2'), etco2:getVal('etco2'), temp:getVal('temp'),
+    spo2:getVal('spo2'), etco2:getVal('etco2'), temp:tempInputStoredF('temp'),
     vaporizer:getVal('vaporizer'), o2flow:getVal('o2flow'),
     fluidRate:getVal('fluidRateInput'), fluidTotal:getVal('fluidTotal'),
     depth:getVal('depth',''), ventilation:getVal('ventilation',''),
@@ -1372,7 +1404,7 @@ function plausibilityWarnings(v,context='anesthesia'){
   if(rr!==null&&(rr<0||rr>120))w.push(`RR ${rr}/min ดูผิดปกติมาก`);
   if(spo2!==null&&(spo2<50||spo2>100))w.push(`SpO₂ ${spo2}% ตรวจหน่วย/การพิมพ์`);
   if(et!==null&&(et<5||et>100))w.push(`ETCO₂ ${et} mmHg ตรวจ waveform/การพิมพ์`);
-  if(temp!==null&&(temp<90||temp>106))w.push(`Temp ${temp}°F ตรวจหน่วยหรือ decimal`);
+  if(temp!==null&&(temp<90||temp>106))w.push(`Temp ${tempTextF(temp)} ตรวจหน่วยหรือ decimal`);
   [sap,map,dap].forEach((x,i)=>{if(x!==null&&(x<0||x>300))w.push(`${['SAP','MAP','DAP'][i]} ${x} mmHg ตรวจการพิมพ์`)});
   if(sap!==null&&map!==null&&dap!==null&&!(sap>=map&&map>=dap))w.push(`BP relation ไม่สอดคล้อง: SAP ${sap} / MAP ${map} / DAP ${dap}`);
   if(context==='recovery'&&rr===0)w.push('Recovery RR = 0 ต้องยืนยันว่าเป็น apnea จริง');
@@ -1382,7 +1414,7 @@ function confirmPlausibility(warnings,title){return confirm(`${title}: พบค
 
 function thresholds(){
   const species=$('species').value;
-  const hr=getVal('hr'),rr=getVal('rr'),map=getVal('map'),spo2=getVal('spo2'),et=getVal('etco2'),temp=getVal('temp');
+  const hr=getVal('hr'),rr=getVal('rr'),map=getVal('map'),spo2=getVal('spo2'),et=getVal('etco2'),temp=tempInputStoredF('temp');
   const status={hr:'neutral',rr:'neutral',map:'neutral',spo2:'neutral',etco2:'neutral',temp:'neutral'};
   if(hr!==null){status.hr='good';if(species==='cat'){if(hr<90||hr>225)status.hr='danger';else if(hr<100||hr>180)status.hr='warn'}else{if(hr<40||hr>190)status.hr='danger';else if(hr<60||hr>150)status.hr='warn'}}
   if(rr!==null){status.rr='good';if(species==='cat'){if(rr<7)status.rr='danger';else if(rr<10||rr>28)status.rr='warn'}else{if(rr<6)status.rr='danger';else if(rr<8||rr>20)status.rr='warn'}}
@@ -1409,7 +1441,7 @@ function updateDashboard(){
   setHint('mapHint',st.map,st.map==='neutral'?'No measurement entered':st.map==='danger'?'MAP <60: intervene':st.map==='warn'?'MAP 60–69: reassess':'≥70 โดยทั่วไป');
   setHint('spo2Hint',st.spo2,st.spo2==='neutral'?'No measurement entered':st.spo2==='danger'?'SpO₂ <90% severe':st.spo2==='warn'?'SpO₂ <95%: investigate':'≥95%');
   setHint('etco2Hint',st.etco2,st.etco2==='neutral'?'No measurement entered':st.etco2==='danger'?'ETCO₂ critical range':st.etco2==='warn'?'outside typical range':'40–50 โดยทั่วไป');
-  setHint('tempHint',st.temp,st.temp==='neutral'?'No measurement entered':st.temp==='danger'?'<98°F: hypothermia':st.temp==='warn'?'falling: warm early':'warming early');
+  setHint('tempHint',st.temp,st.temp==='neutral'?'No measurement entered':st.temp==='danger'?`<${tempTextF(98)}: hypothermia`:st.temp==='warn'?'falling: warm early':'warming early');
 
   const levels=Object.values(st);
   if($('bradyPoorPerf').checked) levels.push('danger');
@@ -1451,7 +1483,7 @@ function renderInterpretation(){
     ['MAP',st.map,msg('map','MAP acceptable','MAP borderline — reassess trend and perfusion','Hypotension — verify BP/perfusion, depth, HR, volume/contractility/SVR')],
     ['SpO₂',st.spo2,msg('spo2','Oxygenation acceptable','SpO₂ below 95% — investigate','Severe hypoxemia — airway/O₂/ventilation immediately')],
     ['ETCO₂',st.etco2,msg('etco2','Ventilation range acceptable','ETCO₂ outside usual range — review waveform','Check ventilation, airway/circuit and perfusion')],
-    ['Temp',st.temp,msg('temp','Temperature acceptable','Temperature falling — warm now','Clinically important hypothermia (<98°F) — active warming')]
+    ['Temp',st.temp,msg('temp','Temperature acceptable','Temperature falling — warm now',`Clinically important hypothermia (<${tempTextF(98)}) — active warming`)]
   ];
   $('interpretationCards').innerHTML=data.map(([name,level,text])=>`<div class="interpret-card ${level}"><span>${name}</span><b>${escapeHtml(text)}</b></div>`).join('');
 }
@@ -1491,7 +1523,7 @@ function renderRecords(){
     const tr=document.createElement('tr');if(recordAlert(r))tr.classList.add('alert');
     const fields=['hr','rr','sap','map','dap','spo2','etco2','temp','vaporizer','fluidRate'];
     tr.innerHTML=`<td>${i+1}</td><td>${formatElapsed(r.elapsedMs)}</td><td>${escapeHtml(r.clock)}</td>`+
-      fields.map(f=>`<td class="${recordCorrectionCount(r.id,f)?'corrected-cell':''}" title="${recordCorrectionCount(r.id,f)?'Corrected value — see history':''}">${r[f]??''}${recordCorrectionCount(r.id,f)?'<span class="correction-badge">C</span>':''}</td>`).join('')+
+      fields.map(f=>`<td class="${recordCorrectionCount(r.id,f)?'corrected-cell':''}" title="${recordCorrectionCount(r.id,f)?'Corrected value — see history':''}">${f==='temp'?(r[f]==null||r[f]===''?'':tempStoredFToDisplay(r[f])):(r[f]??'')}${recordCorrectionCount(r.id,f)?'<span class="correction-badge">C</span>':''}</td>`).join('')+
       `<td class="note">${escapeHtml(r.note||'')}</td><td><div class="record-actions"><button class="record-correct-btn" data-id="${escapeHtml(r.id)}">Correct</button><button class="delete-btn" data-id="${escapeHtml(r.id)}">✕</button></div></td>`;
     body.appendChild(tr);
   });
@@ -1508,14 +1540,15 @@ function renderCorrections(){
   const sel=$('correctionRecord');if(sel){const recs=state.records||[];sel.innerHTML=recs.length?recs.map((r,i)=>`<option value="${escapeHtml(r.id)}">#${i+1} • ${escapeHtml(r.clock)} • ${escapeHtml(formatShortElapsed(r.elapsedMs))}</option>`).join(''):'<option value="">— no records —</option>'}
   const arr=state.corrections||[];if($('correctionCount'))$('correctionCount').textContent=`${arr.length} CORRECTION${arr.length===1?'':'S'}`;
   const box=$('correctionHistory');if(!box)return;if(!arr.length){box.className='correction-history empty-state compact';box.textContent='ยังไม่มี correction';return}
-  box.className='correction-history';box.innerHTML=arr.slice().reverse().map(c=>`<div class="correction-item"><b>${escapeHtml(c.clock)} • ${escapeHtml(c.field.toUpperCase())}: ${escapeHtml(c.oldValue)} → ${escapeHtml(c.newValue)}</b><span>${escapeHtml(c.reason||'No reason entered')} • record ${escapeHtml(formatShortElapsed(c.recordElapsedMs||0))}</span></div>`).join('');
+  box.className='correction-history';box.innerHTML=arr.slice().reverse().map(c=>{const oldV=c.field==='temp'?tempTextF(c.oldValue):c.oldValue,newV=c.field==='temp'?tempTextF(c.newValue):c.newValue;return `<div class="correction-item"><b>${escapeHtml(c.clock)} • ${escapeHtml(c.field.toUpperCase())}: ${escapeHtml(oldV)} → ${escapeHtml(newV)}</b><span>${escapeHtml(c.reason||'No reason entered')} • record ${escapeHtml(formatShortElapsed(c.recordElapsedMs||0))}</span></div>`}).join('');
 }
 function applyCorrection(recordId=null){
   const rid=recordId||$('correctionRecord')?.value;if(!rid){toast('เลือก record ก่อน');return}
   const rec=(state.records||[]).find(r=>String(r.id)===String(rid));if(!rec)return;
   if(recordId && $('correctionRecord'))$('correctionRecord').value=String(recordId);
-  const field=$('correctionField').value,newValue=Number($('correctionValue').value),reason=$('correctionReason').value.trim();
-  if(!Number.isFinite(newValue)){toast('ใส่ corrected value ก่อน');return}
+  const field=$('correctionField').value,enteredValue=Number($('correctionValue').value),reason=$('correctionReason').value.trim();
+  if(!Number.isFinite(enteredValue)){toast('ใส่ corrected value ก่อน');return}
+  const newValue=field==='temp'?tempDisplayToStoredF(enteredValue):enteredValue;
   const oldValue=rec[field];if(String(oldValue)===String(newValue)){toast('ค่าใหม่เท่ากับค่าเดิม');return}
   if(!reason&&!confirm('ยังไม่ได้ระบุ reason — ต้องการบันทึก correction ต่อหรือไม่?'))return;
   const c={id:crypto.randomUUID?crypto.randomUUID():String(Date.now()),recordId:rec.id,recordElapsedMs:rec.elapsedMs,field,oldValue,newValue,reason,epoch:Date.now(),clock:formatClock()};
@@ -1572,8 +1605,8 @@ function renderProcedureTimeline(){
   const items=[
     ...(state.events||[]).map(e=>({elapsedMs:e.elapsedMs,clock:e.clock,cat:e.category,text:`${e.name}${e.dose?' • '+e.dose:''}${e.route?' • '+e.route:''}${e.note?' • '+e.note:''}`})),
     ...(state.records||[]).filter(r=>r.note).map(r=>({elapsedMs:r.elapsedMs,clock:r.clock,cat:'Record',text:r.note,isRecord:true})),
-    ...(state.corrections||[]).map(c=>({elapsedMs:c.recordElapsedMs||0,clock:c.clock,cat:'Correction',text:`${c.field.toUpperCase()} ${c.oldValue} → ${c.newValue}${c.reason?' • '+c.reason:''}`})),
-    ...(state.recoveryRecords||[]).map(r=>({elapsedMs:r.caseElapsedMs||0,clock:r.clock,cat:'Recovery Vitals',text:`HR ${r.hr} • RR ${r.rr} • MAP ${r.map??'—'} • SpO₂ ${r.spo2}% • Temp ${r.temp}°F${r.mentation?' • '+r.mentation:''}`}))
+    ...(state.corrections||[]).map(c=>({elapsedMs:c.recordElapsedMs||0,clock:c.clock,cat:'Correction',text:`${c.field.toUpperCase()} ${c.field==='temp'?tempTextF(c.oldValue):c.oldValue} → ${c.field==='temp'?tempTextF(c.newValue):c.newValue}${c.reason?' • '+c.reason:''}`})),
+    ...(state.recoveryRecords||[]).map(r=>({elapsedMs:r.caseElapsedMs||0,clock:r.clock,cat:'Recovery Vitals',text:`HR ${r.hr} • RR ${r.rr} • MAP ${r.map??'—'} • SpO₂ ${r.spo2}% • Temp ${r.na?.temp?'N/A':tempTextF(r.temp)}${r.mentation?' • '+r.mentation:''}`}))
   ].sort((a,b)=>a.elapsedMs-b.elapsedMs);
   const el=$('procedureTimeline');
   if(!el)return;
@@ -1666,7 +1699,7 @@ $('addEventBtn').addEventListener('click',()=>{
 });
 function populateResponseSelect(){const sel=$('responseEventSelect');if(!sel)return;const events=(state.events||[]).filter(e=>['Drug','Fluid','Complication','Ventilation'].includes(e.category));sel.innerHTML=events.length?events.map(e=>`<option value="${escapeHtml(e.id)}">${escapeHtml(formatShortElapsed(e.elapsedMs)+' • '+e.name)}</option>`).join(''):'<option value="">— no intervention event —</option>'}
 $('captureResponseBtn')?.addEventListener('click',()=>{const id=$('responseEventSelect').value;if(!id){toast('เลือก intervention ก่อน');return}const ev=(state.events||[]).find(e=>String(e.id)===String(id));if(!ev)return;const now=currentSnapshot(''),resp={id:crypto.randomUUID?crypto.randomUUID():String(Date.now()),eventId:id,eventName:ev.name,eventElapsed:ev.elapsedMs,capturedElapsed:now.elapsedMs,map:now.map,hr:now.hr,spo2:now.spo2,etco2:now.etco2,temp:now.temp,note:$('responseNote').value.trim()};state.responses=state.responses||[];state.responses.push(resp);$('responseNote').value='';save();renderResponses();toast('Response captured')});
-function renderResponses(){populateResponseSelect();const el=$('responseList'),arr=state.responses||[];if(!el)return;if(!arr.length){el.className='response-list empty-state';el.textContent='ยังไม่มี response tracking';return}el.className='response-list';el.innerHTML=arr.map(r=>`<div class="response-card"><b>${escapeHtml(r.eventName)} → response at +${escapeHtml(formatShortElapsed(r.capturedElapsed-r.eventElapsed))}</b><span>MAP ${r.map??'—'} • HR ${r.hr??'—'} • SpO₂ ${r.spo2??'—'} • ETCO₂ ${r.etco2??'—'} • Temp ${r.temp??'—'}°F${r.note?' • '+escapeHtml(r.note):''}</span></div>`).join('')}
+function renderResponses(){populateResponseSelect();const el=$('responseList'),arr=state.responses||[];if(!el)return;if(!arr.length){el.className='response-list empty-state';el.textContent='ยังไม่มี response tracking';return}el.className='response-list';el.innerHTML=arr.map(r=>`<div class="response-card"><b>${escapeHtml(r.eventName)} → response at +${escapeHtml(formatShortElapsed(r.capturedElapsed-r.eventElapsed))}</b><span>MAP ${r.map??'—'} • HR ${r.hr??'—'} • SpO₂ ${r.spo2??'—'} • ETCO₂ ${r.etco2??'—'} • Temp ${r.temp==null?'—':tempTextF(r.temp)}${r.note?' • '+escapeHtml(r.note):''}</span></div>`).join('')}
 function renderEvents(){
   renderResponses();
   const events=state.events||[];
@@ -1698,7 +1731,7 @@ function renderSummary(){
     const n=mode==='min'?Math.min(...v):Math.max(...v);
     $(id).textContent=(key==='temp'?n.toFixed(1):Math.round(n))+suffix;
   };
-  set('sumMap','map','min');set('sumSpO2','spo2','min','%');set('sumEtco2','etco2','max');set('sumTemp','temp','min','°F');
+  set('sumMap','map','min');set('sumSpO2','spo2','min','%');set('sumEtco2','etco2','max');const tv=metricValues('temp');$('sumTemp').textContent=tv.length?tempTextF(Math.min(...tv)):'—';
 }
 function eventXDomain(records){
   const xs=records.map((r,i)=>Number(r.elapsedMs)||i*Number($('recordInterval').value||5)*60000);
@@ -1713,7 +1746,7 @@ function svgChartMulti(svgId,series,opts={}){
   }
   const xs=eventXDomain(recs),xMin=Math.min(...xs),xMax0=Math.max(...xs),xMax=xMax0===xMin?xMin+60000:xMax0;
   const allVals=[];
-  series.forEach(s=>recs.forEach(r=>{const raw=r[s.key];if(raw===null||raw===''||raw===undefined)return;const n=Number(raw);if(Number.isFinite(n))allVals.push(n)}));
+  series.forEach(s=>recs.forEach(r=>{const raw=r[s.key];if(raw===null||raw===''||raw===undefined)return;let n=Number(raw);if(Number.isFinite(n)){if(typeof s.transform==='function')n=s.transform(n);allVals.push(n)}}));
   if(!allVals.length)return;
   let yMin=opts.min!==undefined?opts.min:Math.min(...allVals),yMax=opts.max!==undefined?opts.max:Math.max(...allVals);
   if(yMin===yMax){yMin-=1;yMax+=1}
@@ -1753,12 +1786,12 @@ function svgChartMulti(svgId,series,opts={}){
   series.forEach((s,si)=>{
     let d='';
     recs.forEach((r,i)=>{
-      const raw=r[s.key];if(raw===null||raw===''||raw===undefined)return;const y=Number(raw);if(!Number.isFinite(y))return;
+      const raw=r[s.key];if(raw===null||raw===''||raw===undefined)return;let y=Number(raw);if(!Number.isFinite(y))return;if(typeof s.transform==='function')y=s.transform(y);
       d+=(d?' L':'M')+` ${sx(xs[i]).toFixed(1)} ${sy(y).toFixed(1)}`;
     });
     add('path',{d,fill:'none',stroke:colors[si%colors.length],'stroke-width':2.7,'stroke-linecap':'round','stroke-linejoin':'round'});
     recs.forEach((r,i)=>{
-      const raw=r[s.key];if(raw===null||raw===''||raw===undefined)return;const y=Number(raw);if(!Number.isFinite(y))return;
+      const raw=r[s.key];if(raw===null||raw===''||raw===undefined)return;let y=Number(raw);if(!Number.isFinite(y))return;if(typeof s.transform==='function')y=s.transform(y);
       const c=add('circle',{cx:sx(xs[i]),cy:sy(y),r:4.3,fill:colors[si%colors.length],stroke:'#fff','stroke-width':1.5});
       const title=document.createElementNS(NS,'title');title.textContent=`${s.label} ${y} • ${formatShortElapsed(r.elapsedMs)}${r.note?' • '+r.note:''}`;c.appendChild(title);
     });
@@ -1784,7 +1817,7 @@ function renderTrends(){
   svgChartMulti('chartSpO2',[{key:'spo2',label:'SpO₂'}],{min:80,max:100,lines:[{value:95,label:'95%'},{value:90,label:'90%'}]});
   svgChartMulti('chartETCO2',[{key:'etco2',label:'ETCO₂'}],{min:20,max:80,lines:[{value:60,label:'60'},{value:40,label:'40'}]});
   svgChartMulti('chartRR',[{key:'rr',label:'RR'}],{min:0,max:60,lines:rrLines});
-  svgChartMulti('chartTemp',[{key:'temp',label:'Temp'}],{min:93,max:104,decimal:true,lines:[{value:98.0,label:'98°F'}]});
+  {const isC=activeTempDisplayUnit==='C';svgChartMulti('chartTemp',[{key:'temp',label:`Temp ${tempSymbol()}`,transform:v=>tempStoredFToDisplay(v)}],{min:isC?34:93,max:isC?40:104,decimal:true,lines:[{value:isC?Number(fToC(98).toFixed(1)):98.0,label:tempTextF(98)}]});}
   renderTimeline();
 }
 function renderTimeline(){
@@ -1971,7 +2004,7 @@ function getSmartAlerts(){
     const last3=recs.slice(-3),first=last3[0],last=last3[last3.length-1],spanMin=Math.max(1,(last.elapsedMs-first.elapsedMs)/60000);
     const fm=num(first.map),lm=num(last.map);if(fm!==null&&lm!==null){const drop=fm-lm;if(drop>=10)alerts.push({level:lm<60?'danger':'warn',title:'Progressive hypotension',text:`MAP decreased ${Math.round(drop)} mmHg over ~${Math.round(spanMin)} min (${fm} → ${lm})`})}
     const fe=num(first.etco2),le=num(last.etco2);if(fe!==null&&le!==null){const rise=le-fe;if(rise>=8)alerts.push({level:le>60?'danger':'warn',title:'Progressive hypercapnia',text:`ETCO₂ increased ${Math.round(rise)} mmHg (${fe} → ${le})`})}
-    const ft=num(first.temp),lt=num(last.temp);if(ft!==null&&lt!==null){const drop=ft-lt;if(drop>=1.0)alerts.push({level:lt<98?'danger':'warn',title:'Progressive heat loss',text:`Temperature decreased ${drop.toFixed(1)}°F (${ft} → ${lt})`})}
+    const ft=num(first.temp),lt=num(last.temp);if(ft!==null&&lt!==null){const drop=ft-lt;if(drop>=1.0)alerts.push({level:lt<98?'danger':'warn',title:'Progressive heat loss',text:`Temperature decreased ${tempDeltaTextF(drop)} (${tempTextF(ft)} → ${tempTextF(lt)})`})}
     const fs=num(first.spo2),ls=num(last.spo2);if(fs!==null&&ls!==null){const drop=fs-ls;if(drop>=3)alerts.push({level:ls<90?'danger':'warn',title:'Falling SpO₂',text:`SpO₂ decreased ${Math.round(drop)} points (${fs}% → ${ls}%)`})}
   }
   return alerts;
@@ -2013,29 +2046,36 @@ function returnToRecoveryAfterEmergency(){
 }
 $('emergencyReturnOrBtn')?.addEventListener('click',emergencyReturnToOr);
 
+function recoveryAnyNA(){return $$('.recovery-check-na-btn').some(x=>x.classList.contains('active'))||$$('.recovery-observation-na-btn').some(x=>x.classList.contains('active'))}
+function recoveryObservationNA(key){const btn=document.querySelector(`.recovery-observation-na-btn[data-key="${key}"]`);return btn?btn.classList.contains('active'):!!state.recoveryObservationNA?.[key]}
+function recoveryNAReasonValid(){return !recoveryAnyNA()||!!$('recNaReason')?.value.trim()}
 function renderRecovery(){
-  const all=$$('.recovery-check'),done=all.filter(x=>x.checked).length,el=$('recoveryStatus');
-  el.textContent=`Checklist ${done}/${all.length}`;
-  el.className=`recovery-status ${done===all.length?'good':'warn'}`;
-  const rr=Number($('recRR')?.value||0),spo=Number($('recSpO2')?.value||0),temp=Number($('recTemp')?.value||0);
+  const all=$$('.recovery-check'),done=all.filter(x=>x.checked).length,na=$$('.recovery-check-na-btn').filter(x=>x.classList.contains('active')).length,reviewed=done+na,el=$('recoveryStatus');
+  el.textContent=`Checklist ${reviewed}/${all.length}${na?` • N/A ${na}`:''}`;
+  el.className=`recovery-status ${reviewed===all.length&&recoveryNAReasonValid()?'good':'warn'}`;
+  const rr=Number($('recRR')?.value||0),spo=Number($('recSpO2')?.value||0),tempF=tempInputStoredF('recTemp');
   const ment=$('recMentation')?.value||'',ext=$('recExtubation')?.value.trim()||'';
-  const ready=done===all.length && rr>0 && spo>0 && temp>0 && !!ment && !!ext && (state.recoveryRecords||[]).length>0 && !state.emergencyReturnActive;
+  const spoOk=spo>0||recoveryObservationNA('spo2'),tempOk=(tempF!==null&&tempF>0)||recoveryObservationNA('temp'),extOk=!!ext||recoveryObservationNA('extubation');
+  const ready=reviewed===all.length && rr>0 && spoOk && tempOk && !!ment && extOk && recoveryNAReasonValid() && (state.recoveryRecords||[]).length>0 && !state.emergencyReturnActive;
   if($('recoveryReadiness')){
     $('recoveryReadiness').textContent=ready?'READY FOR RECOVERY COMPLETE':'COMPLETE OBSERVATIONS / CHECKLIST';
     $('recoveryReadiness').className=`recovery-readiness ${ready?'good':'warn'}`;
   }
   renderRecoveryState();
 }
-$$('.recovery-check').forEach(el=>el.addEventListener('change',()=>{renderRecovery();save()}));
-['recHR','recRR','recMAP','recSpO2','recTemp','recExtubation','recOxygen','recMentation','recPain','recRecordInterval'].forEach(id=>{const el=$(id);if(el)el.addEventListener(el.tagName==='SELECT'?'change':'input',()=>{renderRecovery();save()})});
+$$('.recovery-check').forEach((el,i)=>el.addEventListener('change',()=>{if(el.checked){const b=$$('.recovery-check-na-btn')[i];b?.classList.remove('active');el.disabled=false}renderRecovery();save()}));
+$$('.recovery-check-na-btn').forEach((btn,i)=>btn.addEventListener('click',()=>{const active=!btn.classList.contains('active');btn.classList.toggle('active',active);const cb=$$('.recovery-check')[i];if(cb){cb.disabled=active;if(active)cb.checked=false}renderRecovery();save()}));
+$$('.recovery-observation-na-btn').forEach(btn=>btn.addEventListener('click',()=>{const active=!btn.classList.contains('active');btn.classList.toggle('active',active);const input=btn.closest('.recovery-field-na')?.querySelector('input');if(input){input.disabled=active;if(active)input.value=''}renderRecovery();save()}));
+['recHR','recRR','recMAP','recSpO2','recTemp','recExtubation','recOxygen','recMentation','recPain','recNaReason','recRecordInterval'].forEach(id=>{const el=$(id);if(el)el.addEventListener(el.tagName==='SELECT'?'change':'input',()=>{renderRecovery();save()})});
 function addRecoveryRecord(){
   if(state.casePhase!=='recovery'||state.emergencyReturnActive){toast('Recovery records บันทึกได้ใน active Recovery mode');return}
-  const hr=Number($('recHR')?.value||0),rr=Number($('recRR')?.value||0),mapRaw=$('recMAP')?.value,spo2=Number($('recSpO2')?.value||0),temp=Number($('recTemp')?.value||0);
-  if(!(hr>0&&rr>0&&spo2>0&&temp>0)){toast('กรุณาตรวจ HR, RR, SpO₂ และ Temp ก่อนบันทึก');return}
-  const rec={id:crypto.randomUUID?crypto.randomUUID():String(Date.now()+Math.random()),epoch:Date.now(),clock:formatClock(),caseElapsedMs:currentElapsed(),recoveryElapsedMs:recoveryElapsed(),hr,rr,map:mapRaw===''||mapRaw==null?null:Number(mapRaw),spo2,temp,oxygen:$('recOxygen')?.value||'',mentation:$('recMentation')?.value||'',note:$('recPain')?.value.trim()||''};
+  const hr=Number($('recHR')?.value||0),rr=Number($('recRR')?.value||0),mapRaw=$('recMAP')?.value,spoNA=recoveryObservationNA('spo2'),tempNA=recoveryObservationNA('temp'),spo2=spoNA?null:Number($('recSpO2')?.value||0),temp=tempNA?null:tempInputStoredF('recTemp');
+  if(!(hr>0&&rr>0&&(spoNA||spo2>0)&&(tempNA||(temp!==null&&temp>0)))){toast('กรุณาตรวจ HR, RR และระบุ SpO₂/Temp หรือ mark N/A ก่อนบันทึก');return}
+  if(recoveryAnyNA()&&!recoveryNAReasonValid()){toast('กรุณาระบุ N/A reason ก่อนบันทึก Recovery record');$('recNaReason')?.focus();return}
+  const rec={id:crypto.randomUUID?crypto.randomUUID():String(Date.now()+Math.random()),epoch:Date.now(),clock:formatClock(),caseElapsedMs:currentElapsed(),recoveryElapsedMs:recoveryElapsed(),hr,rr,map:mapRaw===''||mapRaw==null?null:Number(mapRaw),spo2,temp,na:{spo2:spoNA,temp:tempNA},naReason:(spoNA||tempNA)?$('recNaReason')?.value.trim()||'':'',oxygen:$('recOxygen')?.value||'',mentation:$('recMentation')?.value||'',note:$('recPain')?.value.trim()||''};
   const warnings=plausibilityWarnings(rec,'recovery');if(warnings.length&&!confirmPlausibility(warnings,'Recovery record'))return;
   state.recoveryRecords=state.recoveryRecords||[];state.recoveryRecords.push(rec);recoveryDueReminderToken=null;
-  addAudit('RECOVERY_RECORD_ADDED',`HR ${rec.hr} • RR ${rec.rr} • MAP ${rec.map??'—'} • SpO₂ ${rec.spo2} • Temp ${rec.temp}`);
+  addAudit('RECOVERY_RECORD_ADDED',`HR ${rec.hr} • RR ${rec.rr} • MAP ${rec.map??'—'} • SpO₂ ${rec.na?.spo2?'N/A':rec.spo2} • Temp ${rec.na?.temp?'N/A':tempTextF(rec.temp)}${rec.naReason?' • N/A: '+rec.naReason:''}`);
   save();renderRecoveryRecords();renderRecovery();renderProcedureTimeline();updateRecoveryDue();toast(`Recovery vitals recorded • ${rec.clock}`);
 }
 function renderRecoveryRecords(){
@@ -2044,7 +2084,7 @@ function renderRecoveryRecords(){
   $('recoveryRecordElapsed').textContent=formatElapsed(recoveryElapsed());
   $('recoveryLatestTime').textContent=arr.length?`${arr.at(-1).clock} • ${formatShortElapsed(arr.at(-1).recoveryElapsedMs)}`:'—';
   if(!arr.length){body.innerHTML='<tr><td colspan="11" class="empty-state">ยังไม่มี Recovery record</td></tr>';return}
-  body.innerHTML=arr.map((r,i)=>`<tr><td>${i+1}</td><td>${escapeHtml(formatShortElapsed(r.recoveryElapsedMs))}</td><td>${escapeHtml(r.clock)}</td><td>${r.hr??'—'}</td><td>${r.rr??'—'}</td><td>${r.map??'—'}</td><td>${r.spo2??'—'}</td><td>${r.temp??'—'}</td><td>${escapeHtml(r.oxygen||'—')}</td><td>${escapeHtml(r.mentation||'—')}</td><td>${escapeHtml(r.note||'—')}</td></tr>`).join('');
+  body.innerHTML=arr.map((r,i)=>`<tr><td>${i+1}</td><td>${escapeHtml(formatShortElapsed(r.recoveryElapsedMs))}</td><td>${escapeHtml(r.clock)}</td><td>${r.hr??'—'}</td><td>${r.rr??'—'}</td><td>${r.map??'—'}</td><td>${r.na?.spo2?'N/A':(r.spo2??'—')}</td><td>${r.na?.temp?'N/A':(r.temp==null?'—':tempStoredFToDisplay(r.temp))}</td><td>${escapeHtml(r.oxygen||'—')}</td><td>${escapeHtml(r.mentation||'—')}</td><td>${escapeHtml([r.note,r.naReason?`N/A: ${r.naReason}`:''].filter(Boolean).join(' • ')||'—')}</td></tr>`).join('');
 }
 function updateRecoveryDue(){
   const badge=$('recoveryDueBadge');if(!badge)return;
@@ -2096,11 +2136,12 @@ function beginRecovery(){
 }
 function completeRecovery(){
   if(state.casePhase!=='recovery'||state.emergencyReturnActive)return;
-  const checks=$$('.recovery-check'),done=checks.filter(x=>x.checked).length,rc=(state.recoveryRecords||[]).length;
-  const rr=Number($('recRR')?.value||0),spo=Number($('recSpO2')?.value||0),temp=Number($('recTemp')?.value||0),ment=$('recMentation')?.value||'',ext=$('recExtubation')?.value.trim()||'';
-  const fullyReady=done===checks.length && rc>0 && rr>0 && spo>0 && temp>0 && !!ment && !!ext;
+  if(recoveryAnyNA()&&!recoveryNAReasonValid()){toast('กรุณาระบุ N/A reason ก่อน mark Recovery complete');$('recNaReason')?.focus();return}
+  const checks=$$('.recovery-check'),done=checks.filter(x=>x.checked).length,na=$$('.recovery-check-na-btn').filter(x=>x.classList.contains('active')).length,reviewed=done+na,rc=(state.recoveryRecords||[]).length;
+  const rr=Number($('recRR')?.value||0),spo=Number($('recSpO2')?.value||0),temp=tempInputStoredF('recTemp'),ment=$('recMentation')?.value||'',ext=$('recExtubation')?.value.trim()||'';
+  const fullyReady=reviewed===checks.length && rc>0 && rr>0 && (spo>0||recoveryObservationNA('spo2')) && ((temp!==null&&temp>0)||recoveryObservationNA('temp')) && !!ment && (!!ext||recoveryObservationNA('extubation')) && recoveryNAReasonValid();
   if(!fullyReady&&!confirm(`Recovery readiness ยังไม่ครบ
-Checklist ${done}/${checks.length} • Recovery records ${rc}
+Checklist reviewed ${reviewed}/${checks.length} • Recovery records ${rc}
 ต้องการ mark complete ต่อหรือไม่?`))return;
   state.recoveryCompletedAt=Date.now();state.casePhase='complete';state.emergencyReturnActive=false;renderCasePhase();
   if(state.timer.running)pauseTimer();
@@ -2203,14 +2244,14 @@ function buildPdfReport(){
     ['Lowest MAP',minv('map')],
     ['Lowest SpO₂',minv('spo2')==='—'?'—':minv('spo2')+'%'],
     ['Highest ETCO₂',maxv('etco2')],
-    ['Lowest Temp',minv('temp',1)==='—'?'—':minv('temp',1)+'°F']
+    ['Lowest Temp',minv('temp',1)==='—'?'—':tempTextF(Number(minv('temp',1)))]
   ];
   $('reportSummaryGrid').innerHTML=summary.map(([l,v])=>`<div class="report-summary-item"><span>${escapeHtml(l)}</span><b>${escapeHtml(v)}</b></div>`).join('');
 
   const recs=state.records||[];
   $('reportRecordTable').innerHTML=recs.length?`<table class="report-table">
-    <thead><tr><th>#</th><th>Elapsed</th><th>HR</th><th>RR</th><th>SAP</th><th>MAP</th><th>DAP</th><th>SpO₂</th><th>ETCO₂</th><th>Temp °F</th><th>Vap%</th><th>Fluid</th><th>Note</th></tr></thead>
-    <tbody>${recs.map((r,i)=>`<tr><td>${i+1}</td><td>${formatShortElapsed(r.elapsedMs)}</td><td>${r.hr??''}</td><td>${r.rr??''}</td><td>${r.sap??''}</td><td>${r.map??''}</td><td>${r.dap??''}</td><td>${r.spo2??''}</td><td>${r.etco2??''}</td><td>${r.temp??''}</td><td>${r.vaporizer??''}</td><td>${r.fluidRate??''}</td><td class="note">${escapeHtml(r.note||'')}</td></tr>`).join('')}</tbody>
+    <thead><tr><th>#</th><th>Elapsed</th><th>HR</th><th>RR</th><th>SAP</th><th>MAP</th><th>DAP</th><th>SpO₂</th><th>ETCO₂</th><th>Temp ${tempSymbol()}</th><th>Vap%</th><th>Fluid</th><th>Note</th></tr></thead>
+    <tbody>${recs.map((r,i)=>`<tr><td>${i+1}</td><td>${formatShortElapsed(r.elapsedMs)}</td><td>${r.hr??''}</td><td>${r.rr??''}</td><td>${r.sap??''}</td><td>${r.map??''}</td><td>${r.dap??''}</td><td>${r.spo2??''}</td><td>${r.etco2??''}</td><td>${r.temp==null||r.temp===''?'':tempStoredFToDisplay(r.temp)}</td><td>${r.vaporizer??''}</td><td>${r.fluidRate??''}</td><td class="note">${escapeHtml(r.note||'')}</td></tr>`).join('')}</tbody>
   </table>`:'<div>ไม่มี Record</div>';
 
   const charts=[
@@ -2227,22 +2268,22 @@ function buildPdfReport(){
   </div>`).join(''):'<div>ไม่มี Event</div>';
 
   const corrections=state.corrections||[];
-  $('reportCorrections').innerHTML=corrections.length?corrections.map(c=>`<div class="report-correction"><b>${escapeHtml(c.clock)}</b><span>${escapeHtml(c.field.toUpperCase())}</span><div>${escapeHtml(c.oldValue)} → ${escapeHtml(c.newValue)}${c.reason?' • '+escapeHtml(c.reason):''}</div></div>`).join(''):'<div style="font-size:8px">No corrections</div>';
+  $('reportCorrections').innerHTML=corrections.length?corrections.map(c=>{const oldV=c.field==='temp'?tempTextF(c.oldValue):c.oldValue,newV=c.field==='temp'?tempTextF(c.newValue):c.newValue;return `<div class="report-correction"><b>${escapeHtml(c.clock)}</b><span>${escapeHtml(c.field.toUpperCase())}</span><div>${escapeHtml(oldV)} → ${escapeHtml(newV)}${c.reason?' • '+escapeHtml(c.reason):''}</div></div>`}).join(''):'<div style="font-size:8px">No corrections</div>';
   const amendments=state.amendments||[];$('reportAmendments').innerHTML=amendments.length?amendments.map(a=>`<div class="report-amendment"><b>${escapeHtml(formatDate(a.epoch))} ${escapeHtml(a.clock||formatClock(a.epoch))}</b><span>${escapeHtml(a.author||'—')} • ${escapeHtml(a.reason||'—')}</span><div>${escapeHtml(a.text||'')}</div></div>`).join(''):'<div style="font-size:8px">No amendments / addenda</div>';
   const audit=state.auditTrail||[];$('reportAuditTrail').innerHTML=audit.length?audit.map(a=>`<div class="report-audit"><b>${escapeHtml(a.clock||formatClock(a.epoch))}</b><span>${escapeHtml(a.action||'')}</span><div>${escapeHtml(a.detail||'')}${a.actor?' • '+escapeHtml(a.actor):''}</div></div>`).join(''):'<div style="font-size:8px">No audit entries</div>';
 
   const checks=state.recoveryChecks||[];
   $('reportRecovery').innerHTML=`<div class="report-recovery-grid">
     <div><b>RR</b><br>${escapeHtml($('recRR').value||'—')}</div>
-    <div><b>SpO₂</b><br>${escapeHtml($('recSpO2').value||'—')}%</div>
-    <div><b>Temp</b><br>${escapeHtml($('recTemp').value||'—')}°F</div>
-    <div><b>Checklist</b><br>${checks.filter(Boolean).length}/${checks.length}</div>
+    <div><b>SpO₂</b><br>${recoveryObservationNA('spo2')?'N/A':escapeHtml($('recSpO2').value||'—')+(($('recSpO2').value)?'%':'')}</div>
+    <div><b>Temp</b><br>${recoveryObservationNA('temp')?'N/A':escapeHtml($('recTemp').value||'—')+(($('recTemp').value)?tempSymbol():'')}</div>
+    <div><b>Checklist</b><br>${checks.filter(Boolean).length + (state.recoveryNA||[]).filter(Boolean).length}/${checks.length}</div>
   </div>
-  <div style="margin-top:6px;font-size:8px"><b>Phase:</b> ${escapeHtml(state.recoveryCompletedAt?'Complete':state.casePhase==='recovery'?'Active':'Not started')} • <b>Extubation:</b> ${escapeHtml($('recExtubation').value||'—')} • <b>O₂:</b> ${escapeHtml($('recOxygen').value||'—')} • <b>Mentation:</b> ${escapeHtml($('recMentation').value||'—')}</div>
-  <div style="margin-top:8px;font-size:9px"><b>Recovery note:</b> ${escapeHtml($('recPain').value||'—')}</div>`;
+  <div style="margin-top:6px;font-size:8px"><b>Phase:</b> ${escapeHtml(state.recoveryCompletedAt?'Complete':state.casePhase==='recovery'?'Active':'Not started')} • <b>Extubation:</b> ${recoveryObservationNA('extubation')?'N/A':escapeHtml($('recExtubation').value||'—')} • <b>O₂:</b> ${escapeHtml($('recOxygen').value||'—')} • <b>Mentation:</b> ${escapeHtml($('recMentation').value||'—')}</div>
+  <div style="margin-top:8px;font-size:9px"><b>Recovery note:</b> ${escapeHtml($('recPain').value||'—')}</div><div style="margin-top:4px;font-size:8px"><b>N/A reason:</b> ${escapeHtml($('recNaReason')?.value||'—')}</div>`;
   const recoveryRows=state.recoveryRecords||[];
-  $('reportRecoveryRecords').innerHTML=recoveryRows.length?`<table class="report-recovery-table"><thead><tr><th>#</th><th>Recovery</th><th>Clock</th><th>HR</th><th>RR</th><th>MAP</th><th>SpO₂</th><th>Temp</th><th>O₂</th><th>Mentation</th><th>Note</th></tr></thead><tbody>${recoveryRows.map((r,i)=>`<tr><td>${i+1}</td><td>${escapeHtml(formatShortElapsed(r.recoveryElapsedMs))}</td><td>${escapeHtml(r.clock)}</td><td>${r.hr??'—'}</td><td>${r.rr??'—'}</td><td>${r.map??'—'}</td><td>${r.spo2??'—'}%</td><td>${r.temp??'—'}°F</td><td>${escapeHtml(r.oxygen||'—')}</td><td>${escapeHtml(r.mentation||'—')}</td><td>${escapeHtml(r.note||'—')}</td></tr>`).join('')}</tbody></table>`:'<div style="font-size:8px;margin-top:6px">No serial recovery vital records</div>';
-  const smart=$('smartAlerts')?.innerText?.trim()||'No smart alerts',responses=state.responses||[];$('reportResponses').innerHTML=`<div style="font-size:8px;margin-bottom:6px"><b>Smart alerts:</b> ${escapeHtml(smart)}</div>`+(responses.length?responses.map(r=>`<div class="report-event"><b>${escapeHtml(r.eventName)}</b><span>+${escapeHtml(formatShortElapsed(r.capturedElapsed-r.eventElapsed))}</span><div>MAP ${r.map??'—'} • HR ${r.hr??'—'} • SpO₂ ${r.spo2??'—'} • ETCO₂ ${r.etco2??'—'} • Temp ${r.temp??'—'}°F${r.note?' • '+escapeHtml(r.note):''}</div></div>`).join(''):'<div style="font-size:8px">No intervention-response records</div>');
+  $('reportRecoveryRecords').innerHTML=recoveryRows.length?`<table class="report-recovery-table"><thead><tr><th>#</th><th>Recovery</th><th>Clock</th><th>HR</th><th>RR</th><th>MAP</th><th>SpO₂</th><th>Temp</th><th>O₂</th><th>Mentation</th><th>Note</th></tr></thead><tbody>${recoveryRows.map((r,i)=>`<tr><td>${i+1}</td><td>${escapeHtml(formatShortElapsed(r.recoveryElapsedMs))}</td><td>${escapeHtml(r.clock)}</td><td>${r.hr??'—'}</td><td>${r.rr??'—'}</td><td>${r.map??'—'}</td><td>${r.na?.spo2?'N/A':((r.spo2??'—')+(r.spo2==null?'':'%'))}</td><td>${r.na?.temp?'N/A':(r.temp==null?'—':tempTextF(r.temp))}</td><td>${escapeHtml(r.oxygen||'—')}</td><td>${escapeHtml(r.mentation||'—')}</td><td>${escapeHtml([r.note,r.naReason?`N/A: ${r.naReason}`:''].filter(Boolean).join(' • ')||'—')}</td></tr>`).join('')}</tbody></table>`:'<div style="font-size:8px;margin-top:6px">No serial recovery vital records</div>';
+  const smart=$('smartAlerts')?.innerText?.trim()||'No smart alerts',responses=state.responses||[];$('reportResponses').innerHTML=`<div style="font-size:8px;margin-bottom:6px"><b>Smart alerts:</b> ${escapeHtml(smart)}</div>`+(responses.length?responses.map(r=>`<div class="report-event"><b>${escapeHtml(r.eventName)}</b><span>+${escapeHtml(formatShortElapsed(r.capturedElapsed-r.eventElapsed))}</span><div>MAP ${r.map??'—'} • HR ${r.hr??'—'} • SpO₂ ${r.spo2??'—'} • ETCO₂ ${r.etco2??'—'} • Temp ${r.temp==null?'—':tempTextF(r.temp)}${r.note?' • '+escapeHtml(r.note):''}</div></div>`).join(''):'<div style="font-size:8px">No intervention-response records</div>');
   const fs=state.finalSignoff||{};$('reportSignAnesthetist').textContent=fs.anesthetist?`${fs.anesthetist.name} • signed ${formatDate(fs.anesthetist.epoch)} ${formatClock(fs.anesthetist.epoch)}`:($('anesthetist').value||'—');
   $('reportSignSurgeon').textContent=fs.surgeon?`${fs.surgeon.name} • signed ${formatDate(fs.surgeon.epoch)} ${formatClock(fs.surgeon.epoch)}`:($('surgeon').value||'—');
   $('reportCompleted').textContent=`${formatDate(Date.now())} ${formatClock()}`;
@@ -2271,8 +2312,8 @@ function caseBase(){
   return `ANESVET_${name}_${formatDate(Date.now())}`;
 }
 function exportRecordsCsv(){
-  const head=['No','Elapsed','Clock','HR','RR','SAP','MAP','DAP','SpO2','ETCO2','Temp_F','Vaporizer_pct','O2_Lmin','FluidRate_mLhr','FluidTotal_mL','Depth','Ventilation','Note'];
-  const rows=(state.records||[]).map((r,i)=>[i+1,formatElapsed(r.elapsedMs),r.clock,r.hr,r.rr,r.sap,r.map,r.dap,r.spo2,r.etco2,r.temp,r.vaporizer,r.o2flow,r.fluidRate,r.fluidTotal,r.depth,r.ventilation,r.note]);
+  const head=['No','Elapsed','Clock','HR','RR','SAP','MAP','DAP','SpO2','ETCO2','Temp_F_canonical','Temp_C','Vaporizer_pct','O2_Lmin','FluidRate_mLhr','FluidTotal_mL','Depth','Ventilation','Note'];
+  const rows=(state.records||[]).map((r,i)=>[i+1,formatElapsed(r.elapsedMs),r.clock,r.hr,r.rr,r.sap,r.map,r.dap,r.spo2,r.etco2,r.temp,(r.temp===null||r.temp===''||r.temp===undefined?'':Number(fToC(r.temp).toFixed(1))),r.vaporizer,r.o2flow,r.fluidRate,r.fluidTotal,r.depth,r.ventilation,r.note]);
   const csv='\ufeff'+[head,...rows].map(row=>row.map(csvEscape).join(',')).join('\n');
   downloadBlob(csv,'text/csv;charset=utf-8',caseBase()+'_records.csv');
 }
@@ -2299,7 +2340,7 @@ $('backupNowHealthBtn')?.addEventListener('click',()=>backupAllData());
 
 async function backupAllData(){
   save();await initArchiveDb();await initPatientMaster();
-  const payload={format:'ANESVET_BACKUP',version:'14.4',exportedAt:Date.now(),current:state,archive:getArchive(),patients:getPatients(),breedAliases:loadBreedAliases(),settings:(()=>{try{return JSON.parse(localStorage.getItem(SETTINGS_KEY)||'null')}catch(e){return null}})(),drugLibrary:loadDrugLibraryData(),quickPresets:loadQuickPresets(),protocolAudit:getProtocolAudit()};
+  const payload={format:'ANESVET_BACKUP',version:'14.5',exportedAt:Date.now(),current:state,archive:getArchive(),patients:getPatients(),breedAliases:loadBreedAliases(),settings:(()=>{try{return JSON.parse(localStorage.getItem(SETTINGS_KEY)||'null')}catch(e){return null}})(),drugLibrary:loadDrugLibraryData(),quickPresets:loadQuickPresets(),protocolAudit:getProtocolAudit()};
   downloadBlob(JSON.stringify(payload,null,2),'application/json',`ANESVET_BACKUP_${formatDate(Date.now())}.json`);
   const backupEpoch=Date.now();localStorage.setItem(LAST_BACKUP_KEY,String(backupEpoch));
   if($('backupStatus'))$('backupStatus').textContent=`Backup created ${formatClock(backupEpoch)} • ${payload.archive.length} cases • ${payload.patients.length} patients`;
@@ -2432,7 +2473,7 @@ function appRootUrl(){
   let path=here.pathname;
   if(!path.endsWith('/')) path=path.replace(/\/[^/]*$/,'/');
   const url=new URL(path, here.origin);
-  url.searchParams.set('v','14.4');
+  url.searchParams.set('v','14.5');
   return url.href;
 }
 function restartAtAppRoot(){
@@ -2727,13 +2768,14 @@ $$('.custom-drug-event-btn').forEach(btn=>btn.addEventListener('click',()=>{
 }));
 
 
-function defaultSettings(){return{interval:'5',diazepamConc:'5',propofolConc:'10',tramadolConc:'50',rimadylConc:'50',metacamConc:'5',atropineConc:'0.6',protocolName:'Hospital anesthesia protocol',protocolVersion:'',protocolVerifiedAt:'',protocolLocked:false,autoWakeLock:true}}
+function defaultSettings(){return{interval:'5',temperatureUnit:'C',diazepamConc:'5',propofolConc:'10',tramadolConc:'50',rimadylConc:'50',metacamConc:'5',atropineConc:'0.6',protocolName:'Hospital anesthesia protocol',protocolVersion:'',protocolVerifiedAt:'',protocolLocked:false,autoWakeLock:true}}
 function loadSettings(){
   let s;try{s=JSON.parse(localStorage.getItem(SETTINGS_KEY)||'null')||JSON.parse(localStorage.getItem('anesvet_v14_2_settings')||'null')||JSON.parse(localStorage.getItem('anesvet_v14_1_settings')||'null')||JSON.parse(localStorage.getItem('anesvet_v14_settings')||'null')||JSON.parse(localStorage.getItem('anesvet_v13_4_settings')||'null')||JSON.parse(localStorage.getItem('anesvet_v13_3_settings')||'null')||JSON.parse(localStorage.getItem('anesvet_v13_2_settings')||'null')||JSON.parse(localStorage.getItem('anesvet_v13_1_settings')||'null')||JSON.parse(localStorage.getItem('anesvet_v13_settings')||'null')||JSON.parse(localStorage.getItem('anesvet_v12_1_settings')||'null')||JSON.parse(localStorage.getItem('anesvet_v12_settings')||'null')||JSON.parse(localStorage.getItem('anesvet_v11_settings')||'null')||JSON.parse(localStorage.getItem('anesvet_v10_settings')||'null')}catch(e){}
   s={...defaultSettings(),...(s||{})};
-  const map={settingInterval:'interval',settingDiazepamConc:'diazepamConc',settingPropofolConc:'propofolConc',settingTramadolConc:'tramadolConc',settingRimadylConc:'rimadylConc',settingMetacamConc:'metacamConc',settingAtropineConc:'atropineConc',settingProtocolName:'protocolName',settingProtocolVersion:'protocolVersion',settingProtocolVerifiedAt:'protocolVerifiedAt'};
+  const map={settingInterval:'interval',settingTemperatureUnit:'temperatureUnit',settingDiazepamConc:'diazepamConc',settingPropofolConc:'propofolConc',settingTramadolConc:'tramadolConc',settingRimadylConc:'rimadylConc',settingMetacamConc:'metacamConc',settingAtropineConc:'atropineConc',settingProtocolName:'protocolName',settingProtocolVersion:'protocolVersion',settingProtocolVerifiedAt:'protocolVerifiedAt'};
   Object.entries(map).forEach(([id,key])=>{if($(id))$(id).value=s[key]??''});
   if($('settingAutoWakeLock'))$('settingAutoWakeLock').checked=s.autoWakeLock!==false;
+  setTemperatureDisplayUnit(s.temperatureUnit,{convertInputs:true,rerender:false});
   renderProtocolGovernance();
 }
 function applyHospitalDefaultsToFreshCaseUi(){
@@ -2747,13 +2789,14 @@ function applyHospitalDefaultsToFreshCaseUi(){
 }
 $('saveSettingsBtn')?.addEventListener('click',()=>{
   const old=currentSettingsObject(),locked=!!old.protocolLocked;
-  const s={...old,interval:$('settingInterval').value,autoWakeLock:$('settingAutoWakeLock')?.checked!==false};
+  const newTempUnit=normalizeTempUnit($('settingTemperatureUnit')?.value||old.temperatureUnit);setTemperatureDisplayUnit(newTempUnit,{convertInputs:true,rerender:false});
+  const s={...old,interval:$('settingInterval').value,temperatureUnit:newTempUnit,autoWakeLock:$('settingAutoWakeLock')?.checked!==false};
   if(!locked){
     Object.assign(s,{diazepamConc:$('settingDiazepamConc').value,propofolConc:$('settingPropofolConc').value,tramadolConc:$('settingTramadolConc').value,rimadylConc:$('settingRimadylConc').value,metacamConc:$('settingMetacamConc').value,atropineConc:$('settingAtropineConc').value,protocolName:$('settingProtocolName')?.value.trim()||'Hospital anesthesia protocol',protocolVersion:$('settingProtocolVersion')?.value.trim()||'',protocolVerifiedAt:$('settingProtocolVerifiedAt')?.value||''});
   }
   localStorage.setItem(SETTINGS_KEY,JSON.stringify(s));
   $('recordInterval').value=s.interval;$('diazepamConc').value=s.diazepamConc;$('propofolConc').value=s.propofolConc;$('tramadolConc').value=s.tramadolConc;$('rimadylConc').value=s.rimadylConc;$('metacamConc').value=s.metacamConc;$('atropineConc').value=s.atropineConc;
-  addProtocolAudit('HOSPITAL_SETTINGS_SAVED',`Protocol ${s.protocolVersion||'unversioned'} • locked=${!!s.protocolLocked}`);updateDashboard();renderProtocolGovernance();toast(locked?'General settings saved • protocol remains locked':'Hospital settings saved');
+  addProtocolAudit('HOSPITAL_SETTINGS_SAVED',`Protocol ${s.protocolVersion||'unversioned'} • temp=${s.temperatureUnit} • locked=${!!s.protocolLocked}`);renderRecords();renderRecoveryRecords();renderTrends();renderProcedureTimeline();renderResponses();updateDashboard();renderOrLive();renderProtocolGovernance();toast(locked?'General settings saved • protocol remains locked':'Hospital settings saved');
 });
 function isProtocolLocked(){return !!currentSettingsObject().protocolLocked}
 function renderProtocolGovernance(){
@@ -2790,7 +2833,7 @@ function freshState(){
     createdAt:Date.now(),
     timer:{running:false,startedEpoch:null,elapsedMs:0},
     records:[],events:[],responses:[],corrections:[],recoveryRecords:[],fluidRateHistory:[],
-    recoveryChecks:[false,false,false,false,false,false],preopChecks:{},preopNA:{},
+    recoveryChecks:[false,false,false,false,false,false],recoveryNA:[false,false,false,false,false,false],recoveryObservationNA:{spo2:false,temp:false,extubation:false},preopChecks:{},preopNA:{},
     patientSaved:false,patientMasterId:'',
     patientName:'',hospitalId:'',visitId:'',species:'',sex:'',reproductiveStatus:'',microchip:'',breed:'',
     weight:'',age:'',birthDate:'',birthDateEstimated:false,ageSource:'',estimatedBirthPeriod:'',
@@ -2804,7 +2847,7 @@ function freshState(){
     actualDiazepamMl:'',actualPropofolMl:'',actualTramadolMl:'',
     balanceCrystalloid:'',balanceBolus:'',balanceBloodIn:'',balanceBloodLoss:'',balanceUrine:'',fluidActualTotal:'',
     airwayEttSize:'',airwayEttDepth:'',airwayCuff:'',airwayDifficulty:'',airwayCircuit:'',airwayVentMode:'',airwayVt:'',airwayPip:'',airwayPeep:'',airwayVentRr:'',
-    recHR:'',recRR:'',recMAP:'',recSpO2:'',recTemp:'',recExtubation:'',recOxygen:'',recMentation:'',recPain:'',
+    recHR:'',recRR:'',recMAP:'',recSpO2:'',recTemp:'',recExtubation:'',recOxygen:'',recMentation:'',recPain:'',recNaReason:'',
     caseStartedAt:null,casePhase:'setup',recoveryStartedAt:null,recoveryCompletedAt:null,emergencyReturnActive:false,
     surgeryEndedAt:null,extubatedAt:null,lastSavedAt:null,caseLocked:false,lockedAt:null,protocolSnapshot:null,
     auditTrail:[],amendments:[],finalSignoff:{anesthetist:null,surgeon:null},finalChecksum:null,checksumAlgorithm:null,checksumCreatedAt:null,

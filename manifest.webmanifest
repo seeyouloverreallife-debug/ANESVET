@@ -1,8 +1,8 @@
 {
-  "name": "ANESVET V14.4 — Patient History & Data Integrity",
+  "name": "ANESVET V14.5 — Clinical UX Polish",
   "short_name": "ANESVET",
-  "description": "Veterinary anesthesia workstation with Patient Master, previous anesthesia history, HN/Visit separation, duplicate lifecycle tools and multi-tab write protection",
-  "start_url": "./?v=14.4",
+  "description": "Veterinary anesthesia workstation with configurable °C/°F display, canonical temperature storage, Recovery N/A documentation and strengthened printable clinical records",
+  "start_url": "./?v=14.5",
   "scope": "./",
   "display": "standalone",
   "background_color": "#f3f7f8",
