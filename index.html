@@ -4,12 +4,12 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#0d5265">
-  <meta name="description" content="ANESVET V9 — veterinary anesthesia workstation with OR Live mode">
+  <meta name="description" content="ANESVET V10 — veterinary anesthesia workstation with OR Live mode">
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" href="./icon-192.png">
   <link rel="apple-touch-icon" href="./icon-192.png">
-  <link rel="stylesheet" href="./style.css?v=9">
-  <title>ANESVET V9</title>
+  <link rel="stylesheet" href="./style.css?v=10">
+  <title>ANESVET V10</title>
 </head>
 <body>
 <header class="topbar">
@@ -17,13 +17,14 @@
     <div class="brand-mark">A</div>
     <div>
       <div class="eyebrow">GENOVI PET CARE • DIGITAL ANESTHESIA RECORD</div>
-      <h1>ANESVET <span>V9</span></h1>
+      <h1>ANESVET <span>V10</span></h1>
     </div>
   </div>
   <div class="top-actions">
     <div class="timer-status-wrap">
       <span id="timerStateBadge" class="timer-state ready">READY</span>
       <span id="caseClock" class="case-clock">00:00:00</span>
+      <span id="saveState" class="save-state saved">✓ Saved locally</span>
     </div>
     <button id="installBtn" class="btn light" hidden>ติดตั้งแอป</button>
   </div>
@@ -178,6 +179,7 @@
           <h2 id="orPatientName">—</h2>
           <span id="orPatientMeta">—</span>
           <span id="orAsaBadge" class="status-pill good">ASA II</span>
+          <span id="orPhaseBadge" class="status-pill good">INTRAOP</span>
         </div>
         <div id="orProcedureLine" class="or-procedure-line">Procedure: —</div>
       </div>
@@ -188,6 +190,7 @@
           <button id="orStartBtn" class="btn primary">▶ Start case</button>
           <button id="orPauseBtn" class="btn" disabled>Pause</button>
           <button id="orWakeBtn" class="btn">☀ Keep awake</button>
+          <button id="orBeginRecoveryBtn" class="btn">→ Recovery</button>
           <button id="orFullscreenBtn" class="btn">⛶ Full screen</button>
         </div>
       </div>
@@ -196,17 +199,17 @@
     <section class="or-status-row">
       <div class="or-status-box"><span>Overall status</span><b id="orGlobalStatus" class="or-status-good">STABLE</b></div>
       <div class="or-status-box"><span>Last record</span><b id="orLastRecord">—</b></div>
-      <div class="or-status-box"><span>Next record</span><b id="orNextDue">After first record</b></div>
+      <div class="or-status-box"><span>Next record</span><b id="orNextDue">After first record</b><small id="orNextDueClock">—</small></div>
       <button id="orRecordNowBtn" class="or-record-button">＋ RECORD NOW</button>
     </section>
 
     <section class="or-vital-grid">
-      <article class="or-vital-card" data-vital="hr"><div><span>HR</span><small>bpm</small></div><input id="orHr" inputmode="numeric" type="number" min="0" max="400" value="90"><footer id="orHrHint">—</footer></article>
-      <article class="or-vital-card" data-vital="rr"><div><span>RR</span><small>/min</small></div><input id="orRr" inputmode="numeric" type="number" min="0" max="200" value="12"><footer id="orRrHint">—</footer></article>
-      <article class="or-vital-card" data-vital="map"><div><span>MAP</span><small>mmHg</small></div><input id="orMap" inputmode="numeric" type="number" min="0" max="250" value="72"><footer id="orMapHint">—</footer></article>
-      <article class="or-vital-card" data-vital="spo2"><div><span>SpO₂</span><small>%</small></div><input id="orSpo2" inputmode="numeric" type="number" min="0" max="100" value="98"><footer id="orSpo2Hint">—</footer></article>
-      <article class="or-vital-card" data-vital="etco2"><div><span>ETCO₂</span><small>mmHg</small></div><input id="orEtco2" inputmode="numeric" type="number" min="0" max="150" value="45"><footer id="orEtco2Hint">—</footer></article>
-      <article class="or-vital-card" data-vital="temp"><div><span>Temp</span><small>°F</small></div><input id="orTemp" inputmode="decimal" type="number" min="77" max="113" step="0.1" value="99.0"><footer id="orTempHint">—</footer></article>
+      <article class="or-vital-card priority" data-vital="hr"><div><span>HR</span><small>bpm</small></div><input id="orHr" inputmode="numeric" type="number" min="0" max="400" value="90"><footer id="orHrHint">—</footer></article>
+      <article class="or-vital-card priority" data-vital="map"><div><span>MAP</span><small>mmHg</small></div><input id="orMap" inputmode="numeric" type="number" min="0" max="250" value="72"><footer id="orMapHint">—</footer></article>
+      <article class="or-vital-card priority" data-vital="spo2"><div><span>SpO₂</span><small>%</small></div><input id="orSpo2" inputmode="numeric" type="number" min="0" max="100" value="98"><footer id="orSpo2Hint">—</footer></article>
+      <article class="or-vital-card priority" data-vital="etco2"><div><span>ETCO₂</span><small>mmHg</small></div><input id="orEtco2" inputmode="numeric" type="number" min="0" max="150" value="45"><footer id="orEtco2Hint">—</footer></article>
+      <article class="or-vital-card secondary" data-vital="rr"><div><span>RR</span><small>/min</small></div><input id="orRr" inputmode="numeric" type="number" min="0" max="200" value="12"><footer id="orRrHint">—</footer></article>
+      <article class="or-vital-card secondary" data-vital="temp"><div><span>Temp</span><small>°F</small></div><input id="orTemp" inputmode="decimal" type="number" min="77" max="113" step="0.1" value="99.0"><footer id="orTempHint">—</footer></article>
     </section>
 
     <section class="or-secondary-grid">
@@ -223,7 +226,7 @@
         </div>
       </section>
       <section class="panel or-alert-panel">
-        <div class="section-heading"><div><h2>Immediate alerts</h2><p>threshold + trend alerts ที่ต้องเห็นเร็ว</p></div><span id="orAlertCount" class="status-pill good">0 ALERTS</span></div>
+        <div class="section-heading"><div><h2>Prioritized alerts</h2><p>Immediate problems ก่อน ตามด้วย trend alerts</p></div><span id="orAlertCount" class="status-pill good">0 ALERTS</span></div>
         <div id="orAlertList" class="or-alert-list"><div class="empty-state compact">No active alerts</div></div>
       </section>
     </section>
@@ -243,6 +246,7 @@
           <button class="or-event" data-cat="Fluid" data-label="Fluid bolus">Fluid bolus</button>
           <button class="or-event" data-cat="Ventilation" data-label="PPV started">PPV started</button>
           <button class="or-event warn" data-cat="Complication" data-label="Arrhythmia">Arrhythmia</button>
+          <button id="orRecoveryQuickBtn" class="or-action-link">→ Begin recovery</button>
           <button id="orOpenDrugBtn" class="or-action-link">Drug calculator →</button>
         </div></div>
       </div>
@@ -556,6 +560,23 @@
       </div>
       <div id="recordEmpty" class="empty-state">ยังไม่มี Record</div>
     </section>
+
+    <section class="panel correction-panel">
+      <div class="section-heading">
+        <div><h2>Record correction</h2><p>เก็บค่าเดิมไว้ใน correction history แทนการลบทับแบบไม่มีร่องรอย</p></div>
+        <span id="correctionCount" class="status-pill good">0 CORRECTIONS</span>
+      </div>
+      <div class="correction-grid">
+        <label>Record<select id="correctionRecord"></select></label>
+        <label>Field<select id="correctionField">
+          <option value="hr">HR</option><option value="rr">RR</option><option value="sap">SAP</option><option value="map">MAP</option><option value="dap">DAP</option><option value="spo2">SpO₂</option><option value="etco2">ETCO₂</option><option value="temp">Temp</option><option value="vaporizer">Vaporizer</option><option value="fluidRate">Fluid rate</option>
+        </select></label>
+        <label>Corrected value<input id="correctionValue" type="number" step="0.1"></label>
+        <label>Reason<input id="correctionReason" type="text" placeholder="เช่น transcription error / monitor recheck"></label>
+        <button id="applyCorrectionBtn" class="btn primary">Apply correction</button>
+      </div>
+      <div id="correctionHistory" class="correction-history empty-state compact">ยังไม่มี correction</div>
+    </section>
   </section>
 
   <section id="trends" class="tabpage">
@@ -831,6 +852,15 @@
   </section>
 
   <section id="recovery" class="tabpage">
+    <section class="recovery-command">
+      <div><div class="eyebrow dark">RECOVERY MODE</div><h2>Post-anesthetic recovery</h2><p>ติดตาม airway, oxygenation, temperature, comfort และ mentation จน recovery complete</p></div>
+      <div class="recovery-command-actions">
+        <span id="recoveryPhaseBadge" class="status-pill warn">NOT STARTED</span>
+        <strong id="recoveryElapsed">00:00:00</strong>
+        <button id="beginRecoveryBtn" class="btn primary">Begin recovery</button>
+        <button id="completeRecoveryBtn" class="btn">Recovery complete</button>
+      </div>
+    </section>
     <div class="dashboard-grid">
       <section class="panel">
         <h2>Recovery observations</h2>
@@ -843,6 +873,15 @@
           </label>
           <label>Temp (°F)
             <input id="recTemp" type="number" min="77" max="113" step="0.1" value="99.1">
+          </label>
+          <label>Extubation time
+            <input id="recExtubation" type="text" placeholder="HH:MM or auto from event">
+          </label>
+          <label>O₂ support
+            <select id="recOxygen"><option value="">—</option><option>Room air</option><option>Flow-by oxygen</option><option>Mask oxygen</option><option>Oxygen cage</option><option>Intubated</option></select>
+          </label>
+          <label>Mentation
+            <select id="recMentation"><option value="">—</option><option>Unresponsive</option><option>Dysphoric</option><option>Drowsy</option><option>Sternal</option><option>Alert</option></select>
           </label>
           <label class="span3">Pain / Recovery note
             <input id="recPain" type="text" placeholder="เช่น CMPS-SF 3/24, calm, dysphoric...">
@@ -868,12 +907,18 @@
       <div class="section-heading">
         <div>
           <h2>Case management</h2>
-          <p>ข้อมูลเก็บใน browser ของอุปกรณ์นี้เท่านั้นใน V3</p>
+          <p>ข้อมูลเก็บใน browser ของอุปกรณ์นี้ • V10 แนะนำ Backup เป็นระยะ</p>
         </div>
         <div class="button-row">
           <button id="archiveCaseBtn" class="btn primary">Archive current case</button>
           <button id="newCaseBtn" class="btn">New case</button>
         </div>
+      </div>
+      <div class="button-row backup-row">
+        <button id="backupAllBtn" class="btn primary">⬇ Backup all data</button>
+        <button id="restoreBackupBtn" class="btn">⬆ Restore backup</button>
+        <input id="restoreBackupInput" type="file" accept="application/json,.json" hidden>
+        <span id="backupStatus" class="muted small">Backup includes current case, archived cases and hospital settings.</span>
       </div>
       <div class="button-row export-row">
         <button id="exportCsvBtn2" class="btn">Export Records CSV</button>
@@ -890,7 +935,7 @@
 
     <section class="panel danger-zone">
       <h2>Danger zone</h2>
-      <p>ล้าง current case, records และ events ทั้งหมดบนเครื่องนี้</p>
+      <p>ล้าง current case ทั้งหมด • V10 จะให้ยืนยันแบบพิเศษเมื่อมีข้อมูลหรือเคสกำลังทำงาน</p>
       <button id="resetCurrentBtn" class="btn danger-solid">Reset current case</button>
     </section>
   </section>
@@ -942,6 +987,11 @@
       <div id="reportEvents"></div>
     </section>
 
+    <section class="report-section">
+      <h2>Correction History</h2>
+      <div id="reportCorrections"></div>
+    </section>
+
     <section class="report-section"><h2>Smart Alerts / Intervention Response</h2><div id="reportResponses"></div></section>
     <section class="report-section">
       <h2>Recovery</h2>
@@ -979,6 +1029,6 @@
 </main>
 
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
-<script src="./app.js?v=9"></script>
+<script src="./app.js?v=10"></script>
 </body>
 </html>

@@ -1,8 +1,8 @@
 {
-  "name": "ANESVET V9 — OR Live Anesthesia Workstation",
+  "name": "ANESVET V10 — Clinical Safety Anesthesia Workstation",
   "short_name": "ANESVET",
-  "description": "Single-user veterinary anesthesia workstation with a dedicated OR Live screen",
-  "start_url": "./?v=9",
+  "description": "Single-user veterinary anesthesia workstation with OR Live, autosave status, correction history, recovery mode and backup/restore",
+  "start_url": "./?v=10",
   "scope": "./",
   "display": "standalone",
   "background_color": "#f3f7f8",
