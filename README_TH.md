@@ -28,3 +28,9 @@ Allergy / underlying disease / anesthetic cautions แสดงเป็นแ�
 
 ## Update
 https://seeyouloverreallife-debug.github.io/ANESVET/?v=12.1
+
+
+## Icon update
+- เปลี่ยนไอคอนแอปเป็นภาพโลโก้ ANESVET ที่ผู้ใช้ส่งมา
+- อัปเดตไฟล์ `icon-192.png`, `icon-512.png`, `icon-maskable-512.png`
+- หากมือถือยังแสดงไอคอนเดิม ให้ลบแอปเดิมออกแล้วติดตั้งใหม่ หรือ refresh แบบ hard reload ก่อนติดตั้งใหม่
