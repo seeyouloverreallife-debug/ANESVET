@@ -1,36 +1,50 @@
-# ANESVET V12.1 — Clinical UX Refinement
+# ANESVET V13 — OR Workflow & Fluid Management
 
-ปรับ UX โดยไม่เพิ่มเมนูหลักใหม่
+## Step 1 — Patient & Case Setup
+หน้าแรกมี:
+- Patient / HN / species / breed / age / BW / BCS / ASA
+- Procedure
+- Surgeon
+- Anesthetist
+- Surgical assistant
+- Allergy
+- Underlying disease
+- Anesthetic cautions
 
-## Pre-check
-- แต่ละรายการเลือก Done หรือ N/A
-- progress เป็น REVIEWED
-- Start Case ดูจำนวนรายการที่ review แล้ว
-- PDF แสดง Done / N/A / Pending แยกกัน
+ข้อมูลทีมใช้ต่อใน OR LIVE และ PDF โดยไม่ต้องเข้า Dashboard ไปกรอกซ้ำ
 
-## Patient risk banner
-Allergy / underlying disease / anesthetic cautions แสดงเป็นแถบเตือนด้านบนตลอด workflow
-และยังอยู่ใน OR LIVE + PDF
+## Case Summary
+Dashboard ถูกถอดออกจากเมนูหลัก
+ใน “เพิ่มเติม” เปลี่ยนเป็น Case Summary แบบ read-only
+Legacy Dashboard เดิมยังคงอยู่ใน DOM เพื่อ compatibility ของระบบเดิม
 
-## Drug workflow
-- Hospital Drug Library เพิ่ม Favorite
-- Favorite drugs แสดงเป็น quick buttons ใน Drug Calculator
-- ท้าย Drug Calculator มีปุ่มไป OR LIVE โดยตรง
+## OR LIVE — Fluid / Blood Loss Cockpit
+- Current crystalloid rate (mL/hr)
+- mL/kg/hr
+- Auto calculated crystalloid จาก rate × anesthesia elapsed time
+- Actual/corrected crystalloid (optional)
+- Bolus +5 / +10 / +20 / Custom
+- Estimated blood loss +5 / +10 / +20 / Custom
+- Urine +5 / +10 / +20 / Custom
+- Blood product given
+- Total fluid in + mL/kg
+- Net estimate
+- Rate history
+- rate change / bolus / blood loss / urine ถูกบันทึกใน Event/Timeline
 
-## Airway / Ventilation record ใน OR LIVE
-- ETT size / depth
-- cuff
-- intubation difficulty
-- circuit
-- ventilation mode
-- VT / PIP / PEEP / ventilator RR เมื่อเลือก Mechanical ventilation
-- ข้อมูลถูกเก็บใน case และ PDF
+## End Case / PDF
+เพิ่ม fluid summary:
+- calculated crystalloid
+- effective/actual crystalloid
+- bolus
+- blood product
+- total fluid
+- estimated blood loss
+- urine
+- net estimate
 
-## Update
-https://seeyouloverreallife-debug.github.io/ANESVET/?v=12.1
+## Icon
+รวมไอคอน ANESVET dog + cat + anesthesia monitor ที่ผู้ใช้เลือกไว้แล้ว
 
-
-## Icon update
-- เปลี่ยนไอคอนแอปเป็นภาพโลโก้ ANESVET ที่ผู้ใช้ส่งมา
-- อัปเดตไฟล์ `icon-192.png`, `icon-512.png`, `icon-maskable-512.png`
-- หากมือถือยังแสดงไอคอนเดิม ให้ลบแอปเดิมออกแล้วติดตั้งใหม่ หรือ refresh แบบ hard reload ก่อนติดตั้งใหม่
+## URL
+https://seeyouloverreallife-debug.github.io/ANESVET/?v=13

@@ -8,8 +8,8 @@
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" href="./icon-192.png">
   <link rel="apple-touch-icon" href="./icon-192.png">
-  <link rel="stylesheet" href="./style.css?v=12.1">
-  <title>ANESVET V12.1</title>
+  <link rel="stylesheet" href="./style.css?v=13">
+  <title>ANESVET V13</title>
 </head>
 <body>
 <header class="topbar">
@@ -17,7 +17,7 @@
     <div class="brand-mark">A</div>
     <div>
       <div class="eyebrow">GENOVI PET CARE • DIGITAL ANESTHESIA RECORD</div>
-      <h1>ANESVET <span>V12.1</span></h1>
+      <h1>ANESVET <span>V13</span></h1>
     </div>
   </div>
   <div class="top-actions">
@@ -74,7 +74,7 @@
   </nav>
   <div id="moreMenu" class="more-menu" hidden>
     <button data-more-tab="plan">Anesthesia Plan</button>
-    <button data-more-tab="dashboard">Dashboard</button>
+    <button data-more-tab="casesummary">Case Summary</button>
     <button data-more-tab="record">Record</button>
     <button data-more-tab="trends">Trends</button>
     <button data-more-tab="timeline">Timeline</button>
@@ -86,9 +86,9 @@
   <section id="patient" class="tabpage active">
     <section class="patient-hero">
       <div>
-        <div class="eyebrow dark">PATIENT REGISTRATION</div>
-        <h2>ข้อมูลผู้ป่วยก่อนเริ่มวางยาสลบ</h2>
-        <p>หน้านี้เก็บเฉพาะข้อมูลประจำตัวและการประเมินผู้ป่วยเบื้องต้น ข้อมูลจะถูกใช้ตลอดทั้ง Anesthesia Record</p>
+        <div class="eyebrow dark">PATIENT & CASE SETUP</div>
+        <h2>ข้อมูลผู้ป่วยและทีมในเคส</h2>
+        <p>กรอกข้อมูลผู้ป่วย, procedure, ทีมผ่าตัด และข้อควรระวังในครั้งเดียว ข้อมูลจะใช้ต่อใน OR LIVE, Recovery และ PDF report</p>
       </div>
       <span id="patientSaveStatus" class="status-pill warn">NOT SAVED</span>
     </section>
@@ -138,6 +138,7 @@
         <label class="span2">Procedure ที่จะทำ
           <input id="patientProcedure" type="text" placeholder="เช่น OHE / Dental / Exploratory laparotomy">
         </label>
+        <input id="procedure" type="hidden">
         <label class="span2">ประวัติแพ้ยา / สิ่งที่ต้องหลีกเลี่ยง
           <input id="patientAllergies" type="text" placeholder="เช่น แพ้ amoxicillin / ไม่ทราบประวัติแพ้ยา">
         </label>
@@ -147,6 +148,26 @@
         <label class="span2">ข้อควรระวังเฉพาะราย / Anesthetic concerns
           <textarea id="patientPrecautions" rows="3" placeholder="เช่น difficult airway, aspiration risk, previous anesthetic reaction, ต้องหลีกเลี่ยงยาบางกลุ่ม"></textarea>
         </label>
+      </div>
+
+      <div class="case-team-block">
+        <div class="case-team-title">
+          <div>
+            <b>Case Team</b>
+            <span>กรอกครั้งเดียว ใช้ใน OR LIVE และรายงาน</span>
+          </div>
+        </div>
+        <div class="case-team-grid">
+          <label>Surgeon / คนผ่าตัด
+            <input id="surgeon" type="text" placeholder="ชื่อสัตวแพทย์">
+          </label>
+          <label>Anesthetist / คนวางยา
+            <input id="anesthetist" type="text" placeholder="ชื่อผู้วางยา">
+          </label>
+          <label>Surgical assistant / คนช่วยผ่าตัด
+            <input id="surgicalAssistant" type="text" placeholder="ชื่อผู้ช่วย">
+          </label>
+        </div>
       </div>
     </section>
 
@@ -195,7 +216,7 @@
     </section>
 
     <section class="patient-action-bar">
-      <button id="savePatientBtn" class="btn primary xl">บันทึกข้อมูลผู้ป่วยและไป Dashboard →</button>
+      <button id="savePatientBtn" class="btn primary xl">บันทึก Patient & Case Setup → Pre-check</button>
     </section>
   </section>
 
@@ -211,6 +232,7 @@
           <span id="orPhaseBadge" class="status-pill good">INTRAOP</span>
         </div>
         <div id="orProcedureLine" class="or-procedure-line">Procedure: —</div>
+        <div id="orTeamLine" class="or-team-line">Team: —</div>
         <div id="orRiskLine" class="or-risk-line" hidden></div>
       </div>
       <div class="or-timer-block">
@@ -250,7 +272,7 @@
           <label>DAP (mmHg)<input id="orDap" type="number" inputmode="numeric"></label>
           <label>Vaporizer (%)<input id="orVaporizer" type="number" step="0.1" inputmode="decimal"></label>
           <label>O₂ (L/min)<input id="orO2" type="number" step="0.1" inputmode="decimal"></label>
-          <label>Fluid rate (mL/hr)<input id="orFluidRate" type="number" inputmode="numeric"></label>
+          
           <label>Depth<select id="orDepth"><option value="">—</option><option>Light</option><option>Appropriate</option><option>Deep</option></select></label>
           <label>Ventilation<select id="orVentilation"><option>Spontaneous</option><option>Manual PPV</option><option>Mechanical ventilation</option></select></label>
         </div>
@@ -259,6 +281,92 @@
         <div class="section-heading"><div><h2>Prioritized alerts</h2><p>Immediate problems ก่อน ตามด้วย trend alerts</p></div><span id="orAlertCount" class="status-pill good">0 ALERTS</span></div>
         <div id="orAlertList" class="or-alert-list"><div class="empty-state compact">No active alerts</div></div>
       </section>
+    </section>
+
+    <section class="panel or-fluid-panel">
+      <div class="section-heading">
+        <div>
+          <h2>Fluid / Blood Loss</h2>
+          <p>ตั้ง fluid rate แล้วระบบคำนวณ crystalloid ตาม anesthesia time อัตโนมัติ • bolus / blood loss / urine ใช้ปุ่มเร็ว</p>
+        </div>
+        <span id="orFluidStatus" class="status-pill warn">READY</span>
+      </div>
+
+      <div class="fluid-rate-hero">
+        <div class="fluid-rate-entry">
+          <label>Current crystalloid rate
+            <div class="fluid-rate-input-row">
+              <input id="orFluidManageRate" type="number" min="0" step="1" inputmode="decimal" placeholder="mL/hr">
+              <span>mL/hr</span>
+              <button id="applyFluidRateBtn" class="btn primary">Apply rate</button>
+            </div>
+          </label>
+          <div id="orFluidRateKg" class="fluid-rate-kg">— mL/kg/hr</div>
+        </div>
+
+        <div class="fluid-total-card calculated">
+          <span>Calculated crystalloid</span>
+          <b id="orCalculatedCrystalloid">0 mL</b>
+          <small id="orCalculatedCrystalloidKg">0 mL/kg</small>
+        </div>
+
+        <div class="fluid-total-card actual">
+          <label>Actual / corrected crystalloid
+            <input id="fluidActualTotal" type="number" min="0" step="1" placeholder="ถ้าไม่กรอก ใช้ calculated">
+          </label>
+          <small>ใช้กรณี pump/line/volume จริงไม่ตรงกับค่าคำนวณ</small>
+        </div>
+      </div>
+
+      <div class="fluid-quick-grid">
+        <article class="fluid-quick-card">
+          <div class="fluid-quick-head"><span>Fluid bolus</span><b id="orBolusTotal">0 mL</b></div>
+          <div class="quick-add-buttons">
+            <button data-fluid-kind="bolus" data-amount="5">+5</button>
+            <button data-fluid-kind="bolus" data-amount="10">+10</button>
+            <button data-fluid-kind="bolus" data-amount="20">+20</button>
+            <button data-fluid-custom="bolus">Custom</button>
+          </div>
+        </article>
+
+        <article class="fluid-quick-card blood-loss">
+          <div class="fluid-quick-head"><span>Estimated blood loss</span><b id="orBloodLossTotal">0 mL</b></div>
+          <div id="orBloodLossKg" class="fluid-small-metric">0 mL/kg</div>
+          <div class="quick-add-buttons">
+            <button data-fluid-kind="bloodloss" data-amount="5">+5</button>
+            <button data-fluid-kind="bloodloss" data-amount="10">+10</button>
+            <button data-fluid-kind="bloodloss" data-amount="20">+20</button>
+            <button data-fluid-custom="bloodloss">Custom</button>
+          </div>
+        </article>
+
+        <article class="fluid-quick-card">
+          <div class="fluid-quick-head"><span>Urine output</span><b id="orUrineTotal">0 mL</b></div>
+          <div id="orUrineKg" class="fluid-small-metric">0 mL/kg</div>
+          <div class="quick-add-buttons">
+            <button data-fluid-kind="urine" data-amount="5">+5</button>
+            <button data-fluid-kind="urine" data-amount="10">+10</button>
+            <button data-fluid-kind="urine" data-amount="20">+20</button>
+            <button data-fluid-custom="urine">Custom</button>
+          </div>
+        </article>
+
+        <article class="fluid-quick-card">
+          <label>Blood product given
+            <div class="inline-unit-input"><input id="orBloodProductInput" type="number" min="0" step="1" value="0"><span>mL</span></div>
+          </label>
+          <div id="orBloodProductKg" class="fluid-small-metric">0 mL/kg</div>
+        </article>
+      </div>
+
+      <div class="fluid-running-summary">
+        <div><span>Effective crystalloid</span><b id="orEffectiveCrystalloid">0 mL</b></div>
+        <div><span>Total fluid in</span><b id="orTotalFluidIn">0 mL</b><small id="orTotalFluidInKg">0 mL/kg</small></div>
+        <div><span>Net estimate*</span><b id="orFluidNet">0 mL</b></div>
+        <div><span>Current rate</span><b id="orCurrentRateDisplay">0 mL/hr</b></div>
+      </div>
+
+      <div id="fluidRateHistoryView" class="fluid-rate-history-view">No rate changes recorded yet</div>
     </section>
 
     <section class="panel airway-panel">
@@ -318,7 +426,50 @@
   </section>
 
 
-  <section id="preop" class="tabpage">
+  
+  <section id="casesummary" class="tabpage">
+    <section class="panel case-summary-page">
+      <div class="section-heading">
+        <div>
+          <div class="eyebrow">CASE SUMMARY</div>
+          <h2>ภาพรวมเคส</h2>
+          <p>ใช้สำหรับดูข้อมูลรวม ไม่ต้องกรอกข้อมูลซ้ำ</p>
+        </div>
+        <div class="button-row">
+          <button id="editPatientBtn" class="btn">แก้ Patient & Case Setup</button>
+          <button id="openPreopBtn" class="btn">Pre-check</button>
+          <button id="openOrLiveBtn" class="btn primary">● Open OR LIVE</button>
+          <button id="startCaseBtn" class="btn primary">▶ Start case</button>
+          <button id="pauseCaseBtn" class="btn" disabled>Pause</button>
+        </div>
+      </div>
+
+      <div class="case-summary-grid">
+        <div><span>Patient</span><b id="summaryPatient">—</b></div>
+        <div><span>ASA</span><b id="summaryAsa">—</b></div>
+        <div><span>Procedure</span><b id="summaryProcedure">—</b></div>
+        <div><span>Surgeon</span><b id="summarySurgeon">—</b></div>
+        <div><span>Anesthetist</span><b id="summaryAnesthetist">—</b></div>
+        <div><span>Assistant</span><b id="summaryAssistant">—</b></div>
+      </div>
+
+      <div id="summaryRiskBox" class="summary-risk-box" hidden>
+        <b>⚠ Patient-specific cautions</b>
+        <div id="summaryRiskText">—</div>
+      </div>
+
+      <div class="case-summary-grid compact">
+        <div><span>Records</span><b id="summaryRecordCount">0</b></div>
+        <div><span>Events / Drugs</span><b id="summaryEventCount">0</b></div>
+        <div><span>Current fluid rate</span><b id="summaryFluidRate">0 mL/hr</b></div>
+        <div><span>Total fluid in</span><b id="summaryFluidTotal">0 mL</b></div>
+        <div><span>Estimated blood loss</span><b id="summaryBloodLoss">0 mL</b></div>
+        <div><span>Case time</span><b id="summaryCaseTime">00:00:00</b></div>
+      </div>
+    </section>
+  </section>
+
+<section id="preop" class="tabpage">
     <section class="panel">
       <div class="section-heading">
         <div>
@@ -421,30 +572,12 @@
   </section>
 
   <section id="dashboard" class="tabpage">
-    <section class="panel">
+    <section class="panel legacy-dashboard-note">
       <div class="section-heading">
         <div>
-          <h2>Case setup</h2>
-          <p>รายละเอียดของ procedure และทีมในเคสนี้</p>
+          <h2>Legacy monitoring workspace</h2>
+          <p>V13 ใช้ Patient & Case Setup + OR LIVE เป็น workflow หลัก หน้านี้คงไว้เพื่อ compatibility ของระบบเดิม</p>
         </div>
-        <div class="button-row">
-          <button id="editPatientBtn" class="btn">แก้ข้อมูลผู้ป่วย</button>
-          <button id="openPreopBtn" class="btn">Pre-op checklist</button>
-          <button id="openOrLiveBtn" class="btn primary">● Open OR LIVE</button>
-          <button id="startCaseBtn" class="btn primary">▶ Start case</button>
-          <button id="pauseCaseBtn" class="btn" disabled>Pause</button>
-        </div>
-      </div>
-      <div class="form-grid three">
-        <label>Procedure
-          <input id="procedure" type="text" placeholder="เช่น OHE / Dental / Exploratory laparotomy">
-        </label>
-        <label>Surgeon
-          <input id="surgeon" type="text" placeholder="optional">
-        </label>
-        <label>Anesthetist
-          <input id="anesthetist" type="text" placeholder="optional">
-        </label>
       </div>
     </section>
 
@@ -1241,6 +1374,9 @@
         <div><span>Records</span><b id="endRecordCount">0</b></div>
         <div><span>Events / Drugs</span><b id="endEventCount">0</b></div>
         <div><span>Recovery</span><b id="endRecoveryStatus">Not complete</b></div>
+        <div><span>Total fluid in</span><b id="endFluidTotal">0 mL</b></div>
+        <div><span>Blood loss</span><b id="endBloodLoss">0 mL</b></div>
+        <div><span>Urine</span><b id="endUrine">0 mL</b></div>
       </div>
       <div class="end-case-checklist">
         <label><input id="endConfirmRecovery" type="checkbox"> ตรวจ Recovery แล้ว</label>
@@ -1295,6 +1431,6 @@
 </main>
 
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
-<script src="./app.js?v=12.1"></script>
+<script src="./app.js?v=13"></script>
 </body>
 </html>

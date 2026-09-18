@@ -247,3 +247,55 @@ body.or-fullscreen .topbar,body.or-fullscreen .case-strip,body.or-fullscreen .ta
 @media(max-width:1050px){.airway-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.ventilator-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:760px){.favorite-drug-strip,.drug-next-step{align-items:stretch;flex-direction:column}.favorite-drug-buttons{justify-content:flex-start}}
 @media(max-width:540px){.airway-grid,.ventilator-grid{grid-template-columns:1fr 1fr}}
+
+
+/* V13 — Patient & Case Setup + OR Fluid Cockpit */
+.case-team-block{margin-top:15px;padding-top:14px;border-top:1px solid var(--line)}
+.case-team-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}
+.case-team-title b{display:block;font-size:.95rem}.case-team-title span{display:block;color:var(--muted);font-size:.78rem;margin-top:2px}
+.case-team-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.case-summary-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin-top:13px}
+.case-summary-grid.compact{margin-top:10px}
+.case-summary-grid>div{border:1px solid var(--line);border-radius:11px;padding:10px;background:#fbfdfe}
+.case-summary-grid span{display:block;color:var(--muted);font-size:.69rem;font-weight:850;text-transform:uppercase}
+.case-summary-grid b{display:block;margin-top:3px}
+.summary-risk-box{margin-top:10px;padding:10px 12px;border:1px solid #e4c17f;border-radius:10px;background:#fffaf0;color:#684916}
+.summary-risk-box[hidden]{display:none}.summary-risk-box b{display:block;margin-bottom:3px}
+.legacy-dashboard-note{opacity:.72}
+.or-team-line{margin-top:3px;color:rgba(255,255,255,.78);font-size:.82rem;font-weight:700}
+.or-fluid-panel{margin-top:11px;border:2px solid #bfdde4;background:linear-gradient(180deg,#fbfeff,#f6fbfc)}
+.fluid-rate-hero{display:grid;grid-template-columns:1.3fr .8fr 1fr;gap:10px;margin-top:12px}
+.fluid-rate-entry,.fluid-total-card{border:1px solid var(--line);border-radius:13px;background:#fff;padding:11px}
+.fluid-rate-input-row{display:grid;grid-template-columns:1fr auto auto;gap:7px;align-items:center;margin-top:5px}
+.fluid-rate-input-row input{font-size:1.5rem!important;font-weight:900!important}
+.fluid-rate-input-row>span{color:var(--muted);font-weight:800}
+.fluid-rate-kg{margin-top:6px;color:var(--primary);font-weight:900}
+.fluid-total-card>span{display:block;color:var(--muted);font-size:.72rem;font-weight:850;text-transform:uppercase}
+.fluid-total-card>b{display:block;font-size:1.8rem;margin-top:5px;color:#0b5063}
+.fluid-total-card>small{display:block;color:var(--muted);margin-top:2px}
+.fluid-total-card.actual input{margin-top:5px;font-size:1.2rem;font-weight:850}
+.fluid-quick-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin-top:10px}
+.fluid-quick-card{border:1px solid var(--line);border-radius:12px;background:#fff;padding:10px}
+.fluid-quick-card.blood-loss{border-color:#e5c4bf;background:#fffaf9}
+.fluid-quick-head{display:flex;justify-content:space-between;gap:8px;align-items:center}
+.fluid-quick-head span{font-size:.78rem;color:var(--muted);font-weight:850}.fluid-quick-head b{font-size:1.25rem}
+.fluid-small-metric{color:var(--muted);font-size:.73rem;font-weight:800;margin-top:3px}
+.quick-add-buttons{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:8px}
+.quick-add-buttons button{border:1px solid #c8d8dd;background:#fff;border-radius:8px;padding:8px 4px;font-weight:900;cursor:pointer}
+.quick-add-buttons button:hover{background:var(--primary-soft);color:var(--primary)}
+.inline-unit-input{display:grid;grid-template-columns:1fr auto;gap:6px;align-items:center;margin-top:5px}
+.inline-unit-input span{color:var(--muted);font-weight:800}
+.fluid-running-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:10px}
+.fluid-running-summary>div{border:1px solid var(--line);border-radius:10px;padding:9px;background:#fff}
+.fluid-running-summary span{display:block;color:var(--muted);font-size:.67rem;font-weight:850;text-transform:uppercase}
+.fluid-running-summary b{display:block;margin-top:3px;font-size:1.08rem}.fluid-running-summary small{display:block;color:var(--muted);font-size:.7rem}
+.fluid-rate-history-view{margin-top:9px;padding:8px 10px;background:#edf5f7;border-radius:9px;color:#4f646e;font-size:.76rem;line-height:1.45}
+@media(max-width:1000px){
+  .fluid-rate-hero{grid-template-columns:1fr 1fr}.fluid-rate-entry{grid-column:1/-1}
+  .fluid-quick-grid,.fluid-running-summary{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:760px){.case-team-grid,.case-summary-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:560px){
+  .case-team-grid,.case-summary-grid,.fluid-rate-hero,.fluid-quick-grid,.fluid-running-summary{grid-template-columns:1fr}
+  .fluid-rate-entry{grid-column:auto}
+}
