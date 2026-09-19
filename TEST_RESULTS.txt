@@ -1,37 +1,61 @@
-ANESVET V14.7 — final supported test run
-UTC: 2026-09-19T14:35:22.033730+00:00
-Source: supplied ANESVET_V14_6_4(1).zip (see SOURCE_PROVENANCE.json)
-Runtime: Node.js v24.19.0; jsdom 30.1.0; fake-indexeddb 6.2.5
+ANESVET V14.7.1 — OR LIVE Workflow UX validation
+UTC: 2026-09-19T15:34:46Z
+Source: supplied ANESVET_V14_7(1).zip (see SOURCE_PROVENANCE_V14_7_1.json)
 
-PASS — JavaScript syntax and JSON: 13 JavaScript files
-PASS — Source regression: 662 unique HTML IDs, 346 unique named functions
-PASS — V14.7 integration / storage contracts
-PASS — Original workflow model: 4 scenarios
-PASS — Production clinical helper logic: 73 assertions
-PASS — Full DOM workflow including actual Extubation button: 65 assertions
-PASS — Synthetic V14.6.4 compatibility / checksum / view-only: 33 assertions
-PASS — Protocol governance / species / stale BW / N/A / problems: 27 assertions
-PASS — Final lock / archive / PDF report content integrity: 10 assertions
-Total new production-helper / DOM assertions: 208
-PASS — Baseline comparison: defaultSettings, HR/RR thresholds, calculator
-       implementation and persistent keys unchanged
+PASS — node --check app.js
+PASS — node --check clinical-workflow.js
+PASS — node --check service-worker.js
+PASS — tests/syntax.mjs: Syntax + JSON (13 JavaScript files)
+PASS — tests/regression.mjs: 672 unique HTML IDs, 355 unique named functions
+PASS — V14.7.1 integration / storage contracts
+PASS — original workflow model: 4 scenarios
+PASS — production clinical helper logic: 73 assertions
 
-BLOCKED / NOT PASSED — real Chromium browser E2E
-Not tested: native UI rendering/dialog focus, real mobile layout, print
-pagination, offline behavior and actual PWA version upgrade.
-Browser attempts and repeatable command: BROWSER_E2E_STATUS.txt
-Runner supplied: e2e_browser.mjs (syntax-checked only in final recovered build)
+V14.7.1 OR LIVE UX static regression coverage includes:
+PASS — top NEXT CLINICAL STEP controls are present
+PASS — induction action opens induction-filtered Quick Drug workflow
+PASS — actual administered amount remains manual confirmation
+PASS — induction administration creates the Induction milestone without a second entry
+PASS — Airway / Intubation is promoted into the primary workflow
+PASS — saved intubation can create the Intubation milestone
+PASS — legacy milestone hooks remain in DOM for compatibility
+PASS — duplicate OR status / prioritized-alert / active-complication workspaces are hidden
+PASS — Fluid, Airway and Event/Problem panels are collapsible by default
+PASS — SAP/DAP remain available in stored/advanced views but are hidden from the primary OR cockpit
+PASS — clinical defaults, persistent storage keys and IndexedDB schema are unchanged
 
-Important distinctions:
-- Source regression is static; the original model is separate from production.
-- clinical_workflow.mjs imports the real production helper module.
-- DOM suites evaluate the full production app and invoke actual handlers.
-- Browser-only primitives are replaced by jsdom harness shims; this is NOT E2E.
-- Compatibility fixtures are synthetic. No patient data was supplied.
-- PDF verification checks generated report content, not rendered print pages.
+REAL CHROMIUM — SUPPLEMENTAL OR LIVE UI/WORKFLOW SMOKE: PASS
+Method: production HTML/CSS/JS loaded into an installed headless Chromium page with
+page.set_content because direct localhost/file navigation is administratively blocked.
+Only localStorage/sessionStorage and crypto.randomUUID were polyfilled for the opaque
+about:blank origin; clinical functions were not replaced.
+Covered:
+- New patient setup -> OR LIVE
+- Induction + Drug primary action
+- Frozen induction protocol preselects Propofol from default primary induction preset
+- calculated dose/volume displayed; actual mL remains blank until user entry
+- actual administration -> Drug record + Induction milestone
+- Airway/Intubation -> airway save + Intubation milestone
+- Surgery start -> intraoperative phase
+- vital recording
+- Surgery end -> emergence
+- Extubation -> Recovery + Recovery Handoff
+- duplicate OR workspaces hidden; Airway panel auto-collapses after save
+Artifacts: tests/artifacts/or_live_v14_7_1_induction.png and induction_dialog_v14_7_1.png
 
-Raw supported test output: SUPPORTED_TEST_RUN.txt
-Command: TEST_NODE_MODULES=<installed dependency path> npm test
-No product runtime dependencies or test node_modules are included in ZIP.
+NOT PASSED / ENVIRONMENT BLOCKED — full origin-based browser/PWA acceptance
+- Direct http://127.0.0.1 / localhost navigation is blocked by administrator policy.
+- file:// navigation is also blocked.
+- Therefore service-worker install/update, real IndexedDB/localStorage origin persistence,
+  offline cache behavior, native PWA upgrade V14.7 -> V14.7.1 and print/PDF pagination
+  still require acceptance on an authorized host/browser.
 
-Overall: RELEASE CANDIDATE, browser acceptance gate incomplete.
+NOT COMPLETED IN THIS RUNTIME — jsdom full npm suite
+- npm test reaches the DOM suites but fails because npm dependency installation was not
+  available in this runtime (Cannot find module 'jsdom').
+- This is an environment/dependency-availability limitation; no claim is made that the
+  jsdom DOM suite passed for V14.7.1 in this runtime.
+
+Overall: RELEASE CANDIDATE / CLINICAL UX BUILD.
+Recommended before live surgical use: run npm ci + npm test + npm run test:browser on an
+authorized workstation, then perform one complete simulated case and PWA upgrade check.

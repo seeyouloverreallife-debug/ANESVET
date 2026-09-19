@@ -1,27 +1,39 @@
-STATUS: BLOCKED / NOT PASSED
+ANESVET V14.7.1 BROWSER STATUS
 
-Attempts earlier in this task:
-- Original browser script could not find /usr/bin/chromium.
-- Playwright Chromium executable was not installed in the runtime cache.
-- Playwright Chromium download timed out at cdn.playwright.dev.
-- Managed browser rejected http://127.0.0.1:8765 with ERR_BLOCKED_BY_CLIENT.
-- Managed browser rejected the local file URL under its URL security policy.
-- No alternate browser/control channel was used to bypass those denials.
+FULL ORIGIN-BASED PWA E2E: BLOCKED / NOT PASSED
 
-The workspace was reset during continuation. Source was reconstructed from the
-same baseline and all supported tests rerun. The final real-browser runner in
-this ZIP has only syntax validation; it has NOT executed successfully.
+Current runtime facts:
+- /usr/bin/chromium is installed.
+- Direct localhost / 127.0.0.1 browser navigation is blocked by administrator policy.
+- Direct file:// navigation is blocked as well.
+- Therefore the production service worker, offline cache, PWA update path, native origin
+  localStorage/IndexedDB persistence and print pagination cannot be accepted here.
 
-jsdom is a DOM integration harness. It is NOT browser E2E and does not verify
-native focus/modal behavior, CSS layout, mobile rendering, print pagination,
-service-worker/offline behavior or a V14.6.4-to-V14.7 PWA upgrade.
+SUPPLEMENTAL REAL-CHROMIUM OR LIVE SMOKE: PASS
 
-On an authorized host with Node >=22:
+To validate the redesigned OR LIVE despite the origin restriction, the exact production
+index.html, style.css, clinical-workflow.js and app.js were loaded into a headless Chromium
+page with page.set_content. localStorage/sessionStorage and crypto.randomUUID were polyfilled
+only because about:blank is an opaque origin. No clinical workflow/calculation functions were
+stubbed or replaced.
+
+Validated interaction path:
+Patient setup -> OR LIVE -> Induction + Drug -> actual Propofol administration ->
+Airway/Intubation -> Surgery start -> Record vitals -> Surgery end -> Extubation -> Recovery.
+Recovery Handoff was created. No page errors were observed in the final smoke run.
+
+Visual artifacts:
+- artifacts/or_live_v14_7_1_induction.png
+- artifacts/induction_dialog_v14_7_1.png
+
+Acceptance command on an authorized workstation:
   npm ci
-  npx playwright install chromium
+  npx playwright install chromium   # only if needed
+  npm test
   npm run test:browser
-Or provide CHROMIUM_BIN pointing to an installed Chromium executable.
 
-The runner serves the production files over HTTP, uses real browser storage,
-and covers desktop/mobile, alerts, actual drugs, handoff/reload, Advanced route
-and offline cache smoke. A full old-cache upgrade remains a separate manual gate.
+Manual gate additionally recommended:
+1. Install/open V14.7 with a test case/backup.
+2. Upgrade to V14.7.1 through the PWA update flow.
+3. Confirm current case, Patient Master, archive, protocols and settings are preserved.
+4. Run one complete simulated anesthesia case and export the final PDF.

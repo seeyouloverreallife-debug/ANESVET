@@ -618,3 +618,80 @@ body.hide-sap-dap .record-table td.sap-dap-helper,body.hide-sap-dap .record-tabl
 .advanced-menu{padding:10px;border-top:1px solid #d9e5e8}.advanced-menu summary{cursor:pointer;font-weight:700;padding:8px}.protocol-toolbar,.problem-actions,.workflow-dialog-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:10px 0}.protocol-toolbar{justify-content:space-between}.protocol-toolbar span{font-size:12px;font-weight:800;color:#0d5265}.active-problem{border:1px solid #dfb169;border-left:5px solid #c08018;background:#fffaf0;border-radius:12px;padding:14px;margin:10px 0;overflow-wrap:anywhere}.active-problem.danger{border-color:#dd8f8f;border-left-color:#b52332;background:#fff5f5}.active-problem p{margin:6px 0;font-size:13px;line-height:1.5}.active-problem span{font-size:11px;margin-left:8px}.workflow-dialog{padding:0;border:1px solid #bcced4;border-radius:18px;width:min(760px,94vw);max-height:90dvh;color:#183941;box-shadow:0 22px 80px #001a3266}.workflow-dialog::backdrop{background:#092b3a99}.workflow-dialog-body{padding:24px;overflow:auto}.workflow-dialog h2{margin:0 0 12px}.workflow-dialog p{font-size:14px;line-height:1.6}.workflow-dialog label{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:700;margin:10px 0}.workflow-dialog input,.workflow-dialog select,.workflow-dialog textarea{width:100%;min-width:0;box-sizing:border-box;padding:12px;border:1px solid #bdccd1;border-radius:8px;font:inherit;background:#fff;color:#153746}.workflow-dialog textarea{min-height:80px}.workflow-dialog input[readonly]{background:#edf4f6}.workflow-dialog fieldset{border:1px solid #d6e2e5;border-radius:10px;margin:14px 0;padding:12px}.workflow-dialog legend{font-weight:800}.threshold-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}.quick-drug-fields{display:grid;grid-template-columns:1fr 1fr;gap:12px}.quick-drug-calculation{background:#e6f4f6;border:1px solid #abd0d7;padding:18px;border-radius:10px;font-size:20px;font-weight:800;overflow-wrap:anywhere}.workflow-error{color:#a71828;font-weight:700;white-space:pre-wrap}.workflow-dialog-actions{justify-content:flex-end;position:sticky;bottom:0;padding:12px 0;background:#fff}.handoff-panel pre,#hospitalAlertSummary,.report-handoff pre{white-space:pre-wrap;overflow-wrap:anywhere;font-family:inherit;font-size:13px;line-height:1.7}.handoff-panel details{margin-top:16px}.handoff-panel summary{cursor:pointer;font-weight:700}.handoff-panel h2{color:#0d5265}
 @media(max-width:600px){.threshold-grid,.quick-drug-fields{grid-template-columns:1fr 1fr}.workflow-dialog-body{padding:16px}.workflow-dialog{max-height:94dvh}.workflow-dialog-actions .btn{flex:1}.active-problem .problem-actions .btn{font-size:12px}.handoff-panel pre{font-size:12px}}
 @media print{.report-handoff pre{font-size:8px;line-height:1.45;white-space:pre-wrap;overflow-wrap:anywhere}.report-handoff{break-inside:auto}.workflow-dialog{display:none!important}}
+
+/* V14.7.1 — OR LIVE workflow-first UX simplification */
+.or-tools-menu{position:relative;display:inline-block;text-align:left}
+.or-tools-menu>summary{list-style:none;cursor:pointer;border:1px solid rgba(255,255,255,.28);background:rgba(255,255,255,.1);color:#fff;border-radius:10px;padding:8px 12px;font-weight:850}
+.or-tools-menu>summary::-webkit-details-marker{display:none}
+.or-tools-menu-body{position:absolute;right:0;top:calc(100% + 7px);z-index:65;width:220px;display:grid;gap:7px;padding:9px;border:1px solid #bfd1d6;border-radius:12px;background:#fff;box-shadow:0 14px 34px rgba(0,31,42,.18)}
+.or-tools-menu-body .btn{width:100%;text-align:left;color:var(--primary);background:#fff;border-color:#cad8dc}
+.or-tools-menu-body .btn.primary{background:var(--primary);color:#fff}
+
+.or-primary-flow{display:flex;align-items:center;justify-content:space-between;gap:16px;margin:10px 0 11px;padding:14px 16px;border:2px solid #8dbec9;border-radius:16px;background:linear-gradient(135deg,#f8fdfe,#edf8fa);box-shadow:0 6px 18px rgba(13,82,101,.07)}
+.or-primary-copy{min-width:0;display:flex;flex-direction:column;gap:2px}
+.or-primary-copy>span{font-size:.66rem;font-weight:950;letter-spacing:.07em;color:#52717b}
+.or-primary-copy>b{font-size:1.12rem;color:#0b5365}
+.or-primary-copy>small{color:#5f7179;line-height:1.35}
+.or-primary-buttons{display:flex;align-items:center;justify-content:flex-end;gap:8px;flex-wrap:wrap}
+.or-primary-action{min-height:54px;border:0;border-radius:13px;padding:12px 18px;background:#0d5265;color:#fff;font-weight:950;font-size:1rem;cursor:pointer;box-shadow:0 5px 14px rgba(13,82,101,.18)}
+.or-primary-action:disabled{opacity:.55;cursor:not-allowed}
+.or-secondary-action{min-height:48px;padding:10px 14px}
+
+/* Sticky row already contains the critical status/time/due/record controls. */
+.or-live-page>.or-status-row{display:none}
+
+.or-phase-details{padding:0!important;overflow:hidden}
+.or-phase-details>summary{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 12px;cursor:pointer;list-style:none}
+.or-phase-details>summary::-webkit-details-marker{display:none}
+.or-phase-details .or-phase-current{margin:0;padding:0;border:0;background:transparent;flex:1}
+.or-phase-details .or-phase-steps,.or-phase-details .or-phase-action-hint{margin-left:12px;margin-right:12px}
+.or-phase-details .or-phase-action-hint{margin-bottom:12px}
+.or-phase-expand{font-size:.73rem;font-weight:850;color:#0d6275;white-space:nowrap}
+
+.or-collapsible-panel{padding:0!important;overflow:visible}
+.or-collapsible-summary{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 15px;cursor:pointer;list-style:none;border-radius:15px}
+.or-collapsible-summary::-webkit-details-marker{display:none}
+.or-collapsible-summary>span:first-child{min-width:0}
+.or-collapsible-summary b{display:block;color:#174b59}
+.or-collapsible-summary small{display:block;margin-top:2px;color:var(--muted);font-weight:650;line-height:1.3}
+.or-collapsible-metric{font-weight:900;color:#0c6174;white-space:nowrap;font-size:.8rem}
+.or-collapsible-body{padding:0 15px 15px;border-top:1px solid #e1eaed}
+.or-collapsible-panel[open]>.or-collapsible-summary{background:#f5fbfc;border-radius:15px 15px 0 0}
+.or-collapsible-panel[open]>.or-collapsible-summary .or-collapsible-metric{color:#0b5265}
+
+/* Active Alerts / Problems is the single visible problem workspace. The older duplicate lists stay in DOM for compatibility/reporting. */
+.or-live-page .or-alert-panel,.or-live-page .complication-watch-panel{display:none}
+.or-workflow-problems{grid-column:span 1}
+.or-workflow-problems #orProblemPanel>.empty-state{padding:10px 4px}
+
+.or-event-problem-menu .or-action-buttons{padding-top:12px}
+.legacy-milestone-hooks{display:none!important}
+
+/* Keep fluid/airway available but out of the primary visual path until needed. */
+.or-fluid-panel,.airway-panel{margin-top:10px}
+.airway-panel[open]{scroll-margin-top:95px}
+.or-fluid-panel[open]{scroll-margin-top:95px}
+
+@media(max-width:780px){
+  .or-primary-flow{align-items:stretch;flex-direction:column}
+  .or-primary-buttons{display:grid;grid-template-columns:1fr 1fr;width:100%}
+  .or-primary-action{grid-column:1/-1;width:100%}
+  .or-primary-buttons .btn{width:100%}
+  .or-tools-menu-body{right:auto;left:0}
+}
+@media(max-width:520px){
+  .or-primary-flow{padding:12px}
+  .or-primary-buttons{grid-template-columns:1fr}
+  .or-primary-action{grid-column:auto}
+  .or-collapsible-summary{align-items:flex-start;flex-direction:column}
+  .or-collapsible-metric{white-space:normal}
+  .or-phase-details>summary{align-items:flex-start}
+}
+.or-protocol-details{margin-top:8px;border-top:1px solid var(--line);padding-top:8px}
+.or-protocol-details>summary{cursor:pointer;color:#4d6771;font-size:.72rem;font-weight:850;list-style:none}
+.or-protocol-details>summary::-webkit-details-marker{display:none}
+.or-protocol-details .protocol-toolbar{margin-bottom:6px}
+/* SAP/DAP remain stored and available in Advanced/record views, but are removed from the primary OR cockpit. */
+.or-live-page .or-bp-panel .sap-dap-helper{display:none!important}
+.or-live-page .or-maint-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+@media(max-width:760px){.or-live-page .or-maint-grid{grid-template-columns:1fr 1fr}}

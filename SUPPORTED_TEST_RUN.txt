@@ -1,29 +1,34 @@
-npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+ANESVET V14.7.1 — supported tests executed in this runtime
+UTC: 2026-09-19T15:34:46Z
 
-> anesvet-v14-7@14.7.0 test
-> npm run test:syntax && npm run test:regression && npm run test:workflow
+$ node --check app.js
+PASS
 
-npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+$ node --check clinical-workflow.js
+PASS
 
-> anesvet-v14-7@14.7.0 test:syntax
-> node tests/syntax.mjs
+$ node --check service-worker.js
+PASS
 
+$ node tests/syntax.mjs
 Syntax + JSON: PASS (13 JavaScript files)
-npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
 
-> anesvet-v14-7@14.7.0 test:regression
-> node tests/regression.mjs
+$ node tests/regression.mjs
+ANESVET V14.7.1 regression checks: PASS (672 unique HTML ids, 355 unique named functions)
+V14.7.1 integration and storage contracts: PASS
 
-ANESVET V14.7 regression checks: PASS (662 unique HTML ids, 346 unique named functions)
-V14.7 integration and storage contracts: PASS
-npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
-
-> anesvet-v14-7@14.7.0 test:workflow
-> node tests/workflow_scenarios.mjs && node tests/clinical_workflow.mjs && node tests/dom_workflow.mjs && node tests/compatibility.mjs && node tests/governance.mjs && node tests/final_lock.mjs
-
+$ node tests/workflow_scenarios.mjs
 ANESVET V14.6.4 workflow model scenarios: PASS (4 scenarios)
+
+$ node tests/clinical_workflow.mjs
 Production clinical helpers: PASS (73 assertions)
-Full DOM workflow including Extubation: PASS (65 assertions; jsdom, not browser E2E)
-V14.6.4 compatibility / integrity: PASS (33 assertions; synthetic fixtures)
-Protocol governance / species / BW / recovery N/A: PASS (27 assertions)
-Final lock / archive / report integrity: PASS (10 assertions)
+
+$ npm test
+The syntax/regression/model/helper stages above pass, then the full DOM suite cannot start:
+Error: Cannot find module 'jsdom'
+This runtime could not complete npm dependency installation, so this is not reported as a
+product failure and the V14.7.1 DOM suites are not reported as passed.
+
+Supplemental real-Chromium OR LIVE UI/workflow smoke: PASS using page.set_content of the
+production source because direct local-origin navigation is blocked by administrator policy.
+See TEST_RESULTS.txt and BROWSER_E2E_STATUS.txt for scope/limitations.

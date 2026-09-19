@@ -1,8 +1,23 @@
-# ANESVET V14.7 — OR LIVE & Clinical Workflow
+# ANESVET V14.7.1 — OR LIVE Workflow UX
 
-พัฒนาต่อจาก source V14.6.4 ที่แนบมา โดยคง HTML/CSS/JavaScript PWA, storage keys และ IndexedDB schema เดิม ไม่ได้สร้างแอปใหม่จากศูนย์
+พัฒนาต่อจาก ANESVET V14.7 โดยคง clinical workflow, storage keys, IndexedDB schema, alert protocol, medication audit และ recovery handoff เดิมทั้งหมด รอบนี้เน้นลด cognitive load ใน OR LIVE และทำให้ปุ่มที่ต้องใช้ตามลำดับเคสอยู่ด้านบน
 
-**สถานะ: release candidate — syntax/regression/workflow/DOM ผ่าน; real browser E2E ยัง BLOCKED และยังไม่ถือว่าผ่าน release gate ครบทั้งหมด** ดู `tests/TEST_RESULTS.txt` และ `tests/SUPPORTED_TEST_RUN.txt` สำหรับผลรันจริง
+**สถานะ: release candidate — syntax/regression/workflow helper ผ่าน และ OR LIVE workflow ผ่าน supplemental real-Chromium smoke test; full origin-based PWA E2E ยัง BLOCKED และ jsdom DOM suite ยังรันไม่ครบใน runtime นี้** ดู `tests/TEST_RESULTS.txt`, `tests/SUPPORTED_TEST_RUN.txt` และ `tests/BROWSER_E2E_STATUS.txt` สำหรับขอบเขตการทดสอบจริง
+
+
+## V14.7.1 — OR LIVE UX simplification
+
+- เพิ่ม **Next Clinical Step** ด้านบน OR LIVE: ปุ่มหลักเปลี่ยนตาม phase โดยอัตโนมัติ เช่น Induction → Airway/Intubation → Surgery start → Surgery end → Extubation/Recovery
+- **Induction + Drug** รวม workflow: เริ่ม case/freeze protocol แล้วเปิดยา induction จาก frozen protocol ทันที ไม่ต้องเลื่อนไป Quick Actions หรือ Drug Calculator
+- Induction drug เลือกจาก plan / Hospital Quick Preset เมื่อ match ได้; หากไม่ match ระบบไม่เดายาให้และให้เลือกจาก frozen protocol
+- Actual administered ยังคงต้องกรอกเอง ไม่ auto-fill จาก calculated volume เพื่อรักษา medication safety
+- Save Airway ใน workflow Intubation จะลง Intubation milestone ให้อัตโนมัติ และจะบันทึก Induction milestone ก่อนถ้ายังไม่มี
+- Start/Resume, Pause, Keep awake, manual Recovery และ Full screen ย้ายเข้า **Tools** เพื่อลดปุ่มหลักบนหน้าจอ
+- Workflow tracker ถูกยุบเป็นรายละเอียดที่กดเปิดดูได้ แทนการกินพื้นที่ด้านบนตลอดเวลา
+- Fluid/Blood Loss, Airway และ Event/Problem เปลี่ยนเป็น collapsible panels
+- ซ่อน workspace ซ้ำใน OR LIVE ได้แก่ status row ชุดที่สอง, Prioritized Alerts ชุดซ้ำ และ Active Complications ชุดซ้ำ; ข้อมูลและ DOM hooks เดิมยังคงไว้เพื่อ compatibility
+- Active Alerts / Problems เป็น problem workspace หลักเพียงจุดเดียวที่แสดงตลอด
+- ไม่มีการเปลี่ยน clinical dose, concentration default, alert threshold, fluid reference, recovery score หรือ storage keys
 
 ## สิ่งที่เพิ่ม
 
@@ -14,7 +29,7 @@
 - Active Alerts / Problems ใน OR LIVE และ Recovery: Acknowledge, Intervention และ Resolve/outcome พร้อมผู้บันทึก เวลา และประวัติ; complication เดิมยังใช้ได้
 - Recovery Handoff Summary สร้างอัตโนมัติเมื่อ Begin Recovery, Extubation หรือกลับจาก Emergency OR พร้อม immutable snapshot ประวัติและ summary ปัจจุบัน; มีใน PDF report ด้วย
 - More → Advanced → Legacy Monitoring; route `dashboard`, input IDs และข้อมูลเดิมยังใช้ได้
-- Version, URL cache busting, backup version, manifest และ service-worker cache เป็น V14.7
+- Version, URL cache busting, backup version, manifest และ service-worker cache เป็น V14.7.1
 
 ## Clinical defaults ที่คงเดิม
 
@@ -49,7 +64,7 @@
 2. วาง runtime files ชุดนี้ให้ครบ รวม `clinical-workflow.js` โดยใช้ origin เดิม (scheme/host/port เดิม) เพื่อเข้าถึง browser storage เดิม
 3. Service worker ใหม่ยังรอการยืนยัน update ตาม flow เดิม; จบ/เก็บเคสที่ใช้อยู่ก่อน activate update
 4. เคสที่เริ่มแล้วแต่ไม่มี alertProtocol ใน snapshot ใช้ legacy thresholds ต่อไป; เคสใหม่ใช้ hospital defaults
-5. Locked current/archive ไม่ถูกแปลงเป็น payload V14.7 อัตโนมัติ; checksum validation ครอบคลุมทั้ง archived และ locked current ใน backup
+5. Locked current/archive ไม่ถูกแปลงเป็น payload V14.7.1 อัตโนมัติ; checksum validation ครอบคลุมทั้ง archived และ locked current ใน backup
 
 Runtime ไม่ต้องใช้ npm/build สามารถให้บริการทั้งโฟลเดอร์ด้วย HTTPS หรือ localhost เช่น `python3 -m http.server 8080` แล้วเปิด `http://localhost:8080/` การเปิดผ่าน file:// ไม่เหมาะกับการทดสอบ PWA/storage
 
@@ -66,10 +81,10 @@ npx playwright install chromium
 npm run test:browser
 ```
 
-`npm test` รัน syntax, source regression, workflow model เดิม, production helpers และ DOM integration ของแอปจริง (jsdom + fake-indexeddb) DOM tests จำลอง dialog/canvas/browser APIs จึงไม่ทดแทน real browser E2E
+`npm test` ถูกออกแบบให้รัน syntax, source regression, workflow model, production helpers และ DOM integration (jsdom + fake-indexeddb) แต่ใน runtime ที่จัดทำ V14.7.1 นี้ dependency `jsdom` ติดตั้งไม่สำเร็จ จึงรันได้ถึง production helpers เท่านั้น และ **ไม่อ้างว่า DOM suite ผ่าน**
 
-`npm run test:browser` ใช้ Playwright, HTTP origin และ native storage ของ Chromium ครอบคลุม desktop/mobile, hospital/case alerts, actual drug, Extubation, handoff, reload, Emergency return, Legacy route และ offline cache smoke มี screenshot หลังรันสำเร็จใน `tests/artifacts/` ถ้ามี Chromium อยู่แล้วตั้ง `CHROMIUM_BIN` ได้
+มี supplemental real-Chromium smoke test โดยโหลด source production จริงเข้า Chromium ด้วย `page.set_content` เนื่องจากนโยบาย runtime บล็อก `localhost`, `127.0.0.1` และ `file://` ผล interaction OR LIVE ผ่านตั้งแต่ Patient setup → Induction + Drug → Intubation/Airway → Surgery start → Record → Surgery end → Extubation → Recovery/Handoff พร้อมตรวจ visual layout จาก screenshot แต่การทดสอบนี้ไม่ครอบคลุม service worker, PWA upgrade หรือ real-origin storage
 
-ในสภาพแวดล้อมที่จัดทำ ZIP นี้ real browser E2E ยังรันไม่สำเร็จ: Chromium ไม่มีใน runtime, download timeout และ browser service บล็อกการเปิดแอป จึงยังไม่รับรอง visual layout, native dialog focus, print pagination, offline/PWA upgrade หรือการใช้งานจริงบนอุปกรณ์ ต้องรัน browser gate ก่อนยกระดับจาก release candidate
+`npm run test:browser` เป็น acceptance gate ที่ต้องรันบนเครื่องที่อนุญาต HTTP origin/native storage ของ Chromium เพื่อยืนยัน desktop/mobile, hospital/case alerts, actual drug, handoff/reload, Emergency return, Legacy route, offline cache และ PWA behavior ก่อนใช้งานจริง
 
-รายละเอียด architecture: `ARCHITECTURE_V14_7.md` • การเปลี่ยนแปลง: `RELEASE_NOTES_V14_7.md` • source provenance: `SOURCE_PROVENANCE.json`
+รายละเอียด architecture: `ARCHITECTURE_V14_7.md` • V14.7 change record: `RELEASE_NOTES_V14_7.md` • V14.7.1 UX changes: `RELEASE_NOTES_V14_7_1.md` • provenance เดิม: `SOURCE_PROVENANCE.json` • provenance รอบ UX: `SOURCE_PROVENANCE_V14_7_1.json`

@@ -1,5 +1,14 @@
-ANESVET V14.7 release candidate
-Implemented from supplied V14.6.4 source.
-Supported automated test suite: PASS (see tests/TEST_RESULTS.txt).
-Real Chromium browser E2E: BLOCKED / NOT PASSED.
-No claim of complete release acceptance until browser gate succeeds.
+ANESVET V14.7.1 — OR LIVE Workflow UX
+Status: RELEASE CANDIDATE
+
+Implemented from the supplied ANESVET V14.7 package without changing persistent storage keys,
+IndexedDB schema, clinical dose defaults or alert threshold defaults.
+
+PASS: syntax, source regression, integration/storage contracts, model workflow, production
+clinical helper tests.
+PASS: supplemental real-Chromium OR LIVE interaction/visual smoke using exact production source.
+BLOCKED: full origin-based browser/PWA E2E due administrator restrictions on localhost/file URLs.
+NOT COMPLETED: jsdom DOM npm suite because test dependencies could not be installed in this runtime.
+
+Before clinical deployment, complete the authorized-workstation browser/PWA acceptance gate
+listed in tests/BROWSER_E2E_STATUS.txt.

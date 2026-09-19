@@ -1,0 +1,1049 @@
+--- V14.7/BUILD_STATUS.txt
++++ V14.7.1/BUILD_STATUS.txt
+@@ -1,5 +1,14 @@
+-ANESVET V14.7 release candidate
+-Implemented from supplied V14.6.4 source.
+-Supported automated test suite: PASS (see tests/TEST_RESULTS.txt).
+-Real Chromium browser E2E: BLOCKED / NOT PASSED.
+-No claim of complete release acceptance until browser gate succeeds.
++ANESVET V14.7.1 — OR LIVE Workflow UX
++Status: RELEASE CANDIDATE
++
++Implemented from the supplied ANESVET V14.7 package without changing persistent storage keys,
++IndexedDB schema, clinical dose defaults or alert threshold defaults.
++
++PASS: syntax, source regression, integration/storage contracts, model workflow, production
++clinical helper tests.
++PASS: supplemental real-Chromium OR LIVE interaction/visual smoke using exact production source.
++BLOCKED: full origin-based browser/PWA E2E due administrator restrictions on localhost/file URLs.
++NOT COMPLETED: jsdom DOM npm suite because test dependencies could not be installed in this runtime.
++
++Before clinical deployment, complete the authorized-workstation browser/PWA acceptance gate
++listed in tests/BROWSER_E2E_STATUS.txt.
+--- V14.7/README_TH.md
++++ V14.7.1/README_TH.md
+@@ -1,8 +1,23 @@
+-# ANESVET V14.7 — OR LIVE & Clinical Workflow
++# ANESVET V14.7.1 — OR LIVE Workflow UX
+ 
+-พัฒนาต่อจาก source V14.6.4 ที่แนบมา โดยคง HTML/CSS/JavaScript PWA, storage keys และ IndexedDB schema เดิม ไม่ได้สร้างแอปใหม่จากศูนย์
++พัฒนาต่อจาก ANESVET V14.7 โดยคง clinical workflow, storage keys, IndexedDB schema, alert protocol, medication audit และ recovery handoff เดิมทั้งหมด รอบนี้เน้นลด cognitive load ใน OR LIVE และทำให้ปุ่มที่ต้องใช้ตามลำดับเคสอยู่ด้านบน
+ 
+-**สถานะ: release candidate — syntax/regression/workflow/DOM ผ่าน; real browser E2E ยัง BLOCKED และยังไม่ถือว่าผ่าน release gate ครบทั้งหมด** ดู `tests/TEST_RESULTS.txt` และ `tests/SUPPORTED_TEST_RUN.txt` สำหรับผลรันจริง
++**สถานะ: release candidate — syntax/regression/workflow helper ผ่าน และ OR LIVE workflow ผ่าน supplemental real-Chromium smoke test; full origin-based PWA E2E ยัง BLOCKED และ jsdom DOM suite ยังรันไม่ครบใน runtime นี้** ดู `tests/TEST_RESULTS.txt`, `tests/SUPPORTED_TEST_RUN.txt` และ `tests/BROWSER_E2E_STATUS.txt` สำหรับขอบเขตการทดสอบจริง
++
++
++## V14.7.1 — OR LIVE UX simplification
++
++- เพิ่ม **Next Clinical Step** ด้านบน OR LIVE: ปุ่มหลักเปลี่ยนตาม phase โดยอัตโนมัติ เช่น Induction → Airway/Intubation → Surgery start → Surgery end → Extubation/Recovery
++- **Induction + Drug** รวม workflow: เริ่ม case/freeze protocol แล้วเปิดยา induction จาก frozen protocol ทันที ไม่ต้องเลื่อนไป Quick Actions หรือ Drug Calculator
++- Induction drug เลือกจาก plan / Hospital Quick Preset เมื่อ match ได้; หากไม่ match ระบบไม่เดายาให้และให้เลือกจาก frozen protocol
++- Actual administered ยังคงต้องกรอกเอง ไม่ auto-fill จาก calculated volume เพื่อรักษา medication safety
++- Save Airway ใน workflow Intubation จะลง Intubation milestone ให้อัตโนมัติ และจะบันทึก Induction milestone ก่อนถ้ายังไม่มี
++- Start/Resume, Pause, Keep awake, manual Recovery และ Full screen ย้ายเข้า **Tools** เพื่อลดปุ่มหลักบนหน้าจอ
++- Workflow tracker ถูกยุบเป็นรายละเอียดที่กดเปิดดูได้ แทนการกินพื้นที่ด้านบนตลอดเวลา
++- Fluid/Blood Loss, Airway และ Event/Problem เปลี่ยนเป็น collapsible panels
++- ซ่อน workspace ซ้ำใน OR LIVE ได้แก่ status row ชุดที่สอง, Prioritized Alerts ชุดซ้ำ และ Active Complications ชุดซ้ำ; ข้อมูลและ DOM hooks เดิมยังคงไว้เพื่อ compatibility
++- Active Alerts / Problems เป็น problem workspace หลักเพียงจุดเดียวที่แสดงตลอด
++- ไม่มีการเปลี่ยน clinical dose, concentration default, alert threshold, fluid reference, recovery score หรือ storage keys
+ 
+ ## สิ่งที่เพิ่ม
+ 
+@@ -14,7 +29,7 @@
+ - Active Alerts / Problems ใน OR LIVE และ Recovery: Acknowledge, Intervention และ Resolve/outcome พร้อมผู้บันทึก เวลา และประวัติ; complication เดิมยังใช้ได้
+ - Recovery Handoff Summary สร้างอัตโนมัติเมื่อ Begin Recovery, Extubation หรือกลับจาก Emergency OR พร้อม immutable snapshot ประวัติและ summary ปัจจุบัน; มีใน PDF report ด้วย
+ - More → Advanced → Legacy Monitoring; route `dashboard`, input IDs และข้อมูลเดิมยังใช้ได้
+-- Version, URL cache busting, backup version, manifest และ service-worker cache เป็น V14.7
++- Version, URL cache busting, backup version, manifest และ service-worker cache เป็น V14.7.1
+ 
+ ## Clinical defaults ที่คงเดิม
+ 
+@@ -49,7 +64,7 @@
+ 2. วาง runtime files ชุดนี้ให้ครบ รวม `clinical-workflow.js` โดยใช้ origin เดิม (scheme/host/port เดิม) เพื่อเข้าถึง browser storage เดิม
+ 3. Service worker ใหม่ยังรอการยืนยัน update ตาม flow เดิม; จบ/เก็บเคสที่ใช้อยู่ก่อน activate update
+ 4. เคสที่เริ่มแล้วแต่ไม่มี alertProtocol ใน snapshot ใช้ legacy thresholds ต่อไป; เคสใหม่ใช้ hospital defaults
+-5. Locked current/archive ไม่ถูกแปลงเป็น payload V14.7 อัตโนมัติ; checksum validation ครอบคลุมทั้ง archived และ locked current ใน backup
++5. Locked current/archive ไม่ถูกแปลงเป็น payload V14.7.1 อัตโนมัติ; checksum validation ครอบคลุมทั้ง archived และ locked current ใน backup
+ 
+ Runtime ไม่ต้องใช้ npm/build สามารถให้บริการทั้งโฟลเดอร์ด้วย HTTPS หรือ localhost เช่น `python3 -m http.server 8080` แล้วเปิด `http://localhost:8080/` การเปิดผ่าน file:// ไม่เหมาะกับการทดสอบ PWA/storage
+ 
+@@ -66,10 +81,10 @@
+ npm run test:browser
+ ```
+ 
+-`npm test` รัน syntax, source regression, workflow model เดิม, production helpers และ DOM integration ของแอปจริง (jsdom + fake-indexeddb) DOM tests จำลอง dialog/canvas/browser APIs จึงไม่ทดแทน real browser E2E
++`npm test` ถูกออกแบบให้รัน syntax, source regression, workflow model, production helpers และ DOM integration (jsdom + fake-indexeddb) แต่ใน runtime ที่จัดทำ V14.7.1 นี้ dependency `jsdom` ติดตั้งไม่สำเร็จ จึงรันได้ถึง production helpers เท่านั้น และ **ไม่อ้างว่า DOM suite ผ่าน**
+ 
+-`npm run test:browser` ใช้ Playwright, HTTP origin และ native storage ของ Chromium ครอบคลุม desktop/mobile, hospital/case alerts, actual drug, Extubation, handoff, reload, Emergency return, Legacy route และ offline cache smoke มี screenshot หลังรันสำเร็จใน `tests/artifacts/` ถ้ามี Chromium อยู่แล้วตั้ง `CHROMIUM_BIN` ได้
++มี supplemental real-Chromium smoke test โดยโหลด source production จริงเข้า Chromium ด้วย `page.set_content` เนื่องจากนโยบาย runtime บล็อก `localhost`, `127.0.0.1` และ `file://` ผล interaction OR LIVE ผ่านตั้งแต่ Patient setup → Induction + Drug → Intubation/Airway → Surgery start → Record → Surgery end → Extubation → Recovery/Handoff พร้อมตรวจ visual layout จาก screenshot แต่การทดสอบนี้ไม่ครอบคลุม service worker, PWA upgrade หรือ real-origin storage
+ 
+-ในสภาพแวดล้อมที่จัดทำ ZIP นี้ real browser E2E ยังรันไม่สำเร็จ: Chromium ไม่มีใน runtime, download timeout และ browser service บล็อกการเปิดแอป จึงยังไม่รับรอง visual layout, native dialog focus, print pagination, offline/PWA upgrade หรือการใช้งานจริงบนอุปกรณ์ ต้องรัน browser gate ก่อนยกระดับจาก release candidate
++`npm run test:browser` เป็น acceptance gate ที่ต้องรันบนเครื่องที่อนุญาต HTTP origin/native storage ของ Chromium เพื่อยืนยัน desktop/mobile, hospital/case alerts, actual drug, handoff/reload, Emergency return, Legacy route, offline cache และ PWA behavior ก่อนใช้งานจริง
+ 
+-รายละเอียด architecture: `ARCHITECTURE_V14_7.md` • การเปลี่ยนแปลง: `RELEASE_NOTES_V14_7.md` • source provenance: `SOURCE_PROVENANCE.json`
++รายละเอียด architecture: `ARCHITECTURE_V14_7.md` • V14.7 change record: `RELEASE_NOTES_V14_7.md` • V14.7.1 UX changes: `RELEASE_NOTES_V14_7_1.md` • provenance เดิม: `SOURCE_PROVENANCE.json` • provenance รอบ UX: `SOURCE_PROVENANCE_V14_7_1.json`
+--- V14.7/app.js
++++ V14.7.1/app.js
+@@ -140,7 +140,7 @@
+ }
+ function readSessionLock(){try{const x=JSON.parse(localStorage.getItem(SESSION_LOCK_KEY)||'null');return x&&x.tabId?x:null}catch(e){return null}}
+ function sessionLockIsFresh(lock){return !!(lock&&lock.tabId&&Number(lock.heartbeatAt)>0&&(Date.now()-Number(lock.heartbeatAt))<SESSION_TTL_MS)}
+-function writeSessionLock(){if(sessionMode!=='active')return;const lock={tabId:sessionTabId,heartbeatAt:Date.now(),caseId:state?.caseId||'',patientName:state?.patientName||'',version:'14.7'};try{localStorage.setItem(SESSION_LOCK_KEY,JSON.stringify(lock))}catch(e){};try{sessionChannel?.postMessage({type:'HEARTBEAT',...lock})}catch(e){}}
++function writeSessionLock(){if(sessionMode!=='active')return;const lock={tabId:sessionTabId,heartbeatAt:Date.now(),caseId:state?.caseId||'',patientName:state?.patientName||'',version:'14.7.1'};try{localStorage.setItem(SESSION_LOCK_KEY,JSON.stringify(lock))}catch(e){};try{sessionChannel?.postMessage({type:'HEARTBEAT',...lock})}catch(e){}}
+ function releaseSessionLock(){const lock=readSessionLock();if(lock?.tabId===sessionTabId){try{localStorage.removeItem(SESSION_LOCK_KEY)}catch(e){};try{sessionChannel?.postMessage({type:'RELEASE',tabId:sessionTabId})}catch(e){}}}
+ function sessionSafeTarget(target){return !!target?.closest?.('.session-safe,[data-tab],[data-more-tab],#moreMenuBtn,.archive-pdf,.verify-integrity')}
+ function renderSessionMode(){
+@@ -311,6 +311,7 @@
+   });
+   renderWorkflowLocks();
+   renderOrPhaseTracker();
++  renderOrPrimaryFlow();
+ }
+ function setCasePhase(phase,log=true){
+   if(state.caseLocked)return;
+@@ -1179,6 +1180,7 @@
+ 
+ const OR_SYNC={orHr:'hr',orRr:'rr',orSap:'sap',orMap:'map',orDap:'dap',orSpo2:'spo2',orEtco2:'etco2',orTemp:'temp',orVaporizer:'vaporizer',orO2:'o2flow',orFluidRate:'fluidRateInput',orDepth:'depth',orVentilation:'ventilation'};
+ let wakeLock=null;
++let airwayWorkflowContext='';
+ function syncOrFromMain(){Object.entries(OR_SYNC).forEach(([aId,bId])=>{const a=$(aId),b=$(bId);if(a&&b&&document.activeElement!==a)a.value=b.value})}
+ function syncMainFromOr(orId){const mainId=OR_SYNC[orId],a=$(orId),b=$(mainId);if(!a||!b)return;b.value=a.value;b.dispatchEvent(new Event(b.tagName==='SELECT'?'change':'input',{bubbles:true}))}
+ Object.keys(OR_SYNC).forEach(id=>{const el=$(id);if(el)el.addEventListener(el.tagName==='SELECT'?'change':'input',()=>syncMainFromOr(id))});
+@@ -1189,11 +1191,59 @@
+ function renderOrRecent(){const items=[...(state.records||[]).slice(-5).map(r=>({epoch:r.epoch,elapsedMs:r.elapsedMs,kind:'Record',desc:`HR ${r.hr??'—'} • MAP ${r.map??'—'} • SpO₂ ${r.spo2??'—'} • ETCO₂ ${r.etco2??'—'} • Temp ${r.temp==null?'—':tempTextF(r.temp)}`})),...(state.events||[]).slice(-5).map(e=>({epoch:e.epoch,elapsedMs:e.elapsedMs,kind:e.category,desc:`${e.name}${e.dose?' • '+e.dose:''}`}))].sort((a,b)=>b.epoch-a.epoch).slice(0,7);const box=$('orRecentActivity');if(!box)return;if(!items.length){box.className='or-recent-list empty-state compact';box.textContent='ยังไม่มีข้อมูล';return}box.className='or-recent-list';box.innerHTML=items.map(i=>`<div class="or-recent-item"><span class="t">${escapeHtml(formatShortElapsed(i.elapsedMs))}</span><span class="kind">${escapeHtml(i.kind)}</span><span class="desc">${escapeHtml(i.desc)}</span></div>`).join('')}
+ function renderOrTimerState(){if(!$('orTimerState'))return;if(state.timer.running){$('orTimerState').className='timer-state running';$('orTimerState').textContent='● RUNNING';$('orStartBtn').textContent='Running';$('orStartBtn').disabled=true;$('orPauseBtn').disabled=false;$('orPauseBtn').textContent='Pause case'}else if((state.timer.elapsedMs||0)>0){$('orTimerState').className='timer-state paused';$('orTimerState').textContent='PAUSED';$('orStartBtn').textContent='▶ Resume';$('orStartBtn').disabled=false;$('orPauseBtn').disabled=true;$('orPauseBtn').textContent='Paused'}else{$('orTimerState').className='timer-state ready';$('orTimerState').textContent='READY';$('orStartBtn').textContent='▶ Start case';$('orStartBtn').disabled=false;$('orPauseBtn').disabled=true;$('orPauseBtn').textContent='Pause'}$('orCaseClock').textContent=formatElapsed(currentElapsed())}
+ 
++function hasProcedureMilestone(label){return (state.events||[]).some(e=>e?.name===label)}
++function inductionDrugRecorded(){return (state.drugAdministrations||[]).some(d=>!d.voidedAt&&d.source==='OR Induction')}
++function airwayRecorded(){return !!($('airwayEttSize')?.value||$('airwayCircuit')?.value||$('airwayDifficulty')?.value||hasProcedureMilestone('Intubation'))}
++function triggerOrMilestone(label){
++  const btn=[...document.querySelectorAll('.or-milestone')].find(x=>x.dataset.label===label);
++  if(!btn)return false;markMilestone(btn);renderOrLive();return true;
++}
++function openAirwayWorkflow(context='edit'){
++  if(!clinicalWriteAllowed())return;airwayWorkflowContext=context;const box=$('orAirwayPanelDetails');if(box){box.open=true;try{box.scrollIntoView({behavior:'smooth',block:'start'})}catch(e){box.scrollIntoView()}}
++  if(context==='intubation')toast('บันทึก airway แล้วกด Save — ระบบจะลง Intubation milestone ให้');
++  setTimeout(()=>$('airwayEttSize')?.focus(),180);
++}
++function renderOrPrimaryFlow(){
++  const title=$('orPrimaryActionTitle'),help=$('orPrimaryActionHelp'),primary=$('orPrimaryActionBtn'),secondary=$('orSecondaryPhaseBtn'),drug=$('orPrimaryDrugBtn');if(!title||!help||!primary)return;
++  const phase=state.caseLocked?'locked':(state.casePhase||'setup');
++  primary.disabled=false;primary.hidden=false;secondary.hidden=true;secondary.textContent='';drug.hidden=true;
++  let t='Current step',h='',label='',action='';
++  if(phase==='setup'){t='Start induction';h='เริ่มจับเวลา + freeze protocol แล้วเปิดยาสลบจาก Current BW โดยไม่ต้องไปหน้า Drug Calculator';label='💉 Induction + Drug';action='start-induction';}
++  else if(phase==='induction'){
++    if(!inductionDrugRecorded()&&!hasProcedureMilestone('Intubation')){t='Induction';h='เลือกยาสลบจาก frozen protocol — กรอกเฉพาะปริมาณที่ให้จริง';label='💉 Record induction drug';action='induction-drug';secondary.hidden=false;secondary.textContent='🫁 Airway / Intubation';secondary.dataset.action='airway';}
++    else if(!airwayRecorded()){t='Airway';h='บันทึก ETT / intubation แล้วระบบจะลง milestone ให้ทันที';label='🫁 Intubation / Airway';action='airway';secondary.hidden=false;secondary.textContent='▶ Surgery start';secondary.dataset.action='surgery-start';}
++    else{t='Ready for surgery';h='Airway ถูกบันทึกแล้ว — กดเมื่อเริ่มผ่าตัด';label='▶ Surgery start';action='surgery-start';secondary.hidden=false;secondary.textContent='✎ Edit airway';secondary.dataset.action='airway-edit';}
++  }else if(phase==='intraop'){t='Intraoperative';h='บันทึก vitals จากปุ่ม RECORD NOW ด้านบน • กดเมื่อการผ่าตัดสิ้นสุด';label='■ Surgery end';action='surgery-end';drug.hidden=false;}
++  else if(phase==='emergence'){const intubated=airwayRecorded();t='Emergence';h=intubated?'กดเมื่อถอดท่อแล้ว ระบบจะสร้าง Recovery handoff และเข้า Recovery':'ไม่มี airway/intubation record — สามารถเริ่ม Recovery ได้โดยตรง';label=intubated?'🫁 Extubation → Recovery':'→ Begin Recovery';action=intubated?'extubation':'recovery';}
++  else if(phase==='emergency'){t='Emergency return';h='OR LIVE ใช้งานได้สำหรับ resuscitation / airway / medication';label='→ Return to Recovery';action='recovery';drug.hidden=false;}
++  else if(phase==='recovery'){t='Recovery active';h='บันทึก recovery vitals ในหน้า Recovery';label='Open Recovery';action='open-recovery';}
++  else if(phase==='complete'){t='Recovery complete';h='ดำเนินการ Final review / End Case';label='Go to End Case';action='end-case';}
++  else if(phase==='locked'){t='Final record locked';h='เคสนี้เป็น LOCKED FINAL';label='Locked';action='locked';primary.disabled=true;}
++  title.textContent=t;help.textContent=h;primary.textContent=label;primary.dataset.action=action;
++}
++function handleOrWorkflowAction(action){
++  if(action==='start-induction'){if(!startCaseFromOr())return;openOrQuickDrug({phase:'induction',purpose:'induction'});return}
++  if(action==='induction-drug'){openOrQuickDrug({phase:'induction',purpose:'induction'});return}
++  if(action==='airway'||action==='airway-edit'){if(!state.caseStartedAt&&!startCaseFromOr())return;openAirwayWorkflow(action==='airway'?'intubation':'edit');return}
++  if(action==='surgery-start'){if(!hasProcedureMilestone('Induction'))triggerOrMilestone('Induction');triggerOrMilestone('Surgery start');return}
++  if(action==='surgery-end'){triggerOrMilestone('Surgery end');return}
++  if(action==='extubation'){triggerOrMilestone('Extubation');return}
++  if(action==='recovery'){beginRecovery();return}
++  if(action==='open-recovery'){setTab('recovery',{force:true});return}
++  if(action==='end-case'){setTab('endcase');return}
++}
++$('orPrimaryActionBtn')?.addEventListener('click',()=>handleOrWorkflowAction($('orPrimaryActionBtn').dataset.action));
++$('orSecondaryPhaseBtn')?.addEventListener('click',()=>handleOrWorkflowAction($('orSecondaryPhaseBtn').dataset.action));
++$('orPrimaryDrugBtn')?.addEventListener('click',()=>openOrQuickDrug());
++
+ function renderAirwayPanel(){
+   const mode=$('airwayVentMode')?.value||'';
+   if($('ventilatorFields'))$('ventilatorFields').hidden=mode!=='Mechanical ventilation';
+-  const recorded=!!($('airwayEttSize')?.value||$('airwayCircuit')?.value||$('airwayDifficulty')?.value);
++  const recorded=!!($('airwayEttSize')?.value||$('airwayCircuit')?.value||$('airwayDifficulty')?.value||hasProcedureMilestone('Intubation'));
+   if($('airwayStatus')){$('airwayStatus').textContent=recorded?'RECORDED':'NOT RECORDED';$('airwayStatus').className=`status-pill ${recorded?'good':'warn'}`;}
++  const bits=[];if($('airwayEttSize')?.value)bits.push(`ETT ${$('airwayEttSize').value} mm`);if($('airwayDifficulty')?.value)bits.push($('airwayDifficulty').value);if(mode)bits.push(mode);
++  if($('orAirwaySummary'))$('orAirwaySummary').textContent=recorded?(bits.join(' • ')||'Intubation recorded'):'ยังไม่ได้บันทึก airway';
++  renderOrPrimaryFlow();
+ }
+ $('airwayVentMode')?.addEventListener('change',()=>{renderAirwayPanel();if($('orVentilation')){$('orVentilation').value=$('airwayVentMode').value;syncMainFromOr('orVentilation')}save()});
+ ['airwayEttSize','airwayEttDepth','airwayCuff','airwayDifficulty','airwayCircuit','airwayVt','airwayPip','airwayPeep','airwayVentRr'].forEach(id=>{
+@@ -1202,7 +1252,9 @@
+ $('saveAirwayBtn')?.addEventListener('click',()=>{
+   save();renderAirwayPanel();
+   const parts=[];if($('airwayEttSize').value)parts.push(`ETT ${$('airwayEttSize').value} mm`);if($('airwayEttDepth').value)parts.push(`depth ${$('airwayEttDepth').value} cm`);if($('airwayDifficulty').value)parts.push($('airwayDifficulty').value);if($('airwayVentMode').value)parts.push($('airwayVentMode').value);
+-  addEvent({category:'Airway',name:'Airway record updated',note:parts.join(' • ')||'Airway record updated'});toast('Airway record saved');
++  addEvent({category:'Airway',name:'Airway record updated',note:parts.join(' • ')||'Airway record updated'});
++  if(airwayWorkflowContext==='intubation'){if(!hasProcedureMilestone('Induction'))triggerOrMilestone('Induction');if(!hasProcedureMilestone('Intubation'))triggerOrMilestone('Intubation');}
++  airwayWorkflowContext='';if($('orAirwayPanelDetails'))$('orAirwayPanelDetails').open=false;renderOrPrimaryFlow();setTimeout(()=>{try{$('orPrimaryActionBtn')?.scrollIntoView({behavior:'smooth',block:'center'})}catch(e){}},50);toast('Airway record saved');
+ });
+ $('orVentilation')?.addEventListener('change',()=>{if($('airwayVentMode')){$('airwayVentMode').value=$('orVentilation').value;renderAirwayPanel();save()}});
+ 
+@@ -1260,7 +1312,7 @@
+   const total=immediateWithAdvice.length+trends.length;$('orAlertCount').textContent=`${total} ALERT${total===1?'':'S'}`;$('orAlertCount').className=`status-pill ${immediateWithAdvice.some(a=>a.level==='danger')||trends.some(a=>a.level==='danger')?'danger':total?'warn':'good'}`;
+   const group=(title,kind,arr)=>arr.length?`<div class="or-alert-group ${kind}"><div class="or-alert-group-title">${title}</div>${arr.map(a=>`<div class="or-alert-item ${a.level}"><b>${escapeHtml(a.title)}</b><span>${escapeHtml(a.text)}</span>${a.advice?`<small class="alert-advice">Suggested first checks: ${escapeHtml(a.advice)}</small>`:''}</div>`).join('')}</div>`:'';
+   $('orAlertList').innerHTML=total?group('Immediate','immediate',immediateWithAdvice)+group('Trend','trend',trends):'<div class="empty-state compact">No active alerts</div>';
+-  renderOrFluidPanel();renderOrMiniTrends();renderOrRecent();renderOrTimerState();renderSaveState();renderRecoveryState();renderComplications();renderAlertProtocolStatus();renderActiveProblems();
++  renderOrFluidPanel();renderOrMiniTrends();renderOrRecent();renderOrTimerState();renderSaveState();renderRecoveryState();renderComplications();renderAlertProtocolStatus();renderActiveProblems();renderAirwayPanel();renderOrPrimaryFlow();
+ }
+ function startCaseFromOr(){if(!clinicalWriteAllowed())return false;if(state.timer.running)return true;if(!validateCaseReadyToStart())return false;const preopTotal=$$('.preop-check').length,preopDone=$$('.preop-check').filter(x=>x.checked).length,preopNA=$$('.preop-item.na').length,preopReviewed=preopDone+preopNA;if(preopReviewed<preopTotal&&!confirm(`Pre-op checklist ยัง review ไม่ครบ (${preopReviewed}/${preopTotal}) — ต้องการเริ่มเคสต่อหรือไม่?`))return false;const firstStart=(state.timer.elapsedMs||0)===0&&!state.caseStartedAt;state.timer.running=true;state.timer.startedEpoch=Date.now();if(firstStart){state.caseStartedAt=state.timer.startedEpoch;state.casePhase='induction';captureProtocolSnapshot();addAudit('CASE_STARTED','Anesthesia case timer started');}startTimerLoop();renderTimerState();renderOrTimerState();renderCasePhase();save();if(autoWakeEnabled())requestScreenWakeLock(true);if(firstStart)addEvent({category:'Case',name:'Case started',note:'Anesthesia case timer started'});toast(firstStart?'Case timer started':'Case timer resumed');return true}
+ $('orStartBtn')?.addEventListener('click',startCaseFromOr);$('orPauseBtn')?.addEventListener('click',()=>{pauseTimer();renderOrLive()});$('orRecordNowBtn')?.addEventListener('click',()=>{if(!state.timer.running&&(state.timer.elapsedMs||0)===0){if(!startCaseFromOr())return}addRecord('');renderOrLive()});$('openOrLiveBtn')?.addEventListener('click',()=>setTab('orlive'));$('orOpenDrugBtn')?.addEventListener('click',openOrQuickDrug);$('orOpenTrendsBtn')?.addEventListener('click',()=>setTab('trends'));$('orOpenTimelineBtn')?.addEventListener('click',()=>setTab('timeline'));
+@@ -2286,6 +2338,7 @@
+     : 'No rate changes recorded yet';
+   $('orFluidStatus').textContent=rate>0?'RUNNING':hasData?'READY':'NO DATA';
+   $('orFluidStatus').className=`status-pill ${rate>0?'good':'warn'}`;
++  if($('orFluidSummary'))$('orFluidSummary').textContent=hasData?`${fmtVol(rate)} mL/hr • ${fmtVol(fm.totalIn)} mL in`:'Not set';
+   syncFluidLegacyFields();
+ }
+ $('applyFluidRateBtn')?.addEventListener('click',()=>{
+@@ -2690,7 +2743,7 @@
+ 
+ async function backupAllData(){
+   save();await initArchiveDb();await initPatientMaster();
+-  const payload={format:'ANESVET_BACKUP',version:'14.7',exportedAt:Date.now(),current:state,archive:getArchive(),patients:getPatients(),breedAliases:loadBreedAliases(),settings:(()=>{try{return JSON.parse(localStorage.getItem(SETTINGS_KEY)||'null')}catch(e){return null}})(),drugLibrary:loadDrugLibraryData(),quickPresets:loadQuickPresets(),protocolAudit:getProtocolAudit()};
++  const payload={format:'ANESVET_BACKUP',version:'14.7.1',exportedAt:Date.now(),current:state,archive:getArchive(),patients:getPatients(),breedAliases:loadBreedAliases(),settings:(()=>{try{return JSON.parse(localStorage.getItem(SETTINGS_KEY)||'null')}catch(e){return null}})(),drugLibrary:loadDrugLibraryData(),quickPresets:loadQuickPresets(),protocolAudit:getProtocolAudit()};
+   downloadBlob(JSON.stringify(payload,null,2),'application/json',`ANESVET_BACKUP_${formatDate(Date.now())}.json`);
+   const backupEpoch=Date.now();localStorage.setItem(LAST_BACKUP_KEY,String(backupEpoch));
+   if($('backupStatus'))$('backupStatus').textContent=`Backup created ${formatClock(backupEpoch)} • ${payload.archive.length} cases • ${payload.patients.length} patients`;
+@@ -2831,7 +2884,7 @@
+   let path=here.pathname;
+   if(!path.endsWith('/')) path=path.replace(/\/[^/]*$/,'/');
+   const url=new URL(path, here.origin);
+-  url.searchParams.set('v','14.7');
++  url.searchParams.set('v','14.7.1');
+   return url.href;
+ }
+ function restartAtAppRoot(){
+@@ -3289,10 +3342,10 @@
+ $('updateLaterBtn')?.addEventListener('click',()=>{if($('updateBanner'))$('updateBanner').hidden=true});
+ window.addEventListener('load',setupServiceWorkerUpdates);
+ 
+-// V14.7 workflow integration; existing state, storage and event API retained.
++// V14.7.1 workflow integration; V14.7 clinical logic retained, OR LIVE interaction simplified.
+ const WF=globalThis.AnesvetWorkflow;
+ const ALERT_KEYS={map:'hypotension',spo2:'hypoxemia',etco2:'ventilation',temp:'hypothermia'};
+-let alertProtocolEditScope='hospital',pendingProblem=null,orQuickOptions=[],orQuickBasis=null;
++let alertProtocolEditScope='hospital',pendingProblem=null,orQuickOptions=[],orQuickBasis=null,orQuickContext=null;
+ const alertObservationRevision={};
+ function clinicalWriteAllowed(){if(sessionMode!=='active'||state.caseLocked){toast(state.caseLocked?'LOCKED FINAL — clinical changes are disabled':'VIEW ONLY — take control before editing');return false}return true}
+ function activeAlertProtocol(){return WF.effectiveAlertProtocol(state,currentSettingsObject().alertProtocol)}
+@@ -3383,27 +3436,58 @@
+ }
+ function frozenQuickDrugs(){
+   const snap=state.protocolSnapshot;if(!snap)return [];
+-  const defs=[['diazepam','Diazepam','diazepamDose','IV'],['propofol','Propofol','propofolDose','IV'],['tramadol','Tramadol','tramadolDose',''],['carprofen','Carprofen','carprofenDose',''],['meloxicam','Meloxicam','meloxicamDose',''],['adrenaline','Adrenaline CPR','adrenalineDose','IV/IO'],['atropine','Atropine — bradycardia','atropineBradyDose','IV'],['atropine','Atropine — CPR','atropineCprDose','IV']];
+-  const list=defs.filter(([k])=>k!=='carprofen'||state.species==='dog').filter(([k])=>k!=='meloxicam'||state.species==='cat').map(([k,name,doseKey,route])=>({id:doseKey,name,mode:'mgkg',dose:snap.builtInProtocol?.[doseKey]?.value??snap.builtInProtocol?.[doseKey],conc:snap.concentrations?.[k]?.value,concUnit:snap.concentrations?.[k]?.unit||'mg/mL',route}));
+-  for(const [name,key]of [['Cefazolin','cefazolinDivisor'],['Convenia','conveniaDivisor']])list.push({id:key,name,mode:'bwdiv',dose:snap.builtInProtocol?.[key]?.value??snap.builtInProtocol?.[key],conc:'',concUnit:'',route:'',note:'Legacy volume preset: verify the preparation / concentration before recording'});
++  const defs=[
++    ['diazepam','Diazepam','diazepamDose','IV','induction','adjunct'],
++    ['propofol','Propofol','propofolDose','IV','induction','agent'],
++    ['tramadol','Tramadol','tramadolDose','','pre',''],
++    ['carprofen','Carprofen','carprofenDose','','post',''],
++    ['meloxicam','Meloxicam','meloxicamDose','','post',''],
++    ['adrenaline','Adrenaline CPR','adrenalineDose','IV/IO','emergency',''],
++    ['atropine','Atropine — bradycardia','atropineBradyDose','IV','emergency',''],
++    ['atropine','Atropine — CPR','atropineCprDose','IV','emergency','']
++  ];
++  const list=defs.filter(([k])=>k!=='carprofen'||state.species==='dog').filter(([k])=>k!=='meloxicam'||state.species==='cat').map(([k,name,doseKey,route,phase,role])=>({id:doseKey,name,phase,role,mode:'mgkg',dose:snap.builtInProtocol?.[doseKey]?.value??snap.builtInProtocol?.[doseKey],conc:snap.concentrations?.[k]?.value,concUnit:snap.concentrations?.[k]?.unit||'mg/mL',route}));
++  for(const [name,key,phase]of [['Cefazolin','cefazolinDivisor','pre'],['Convenia','conveniaDivisor','post']])list.push({id:key,name,phase,mode:'bwdiv',dose:snap.builtInProtocol?.[key]?.value??snap.builtInProtocol?.[key],conc:'',concUnit:'',route:'',note:'Legacy volume preset: verify the preparation / concentration before recording'});
+   return list.concat((snap.drugLibrary||[]).filter(d=>d.mode!=='manual').map(d=>({...d,id:'library:'+d.id})));
+ }
+-function openOrQuickDrug(){
++function preferredQuickDrugIndex(options,phase=''){
++  if(!options.length)return -1;
++  const plan=phase==='induction'?String($('planInduction')?.value||'').trim().toLowerCase():'';
++  if(plan){const i=options.findIndex(d=>String(d.name||'').trim().toLowerCase()===plan);if(i>=0)return i}
++  const isPrimaryInduction=d=>d?.role==='agent'||/induction agent/i.test(String(d?.drugClass||''));
++  const presetIds=phase?state.protocolSnapshot?.quickPresets?.[phase]||[]:[];
++  const presetMap={builtin_diazepam:'diazepamDose',builtin_propofol:'propofolDose',builtin_cefazolin:'cefazolinDivisor',builtin_tramadol:'tramadolDose',builtin_convenia:'conveniaDivisor'};
++  for(const pid of presetIds){const target=presetMap[pid]||('library:'+pid),i=options.findIndex(d=>d.id===target);if(i>=0&&(phase!=='induction'||isPrimaryInduction(options[i])))return i}
++  return -1;
++}
++function openOrQuickDrug(options={}){
++  const phase=typeof options==='object'&&options?options.phase||'':'',purpose=typeof options==='object'&&options?options.purpose||'':'';
+   if(!clinicalWriteAllowed()||!requireCurrentWeight('using OR Quick Drug'))return;if(orLiveLockedByRecovery()){toast('OR Quick Drug is available in OR LIVE / Emergency return');return}if(!state.caseStartedAt||!state.protocolSnapshot){toast('Start Case to freeze the protocol before using OR Quick Drug');return}
+-  orQuickOptions=frozenQuickDrugs();$('orQuickDrugSelect').innerHTML=orQuickOptions.map((d,i)=>`<option value="${i}">${escapeHtml(d.name)}</option>`).join('');$('orQuickDrugBy').value=$('anesthetist')?.value.trim()||'';$('orQuickDrugNote').value='';renderOrQuickDrug();$('orQuickDrugDialog').showModal();
++  orQuickContext={phase,purpose};const all=frozenQuickDrugs();orQuickOptions=phase?all.filter(d=>d.phase===phase):all;if(!orQuickOptions.length)orQuickOptions=all;
++  const preferred=preferredQuickDrugIndex(orQuickOptions,phase),sel=$('orQuickDrugSelect');
++  sel.innerHTML='<option value="">— Select drug —</option>'+orQuickOptions.map((d,i)=>`<option value="${i}">${escapeHtml(d.name)}</option>`).join('');sel.value=preferred>=0?String(preferred):'';
++  $('orQuickDrugTitle').textContent=purpose==='induction'?'Induction medication':'OR Quick Drug';$('orQuickDrugBy').value=$('anesthetist')?.value.trim()||'';$('orQuickDrugNote').value='';
++  if($('orQuickInductionSkipBtn'))$('orQuickInductionSkipBtn').hidden=purpose!=='induction';renderOrQuickDrug();$('orQuickDrugDialog').showModal();
+ }
+ function renderOrQuickDrug(){
+-  const d=orQuickOptions[Number($('orQuickDrugSelect').value)],w=currentWeightReady()?currentWeightKg():null;if(!d)return;const r=calculateLibraryDrug(d,w,d.dose,d.conc),valid=w!==null&&Number.isFinite(r.ml)&&r.ml>0;
++  const idx=$('orQuickDrugSelect').value===''?-1:Number($('orQuickDrugSelect').value),d=idx>=0?orQuickOptions[idx]:null,w=currentWeightReady()?currentWeightKg():null;
++  if(!d){orQuickBasis=null;$('orQuickDrugBasis').textContent=`Current BW ${w??'—'} kg • Frozen protocol ${state.protocolSnapshot?.version||'unversioned'}`;$('orQuickDrugCalculation').textContent=orQuickContext?.purpose==='induction'?'เลือกยา induction จาก frozen protocol':'เลือกยาที่ต้องการบันทึก';$('orQuickDrugActual').value='';$('orQuickDrugRoute').value='';$('orQuickDrugConcentration').value='';$('orQuickDrugConcentration').readOnly=false;$('orQuickDrugError').textContent='';$('orQuickDrugSaveBtn').disabled=true;return}
++  const r=calculateLibraryDrug(d,w,d.dose,d.conc),valid=w!==null&&Number.isFinite(r.ml)&&r.ml>0;
+   orQuickBasis={caseId:state.caseId,weightKg:w,protocolCapturedAt:state.protocolSnapshot?.capturedAt,protocolVersion:state.protocolSnapshot?.version,drug:WF.clone(d),calculatedMl:valid?r.ml:null};
+   $('orQuickDrugBasis').textContent=`Current BW ${w??'—'} kg • Frozen protocol ${state.protocolSnapshot?.version||'unversioned'} • ${state.protocolSnapshot?.capturedAt?new Date(state.protocolSnapshot.capturedAt).toLocaleString():'legacy snapshot'}`;
+   $('orQuickDrugCalculation').textContent=valid?`${r.total} • ${fmtDose(r.ml)} mL${d.note?' • '+d.note:''}`:'ไม่พบ dose/concentration ที่ใช้คำนวณได้ใน frozen protocol';$('orQuickDrugActual').value='';$('orQuickDrugRoute').value=d.route||'';$('orQuickDrugConcentration').value=d.conc?`${d.conc} ${d.concUnit}`:'';$('orQuickDrugConcentration').readOnly=!!d.conc;$('orQuickDrugError').textContent='';$('orQuickDrugSaveBtn').disabled=!valid;
+ }
++function recordInductionWithoutDrug(){
++  if(!clinicalWriteAllowed()||orQuickContext?.purpose!=='induction')return;const note=$('orQuickDrugNote')?.value.trim()||'Induction recorded without linked injectable drug administration';
++  if(!hasProcedureMilestone('Induction'))triggerOrMilestone('Induction');addAudit('INDUCTION_WITHOUT_LINKED_DRUG',note);$('orQuickDrugDialog').close();orQuickBasis=null;orQuickContext=null;save();renderOrPrimaryFlow();toast('Induction milestone recorded');
++}
+ function saveOrQuickDrug(){
+   if(!clinicalWriteAllowed()||!requireCurrentWeight('recording OR Quick Drug')||!orQuickBasis)return;if(orLiveLockedByRecovery()){toast('OR LIVE is closed during recovery');return}const b=orQuickBasis;
+   if(b.caseId!==state.caseId||b.weightKg!==currentWeightKg()||b.protocolCapturedAt!==state.protocolSnapshot?.capturedAt){renderOrQuickDrug();$('orQuickDrugError').textContent='BW/protocol changed — calculation refreshed; review actual amount again';return}
+   const actual=WF.numeric($('orQuickDrugActual').value),route=$('orQuickDrugRoute').value.trim(),by=$('orQuickDrugBy').value.trim(),concentration=$('orQuickDrugConcentration').value.trim(),note=$('orQuickDrugNote').value.trim();if(!(actual>0)||!route||!by||!concentration){$('orQuickDrugError').textContent='กรอก actual mL (>0), route, ผู้ให้ยา และ concentration';return}if(!Number.isFinite(b.calculatedMl)||b.calculatedMl<=0)return;
+   if(!confirm(`Confirm actual administration\n${b.drug.name}: ${actual} mL • ${route}\n${concentration} • By ${by}\nCalculated amount is a reference, not an administration record.`))return;
+-  const entry=recordDrugAdministration({drug:b.drug.name,calculated:`${fmtDose(b.calculatedMl)} mL • BW ${b.weightKg} kg • frozen ${b.protocolVersion||'unversioned'}`,actual,unit:'mL',route,administeredBy:by,concentration,note,source:'OR Quick Drug',calculationBasis:WF.clone(b)});if(entry){$('orQuickDrugDialog').close();orQuickBasis=null;toast('Actual administration saved • OR LIVE')}
++  const induction=orQuickContext?.purpose==='induction';const entry=recordDrugAdministration({drug:b.drug.name,calculated:`${fmtDose(b.calculatedMl)} mL • BW ${b.weightKg} kg • frozen ${b.protocolVersion||'unversioned'}`,actual,unit:'mL',route,administeredBy:by,concentration,note,source:induction?'OR Induction':'OR Quick Drug',calculationBasis:WF.clone(b)});
++  if(entry){if(induction&&!hasProcedureMilestone('Induction'))triggerOrMilestone('Induction');$('orQuickDrugDialog').close();orQuickBasis=null;orQuickContext=null;renderOrPrimaryFlow();toast(induction?'Induction drug + milestone saved':'Actual administration saved • OR LIVE')}
+ }
+ function captureRecoveryHandoff(reason){if(sessionMode!=='active'||state.caseLocked)return;save();const h=WF.buildHandoff(state);h.reason=reason;state.recoveryHandoffs??=[];state.recoveryHandoffs.push(h);addAudit('RECOVERY_HANDOFF_CREATED',`${reason} • ${h.administrations.length} administered drugs • ${h.alerts.length+h.complications.length} unresolved items`);save();renderRecoveryHandoff()}
+ function handoffText(h){
+@@ -3434,6 +3518,7 @@
+ $('saveProblemActionBtn')?.addEventListener('click',saveProblemAction);
+ $('orQuickDrugSelect')?.addEventListener('change',renderOrQuickDrug);
+ $('orQuickDrugSaveBtn')?.addEventListener('click',saveOrQuickDrug);
++$('orQuickInductionSkipBtn')?.addEventListener('click',recordInductionWithoutDrug);
+ $$('[data-close-dialog]').forEach(b=>b.addEventListener('click',()=>$(b.dataset.closeDialog)?.close()));
+ for(const id of ['orProblemPanel','recoveryProblemPanel'])$(id)?.addEventListener('click',e=>{const b=e.target.closest('[data-problem-action]');if(b)openProblemAction(b.dataset.kind,b.dataset.id,b.dataset.problemAction)});
+ for(const id of ['map','spo2','etco2','temp','orMap','orSpo2','orEtco2','orTemp'])$(id)?.addEventListener('blur',()=>setTimeout(()=>{maybeShowCriticalClinicalAlert();save()},0));
+--- V14.7/clinical-workflow.js
++++ V14.7.1/clinical-workflow.js
+@@ -1,4 +1,4 @@
+-/* ANESVET V14.7: production helpers shared with tests; baseline clinical values unchanged. */
++/* ANESVET V14.7.1: V14.7 production helpers retained; baseline clinical values unchanged. */
+ (function(root){
+ 'use strict';
+ const clone=x=>JSON.parse(JSON.stringify(x));
+--- V14.7/index.html
++++ V14.7.1/index.html
+@@ -4,12 +4,12 @@
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+   <meta name="theme-color" content="#0d5265">
+-  <meta name="description" content="ANESVET V14.7 — veterinary anesthesia workstation with critical alert popups, quick clinical guides and configurable SAP/DAP helpers">
++  <meta name="description" content="ANESVET V14.7.1 — OR LIVE workflow-first veterinary anesthesia workstation">
+   <link rel="manifest" href="./manifest.webmanifest">
+   <link rel="icon" href="./icon-192.png">
+   <link rel="apple-touch-icon" href="./icon-192.png">
+-  <link rel="stylesheet" href="./style.css?v=14.7">
+-  <title>ANESVET V14.7</title>
++  <link rel="stylesheet" href="./style.css?v=14.7.1">
++  <title>ANESVET V14.7.1</title>
+ </head>
+ <body>
+ <header class="topbar">
+@@ -17,7 +17,7 @@
+     <img class="brand-logo" src="./icon-192.png" alt="ANESVET logo">
+     <div>
+       <div class="eyebrow">GENOVI PET CARE • DIGITAL ANESTHESIA RECORD</div>
+-      <h1>ANESVET <span>V14.7</span></h1>
++      <h1>ANESVET <span>V14.7.1</span></h1>
+     </div>
+   </div>
+   <div class="top-actions">
+@@ -357,13 +357,16 @@
+       <div class="or-timer-block">
+         <span id="orCasePhaseBadge" class="status-pill phase setup">SETUP</span><span id="orTimerState" class="timer-state ready">READY</span>
+         <strong id="orCaseClock" class="or-case-clock">00:00:00</strong>
+-        <div class="button-row">
+-          <button id="orStartBtn" class="btn primary">▶ Start case</button>
+-          <button id="orPauseBtn" class="btn" disabled>Pause</button>
+-          <button id="orWakeBtn" class="btn">☀ Keep awake</button>
+-          <button id="orBeginRecoveryBtn" class="btn">→ Recovery</button>
+-          <button id="orFullscreenBtn" class="btn">⛶ Full screen</button>
+-        </div>
++        <details class="or-tools-menu">
++          <summary>⋯ Tools</summary>
++          <div class="or-tools-menu-body">
++            <button id="orStartBtn" class="btn primary">▶ Start / Resume</button>
++            <button id="orPauseBtn" class="btn" disabled>Pause</button>
++            <button id="orWakeBtn" class="btn">☀ Keep awake</button>
++            <button id="orBeginRecoveryBtn" class="btn">→ Recovery</button>
++            <button id="orFullscreenBtn" class="btn">⛶ Full screen</button>
++          </div>
++        </details>
+       </div>
+     </section>
+ 
+@@ -374,13 +377,28 @@
+       <button id="orStickyRecordBtn" class="btn primary">＋ RECORD NOW</button>
+     </section>
+ 
+-    <section class="or-phase-tracker-panel">
+-      <div class="or-phase-current">
+-        <span>CASE STATUS</span>
+-        <b id="orPhaseCurrentText">SETUP</b>
+-        <small id="orPhaseCurrentHelp">เตรียมข้อมูลและอุปกรณ์ก่อนเริ่มวางยา</small>
++    <section class="or-primary-flow" aria-label="Current anesthesia workflow action">
++      <div class="or-primary-copy">
++        <span>NEXT CLINICAL STEP</span>
++        <b id="orPrimaryActionTitle">Start induction</b>
++        <small id="orPrimaryActionHelp">เริ่มจับเวลาและบันทึกยาสลบโดยใช้ Current BW + frozen protocol</small>
++      </div>
++      <div class="or-primary-buttons">
++        <button id="orPrimaryActionBtn" class="or-primary-action" type="button">💉 Induction + Drug</button>
++        <button id="orSecondaryPhaseBtn" class="btn or-secondary-action" type="button" hidden></button>
++        <button id="orPrimaryDrugBtn" class="btn or-secondary-action" type="button" hidden>💉 Drug</button>
+       </div>
++    </section>
+ 
++    <details class="or-phase-tracker-panel or-phase-details">
++      <summary>
++        <div class="or-phase-current">
++          <span>WORKFLOW</span>
++          <b id="orPhaseCurrentText">SETUP</b>
++          <small id="orPhaseCurrentHelp">เตรียมข้อมูลและอุปกรณ์ก่อนเริ่มวางยา</small>
++        </div>
++        <span class="or-phase-expand">ดูขั้นตอนทั้งหมด</span>
++      </summary>
+       <div class="or-phase-steps" aria-label="Anesthesia workflow status">
+         <div class="or-phase-step" data-phase-step="setup"><span>1</span><b>Setup</b><small>เตรียมเคส</small></div>
+         <div class="or-phase-arrow">→</div>
+@@ -392,9 +410,8 @@
+         <div class="or-phase-arrow">→</div>
+         <div class="or-phase-step" data-phase-step="recovery"><span>5</span><b>Recovery</b><small>หลังถอดท่อ</small></div>
+       </div>
+-
+-      <div id="orPhaseActionHint" class="or-phase-action-hint">Next: กด Start case เพื่อเข้าสู่ Induction</div>
+-    </section>
++      <div id="orPhaseActionHint" class="or-phase-action-hint">Next: เริ่ม Induction จากปุ่มด้านบน</div>
++    </details>
+ 
+     <section class="or-status-row">
+       <div class="or-status-box"><span>Overall status</span><b id="orGlobalStatus" class="or-status-good">STABLE</b></div>
+@@ -425,7 +442,16 @@
+           <label>Ventilation<select id="orVentilation"><option value="">—</option><option>Spontaneous</option><option>Manual PPV</option><option>Mechanical ventilation</option></select></label>
+         </div>
+       </section>
+-      <section class="panel or-workflow-problems"><div class="section-heading"><div><h2>Active Alerts / Problems</h2><p>รับทราบ • บันทึก intervention • ติดตามผล</p></div><span id="orProblemCount" class="status-pill">0 OPEN</span></div><div class="protocol-toolbar"><span id="orAlertProtocolStatus"></span><button id="editCaseAlertBtn" class="btn">Case alert override</button></div><div id="orProblemPanel"></div><details><summary>Case alert protocol history</summary><div id="caseAlertHistory"></div></details></section><section class="panel or-alert-panel">
++      <section class="panel or-workflow-problems">
++        <div class="section-heading"><div><h2>Active Alerts / Problems</h2><p>รับทราบ • บันทึก intervention • ติดตามผล</p></div><span id="orProblemCount" class="status-pill">0 OPEN</span></div>
++        <div id="orProblemPanel"></div>
++        <details class="or-protocol-details">
++          <summary>Alert protocol • <span id="orAlertProtocolStatus"></span></summary>
++          <div class="protocol-toolbar"><span>Case-specific thresholds</span><button id="editCaseAlertBtn" class="btn">Case alert override</button></div>
++          <details><summary>Protocol change history</summary><div id="caseAlertHistory"></div></details>
++        </details>
++      </section>
++      <section class="panel or-alert-panel">
+         <div class="section-heading"><div><h2>Prioritized alerts</h2><p>Immediate problems ก่อน ตามด้วย trend alerts</p></div><span id="orAlertCount" class="status-pill good">0 ALERTS</span></div>
+         <div id="orAlertList" class="or-alert-list"><div class="empty-state compact">No active alerts</div></div>
+         <div class="or-quick-guides">
+@@ -441,7 +467,12 @@
+       </section>
+     </section>
+ 
+-    <section class="panel or-fluid-panel">
++    <details id="orFluidPanelDetails" class="panel or-fluid-panel or-collapsible-panel">
++      <summary class="or-collapsible-summary">
++        <span><b>💧 Fluid / Blood Loss</b><small>กดเพื่อเปิดเมื่อจะตั้ง rate / bolus / blood loss</small></span>
++        <span id="orFluidSummary" class="or-collapsible-metric">Not set</span>
++      </summary>
++      <div class="or-collapsible-body">
+       <div class="section-heading">
+         <div>
+           <h2>Fluid / Blood Loss</h2>
+@@ -525,12 +556,17 @@
+       </div>
+ 
+       <div id="fluidRateHistoryView" class="fluid-rate-history-view">No rate changes recorded yet</div>
+-    </section>
++      </div>
++    </details>
+ 
+-    <section class="panel airway-panel">
++    <details id="orAirwayPanelDetails" class="panel airway-panel or-collapsible-panel">
++      <summary class="or-collapsible-summary">
++        <span><b>🫁 Airway / Ventilation</b><small id="orAirwaySummary">ยังไม่ได้บันทึก airway</small></span>
++        <span id="airwayStatus" class="status-pill warn">NOT RECORDED</span>
++      </summary>
++      <div class="or-collapsible-body">
+       <div class="section-heading">
+         <div><h2>Airway / Ventilation record</h2><p>บันทึกข้อมูล airway แบบย่อ — ventilator fields แสดงเฉพาะเมื่อเลือก Mechanical ventilation</p></div>
+-        <span id="airwayStatus" class="status-pill warn">NOT RECORDED</span>
+       </div>
+       <div class="airway-grid">
+         <label>ETT size (mm)<input id="airwayEttSize" type="number" min="0" step="0.5" placeholder="เช่น 6.0"></label>
+@@ -547,19 +583,23 @@
+         <label>Ventilator RR (/min)<input id="airwayVentRr" type="number" min="0" step="1"></label>
+       </div>
+       <div class="airway-actions"><button id="saveAirwayBtn" class="btn primary">Save airway record</button></div>
+-    </section>
++      </div>
++    </details>
+ 
+-    <section class="panel or-action-panel">
+-      <div class="section-heading"><div><h2>Quick actions</h2><p>ปุ่มใหญ่สำหรับใช้ระหว่าง anesthesia โดยไม่ต้องเปลี่ยนหน้า</p></div></div>
+-      <div class="or-action-groups">
+-        <div><h3>Milestones</h3><div class="or-action-buttons">
++    <details class="panel or-action-panel or-collapsible-panel or-event-problem-menu">
++      <summary class="or-collapsible-summary">
++        <span><b>＋ Event / Problem</b><small>ใช้เมื่ออยากบันทึกเหตุการณ์หรือ complication ด้วยตนเอง</small></span>
++        <span class="or-collapsible-metric">Optional</span>
++      </summary>
++      <div class="or-collapsible-body">
++        <div class="legacy-milestone-hooks" hidden aria-hidden="true">
+           <button class="or-milestone" data-cat="Airway" data-label="Induction">Induction</button>
+           <button class="or-milestone" data-cat="Airway" data-label="Intubation">Intubation</button>
+           <button class="or-milestone" data-cat="Surgery" data-label="Surgery start">Surgery start</button>
+           <button class="or-milestone" data-cat="Surgery" data-label="Surgery end">Surgery end</button>
+           <button class="or-milestone" data-cat="Airway" data-label="Extubation">Extubation</button>
+-        </div></div>
+-        <div><h3>Clinical events</h3><div class="or-action-buttons">
++        </div>
++        <div class="or-action-buttons">
+           <button class="or-complication warn" data-complication="Hypotension">Hypotension</button>
+           <button class="or-complication warn" data-complication="Bradycardia">Bradycardia</button>
+           <button class="or-complication warn" data-complication="Hypoxemia">Hypoxemia</button>
+@@ -570,9 +610,9 @@
+           <button class="or-event" data-cat="Ventilation" data-label="PPV started">PPV started</button>
+           <button id="orRecoveryQuickBtn" class="or-action-link">→ Begin recovery</button>
+           <button id="orOpenDrugBtn" class="or-action-link">＋ Quick Drug</button>
+-        </div></div>
++        </div>
+       </div>
+-    </section>
++    </details>
+ 
+     <section class="panel complication-watch-panel">
+       <div class="section-heading">
+@@ -746,7 +786,7 @@
+       <div class="section-heading">
+         <div>
+           <h2>Legacy monitoring workspace</h2>
+-          <p>V14.7 ใช้ Patient & Case Setup + OR LIVE เป็น workflow หลัก หน้านี้คงไว้เพื่อ compatibility ของระบบเดิม</p>
++          <p>V14.7.1 ใช้ Patient & Case Setup + OR LIVE เป็น workflow หลัก หน้านี้คงไว้เพื่อ compatibility ของระบบเดิม</p>
+         </div>
+       </div>
+     </section>
+@@ -1859,7 +1899,7 @@
+ 
+ <dialog id="alertProtocolDialog" class="workflow-dialog" aria-labelledby="alertProtocolTitle"><div class="workflow-dialog-body"><h2 id="alertProtocolTitle">Alert Protocol</h2><p id="alertProtocolContext"></p><p>Temperature thresholds use °F for exact compatibility (°C = (°F − 32) ÷ 1.8). Leave both upper fields blank to disable upper alerts. Comparisons are strictly below / above.</p><div id="alertThresholdFields"></div><label>Changed by<input id="alertProtocolActor" autocomplete="off"></label><label>Reason (required)<textarea id="alertProtocolReason"></textarea></label><p id="alertProtocolError" class="workflow-error" role="alert"></p><div class="workflow-dialog-actions"><button class="btn" data-close-dialog="alertProtocolDialog">Cancel</button><button class="btn" id="clearCaseAlertOverrideBtn">Return to frozen defaults</button><button class="btn primary" id="saveAlertProtocolBtn">Save with audit</button></div></div></dialog>
+ <dialog id="problemActionDialog" class="workflow-dialog" aria-labelledby="problemActionTitle"><div class="workflow-dialog-body"><h2 id="problemActionTitle"></h2><label>Recorded by<input id="problemActionActor"></label><label>Intervention / outcome / reason<textarea id="problemActionNote"></textarea></label><p id="problemActionError" class="workflow-error" role="alert"></p><div class="workflow-dialog-actions"><button class="btn" data-close-dialog="problemActionDialog">Cancel</button><button id="saveProblemActionBtn" class="btn primary">Save action</button></div></div></dialog>
+-<dialog id="orQuickDrugDialog" class="workflow-dialog" aria-labelledby="orQuickDrugTitle"><div class="workflow-dialog-body"><h2 id="orQuickDrugTitle">OR Quick Drug</h2><p id="orQuickDrugBasis"></p><label>Frozen protocol drug<select id="orQuickDrugSelect"></select></label><div class="quick-drug-calculation" id="orQuickDrugCalculation"></div><p>ค่าคำนวณเป็นข้อมูลอ้างอิง กรุณาระบุปริมาณที่ให้จริงและตรวจ preparation ก่อนยืนยัน</p><div class="quick-drug-fields"><label>Actual administered (mL)<input id="orQuickDrugActual" type="number" min="0" step="any" inputmode="decimal"></label><label>Route<input id="orQuickDrugRoute" placeholder="IV / IM / SC ..."></label><label>Administered by<input id="orQuickDrugBy"></label><label>Preparation / concentration<input id="orQuickDrugConcentration" placeholder="Confirm preparation used"></label></div><label>Note<textarea id="orQuickDrugNote"></textarea></label><p class="workflow-error" id="orQuickDrugError" role="alert"></p><div class="workflow-dialog-actions"><button class="btn" data-close-dialog="orQuickDrugDialog">Cancel</button><button id="orQuickDrugSaveBtn" class="btn primary">Confirm actual administration</button></div></div></dialog>
++<dialog id="orQuickDrugDialog" class="workflow-dialog" aria-labelledby="orQuickDrugTitle"><div class="workflow-dialog-body"><h2 id="orQuickDrugTitle">OR Quick Drug</h2><p id="orQuickDrugBasis"></p><label>Frozen protocol drug<select id="orQuickDrugSelect"></select></label><div class="quick-drug-calculation" id="orQuickDrugCalculation"></div><p>ค่าคำนวณเป็นข้อมูลอ้างอิง กรุณาระบุปริมาณที่ให้จริงและตรวจ preparation ก่อนยืนยัน</p><div class="quick-drug-fields"><label>Actual administered (mL)<input id="orQuickDrugActual" type="number" min="0" step="any" inputmode="decimal"></label><label>Route<input id="orQuickDrugRoute" placeholder="IV / IM / SC ..."></label><label>Administered by<input id="orQuickDrugBy"></label><label>Preparation / concentration<input id="orQuickDrugConcentration" placeholder="Confirm preparation used"></label></div><label>Note<textarea id="orQuickDrugNote"></textarea></label><p class="workflow-error" id="orQuickDrugError" role="alert"></p><div class="workflow-dialog-actions"><button class="btn" data-close-dialog="orQuickDrugDialog">Cancel</button><button id="orQuickInductionSkipBtn" class="btn" type="button" hidden>Induction without injectable drug</button><button id="orQuickDrugSaveBtn" class="btn primary">Confirm actual administration</button></div></div></dialog>
+ 
+ <dialog id="drugAdminDialog" class="drug-admin-dialog">
+   <form method="dialog" class="drug-admin-card" onsubmit="return false;">
+@@ -1985,7 +2025,7 @@
+ </dialog>
+ 
+ <div id="toast" class="toast" role="status" aria-live="polite"></div>
+-<script src="./clinical-workflow.js?v=14.7"></script>
+-<script src="./app.js?v=14.7"></script>
++<script src="./clinical-workflow.js?v=14.7.1"></script>
++<script src="./app.js?v=14.7.1"></script>
+ </body>
+ </html>
+--- V14.7/manifest.webmanifest
++++ V14.7.1/manifest.webmanifest
+@@ -1,8 +1,8 @@
+ {
+-  "name": "ANESVET V14.7 — OR LIVE & Clinical Workflow",
++  "name": "ANESVET V14.7.1 — OR LIVE Workflow UX",
+   "short_name": "ANESVET",
+-  "description": "Configurable alerts, frozen case protocol, OR Quick Drug, active problems and recovery handoff",
+-  "start_url": "./?v=14.7",
++  "description": "Workflow-first OR LIVE with contextual induction, airway, surgery milestones, configurable alerts, Quick Drug and recovery handoff",
++  "start_url": "./?v=14.7.1",
+   "scope": "./",
+   "display": "standalone",
+   "background_color": "#f3f7f8",
+--- V14.7/package-lock.json
++++ V14.7.1/package-lock.json
+@@ -1,12 +1,12 @@
+ {
+-  "name": "anesvet-v14-7",
+-  "version": "14.7.0",
++  "name": "anesvet-v14-7-1",
++  "version": "14.7.1",
+   "lockfileVersion": 3,
+   "requires": true,
+   "packages": {
+     "": {
+-      "name": "anesvet-v14-7",
+-      "version": "14.7.0",
++      "name": "anesvet-v14-7-1",
++      "version": "14.7.1",
+       "devDependencies": {
+         "fake-indexeddb": "6.2.5",
+         "jsdom": "30.1.0",
+--- V14.7/package.json
++++ V14.7.1/package.json
+@@ -1,9 +1,11 @@
+ {
+-  "name": "anesvet-v14-7",
+-  "version": "14.7.0",
++  "name": "anesvet-v14-7-1",
++  "version": "14.7.1",
+   "private": true,
+-  "description": "ANESVET V14.7 OR LIVE & Clinical Workflow; runtime requires no build",
+-  "engines": {"node": ">=22"},
++  "description": "ANESVET V14.7.1 OR LIVE Workflow UX; runtime requires no build",
++  "engines": {
++    "node": ">=22"
++  },
+   "scripts": {
+     "test:syntax": "node tests/syntax.mjs",
+     "test:regression": "node tests/regression.mjs",
+@@ -11,5 +13,9 @@
+     "test": "npm run test:syntax && npm run test:regression && npm run test:workflow",
+     "test:browser": "node tests/e2e_browser.mjs"
+   },
+-  "devDependencies": {"fake-indexeddb": "6.2.5", "jsdom": "30.1.0", "playwright": "1.62.1"}
++  "devDependencies": {
++    "fake-indexeddb": "6.2.5",
++    "jsdom": "30.1.0",
++    "playwright": "1.62.1"
++  }
+ }
+--- V14.7/service-worker.js
++++ V14.7.1/service-worker.js
+@@ -1,5 +1,5 @@
+-const CACHE='anesvet-v14-7-or-live-clinical-workflow';
+-const ASSETS=['./','./index.html','./style.css?v=14.7','./clinical-workflow.js?v=14.7','./app.js?v=14.7','./manifest.webmanifest','./icon-192.png','./icon-512.png','./icon-maskable-512.png'];
++const CACHE='anesvet-v14-7-1-or-live-ux';
++const ASSETS=['./','./index.html','./style.css?v=14.7.1','./clinical-workflow.js?v=14.7.1','./app.js?v=14.7.1','./manifest.webmanifest','./icon-192.png','./icon-512.png','./icon-maskable-512.png'];
+ self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)))});
+ self.addEventListener('message',e=>{if(e.data?.type==='SKIP_WAITING')self.skipWaiting()});
+ self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))));self.clients.claim()});
+--- V14.7/style.css
++++ V14.7.1/style.css
+@@ -618,3 +618,80 @@
+ .advanced-menu{padding:10px;border-top:1px solid #d9e5e8}.advanced-menu summary{cursor:pointer;font-weight:700;padding:8px}.protocol-toolbar,.problem-actions,.workflow-dialog-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:10px 0}.protocol-toolbar{justify-content:space-between}.protocol-toolbar span{font-size:12px;font-weight:800;color:#0d5265}.active-problem{border:1px solid #dfb169;border-left:5px solid #c08018;background:#fffaf0;border-radius:12px;padding:14px;margin:10px 0;overflow-wrap:anywhere}.active-problem.danger{border-color:#dd8f8f;border-left-color:#b52332;background:#fff5f5}.active-problem p{margin:6px 0;font-size:13px;line-height:1.5}.active-problem span{font-size:11px;margin-left:8px}.workflow-dialog{padding:0;border:1px solid #bcced4;border-radius:18px;width:min(760px,94vw);max-height:90dvh;color:#183941;box-shadow:0 22px 80px #001a3266}.workflow-dialog::backdrop{background:#092b3a99}.workflow-dialog-body{padding:24px;overflow:auto}.workflow-dialog h2{margin:0 0 12px}.workflow-dialog p{font-size:14px;line-height:1.6}.workflow-dialog label{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:700;margin:10px 0}.workflow-dialog input,.workflow-dialog select,.workflow-dialog textarea{width:100%;min-width:0;box-sizing:border-box;padding:12px;border:1px solid #bdccd1;border-radius:8px;font:inherit;background:#fff;color:#153746}.workflow-dialog textarea{min-height:80px}.workflow-dialog input[readonly]{background:#edf4f6}.workflow-dialog fieldset{border:1px solid #d6e2e5;border-radius:10px;margin:14px 0;padding:12px}.workflow-dialog legend{font-weight:800}.threshold-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}.quick-drug-fields{display:grid;grid-template-columns:1fr 1fr;gap:12px}.quick-drug-calculation{background:#e6f4f6;border:1px solid #abd0d7;padding:18px;border-radius:10px;font-size:20px;font-weight:800;overflow-wrap:anywhere}.workflow-error{color:#a71828;font-weight:700;white-space:pre-wrap}.workflow-dialog-actions{justify-content:flex-end;position:sticky;bottom:0;padding:12px 0;background:#fff}.handoff-panel pre,#hospitalAlertSummary,.report-handoff pre{white-space:pre-wrap;overflow-wrap:anywhere;font-family:inherit;font-size:13px;line-height:1.7}.handoff-panel details{margin-top:16px}.handoff-panel summary{cursor:pointer;font-weight:700}.handoff-panel h2{color:#0d5265}
+ @media(max-width:600px){.threshold-grid,.quick-drug-fields{grid-template-columns:1fr 1fr}.workflow-dialog-body{padding:16px}.workflow-dialog{max-height:94dvh}.workflow-dialog-actions .btn{flex:1}.active-problem .problem-actions .btn{font-size:12px}.handoff-panel pre{font-size:12px}}
+ @media print{.report-handoff pre{font-size:8px;line-height:1.45;white-space:pre-wrap;overflow-wrap:anywhere}.report-handoff{break-inside:auto}.workflow-dialog{display:none!important}}
++
++/* V14.7.1 — OR LIVE workflow-first UX simplification */
++.or-tools-menu{position:relative;display:inline-block;text-align:left}
++.or-tools-menu>summary{list-style:none;cursor:pointer;border:1px solid rgba(255,255,255,.28);background:rgba(255,255,255,.1);color:#fff;border-radius:10px;padding:8px 12px;font-weight:850}
++.or-tools-menu>summary::-webkit-details-marker{display:none}
++.or-tools-menu-body{position:absolute;right:0;top:calc(100% + 7px);z-index:65;width:220px;display:grid;gap:7px;padding:9px;border:1px solid #bfd1d6;border-radius:12px;background:#fff;box-shadow:0 14px 34px rgba(0,31,42,.18)}
++.or-tools-menu-body .btn{width:100%;text-align:left;color:var(--primary);background:#fff;border-color:#cad8dc}
++.or-tools-menu-body .btn.primary{background:var(--primary);color:#fff}
++
++.or-primary-flow{display:flex;align-items:center;justify-content:space-between;gap:16px;margin:10px 0 11px;padding:14px 16px;border:2px solid #8dbec9;border-radius:16px;background:linear-gradient(135deg,#f8fdfe,#edf8fa);box-shadow:0 6px 18px rgba(13,82,101,.07)}
++.or-primary-copy{min-width:0;display:flex;flex-direction:column;gap:2px}
++.or-primary-copy>span{font-size:.66rem;font-weight:950;letter-spacing:.07em;color:#52717b}
++.or-primary-copy>b{font-size:1.12rem;color:#0b5365}
++.or-primary-copy>small{color:#5f7179;line-height:1.35}
++.or-primary-buttons{display:flex;align-items:center;justify-content:flex-end;gap:8px;flex-wrap:wrap}
++.or-primary-action{min-height:54px;border:0;border-radius:13px;padding:12px 18px;background:#0d5265;color:#fff;font-weight:950;font-size:1rem;cursor:pointer;box-shadow:0 5px 14px rgba(13,82,101,.18)}
++.or-primary-action:disabled{opacity:.55;cursor:not-allowed}
++.or-secondary-action{min-height:48px;padding:10px 14px}
++
++/* Sticky row already contains the critical status/time/due/record controls. */
++.or-live-page>.or-status-row{display:none}
++
++.or-phase-details{padding:0!important;overflow:hidden}
++.or-phase-details>summary{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 12px;cursor:pointer;list-style:none}
++.or-phase-details>summary::-webkit-details-marker{display:none}
++.or-phase-details .or-phase-current{margin:0;padding:0;border:0;background:transparent;flex:1}
++.or-phase-details .or-phase-steps,.or-phase-details .or-phase-action-hint{margin-left:12px;margin-right:12px}
++.or-phase-details .or-phase-action-hint{margin-bottom:12px}
++.or-phase-expand{font-size:.73rem;font-weight:850;color:#0d6275;white-space:nowrap}
++
++.or-collapsible-panel{padding:0!important;overflow:visible}
++.or-collapsible-summary{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 15px;cursor:pointer;list-style:none;border-radius:15px}
++.or-collapsible-summary::-webkit-details-marker{display:none}
++.or-collapsible-summary>span:first-child{min-width:0}
++.or-collapsible-summary b{display:block;color:#174b59}
++.or-collapsible-summary small{display:block;margin-top:2px;color:var(--muted);font-weight:650;line-height:1.3}
++.or-collapsible-metric{font-weight:900;color:#0c6174;white-space:nowrap;font-size:.8rem}
++.or-collapsible-body{padding:0 15px 15px;border-top:1px solid #e1eaed}
++.or-collapsible-panel[open]>.or-collapsible-summary{background:#f5fbfc;border-radius:15px 15px 0 0}
++.or-collapsible-panel[open]>.or-collapsible-summary .or-collapsible-metric{color:#0b5265}
++
++/* Active Alerts / Problems is the single visible problem workspace. The older duplicate lists stay in DOM for compatibility/reporting. */
++.or-live-page .or-alert-panel,.or-live-page .complication-watch-panel{display:none}
++.or-workflow-problems{grid-column:span 1}
++.or-workflow-problems #orProblemPanel>.empty-state{padding:10px 4px}
++
++.or-event-problem-menu .or-action-buttons{padding-top:12px}
++.legacy-milestone-hooks{display:none!important}
++
++/* Keep fluid/airway available but out of the primary visual path until needed. */
++.or-fluid-panel,.airway-panel{margin-top:10px}
++.airway-panel[open]{scroll-margin-top:95px}
++.or-fluid-panel[open]{scroll-margin-top:95px}
++
++@media(max-width:780px){
++  .or-primary-flow{align-items:stretch;flex-direction:column}
++  .or-primary-buttons{display:grid;grid-template-columns:1fr 1fr;width:100%}
++  .or-primary-action{grid-column:1/-1;width:100%}
++  .or-primary-buttons .btn{width:100%}
++  .or-tools-menu-body{right:auto;left:0}
++}
++@media(max-width:520px){
++  .or-primary-flow{padding:12px}
++  .or-primary-buttons{grid-template-columns:1fr}
++  .or-primary-action{grid-column:auto}
++  .or-collapsible-summary{align-items:flex-start;flex-direction:column}
++  .or-collapsible-metric{white-space:normal}
++  .or-phase-details>summary{align-items:flex-start}
++}
++.or-protocol-details{margin-top:8px;border-top:1px solid var(--line);padding-top:8px}
++.or-protocol-details>summary{cursor:pointer;color:#4d6771;font-size:.72rem;font-weight:850;list-style:none}
++.or-protocol-details>summary::-webkit-details-marker{display:none}
++.or-protocol-details .protocol-toolbar{margin-bottom:6px}
++/* SAP/DAP remain stored and available in Advanced/record views, but are removed from the primary OR cockpit. */
++.or-live-page .or-bp-panel .sap-dap-helper{display:none!important}
++.or-live-page .or-maint-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
++@media(max-width:760px){.or-live-page .or-maint-grid{grid-template-columns:1fr 1fr}}
+--- V14.7/tests/BROWSER_E2E_STATUS.txt
++++ V14.7.1/tests/BROWSER_E2E_STATUS.txt
+@@ -1,27 +1,39 @@
+-STATUS: BLOCKED / NOT PASSED
++ANESVET V14.7.1 BROWSER STATUS
+ 
+-Attempts earlier in this task:
+-- Original browser script could not find /usr/bin/chromium.
+-- Playwright Chromium executable was not installed in the runtime cache.
+-- Playwright Chromium download timed out at cdn.playwright.dev.
+-- Managed browser rejected http://127.0.0.1:8765 with ERR_BLOCKED_BY_CLIENT.
+-- Managed browser rejected the local file URL under its URL security policy.
+-- No alternate browser/control channel was used to bypass those denials.
+-
+-The workspace was reset during continuation. Source was reconstructed from the
+-same baseline and all supported tests rerun. The final real-browser runner in
+-this ZIP has only syntax validation; it has NOT executed successfully.
+-
+-jsdom is a DOM integration harness. It is NOT browser E2E and does not verify
+-native focus/modal behavior, CSS layout, mobile rendering, print pagination,
+-service-worker/offline behavior or a V14.6.4-to-V14.7 PWA upgrade.
++FULL ORIGIN-BASED PWA E2E: BLOCKED / NOT PASSED
+ 
+-On an authorized host with Node >=22:
++Current runtime facts:
++- /usr/bin/chromium is installed.
++- Direct localhost / 127.0.0.1 browser navigation is blocked by administrator policy.
++- Direct file:// navigation is blocked as well.
++- Therefore the production service worker, offline cache, PWA update path, native origin
++  localStorage/IndexedDB persistence and print pagination cannot be accepted here.
++
++SUPPLEMENTAL REAL-CHROMIUM OR LIVE SMOKE: PASS
++
++To validate the redesigned OR LIVE despite the origin restriction, the exact production
++index.html, style.css, clinical-workflow.js and app.js were loaded into a headless Chromium
++page with page.set_content. localStorage/sessionStorage and crypto.randomUUID were polyfilled
++only because about:blank is an opaque origin. No clinical workflow/calculation functions were
++stubbed or replaced.
++
++Validated interaction path:
++Patient setup -> OR LIVE -> Induction + Drug -> actual Propofol administration ->
++Airway/Intubation -> Surgery start -> Record vitals -> Surgery end -> Extubation -> Recovery.
++Recovery Handoff was created. No page errors were observed in the final smoke run.
++
++Visual artifacts:
++- artifacts/or_live_v14_7_1_induction.png
++- artifacts/induction_dialog_v14_7_1.png
++
++Acceptance command on an authorized workstation:
+   npm ci
+-  npx playwright install chromium
++  npx playwright install chromium   # only if needed
++  npm test
+   npm run test:browser
+-Or provide CHROMIUM_BIN pointing to an installed Chromium executable.
+ 
+-The runner serves the production files over HTTP, uses real browser storage,
+-and covers desktop/mobile, alerts, actual drugs, handoff/reload, Advanced route
+-and offline cache smoke. A full old-cache upgrade remains a separate manual gate.
++Manual gate additionally recommended:
++1. Install/open V14.7 with a test case/backup.
++2. Upgrade to V14.7.1 through the PWA update flow.
++3. Confirm current case, Patient Master, archive, protocols and settings are preserved.
++4. Run one complete simulated anesthesia case and export the final PDF.
+--- V14.7/tests/SUPPORTED_TEST_RUN.txt
++++ V14.7.1/tests/SUPPORTED_TEST_RUN.txt
+@@ -1,29 +1,34 @@
+-npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
++ANESVET V14.7.1 — supported tests executed in this runtime
++UTC: 2026-09-19T15:34:46Z
+ 
+-> anesvet-v14-7@14.7.0 test
+-> npm run test:syntax && npm run test:regression && npm run test:workflow
++$ node --check app.js
++PASS
+ 
+-npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
++$ node --check clinical-workflow.js
++PASS
+ 
+-> anesvet-v14-7@14.7.0 test:syntax
+-> node tests/syntax.mjs
++$ node --check service-worker.js
++PASS
+ 
++$ node tests/syntax.mjs
+ Syntax + JSON: PASS (13 JavaScript files)
+-npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+ 
+-> anesvet-v14-7@14.7.0 test:regression
+-> node tests/regression.mjs
+-
+-ANESVET V14.7 regression checks: PASS (662 unique HTML ids, 346 unique named functions)
+-V14.7 integration and storage contracts: PASS
+-npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+-
+-> anesvet-v14-7@14.7.0 test:workflow
+-> node tests/workflow_scenarios.mjs && node tests/clinical_workflow.mjs && node tests/dom_workflow.mjs && node tests/compatibility.mjs && node tests/governance.mjs && node tests/final_lock.mjs
++$ node tests/regression.mjs
++ANESVET V14.7.1 regression checks: PASS (672 unique HTML ids, 355 unique named functions)
++V14.7.1 integration and storage contracts: PASS
+ 
++$ node tests/workflow_scenarios.mjs
+ ANESVET V14.6.4 workflow model scenarios: PASS (4 scenarios)
++
++$ node tests/clinical_workflow.mjs
+ Production clinical helpers: PASS (73 assertions)
+-Full DOM workflow including Extubation: PASS (65 assertions; jsdom, not browser E2E)
+-V14.6.4 compatibility / integrity: PASS (33 assertions; synthetic fixtures)
+-Protocol governance / species / BW / recovery N/A: PASS (27 assertions)
+-Final lock / archive / report integrity: PASS (10 assertions)
++
++$ npm test
++The syntax/regression/model/helper stages above pass, then the full DOM suite cannot start:
++Error: Cannot find module 'jsdom'
++This runtime could not complete npm dependency installation, so this is not reported as a
++product failure and the V14.7.1 DOM suites are not reported as passed.
++
++Supplemental real-Chromium OR LIVE UI/workflow smoke: PASS using page.set_content of the
++production source because direct local-origin navigation is blocked by administrator policy.
++See TEST_RESULTS.txt and BROWSER_E2E_STATUS.txt for scope/limitations.
+--- V14.7/tests/TEST_RESULTS.txt
++++ V14.7.1/tests/TEST_RESULTS.txt
+@@ -1,37 +1,61 @@
+-ANESVET V14.7 — final supported test run
+-UTC: 2026-09-19T14:35:22.033730+00:00
+-Source: supplied ANESVET_V14_6_4(1).zip (see SOURCE_PROVENANCE.json)
+-Runtime: Node.js v24.19.0; jsdom 30.1.0; fake-indexeddb 6.2.5
+-
+-PASS — JavaScript syntax and JSON: 13 JavaScript files
+-PASS — Source regression: 662 unique HTML IDs, 346 unique named functions
+-PASS — V14.7 integration / storage contracts
+-PASS — Original workflow model: 4 scenarios
+-PASS — Production clinical helper logic: 73 assertions
+-PASS — Full DOM workflow including actual Extubation button: 65 assertions
+-PASS — Synthetic V14.6.4 compatibility / checksum / view-only: 33 assertions
+-PASS — Protocol governance / species / stale BW / N/A / problems: 27 assertions
+-PASS — Final lock / archive / PDF report content integrity: 10 assertions
+-Total new production-helper / DOM assertions: 208
+-PASS — Baseline comparison: defaultSettings, HR/RR thresholds, calculator
+-       implementation and persistent keys unchanged
+-
+-BLOCKED / NOT PASSED — real Chromium browser E2E
+-Not tested: native UI rendering/dialog focus, real mobile layout, print
+-pagination, offline behavior and actual PWA version upgrade.
+-Browser attempts and repeatable command: BROWSER_E2E_STATUS.txt
+-Runner supplied: e2e_browser.mjs (syntax-checked only in final recovered build)
+-
+-Important distinctions:
+-- Source regression is static; the original model is separate from production.
+-- clinical_workflow.mjs imports the real production helper module.
+-- DOM suites evaluate the full production app and invoke actual handlers.
+-- Browser-only primitives are replaced by jsdom harness shims; this is NOT E2E.
+-- Compatibility fixtures are synthetic. No patient data was supplied.
+-- PDF verification checks generated report content, not rendered print pages.
+-
+-Raw supported test output: SUPPORTED_TEST_RUN.txt
+-Command: TEST_NODE_MODULES=<installed dependency path> npm test
+-No product runtime dependencies or test node_modules are included in ZIP.
++ANESVET V14.7.1 — OR LIVE Workflow UX validation
++UTC: 2026-09-19T15:34:46Z
++Source: supplied ANESVET_V14_7(1).zip (see SOURCE_PROVENANCE_V14_7_1.json)
+ 
+-Overall: RELEASE CANDIDATE, browser acceptance gate incomplete.
++PASS — node --check app.js
++PASS — node --check clinical-workflow.js
++PASS — node --check service-worker.js
++PASS — tests/syntax.mjs: Syntax + JSON (13 JavaScript files)
++PASS — tests/regression.mjs: 672 unique HTML IDs, 355 unique named functions
++PASS — V14.7.1 integration / storage contracts
++PASS — original workflow model: 4 scenarios
++PASS — production clinical helper logic: 73 assertions
++
++V14.7.1 OR LIVE UX static regression coverage includes:
++PASS — top NEXT CLINICAL STEP controls are present
++PASS — induction action opens induction-filtered Quick Drug workflow
++PASS — actual administered amount remains manual confirmation
++PASS — induction administration creates the Induction milestone without a second entry
++PASS — Airway / Intubation is promoted into the primary workflow
++PASS — saved intubation can create the Intubation milestone
++PASS — legacy milestone hooks remain in DOM for compatibility
++PASS — duplicate OR status / prioritized-alert / active-complication workspaces are hidden
++PASS — Fluid, Airway and Event/Problem panels are collapsible by default
++PASS — SAP/DAP remain available in stored/advanced views but are hidden from the primary OR cockpit
++PASS — clinical defaults, persistent storage keys and IndexedDB schema are unchanged
++
++REAL CHROMIUM — SUPPLEMENTAL OR LIVE UI/WORKFLOW SMOKE: PASS
++Method: production HTML/CSS/JS loaded into an installed headless Chromium page with
++page.set_content because direct localhost/file navigation is administratively blocked.
++Only localStorage/sessionStorage and crypto.randomUUID were polyfilled for the opaque
++about:blank origin; clinical functions were not replaced.
++Covered:
++- New patient setup -> OR LIVE
++- Induction + Drug primary action
++- Frozen induction protocol preselects Propofol from default primary induction preset
++- calculated dose/volume displayed; actual mL remains blank until user entry
++- actual administration -> Drug record + Induction milestone
++- Airway/Intubation -> airway save + Intubation milestone
++- Surgery start -> intraoperative phase
++- vital recording
++- Surgery end -> emergence
++- Extubation -> Recovery + Recovery Handoff
++- duplicate OR workspaces hidden; Airway panel auto-collapses after save
++Artifacts: tests/artifacts/or_live_v14_7_1_induction.png and induction_dialog_v14_7_1.png
++
++NOT PASSED / ENVIRONMENT BLOCKED — full origin-based browser/PWA acceptance
++- Direct http://127.0.0.1 / localhost navigation is blocked by administrator policy.
++- file:// navigation is also blocked.
++- Therefore service-worker install/update, real IndexedDB/localStorage origin persistence,
++  offline cache behavior, native PWA upgrade V14.7 -> V14.7.1 and print/PDF pagination
++  still require acceptance on an authorized host/browser.
++
++NOT COMPLETED IN THIS RUNTIME — jsdom full npm suite
++- npm test reaches the DOM suites but fails because npm dependency installation was not
++  available in this runtime (Cannot find module 'jsdom').
++- This is an environment/dependency-availability limitation; no claim is made that the
++  jsdom DOM suite passed for V14.7.1 in this runtime.
++
++Overall: RELEASE CANDIDATE / CLINICAL UX BUILD.
++Recommended before live surgical use: run npm ci + npm test + npm run test:browser on an
++authorized workstation, then perform one complete simulated case and PWA upgrade check.
+--- V14.7/tests/regression.mjs
++++ V14.7.1/tests/regression.mjs
+@@ -13,8 +13,8 @@
+ const must=(cond,msg)=>assert.ok(cond,msg);
+ 
+ // Core version / structure
+-must(manifest.name.includes('V14.7'),'manifest should be V14.7');
+-must(sw.includes('v14-7'),'service worker cache should identify V14.7');
++must(manifest.name.includes('V14.7.1'),'manifest should be V14.7.1');
++must(sw.includes('v14-7-1'),'service worker cache should identify V14.7.1');
+ must(count(app,/function\s+phaseLabel\s*\(/g)===1,'phaseLabel must be declared once');
+ const fnNames=[...app.matchAll(/\bfunction\s+([A-Za-z_$][\w$]*)\s*\(/g)].map(m=>m[1]);
+ const dupFns=[...new Set(fnNames.filter((n,i)=>fnNames.indexOf(n)!==i))];
+@@ -90,7 +90,7 @@
+ must(app.includes('function getFluidMetrics'),'fluid integration missing');
+ 
+ // Backup / restore
+-must(app.includes("format:'ANESVET_BACKUP',version:'14.7'"),'backup version must be 14.7');
++must(app.includes("format:'ANESVET_BACKUP',version:'14.7.1'"),'backup version must be 14.7.1');
+ must(app.includes("raw.format!=='ANESVET_BACKUP'")&&app.includes('idbClearCases()'),'backup restore integrity path missing');
+ 
+ // Reset must preserve persistent stores by only resetting current case state.
+@@ -131,13 +131,19 @@
+ must(html.includes('id="updateBanner"')&&app.includes('Finish / archive current case before updating'),'safe PWA update UI missing');
+ must(app.includes('caseLowestMap')&&app.includes('caseLowestSpo2')&&app.includes('Emergency return to OR recorded'),'previous anesthesia warning expansion missing');
+ 
+-console.log(`ANESVET V14.7 regression checks: PASS (${ids.length} unique HTML ids, ${fnNames.length} unique named functions)`);
++console.log(`ANESVET V14.7.1 regression checks: PASS (${ids.length} unique HTML ids, ${fnNames.length} unique named functions)`);
+ 
+-// V14.7 compatibility and integration contracts.
++// V14.7.1 compatibility and integration contracts.
+ for(const key of ['anesvet_v14_3_current','anesvet_v14_3_settings','anesvet_v14_3_archive','anesvet_v14_3_protocol_audit'])must(app.includes(key),'original key retained: '+key);
+ must(html.indexOf('clinical-workflow.js')<html.indexOf('app.js'),'helper loads before application');
+-must(sw.includes('clinical-workflow.js?v=14.7'),'offline cache includes helper');
++must(sw.includes('clinical-workflow.js?v=14.7.1'),'offline cache includes helper');
+ must(count(app,/\$\('orStickyRecordBtn'\)\?\.addEventListener/g)===1,'sticky record listener must bind once');
+ for(const id of ['alertProtocolDialog','orQuickDrugDialog','orProblemPanel','recoveryProblemPanel','recoveryHandoffText','reportRecoveryHandoff'])must(ids.includes(id),'new UI '+id);
+ for(const file of [...sw.matchAll(/'\.\/([^']+)'/g)].map(x=>x[1].split('?')[0]))must(fs.existsSync(path.join(root,file)),'cache asset exists: '+file);
+-console.log('V14.7 integration and storage contracts: PASS');
++for(const id of ['orPrimaryActionBtn','orSecondaryPhaseBtn','orPrimaryDrugBtn','orAirwayPanelDetails','orFluidPanelDetails','orQuickInductionSkipBtn'])must(ids.includes(id),'V14.7.1 OR LIVE UX control '+id);
++must(app.includes("openOrQuickDrug({phase:'induction',purpose:'induction'})"),'Induction primary action must open the frozen-protocol drug flow');
++must(app.includes("source:induction?'OR Induction':'OR Quick Drug'"),'Induction administration must be tagged distinctly in the medication audit');
++must(app.includes("airwayWorkflowContext==='intubation'")&&app.includes("triggerOrMilestone('Intubation')"),'Airway save must be able to create the Intubation milestone');
++must(css.includes('.or-live-page>.or-status-row{display:none}')&&css.includes('.or-live-page .or-alert-panel,.or-live-page .complication-watch-panel{display:none}'),'duplicate OR LIVE workspaces should be visually suppressed');
++must(count(html,/class="or-milestone"/g)>=5,'legacy milestone hooks must remain for compatibility');
++console.log('V14.7.1 integration and storage contracts: PASS');
+--- /dev/null
++++ V14.7.1/RELEASE_NOTES_V14_7_1.md
+@@ -0,0 +1,53 @@
++# ANESVET V14.7.1 — OR LIVE Workflow UX
++
++## Why this release
++
++V14.7 มีความสามารถใน OR LIVE ครบขึ้นมาก แต่มีปุ่มและ panel ซ้ำหลายจุด และ milestone ที่ต้องใช้ตั้งแต่ช่วงต้น เช่น Induction / Intubation อยู่ต่ำกว่าข้อมูล monitoring หลาย section รอบนี้จึงปรับ interaction hierarchy โดยไม่เปลี่ยน clinical logic เดิม
++
++## Workflow-first OR LIVE
++
++เพิ่ม `Next Clinical Step` เป็น action หลักด้านบนหน้าจอ ปุ่มเปลี่ยนตาม `casePhase` และข้อมูลที่ถูกบันทึกแล้ว:
++
++1. SETUP → **Induction + Drug**
++2. INDUCTION → **Record induction drug** หรือ **Airway / Intubation**
++3. Airway recorded → **Surgery start**
++4. INTRAOPERATIVE → **Surgery end**
++5. EMERGENCE → **Extubation → Recovery** หรือ Begin Recovery ถ้าไม่มี airway/intubation record
++6. EMERGENCY RETURN → **Return to Recovery**
++
++ผู้ใช้ยังเข้าถึงทางเลือกเดิมผ่าน Tools / Event / Problem และ legacy milestone hooks ถูกเก็บใน DOM เพื่อ compatibility
++
++## Induction medication integration
++
++- Start Induction จะเริ่ม timer/freeze protocol ก่อนเปิด OR Quick Drug
++- Quick Drug filter เฉพาะ phase `induction` ใน workflow นี้
++- พยายาม preselect จาก Anesthesia Plan หรือ Hospital Quick Preset ที่ถูก freeze กับเคส
++- ถ้าไม่มี match ระบบแสดง Select drug แทนการเดายา
++- Actual administered ยังคงว่างและต้องยืนยัน actual mL, route, operator และ preparation
++- Administration จาก workflow นี้ถูก tag เป็น `OR Induction` ใน medication audit
++- มีทางเลือก `Induction without injectable drug` สำหรับกรณีที่ไม่ควรสร้าง administration record
++
++## Intubation / Airway
++
++Airway panel เปลี่ยนเป็น collapsible workspace และ primary workflow จะเปิด/scroll ไปให้ทันที เมื่อ Save จาก Intubation context ระบบจะลง Intubation milestone อัตโนมัติ รวมถึงลง Induction milestone ก่อนถ้ายังขาด เพื่อรักษาลำดับ timeline
++
++## Visual simplification
++
++- Utility controls: Start/Resume, Pause, Keep awake, Recovery, Full screen → `Tools`
++- Phase tracker → collapsed details
++- Fluid/Blood Loss → collapsed
++- Airway/Ventilation → collapsed
++- Manual Event/Problem → collapsed
++- ซ่อน OR status row ที่ซ้ำกับ sticky cockpit
++- ซ่อน Prioritized Alerts และ Active Complications ชุดเก่าที่ซ้ำกับ Active Alerts / Problems
++
++## Compatibility / safety
++
++- Storage keys `anesvet_v14_3_*` ไม่เปลี่ยน
++- IndexedDB `ANESVET_DB` version 2 ไม่เปลี่ยน
++- V14.7 configurable alert protocol / case override / alert lifecycle / Quick Drug / recovery handoff / final lock logic คงเดิม
++- ไม่มีการเปลี่ยน dose, concentration default, alert threshold, HR/RR range, fluid reference, plausibility limit หรือ recovery score
++
++## Validation note
++
++Static syntax/regression and no-dependency workflow checks pass. A supplemental real-Chromium OR LIVE interaction/visual smoke also passes using the exact production source loaded with `page.set_content`; direct local-origin navigation is blocked by this runtime. Full origin-based PWA E2E (service worker/offline/update/storage) and the jsdom DOM suite remain acceptance gates to rerun on an authorized workstation before production use.
+--- /dev/null
++++ V14.7.1/SOURCE_PROVENANCE_V14_7_1.json
+@@ -0,0 +1,34 @@
++{
++  "source_file": "ANESVET_V14_7(1).zip",
++  "source_sha256": "a84a9acedca85bc407982e470a9fb70ae92f6fb2727b4e13f09cea3701a0dc2f",
++  "version_from": "14.7",
++  "version_to": "14.7.1",
++  "release_scope": "OR LIVE workflow-first UX simplification",
++  "persistent_storage_keys_unchanged": true,
++  "indexed_db": {
++    "name": "ANESVET_DB",
++    "version": 2,
++    "schema_changed": false
++  },
++  "clinical_defaults_changed": false,
++  "alert_threshold_defaults_changed": false,
++  "drug_dose_defaults_changed": false,
++  "major_changes": [
++    "Promoted context-sensitive NEXT CLINICAL STEP to the top of OR LIVE",
++    "Integrated Start Case + induction drug recording into one Induction + Drug workflow",
++    "Kept actual administered amount as manual confirmation rather than copying calculated volume",
++    "Promoted Airway/Intubation and Surgery start/end/extubation according to case phase",
++    "Collapsed utility controls under Tools",
++    "Collapsed Fluid/Blood Loss, Airway/Ventilation and Event/Problem secondary panels",
++    "Kept Active Alerts/Problems as the single visible problem workspace",
++    "Hid redundant OR status/prioritized-alert/active-complication panels without removing data hooks",
++    "Hid SAP/DAP from the primary OR cockpit while retaining compatibility",
++    "Preserved legacy milestone DOM hooks and existing clinical data model"
++  ],
++  "validation": {
++    "syntax_regression_model_helpers": "PASS",
++    "real_chromium_injected_source_or_live_smoke": "PASS",
++    "full_origin_browser_pwa_e2e": "BLOCKED_BY_RUNTIME_POLICY",
++    "jsdom_full_npm_suite": "NOT_COMPLETED_DEPENDENCY_UNAVAILABLE"
++  }
++}
