@@ -77,4 +77,4 @@ function lockAndArchive(s){if(!canLock(s))return false;s.locked=true;s.archivedA
   assert.equal(r.total,6);assert.equal(r.possible,6);assert.equal(r.percent,100);
 }
 
-console.log('ANESVET V14.6 workflow model scenarios: PASS (4 scenarios)');
+console.log('ANESVET V14.6.4 workflow model scenarios: PASS (4 scenarios)');

@@ -41,7 +41,7 @@ for(const id of ['hr','rr','sap','map','dap','spo2','etco2','temp']){
 }
 must(app.includes('validateCaseReadyToStart()'),'case-start safety validation missing');
 must(app.includes("requireCurrentWeight('using the Drug Calculator')"),'weight-based drug guard missing');
-must(app.includes("state.patientSaved=true;save();syncAsaCards();updatePatientSaveStatus();")&&app.includes("// V14.6.3: current-weight dependent UI")&&app.includes("updateDashboard();\n  toast('บันทึก Patient Master + Case Setup แล้ว')"),'new-patient current BW must propagate immediately after successful Save');
+must(app.includes("state.patientSaved=true;save();syncAsaCards();updatePatientSaveStatus();")&&app.includes("// V14.6.4: current-weight dependent UI")&&app.includes("updateDashboard();\n  toast('บันทึก Patient Master + Case Setup แล้ว')"),'new-patient current BW must propagate immediately after successful Save');
 
 // Patient / data integrity
 must(html.includes('id="hospitalId"')&&html.includes('id="visitId"'),'HN and Visit IDs must remain separate');
@@ -90,13 +90,13 @@ must(app.includes('function agePartsFromDob'),'age calculation missing');
 must(app.includes('function getFluidMetrics'),'fluid integration missing');
 
 // Backup / restore
-must(app.includes("format:'ANESVET_BACKUP',version:'14.6.3'"),'backup version must be 14.6.3');
+must(app.includes("format:'ANESVET_BACKUP',version:'14.6.4'"),'backup version must be 14.6.4');
 must(app.includes("raw.format!=='ANESVET_BACKUP'")&&app.includes('idbClearCases()'),'backup restore integrity path missing');
 
 // Reset must preserve persistent stores by only resetting current case state.
 must(app.includes('state=freshState()')&&app.includes("localStorage.setItem(CURRENT_KEY,JSON.stringify(state))"),'fresh reset path missing');
 must(!/function resetCurrent\([\s\S]*?localStorage\.removeItem\(SETTINGS_KEY\)/.test(app),'reset must not delete settings');
-must(app.includes('complications:[],drugAdministrations:[],recoveryScores:[]'),'fresh reset must clear V14.6 case-only structured records');
+must(app.includes('complications:[],drugAdministrations:[],alertEpisodes:[],recoveryScores:[]'),'fresh reset must clear V14.6 case-only structured records');
 
 // Print/PDF hardening + V14.6 report sections
 must(css.includes('display:table-header-group'),'print table headers should repeat');
@@ -108,7 +108,7 @@ for(const id of ['reportComplications','reportDrugAdministrations','reportRecove
 
 // V14.6.2 alert UX / configurable BP helpers
 for(const id of ['clinicalGuideDialog','clinicalGuideTitle','clinicalGuideSteps','clinicalGuideComplicationBtn','settingShowSapDap','settingCriticalPopup']){
-  must(html.includes(`id="${id}"`),`V14.6.3 clinical alert UI missing ${id}`);
+  must(html.includes(`id="${id}"`),`V14.6.4 clinical alert UI missing ${id}`);
 }
 must(app.includes('function maybeShowCriticalClinicalAlert'),'critical alert popup logic missing');
 must(app.includes("spo2<90")&&app.includes("map<60"),'critical popup triggers must include SpO2 <90 and MAP <60');
@@ -117,4 +117,18 @@ must(app.includes('function renderSapDapVisibility'),'SAP/DAP visibility setting
 must(css.includes('body.hide-sap-dap .sap-dap-helper'),'SAP/DAP hide CSS missing');
 must(app.includes('criticalPopupEnabled:true')&&app.includes('showSapDap:true'),'new alert settings should have explicit defaults');
 
-console.log(`ANESVET V14.6.3 regression checks: PASS (${ids.length} unique HTML ids, ${fnNames.length} unique named functions)`);
+// V14.6.4 reliability & safety
+must(app.includes('async function idbGetMeta')&&app.includes('async function reconcileCurrentFromMirror'),'IndexedDB current-case recovery path missing');
+must(app.includes('caseActivityEpoch(')&&app.includes('Restore this newer clinical state'),'mirror freshness / restore prompt missing');
+must(html.includes('id="settingDiazepamDose"')&&html.includes('id="settingAdrenalineDose"'),'built-in protocol dose settings missing');
+must(app.includes('function activeBuiltInProtocol')&&app.includes("protocolNumber('diazepamDose'"),'calculator must use protocol-controlled built-in doses');
+must(app.includes('builtInProtocol:{')&&app.includes("unit:'mg/kg'"),'protocol snapshot must freeze built-in dose units');
+must(app.includes('Concentration unit')&&app.includes('concUnit'),'explicit Hospital Drug Library concentration units missing');
+must(app.includes("cu==='μg/mL'?conc/1000:conc")&&app.includes("cu==='mg/mL'?conc*1000:conc"),'mg/μg concentration conversion path missing');
+must(app.includes('function ensureAlertEpisode')&&app.includes('CLINICAL_ALERT_ACKNOWLEDGED')&&app.includes('CLINICAL_ALERT_RESOLVED'),'clinical alert episode lifecycle missing');
+must(app.includes('async function verifyBackupPayloadIntegrity')&&app.includes('checksum mismatch'),'backup checksum validation missing');
+must(sw.includes("message")&&sw.includes('SKIP_WAITING')&&!sw.includes("install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)));self.skipWaiting()"),'service worker update must wait for explicit activation');
+must(html.includes('id="updateBanner"')&&app.includes('Finish / archive current case before updating'),'safe PWA update UI missing');
+must(app.includes('caseLowestMap')&&app.includes('caseLowestSpo2')&&app.includes('Emergency return to OR recorded'),'previous anesthesia warning expansion missing');
+
+console.log(`ANESVET V14.6.4 regression checks: PASS (${ids.length} unique HTML ids, ${fnNames.length} unique named functions)`);

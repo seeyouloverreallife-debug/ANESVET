@@ -1,8 +1,8 @@
 {
-  "name": "ANESVET V14.6.3 — Critical Alerts & Quick Guides",
+  "name": "ANESVET V14.6.4 — Reliability & Safety",
   "short_name": "ANESVET",
-  "description": "Veterinary anesthesia workstation with critical alert popups, quick clinical guides, configurable SAP/DAP helpers, complication workflow and recovery documentation",
-  "start_url": "./?v=14.6.3",
+  "description": "Veterinary anesthesia workstation with current-case recovery, protocol-controlled dosing, explicit concentration units, alert episode audit, safe PWA updates and backup integrity validation",
+  "start_url": "./?v=14.6.4",
   "scope": "./",
   "display": "standalone",
   "background_color": "#f3f7f8",

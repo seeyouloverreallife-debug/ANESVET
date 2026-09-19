@@ -1,56 +1,38 @@
-# ANESVET V14.6.3 — New Patient Current BW Fix
+# ANESVET V14.6.4 — Reliability & Safety Release
 
-## V14.6.3
-- แก้ **New Patient Current BW bug**: หลังกรอกน้ำหนักผู้ป่วยใหม่และกด **Save Patient & Case Setup** ค่า Current BW จะ propagate ไปยัง Drug Calculator / Fluid reference / weight-based plan ทันที
-- ไม่ต้องแก้ช่องอื่น, reload หน้า, หรือเรียกผู้ป่วยเดิมกลับมาอีกครั้งเพื่อให้ BW link
-- เพิ่ม regression check เพื่อป้องกัน bug นี้กลับมา
-- อัปเดต PWA cache/version เป็น V14.6.3
+## สิ่งที่ปรับปรุงหลัก
 
-## V14.6.2
-- เพิ่ม **Critical Alert Popup** ระหว่าง active anesthesia case
-  - MAP <60 mmHg → Hypotension quick guide
-  - SpO₂ <90% → Hypoxemia quick guide
-  - แสดงเพียงครั้งเดียวต่อ alert episode และจะ re-arm เมื่อค่ากลับพ้น critical threshold แล้วเกิดซ้ำ
-  - ไม่เด้งขณะกำลังพิมพ์ค่า MAP / SpO₂ และไม่ซ้อนทับ dialog อื่น
-  - เปิด/ปิดได้จาก Hospital Settings
-- เพิ่ม **Clinical Quick Guides** บน OR LIVE
-  - Hypotension, Bradycardia, Hypoxemia, Ventilation/ETCO₂, Hypothermia
-  - เน้น verify monitor → reassess physiology/anesthetic depth → basic troubleshooting → escalate per hospital protocol
-  - ไม่ใส่ fixed drug doses เพื่อไม่แทน clinical judgment หรือ local protocol
-  - จาก guide สามารถกด **Record complication** ต่อเข้าสู่ structured complication workflow ได้ทันที
-- เพิ่ม **Show SAP / DAP helper fields** ใน Hospital Settings
-  - ปิดได้ทั้ง OR LIVE, Monitoring cards, record preview, record table columns และ BP trend series
-  - MAP ยังเป็น BP alert หลัก
-  - การซ่อนเป็น UI preference เท่านั้น ข้อมูล SAP/DAP เดิมใน record/export ไม่ถูกลบ
-- คงโลโก้ ANESVET ใหม่จาก V14.6.1
-- อัปเดต PWA cache/version เป็น V14.6.2
+- **Current-case recovery จาก IndexedDB mirror**: ตอนเปิดแอป ระบบเปรียบเทียบ current case ใน localStorage กับ mirror ใน IndexedDB และเสนอ restore เมื่อพบข้อมูล mirror ที่ใหม่กว่า
+- **Built-in Drug Protocol ย้ายออกจาก hard-coded dose**: dose/factor ของ Diazepam, Propofol, Tramadol, Carprofen, Meloxicam, Cefazolin preset, Convenia preset, Adrenaline และ Atropine ปรับได้จาก Hospital Settings และถูก freeze เข้า protocol snapshot ตอน Start Case
+- **Explicit concentration units**: Hospital Drug Library เก็บ unit ของ concentration (`mg/mL` หรือ `μg/mL`) แยกชัดเจน และ calculator รองรับการแปลง mg↔μg อย่างถูกต้อง
+- **Clinical alert episodes**: critical MAP/SpO₂ alert เก็บเวลาเริ่ม, acknowledge และ resolved พร้อมขึ้นใน Procedure Timeline / audit trail
+- **Backup integrity validation ก่อน Restore**: ตรวจ checksum ของ LOCKED FINAL records ที่ตรวจสอบได้ก่อนแทนที่ฐานข้อมูลเดิม และเตือน/บล็อกแบบเข้มเมื่อพบ mismatch
+- **Safe PWA update**: service worker เวอร์ชันใหม่จะรอ ไม่ `skipWaiting` อัตโนมัติ และ UI จะไม่อนุญาตให้สลับเวอร์ชันระหว่าง current case ที่ยังมีข้อมูล
+- **Previous anesthesia warnings เพิ่มรายละเอียด**: แสดง difficult airway/ETT, lowest MAP, lowest SpO₂, hypothermia, complication และ emergency return เมื่อมีข้อมูลในเคสก่อนหน้า
+- คง fix จาก **V14.6.3 New Patient Current BW propagation**
 
-## V14.6
-- เพิ่ม **Structured Complication Workflow** สำหรับ onset → assessment/intervention → response → resolution
-- เพิ่ม **Medication Administration Audit** แยก calculated dose ออกจาก actual administration
-- เพิ่ม **Recovery Readiness Score** แบบ internal documentation aid
-- PDF/Archive แสดง complication, medication administration audit และ recovery score history
+## Clinical safety notes
 
-## Safety behavior carried forward
-- Fresh case ไม่มี default BW หรือ vital signs
-- Current BW ต้องกรอกและ Save ก่อน Start case / weight-based drug administration
-- Reset current case ล้าง current-case fields ทุกหน้า แต่ไม่ลบ Patient Master / Archive / Settings
-- HN / Patient ID แยกจาก Visit / Case ID
-- Patient Master duplicate protection + Retire / Restore / Merge alias
-- Multi-tab active-session protection
-- Temperature display °C/°F โดย clinical storage ใช้ canonical °F เพื่อรักษา historical compatibility
-- Recovery explicit N/A + reason
-- Locked final record checksum / audit trail / backup migration
+ANESVET เป็น decision-support + digital anesthesia record ไม่ใช่ continuous physiologic monitor และไม่แทนการประเมินผู้ป่วย, waveform, airway, anesthetic depth หรือ protocol ของโรงพยาบาล
 
-## Tests
-รันจากโฟลเดอร์ ANESVET:
+ควรตรวจ Hospital Protocol และ concentration/dose ทุกครั้งก่อนใช้งานจริง โดยเฉพาะหลังอัปเดตเวอร์ชันหรือแก้ protocol settings
+
+## Validation
+
+โฟลเดอร์ `tests/` มี regression checks, workflow scenarios และ browser E2E smoke test สำหรับ critical workflow ที่รองรับการทดสอบด้วย Chromium headless
+
+## Compatibility
+
+- คง storage keys ตระกูล `anesvet_v14_3_*` โดยตั้งใจ เพื่อให้ข้อมูลจาก V14.3+ อัปเกรดแบบ in-place และไม่สร้างฐานข้อมูลซ้ำโดยไม่จำเป็น
+- IndexedDB schema ยังคงเข้ากันได้กับ V14.6.3; release นี้ไม่ได้เพิ่ม object store ใหม่
+- แนะนำให้ Export Backup ก่อนอัปเดตจากเครื่องที่มีข้อมูลเคสจริง
+
+## Validation commands
 
 ```bash
 node --check app.js
+node --check service-worker.js
 node tests/regression.mjs
 node tests/workflow_scenarios.mjs
+node tests/e2e_browser.mjs
 ```
-
-`tests/pdf_stress_fixture.html` ใช้ตรวจ printable layout โดยไม่แตะข้อมูลผู้ป่วยจริง
-
-Storage keys remain `anesvet_v14_3_*` intentionally so existing V14.3+ data upgrades in place.
