@@ -4,12 +4,12 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#0d5265">
-  <meta name="description" content="ANESVET V14.6.4 — veterinary anesthesia workstation with critical alert popups, quick clinical guides and configurable SAP/DAP helpers">
+  <meta name="description" content="ANESVET V14.7 — veterinary anesthesia workstation with critical alert popups, quick clinical guides and configurable SAP/DAP helpers">
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" href="./icon-192.png">
   <link rel="apple-touch-icon" href="./icon-192.png">
-  <link rel="stylesheet" href="./style.css?v=14.6.4">
-  <title>ANESVET V14.6.4</title>
+  <link rel="stylesheet" href="./style.css?v=14.7">
+  <title>ANESVET V14.7</title>
 </head>
 <body>
 <header class="topbar">
@@ -17,7 +17,7 @@
     <img class="brand-logo" src="./icon-192.png" alt="ANESVET logo">
     <div>
       <div class="eyebrow">GENOVI PET CARE • DIGITAL ANESTHESIA RECORD</div>
-      <h1>ANESVET <span>V14.6.4</span></h1>
+      <h1>ANESVET <span>V14.7</span></h1>
     </div>
   </div>
   <div class="top-actions">
@@ -101,7 +101,7 @@
     <button data-more-tab="timeline">Timeline</button>
     <button data-more-tab="events">Events & Drugs</button>
     <button data-more-tab="cases">Cases</button>
-    <button data-more-tab="settings">Settings</button>
+    <button data-more-tab="settings">Settings</button><details class="advanced-menu"><summary>Advanced</summary><button data-more-tab="dashboard">Legacy Monitoring</button></details>
   </div>
 
   <section id="patient" class="tabpage active">
@@ -425,7 +425,7 @@
           <label>Ventilation<select id="orVentilation"><option value="">—</option><option>Spontaneous</option><option>Manual PPV</option><option>Mechanical ventilation</option></select></label>
         </div>
       </section>
-      <section class="panel or-alert-panel">
+      <section class="panel or-workflow-problems"><div class="section-heading"><div><h2>Active Alerts / Problems</h2><p>รับทราบ • บันทึก intervention • ติดตามผล</p></div><span id="orProblemCount" class="status-pill">0 OPEN</span></div><div class="protocol-toolbar"><span id="orAlertProtocolStatus"></span><button id="editCaseAlertBtn" class="btn">Case alert override</button></div><div id="orProblemPanel"></div><details><summary>Case alert protocol history</summary><div id="caseAlertHistory"></div></details></section><section class="panel or-alert-panel">
         <div class="section-heading"><div><h2>Prioritized alerts</h2><p>Immediate problems ก่อน ตามด้วย trend alerts</p></div><span id="orAlertCount" class="status-pill good">0 ALERTS</span></div>
         <div id="orAlertList" class="or-alert-list"><div class="empty-state compact">No active alerts</div></div>
         <div class="or-quick-guides">
@@ -569,7 +569,7 @@
           <button class="or-event" data-cat="Fluid" data-label="Fluid bolus">Fluid bolus</button>
           <button class="or-event" data-cat="Ventilation" data-label="PPV started">PPV started</button>
           <button id="orRecoveryQuickBtn" class="or-action-link">→ Begin recovery</button>
-          <button id="orOpenDrugBtn" class="or-action-link">Drug calculator →</button>
+          <button id="orOpenDrugBtn" class="or-action-link">＋ Quick Drug</button>
         </div></div>
       </div>
     </section>
@@ -746,7 +746,7 @@
       <div class="section-heading">
         <div>
           <h2>Legacy monitoring workspace</h2>
-          <p>V13 ใช้ Patient & Case Setup + OR LIVE เป็น workflow หลัก หน้านี้คงไว้เพื่อ compatibility ของระบบเดิม</p>
+          <p>V14.7 ใช้ Patient & Case Setup + OR LIVE เป็น workflow หลัก หน้านี้คงไว้เพื่อ compatibility ของระบบเดิม</p>
         </div>
       </div>
     </section>
@@ -1396,7 +1396,7 @@
     </section>
   </section>
 
-  <section id="recovery" class="tabpage">
+  <section id="recovery" class="tabpage"><section class="panel handoff-panel"><h2>Recovery Handoff Summary</h2><p>สรุปจากข้อมูลที่บันทึก • ค่าที่ไม่ได้บันทึกจะแสดงชัดเจน</p><pre id="recoveryHandoffText"></pre><details><summary>Snapshots at transfer</summary><div id="recoveryHandoffHistory"></div></details></section><section class="panel"><h2>Unresolved alerts / problems</h2><div id="recoveryProblemPanel"></div></section>
     <section class="recovery-command">
       <div><div class="eyebrow dark">RECOVERY MODE</div><h2>Post-anesthetic recovery</h2><p>ติดตาม airway, oxygenation, temperature, comfort และ mentation จน recovery complete</p></div>
       <div class="recovery-command-actions">
@@ -1653,7 +1653,7 @@
     <section class="report-section">
       <h2>Recovery</h2>
       <div id="reportRecovery"></div>
-      <div id="reportRecoveryScores"></div>
+      <div id="reportRecoveryHandoff" class="report-handoff"></div><div id="reportRecoveryScores"></div>
       <div id="reportRecoveryRecords"></div>
     </section>
 
@@ -1727,11 +1727,11 @@
     </section>
   </section>
 
-  <section id="settings" class="tabpage"><section class="panel"><div class="section-heading"><div><h2>Hospital settings</h2><p>ปรับ default ของโรงพยาบาลโดยไม่ต้องแก้ code</p></div><button id="saveSettingsBtn" class="btn primary">Save settings</button></div><div class="settings-grid">
+  <section id="settings" class="tabpage"><section class="panel"><div class="section-heading"><h2>Configurable Alert Protocol</h2><button id="editHospitalAlertBtn" class="btn primary">Edit hospital alerts</button></div><pre id="hospitalAlertSummary"></pre><details><summary>Hospital alert history</summary><div id="hospitalAlertHistory"></div></details><p>Default thresholds match V14.6.4. Hospital edits apply to new cases; case overrides require an actor and reason.</p></section><section class="panel"><div class="section-heading"><div><h2>Hospital settings</h2><p>ปรับ default ของโรงพยาบาลโดยไม่ต้องแก้ code</p></div><button id="saveSettingsBtn" class="btn primary">Save settings</button></div><div class="settings-grid">
 <label>Default record interval<select id="settingInterval"><option value="5">5 min</option><option value="10">10 min</option></select></label>
 <label>Temperature unit<select id="settingTemperatureUnit"><option value="C">°C (recommended for Thailand)</option><option value="F">°F</option></select></label>
 <label class="settings-toggle"><span>Show SAP / DAP helper fields</span><input id="settingShowSapDap" type="checkbox" checked></label>
-<label class="settings-toggle"><span>Critical popup (MAP &lt;60 / SpO₂ &lt;90)</span><input id="settingCriticalPopup" type="checkbox" checked></label>
+<label class="settings-toggle"><span>Critical popup (configured alert thresholds)</span><input id="settingCriticalPopup" type="checkbox" checked></label>
 <label>Diazepam concentration (mg/mL)<input id="settingDiazepamConc" type="number" min="0.01" step="0.1" value="5"></label>
 <label>Propofol concentration (mg/mL)<input id="settingPropofolConc" type="number" min="0.01" step="0.1" value="10"></label>
 <label>Tramadol concentration (mg/mL)<input id="settingTramadolConc" type="number" min="0.01" step="0.1" value="50"></label>
@@ -1855,6 +1855,11 @@
   </section>
 </main>
 
+
+
+<dialog id="alertProtocolDialog" class="workflow-dialog" aria-labelledby="alertProtocolTitle"><div class="workflow-dialog-body"><h2 id="alertProtocolTitle">Alert Protocol</h2><p id="alertProtocolContext"></p><p>Temperature thresholds use °F for exact compatibility (°C = (°F − 32) ÷ 1.8). Leave both upper fields blank to disable upper alerts. Comparisons are strictly below / above.</p><div id="alertThresholdFields"></div><label>Changed by<input id="alertProtocolActor" autocomplete="off"></label><label>Reason (required)<textarea id="alertProtocolReason"></textarea></label><p id="alertProtocolError" class="workflow-error" role="alert"></p><div class="workflow-dialog-actions"><button class="btn" data-close-dialog="alertProtocolDialog">Cancel</button><button class="btn" id="clearCaseAlertOverrideBtn">Return to frozen defaults</button><button class="btn primary" id="saveAlertProtocolBtn">Save with audit</button></div></div></dialog>
+<dialog id="problemActionDialog" class="workflow-dialog" aria-labelledby="problemActionTitle"><div class="workflow-dialog-body"><h2 id="problemActionTitle"></h2><label>Recorded by<input id="problemActionActor"></label><label>Intervention / outcome / reason<textarea id="problemActionNote"></textarea></label><p id="problemActionError" class="workflow-error" role="alert"></p><div class="workflow-dialog-actions"><button class="btn" data-close-dialog="problemActionDialog">Cancel</button><button id="saveProblemActionBtn" class="btn primary">Save action</button></div></div></dialog>
+<dialog id="orQuickDrugDialog" class="workflow-dialog" aria-labelledby="orQuickDrugTitle"><div class="workflow-dialog-body"><h2 id="orQuickDrugTitle">OR Quick Drug</h2><p id="orQuickDrugBasis"></p><label>Frozen protocol drug<select id="orQuickDrugSelect"></select></label><div class="quick-drug-calculation" id="orQuickDrugCalculation"></div><p>ค่าคำนวณเป็นข้อมูลอ้างอิง กรุณาระบุปริมาณที่ให้จริงและตรวจ preparation ก่อนยืนยัน</p><div class="quick-drug-fields"><label>Actual administered (mL)<input id="orQuickDrugActual" type="number" min="0" step="any" inputmode="decimal"></label><label>Route<input id="orQuickDrugRoute" placeholder="IV / IM / SC ..."></label><label>Administered by<input id="orQuickDrugBy"></label><label>Preparation / concentration<input id="orQuickDrugConcentration" placeholder="Confirm preparation used"></label></div><label>Note<textarea id="orQuickDrugNote"></textarea></label><p class="workflow-error" id="orQuickDrugError" role="alert"></p><div class="workflow-dialog-actions"><button class="btn" data-close-dialog="orQuickDrugDialog">Cancel</button><button id="orQuickDrugSaveBtn" class="btn primary">Confirm actual administration</button></div></div></dialog>
 
 <dialog id="drugAdminDialog" class="drug-admin-dialog">
   <form method="dialog" class="drug-admin-card" onsubmit="return false;">
@@ -1980,6 +1985,7 @@
 </dialog>
 
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
-<script src="./app.js?v=14.6.4"></script>
+<script src="./clinical-workflow.js?v=14.7"></script>
+<script src="./app.js?v=14.7"></script>
 </body>
 </html>

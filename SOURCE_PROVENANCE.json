@@ -1,0 +1,67 @@
+{
+  "source_file": "ANESVET_V14_6_4(1).zip",
+  "source_sha256": "8c7a5fe7ff19ea5652007ae053d9a41124d04d05b5f6cce02ffefc6e41625df8",
+  "version_from": "14.6.4",
+  "version_to": "14.7",
+  "architecture_review": "ARCHITECTURE_V14_7.md",
+  "storage_keys_unchanged": {
+    "CURRENT_KEY": "anesvet_v14_3_current",
+    "ARCHIVE_KEY": "anesvet_v14_3_archive_legacy",
+    "TAB_KEY": "anesvet_v14_3_tab",
+    "SETTINGS_KEY": "anesvet_v14_3_settings",
+    "DRUG_LIBRARY_KEY": "anesvet_v14_3_drug_library",
+    "QUICK_PRESET_KEY": "anesvet_v14_3_quick_presets",
+    "ALERT_PREF_KEY": "anesvet_due_alert_feedback",
+    "PROTOCOL_AUDIT_KEY": "anesvet_v14_3_protocol_audit",
+    "LAST_BACKUP_KEY": "anesvet_v14_3_last_backup",
+    "BREED_ALIAS_KEY": "anesvet_v14_3_breed_aliases",
+    "PATIENT_FALLBACK_KEY": "anesvet_v14_3_patients_fallback",
+    "SESSION_LOCK_KEY": "anesvet_v14_3_active_session",
+    "SESSION_TAB_KEY": "anesvet_session_tab_id"
+  },
+  "indexed_db": {
+    "name": "ANESVET_DB",
+    "version": 2
+  },
+  "unchanged_source_files": [
+    "icon-192.png",
+    "icon-512.png",
+    "icon-maskable-512.png",
+    "tests/pdf_stress_fixture.html",
+    "tests/workflow_scenarios.mjs"
+  ],
+  "modified_source_files": [
+    "README_TH.md",
+    "app.js",
+    "index.html",
+    "manifest.webmanifest",
+    "service-worker.js",
+    "style.css",
+    "tests/TEST_RESULTS.txt",
+    "tests/e2e_browser.mjs",
+    "tests/regression.mjs"
+  ],
+  "clinical_default_settings_function_identical": true,
+  "hr_rr_threshold_code_identical": true,
+  "drug_calculation_function_identical": true,
+  "browser_e2e_status": "BLOCKED / not passed",
+  "added_files": [
+    "ARCHITECTURE_V14_7.md",
+    "BUILD_STATUS.txt",
+    "RELEASE_NOTES_V14_7.md",
+    "SOURCE_CHANGES.patch",
+    "SOURCE_PROVENANCE.json",
+    "clinical-workflow.js",
+    "package-lock.json",
+    "package.json",
+    "tests/BROWSER_E2E_STATUS.txt",
+    "tests/SUPPORTED_TEST_RUN.txt",
+    "tests/clinical_workflow.mjs",
+    "tests/compatibility.mjs",
+    "tests/dom_harness.mjs",
+    "tests/dom_workflow.mjs",
+    "tests/final_lock.mjs",
+    "tests/governance.mjs",
+    "tests/syntax.mjs"
+  ]
+}

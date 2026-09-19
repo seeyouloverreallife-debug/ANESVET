@@ -1,17 +1,37 @@
-ANESVET V14.6.4 validation run - 2026-09-19
+ANESVET V14.7 — final supported test run
+UTC: 2026-09-19T14:35:22.033730+00:00
+Source: supplied ANESVET_V14_6_4(1).zip (see SOURCE_PROVENANCE.json)
+Runtime: Node.js v24.19.0; jsdom 30.1.0; fake-indexeddb 6.2.5
 
-PASS - node --check app.js
-PASS - node --check service-worker.js
-PASS - tests/regression.mjs
-PASS - tests/workflow_scenarios.mjs
-PASS - tests/e2e_browser.mjs (Chromium headless)
-PASS - New Patient Current BW recalculates immediately after Save Patient & Case Setup
-PASS - Built-in protocol dose settings drive Drug Calculator and protocol chips
-PASS - Hospital Drug Library stores explicit concentration units and converts mg/mL ↔ μg/mL where applicable
-PASS - Critical MAP alert lifecycle: started → acknowledged → resolved with timestamps
-PASS - IndexedDB current mirror has read/recovery path with freshness comparison
-PASS - Backup restore validates LOCKED FINAL SHA-256 checksums and warns on mismatch
-PASS - Previous anesthesia warnings include low MAP, low SpO₂, hypothermia, difficult airway/ETT, complications and emergency return
-PASS - PWA update waits for explicit activation and is deferred while current case has data
-PASS - Patient Master / Archive / Settings storage keys preserved for in-place upgrade
-PASS - PWA cache/version bumped to V14.6.4
+PASS — JavaScript syntax and JSON: 13 JavaScript files
+PASS — Source regression: 662 unique HTML IDs, 346 unique named functions
+PASS — V14.7 integration / storage contracts
+PASS — Original workflow model: 4 scenarios
+PASS — Production clinical helper logic: 73 assertions
+PASS — Full DOM workflow including actual Extubation button: 65 assertions
+PASS — Synthetic V14.6.4 compatibility / checksum / view-only: 33 assertions
+PASS — Protocol governance / species / stale BW / N/A / problems: 27 assertions
+PASS — Final lock / archive / PDF report content integrity: 10 assertions
+Total new production-helper / DOM assertions: 208
+PASS — Baseline comparison: defaultSettings, HR/RR thresholds, calculator
+       implementation and persistent keys unchanged
+
+BLOCKED / NOT PASSED — real Chromium browser E2E
+Not tested: native UI rendering/dialog focus, real mobile layout, print
+pagination, offline behavior and actual PWA version upgrade.
+Browser attempts and repeatable command: BROWSER_E2E_STATUS.txt
+Runner supplied: e2e_browser.mjs (syntax-checked only in final recovered build)
+
+Important distinctions:
+- Source regression is static; the original model is separate from production.
+- clinical_workflow.mjs imports the real production helper module.
+- DOM suites evaluate the full production app and invoke actual handlers.
+- Browser-only primitives are replaced by jsdom harness shims; this is NOT E2E.
+- Compatibility fixtures are synthetic. No patient data was supplied.
+- PDF verification checks generated report content, not rendered print pages.
+
+Raw supported test output: SUPPORTED_TEST_RUN.txt
+Command: TEST_NODE_MODULES=<installed dependency path> npm test
+No product runtime dependencies or test node_modules are included in ZIP.
+
+Overall: RELEASE CANDIDATE, browser acceptance gate incomplete.

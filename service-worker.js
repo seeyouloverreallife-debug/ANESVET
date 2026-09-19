@@ -1,5 +1,5 @@
-const CACHE='anesvet-v14-6-4-reliability-safety';
-const ASSETS=['./','./index.html','./style.css?v=14.6.4','./app.js?v=14.6.4','./manifest.webmanifest','./icon-192.png','./icon-512.png','./icon-maskable-512.png'];
+const CACHE='anesvet-v14-7-or-live-clinical-workflow';
+const ASSETS=['./','./index.html','./style.css?v=14.7','./clinical-workflow.js?v=14.7','./app.js?v=14.7','./manifest.webmanifest','./icon-192.png','./icon-512.png','./icon-maskable-512.png'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)))});
 self.addEventListener('message',e=>{if(e.data?.type==='SKIP_WAITING')self.skipWaiting()});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))));self.clients.claim()});

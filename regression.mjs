@@ -13,8 +13,8 @@ const count=(s,re)=>(s.match(re)||[]).length;
 const must=(cond,msg)=>assert.ok(cond,msg);
 
 // Core version / structure
-must(manifest.name.includes('V14.6'),'manifest should be V14.6');
-must(sw.includes('v14-6')||sw.includes('14.6'),'service worker cache should identify V14.6');
+must(manifest.name.includes('V14.7'),'manifest should be V14.7');
+must(sw.includes('v14-7'),'service worker cache should identify V14.7');
 must(count(app,/function\s+phaseLabel\s*\(/g)===1,'phaseLabel must be declared once');
 const fnNames=[...app.matchAll(/\bfunction\s+([A-Za-z_$][\w$]*)\s*\(/g)].map(m=>m[1]);
 const dupFns=[...new Set(fnNames.filter((n,i)=>fnNames.indexOf(n)!==i))];
@@ -90,12 +90,12 @@ must(app.includes('function agePartsFromDob'),'age calculation missing');
 must(app.includes('function getFluidMetrics'),'fluid integration missing');
 
 // Backup / restore
-must(app.includes("format:'ANESVET_BACKUP',version:'14.6.4'"),'backup version must be 14.6.4');
+must(app.includes("format:'ANESVET_BACKUP',version:'14.7'"),'backup version must be 14.7');
 must(app.includes("raw.format!=='ANESVET_BACKUP'")&&app.includes('idbClearCases()'),'backup restore integrity path missing');
 
 // Reset must preserve persistent stores by only resetting current case state.
 must(app.includes('state=freshState()')&&app.includes("localStorage.setItem(CURRENT_KEY,JSON.stringify(state))"),'fresh reset path missing');
-must(!/function resetCurrent\([\s\S]*?localStorage\.removeItem\(SETTINGS_KEY\)/.test(app),'reset must not delete settings');
+must(!app.slice(app.indexOf('function resetCurrent('),app.indexOf('\n}',app.indexOf('function resetCurrent('))+2).includes('localStorage.removeItem(SETTINGS_KEY)'),'reset must not delete settings');
 must(app.includes('complications:[],drugAdministrations:[],alertEpisodes:[],recoveryScores:[]'),'fresh reset must clear V14.6 case-only structured records');
 
 // Print/PDF hardening + V14.6 report sections
@@ -111,7 +111,7 @@ for(const id of ['clinicalGuideDialog','clinicalGuideTitle','clinicalGuideSteps'
   must(html.includes(`id="${id}"`),`V14.6.4 clinical alert UI missing ${id}`);
 }
 must(app.includes('function maybeShowCriticalClinicalAlert'),'critical alert popup logic missing');
-must(app.includes("spo2<90")&&app.includes("map<60"),'critical popup triggers must include SpO2 <90 and MAP <60');
+must(app.includes('syncAlertEpisodes')&&app.includes('WF.classifyAlert'),'configured alert classifier must be used');
 must(app.includes('CLINICAL_GUIDES')&&app.includes("hypotension:{")&&app.includes("hypoxemia:{"),'quick clinical guide content missing');
 must(app.includes('function renderSapDapVisibility'),'SAP/DAP visibility setting missing');
 must(css.includes('body.hide-sap-dap .sap-dap-helper'),'SAP/DAP hide CSS missing');
@@ -131,4 +131,13 @@ must(sw.includes("message")&&sw.includes('SKIP_WAITING')&&!sw.includes("install'
 must(html.includes('id="updateBanner"')&&app.includes('Finish / archive current case before updating'),'safe PWA update UI missing');
 must(app.includes('caseLowestMap')&&app.includes('caseLowestSpo2')&&app.includes('Emergency return to OR recorded'),'previous anesthesia warning expansion missing');
 
-console.log(`ANESVET V14.6.4 regression checks: PASS (${ids.length} unique HTML ids, ${fnNames.length} unique named functions)`);
+console.log(`ANESVET V14.7 regression checks: PASS (${ids.length} unique HTML ids, ${fnNames.length} unique named functions)`);
+
+// V14.7 compatibility and integration contracts.
+for(const key of ['anesvet_v14_3_current','anesvet_v14_3_settings','anesvet_v14_3_archive','anesvet_v14_3_protocol_audit'])must(app.includes(key),'original key retained: '+key);
+must(html.indexOf('clinical-workflow.js')<html.indexOf('app.js'),'helper loads before application');
+must(sw.includes('clinical-workflow.js?v=14.7'),'offline cache includes helper');
+must(count(app,/\$\('orStickyRecordBtn'\)\?\.addEventListener/g)===1,'sticky record listener must bind once');
+for(const id of ['alertProtocolDialog','orQuickDrugDialog','orProblemPanel','recoveryProblemPanel','recoveryHandoffText','reportRecoveryHandoff'])must(ids.includes(id),'new UI '+id);
+for(const file of [...sw.matchAll(/'\.\/([^']+)'/g)].map(x=>x[1].split('?')[0]))must(fs.existsSync(path.join(root,file)),'cache asset exists: '+file);
+console.log('V14.7 integration and storage contracts: PASS');

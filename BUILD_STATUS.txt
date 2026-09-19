@@ -1,0 +1,5 @@
+ANESVET V14.7 release candidate
+Implemented from supplied V14.6.4 source.
+Supported automated test suite: PASS (see tests/TEST_RESULTS.txt).
+Real Chromium browser E2E: BLOCKED / NOT PASSED.
+No claim of complete release acceptance until browser gate succeeds.

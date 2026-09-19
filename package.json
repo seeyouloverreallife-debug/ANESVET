@@ -1,0 +1,15 @@
+{
+  "name": "anesvet-v14-7",
+  "version": "14.7.0",
+  "private": true,
+  "description": "ANESVET V14.7 OR LIVE & Clinical Workflow; runtime requires no build",
+  "engines": {"node": ">=22"},
+  "scripts": {
+    "test:syntax": "node tests/syntax.mjs",
+    "test:regression": "node tests/regression.mjs",
+    "test:workflow": "node tests/workflow_scenarios.mjs && node tests/clinical_workflow.mjs && node tests/dom_workflow.mjs && node tests/compatibility.mjs && node tests/governance.mjs && node tests/final_lock.mjs",
+    "test": "npm run test:syntax && npm run test:regression && npm run test:workflow",
+    "test:browser": "node tests/e2e_browser.mjs"
+  },
+  "devDependencies": {"fake-indexeddb": "6.2.5", "jsdom": "30.1.0", "playwright": "1.62.1"}
+}

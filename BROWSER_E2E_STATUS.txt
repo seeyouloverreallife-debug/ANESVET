@@ -1,0 +1,27 @@
+STATUS: BLOCKED / NOT PASSED
+
+Attempts earlier in this task:
+- Original browser script could not find /usr/bin/chromium.
+- Playwright Chromium executable was not installed in the runtime cache.
+- Playwright Chromium download timed out at cdn.playwright.dev.
+- Managed browser rejected http://127.0.0.1:8765 with ERR_BLOCKED_BY_CLIENT.
+- Managed browser rejected the local file URL under its URL security policy.
+- No alternate browser/control channel was used to bypass those denials.
+
+The workspace was reset during continuation. Source was reconstructed from the
+same baseline and all supported tests rerun. The final real-browser runner in
+this ZIP has only syntax validation; it has NOT executed successfully.
+
+jsdom is a DOM integration harness. It is NOT browser E2E and does not verify
+native focus/modal behavior, CSS layout, mobile rendering, print pagination,
+service-worker/offline behavior or a V14.6.4-to-V14.7 PWA upgrade.
+
+On an authorized host with Node >=22:
+  npm ci
+  npx playwright install chromium
+  npm run test:browser
+Or provide CHROMIUM_BIN pointing to an installed Chromium executable.
+
+The runner serves the production files over HTTP, uses real browser storage,
+and covers desktop/mobile, alerts, actual drugs, handoff/reload, Advanced route
+and offline cache smoke. A full old-cache upgrade remains a separate manual gate.
