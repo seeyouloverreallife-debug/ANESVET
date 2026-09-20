@@ -1,0 +1,18 @@
+import fs from 'node:fs';import path from 'node:path';import assert from 'node:assert/strict';
+const root=path.resolve(path.dirname(new URL(import.meta.url).pathname),'..');
+const app=fs.readFileSync(path.join(root,'app.js'),'utf8'),html=fs.readFileSync(path.join(root,'index.html'),'utf8'),css=fs.readFileSync(path.join(root,'style.css'),'utf8');
+const ok=(c,m)=>assert.ok(c,m);
+ok(app.includes("if(action==='start-induction')")&&app.includes("triggerOrMilestone('Induction')"),'one-tap induction timestamp missing');
+ok(!app.includes("if(action==='start-induction'){if(!startCaseFromOr())return;openOrQuickDrug"),'start induction must not force medication dialog');
+ok(app.includes("state.inductionDocumentationMode='deferred-v1472'"),'deferred induction documentation mode missing');
+ok(app.includes('function inductionMedicationRecords')&&app.includes('function nextInductionQuickDrugIndex'),'multi-drug induction helpers missing');
+ok(html.includes('id="orQuickDrugDoneBtn"')&&html.includes('No injectable induction meds'),'induction batch completion controls missing');
+ok(app.includes('adminEpoch:b.adminEpoch')&&app.includes('documentedAt:Date.now()'),'retrospective administration timestamps missing');
+ok(app.includes("source:induction?'OR Induction':recovery?'Recovery Medication':'OR Quick Drug'"),'medication source tagging missing');
+ok(html.includes('id="orStickyDrugBtn"')&&app.includes("$('orStickyDrugBtn')?.addEventListener"),'persistent OR medication access missing');
+ok(html.includes('id="recoveryMedicationBtn"')&&app.includes("purpose:'recovery',allowRecovery:true"),'Recovery medication access missing');
+ok(html.indexOf('class="recovery-command"')<html.indexOf('class="panel handoff-panel"'),'Recovery command must appear before handoff summary');
+ok(html.includes('id="recoveryHandoffSummary"')&&app.includes('function renderRecoveryHandoffSummary'),'compact handoff renderer missing');
+ok(css.includes('.handoff-summary-grid')&&css.includes('.handoff-full-details'),'compact handoff styles missing');
+ok(app.includes("purpose==='recovery'&&state.casePhase!=='recovery'"),'Recovery medication phase guard missing');
+console.log('V14.7.2 UX contracts: PASS (13 assertions)');

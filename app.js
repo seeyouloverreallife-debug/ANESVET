@@ -40,6 +40,7 @@ let state = {
   drugAdministrations: [],
   alertEpisodes: [],
   alertProtocolOverride:null,alertProtocolHistory:[],recoveryHandoffs:[],
+  inductionDocumentationMode:'',inductionMedicationReviewCompletedAt:null,
   recoveryScores: [],
   recoveryChecks: [false,false,false,false,false,false],
   recoveryNA: [false,false,false,false,false,false],
@@ -140,7 +141,7 @@ function toast(msg){
 }
 function readSessionLock(){try{const x=JSON.parse(localStorage.getItem(SESSION_LOCK_KEY)||'null');return x&&x.tabId?x:null}catch(e){return null}}
 function sessionLockIsFresh(lock){return !!(lock&&lock.tabId&&Number(lock.heartbeatAt)>0&&(Date.now()-Number(lock.heartbeatAt))<SESSION_TTL_MS)}
-function writeSessionLock(){if(sessionMode!=='active')return;const lock={tabId:sessionTabId,heartbeatAt:Date.now(),caseId:state?.caseId||'',patientName:state?.patientName||'',version:'14.7.1'};try{localStorage.setItem(SESSION_LOCK_KEY,JSON.stringify(lock))}catch(e){};try{sessionChannel?.postMessage({type:'HEARTBEAT',...lock})}catch(e){}}
+function writeSessionLock(){if(sessionMode!=='active')return;const lock={tabId:sessionTabId,heartbeatAt:Date.now(),caseId:state?.caseId||'',patientName:state?.patientName||'',version:'14.7.2'};try{localStorage.setItem(SESSION_LOCK_KEY,JSON.stringify(lock))}catch(e){};try{sessionChannel?.postMessage({type:'HEARTBEAT',...lock})}catch(e){}}
 function releaseSessionLock(){const lock=readSessionLock();if(lock?.tabId===sessionTabId){try{localStorage.removeItem(SESSION_LOCK_KEY)}catch(e){};try{sessionChannel?.postMessage({type:'RELEASE',tabId:sessionTabId})}catch(e){}}}
 function sessionSafeTarget(target){return !!target?.closest?.('.session-safe,[data-tab],[data-more-tab],#moreMenuBtn,.archive-pdf,.verify-integrity')}
 function renderSessionMode(){
@@ -1192,7 +1193,13 @@ function renderOrRecent(){const items=[...(state.records||[]).slice(-5).map(r=>(
 function renderOrTimerState(){if(!$('orTimerState'))return;if(state.timer.running){$('orTimerState').className='timer-state running';$('orTimerState').textContent='● RUNNING';$('orStartBtn').textContent='Running';$('orStartBtn').disabled=true;$('orPauseBtn').disabled=false;$('orPauseBtn').textContent='Pause case'}else if((state.timer.elapsedMs||0)>0){$('orTimerState').className='timer-state paused';$('orTimerState').textContent='PAUSED';$('orStartBtn').textContent='▶ Resume';$('orStartBtn').disabled=false;$('orPauseBtn').disabled=true;$('orPauseBtn').textContent='Paused'}else{$('orTimerState').className='timer-state ready';$('orTimerState').textContent='READY';$('orStartBtn').textContent='▶ Start case';$('orStartBtn').disabled=false;$('orPauseBtn').disabled=true;$('orPauseBtn').textContent='Pause'}$('orCaseClock').textContent=formatElapsed(currentElapsed())}
 
 function hasProcedureMilestone(label){return (state.events||[]).some(e=>e?.name===label)}
-function inductionDrugRecorded(){return (state.drugAdministrations||[]).some(d=>!d.voidedAt&&d.source==='OR Induction')}
+function procedureMilestoneEvent(label){return (state.events||[]).find(e=>e?.name===label&&e?.note==='Procedure milestone')||(state.events||[]).find(e=>e?.name===label)||null}
+function inductionMedicationRecords(){return (state.drugAdministrations||[]).filter(d=>!d.voidedAt&&d.source==='OR Induction')}
+function inductionDrugRecorded(){return inductionMedicationRecords().length>0}
+function inductionMedicationComplete(){
+  if(state.inductionDocumentationMode==='deferred-v1472')return !!state.inductionMedicationReviewCompletedAt;
+  return !!state.inductionMedicationReviewCompletedAt||inductionDrugRecorded();
+}
 function airwayRecorded(){return !!($('airwayEttSize')?.value||$('airwayCircuit')?.value||$('airwayDifficulty')?.value||hasProcedureMilestone('Intubation'))}
 function triggerOrMilestone(label){
   const btn=[...document.querySelectorAll('.or-milestone')].find(x=>x.dataset.label===label);
@@ -1204,25 +1211,29 @@ function openAirwayWorkflow(context='edit'){
   setTimeout(()=>$('airwayEttSize')?.focus(),180);
 }
 function renderOrPrimaryFlow(){
-  const title=$('orPrimaryActionTitle'),help=$('orPrimaryActionHelp'),primary=$('orPrimaryActionBtn'),secondary=$('orSecondaryPhaseBtn'),drug=$('orPrimaryDrugBtn');if(!title||!help||!primary)return;
-  const phase=state.caseLocked?'locked':(state.casePhase||'setup');
-  primary.disabled=false;primary.hidden=false;secondary.hidden=true;secondary.textContent='';drug.hidden=true;
+  const title=$('orPrimaryActionTitle'),help=$('orPrimaryActionHelp'),primary=$('orPrimaryActionBtn'),secondary=$('orSecondaryPhaseBtn'),drug=$('orPrimaryDrugBtn'),stickyDrug=$('orStickyDrugBtn');if(!title||!help||!primary)return;
+  const phase=state.caseLocked?'locked':(state.casePhase||'setup'),started=!!state.caseStartedAt,pendingInduction=started&&!inductionMedicationComplete();
+  primary.disabled=false;primary.hidden=false;secondary.hidden=true;secondary.textContent='';drug.hidden=true;if(stickyDrug){stickyDrug.hidden=!started||['recovery','complete','locked'].includes(phase);stickyDrug.classList.toggle('pending',pendingInduction);stickyDrug.textContent=pendingInduction?'💉 MEDS • induction pending':'💉 MEDS';}
   let t='Current step',h='',label='',action='';
-  if(phase==='setup'){t='Start induction';h='เริ่มจับเวลา + freeze protocol แล้วเปิดยาสลบจาก Current BW โดยไม่ต้องไปหน้า Drug Calculator';label='💉 Induction + Drug';action='start-induction';}
+  if(phase==='setup'){t='Start induction';h='กดครั้งเดียวเพื่อ timestamp Induction + เริ่มจับเวลา • ปริมาณยาค่อยลงย้อนหลังได้หลัง airway stable';label='▶ Start induction';action='start-induction';}
   else if(phase==='induction'){
-    if(!inductionDrugRecorded()&&!hasProcedureMilestone('Intubation')){t='Induction';h='เลือกยาสลบจาก frozen protocol — กรอกเฉพาะปริมาณที่ให้จริง';label='💉 Record induction drug';action='induction-drug';secondary.hidden=false;secondary.textContent='🫁 Airway / Intubation';secondary.dataset.action='airway';}
-    else if(!airwayRecorded()){t='Airway';h='บันทึก ETT / intubation แล้วระบบจะลง milestone ให้ทันที';label='🫁 Intubation / Airway';action='airway';secondary.hidden=false;secondary.textContent='▶ Surgery start';secondary.dataset.action='surgery-start';}
-    else{t='Ready for surgery';h='Airway ถูกบันทึกแล้ว — กดเมื่อเริ่มผ่าตัด';label='▶ Surgery start';action='surgery-start';secondary.hidden=false;secondary.textContent='✎ Edit airway';secondary.dataset.action='airway-edit';}
-  }else if(phase==='intraop'){t='Intraoperative';h='บันทึก vitals จากปุ่ม RECORD NOW ด้านบน • กดเมื่อการผ่าตัดสิ้นสุด';label='■ Surgery end';action='surgery-end';drug.hidden=false;}
-  else if(phase==='emergence'){const intubated=airwayRecorded();t='Emergence';h=intubated?'กดเมื่อถอดท่อแล้ว ระบบจะสร้าง Recovery handoff และเข้า Recovery':'ไม่มี airway/intubation record — สามารถเริ่ม Recovery ได้โดยตรง';label=intubated?'🫁 Extubation → Recovery':'→ Begin Recovery';action=intubated?'extubation':'recovery';}
-  else if(phase==='emergency'){t='Emergency return';h='OR LIVE ใช้งานได้สำหรับ resuscitation / airway / medication';label='→ Return to Recovery';action='recovery';drug.hidden=false;}
-  else if(phase==='recovery'){t='Recovery active';h='บันทึก recovery vitals ในหน้า Recovery';label='Open Recovery';action='open-recovery';}
+    drug.hidden=false;drug.textContent=pendingInduction?'💉 Induction meds • ใส่ทีหลัง':'💉 Medications';drug.dataset.mode=pendingInduction?'induction':'generic';
+    if(!airwayRecorded()){t='Airway / Intubation';h=pendingInduction?'Induction ถูก timestamp แล้ว • ทำ airway ก่อน แล้วค่อยกลับมาลง Diazepam / Propofol / ยาอื่นภายหลัง':'บันทึก ETT / intubation แล้วระบบจะลง milestone ให้ทันที';label='🫁 Intubation / Airway';action='airway';}
+    else{t='Ready for surgery';h=pendingInduction?'Airway บันทึกแล้ว • เริ่มผ่าตัดได้ ยา induction ยังขึ้น Pending ให้กลับมาลงภายหลัง':'Airway ถูกบันทึกแล้ว — กดเมื่อเริ่มผ่าตัด';label='▶ Surgery start';action='surgery-start';secondary.hidden=false;secondary.textContent='✎ Edit airway';secondary.dataset.action='airway-edit';}
+  }else if(phase==='intraop'){t='Intraoperative';h=pendingInduction?'บันทึก vitals ตามปกติ • Induction meds ยัง Pending และลงย้อนหลังได้จาก MEDS':'บันทึก vitals จาก RECORD NOW • MEDS ใช้ลงยาเพิ่มเติมได้ตลอดเคส';label='■ Surgery end';action='surgery-end';drug.hidden=false;drug.textContent=pendingInduction?'💉 Induction meds pending':'💉 Medications';drug.dataset.mode=pendingInduction?'induction':'generic';}
+  else if(phase==='emergence'){const intubated=airwayRecorded();t='Emergence';h=intubated?'กดเมื่อถอดท่อแล้ว ระบบจะสร้าง Recovery handoff และเข้า Recovery':'ไม่มี airway/intubation record — สามารถเริ่ม Recovery ได้โดยตรง';label=intubated?'🫁 Extubation → Recovery':'→ Begin Recovery';action=intubated?'extubation':'recovery';drug.hidden=false;drug.textContent=pendingInduction?'💉 Induction meds pending':'💉 Medications';drug.dataset.mode=pendingInduction?'induction':'generic';}
+  else if(phase==='emergency'){t='Emergency return';h='OR LIVE ใช้งานได้สำหรับ resuscitation / airway / medication';label='→ Return to Recovery';action='recovery';drug.hidden=false;drug.textContent='💉 Medications';drug.dataset.mode='generic';}
+  else if(phase==='recovery'){t='Recovery active';h='บันทึก recovery vitals • หากมีการให้ยาเพิ่มใช้ปุ่ม Medication ในหน้า Recovery';label='Open Recovery';action='open-recovery';}
   else if(phase==='complete'){t='Recovery complete';h='ดำเนินการ Final review / End Case';label='Go to End Case';action='end-case';}
   else if(phase==='locked'){t='Final record locked';h='เคสนี้เป็น LOCKED FINAL';label='Locked';action='locked';primary.disabled=true;}
   title.textContent=t;help.textContent=h;primary.textContent=label;primary.dataset.action=action;
 }
 function handleOrWorkflowAction(action){
-  if(action==='start-induction'){if(!startCaseFromOr())return;openOrQuickDrug({phase:'induction',purpose:'induction'});return}
+  if(action==='start-induction'){
+    if(!startCaseFromOr())return;
+    if(!hasProcedureMilestone('Induction'))triggerOrMilestone('Induction');
+    state.inductionDocumentationMode='deferred-v1472';state.inductionMedicationReviewCompletedAt=null;save();renderOrPrimaryFlow();toast('Induction timestamp saved • ลงยาหลัง airway stable ได้');return;
+  }
   if(action==='induction-drug'){openOrQuickDrug({phase:'induction',purpose:'induction'});return}
   if(action==='airway'||action==='airway-edit'){if(!state.caseStartedAt&&!startCaseFromOr())return;openAirwayWorkflow(action==='airway'?'intubation':'edit');return}
   if(action==='surgery-start'){if(!hasProcedureMilestone('Induction'))triggerOrMilestone('Induction');triggerOrMilestone('Surgery start');return}
@@ -1234,7 +1245,8 @@ function handleOrWorkflowAction(action){
 }
 $('orPrimaryActionBtn')?.addEventListener('click',()=>handleOrWorkflowAction($('orPrimaryActionBtn').dataset.action));
 $('orSecondaryPhaseBtn')?.addEventListener('click',()=>handleOrWorkflowAction($('orSecondaryPhaseBtn').dataset.action));
-$('orPrimaryDrugBtn')?.addEventListener('click',()=>openOrQuickDrug());
+$('orPrimaryDrugBtn')?.addEventListener('click',()=>$('orPrimaryDrugBtn').dataset.mode==='induction'?openOrQuickDrug({phase:'induction',purpose:'induction'}):openOrQuickDrug());
+$('orStickyDrugBtn')?.addEventListener('click',()=>inductionMedicationComplete()?openOrQuickDrug():openOrQuickDrug({phase:'induction',purpose:'induction'}));
 
 function renderAirwayPanel(){
   const mode=$('airwayVentMode')?.value||'';
@@ -1932,19 +1944,20 @@ function closeDrugAdministration(){
   if(dlg.close)dlg.close();else dlg.removeAttribute('open');
   pendingDrugAdministration=null;
 }
-function recentSameDrugAdministration(drug,windowMs=120000){
-  const now=Date.now();return [...(state.drugAdministrations||[])].reverse().find(x=>!x.voidedAt&&String(x.drug).toLowerCase()===String(drug).toLowerCase()&&now-Number(x.epoch||0)<=windowMs)||null;
+function recentSameDrugAdministration(drug,windowMs=120000,referenceEpoch=Date.now()){
+  const ref=Number(referenceEpoch)||Date.now();return [...(state.drugAdministrations||[])].reverse().find(x=>!x.voidedAt&&String(x.drug).toLowerCase()===String(drug).toLowerCase()&&Math.abs(ref-Number(x.epoch||0))<=windowMs)||null;
 }
-function recordDrugAdministration({drug,calculated='',actual,unit='mL',route='',administeredBy='',concentration='',note='',source='Manual',calculationBasis=null}){
+function recordDrugAdministration({drug,calculated='',actual,unit='mL',route='',administeredBy='',concentration='',note='',source='Manual',calculationBasis=null,adminEpoch=null,adminElapsedMs=null,adminClock=null,documentedAt=null,retrospective=false}){
   if(!clinicalWriteAllowed()||!Number.isFinite(Number(actual))||!(Number(actual)>0)||!drug||!route||!administeredBy)return null;
   if(!ensureTimerStarted())return null;
   state.drugAdministrations=state.drugAdministrations||[];
-  const duplicate=recentSameDrugAdministration(drug);
-  if(duplicate&&!confirm(`${drug} was also documented recently (${duplicate.clock||'—'}).\n\nConfirm this is a separate administration?`))return null;
+  const epoch=Number.isFinite(Number(adminEpoch))?Number(adminEpoch):Date.now(),elapsed=Number.isFinite(Number(adminElapsedMs))?Number(adminElapsedMs):currentElapsed(),clock=adminClock||formatClock(epoch),docAt=Number(documentedAt)||Date.now();
+  const duplicate=recentSameDrugAdministration(drug,120000,epoch);
+  if(duplicate&&!confirm(`${drug} was also documented near this administration time (${duplicate.clock||'—'}).\n\nConfirm this is a separate administration?`))return null;
   const id=crypto.randomUUID?crypto.randomUUID():String(Date.now()+Math.random());
-  const entry={id,epoch:Date.now(),elapsedMs:currentElapsed(),clock:formatClock(),drug,calculated,actual:Number(actual),unit,route,administeredBy,concentration,note,source,...(calculationBasis?{calculationBasis}:{}),casePhase:state.casePhase||'intraop',voidedAt:null,voidReason:'',voidedBy:''};
-  state.drugAdministrations.push(entry);
-  const ev=addEvent({category:'Drug',name:drug,dose:`Actual ${fmtDose(entry.actual)} ${unit}`,route,note:[concentration?`Preparation ${concentration}`:'',calculated?`Calculated ${calculated}`:'',note].filter(Boolean).join(' • '),meta:{drugAdministrationId:id}});
+  const entry={id,epoch,elapsedMs:elapsed,clock,documentedAt:docAt,retrospective:!!retrospective,drug,calculated,actual:Number(actual),unit,route,administeredBy,concentration,note,source,...(calculationBasis?{calculationBasis}:{}),casePhase:source==='OR Induction'?'induction':(state.casePhase||'intraop'),voidedAt:null,voidReason:'',voidedBy:''};
+  state.drugAdministrations.push(entry);state.drugAdministrations.sort((a,b)=>(a.epoch||0)-(b.epoch||0));
+  const ev=addEvent({category:'Drug',name:drug,dose:`Actual ${fmtDose(entry.actual)} ${unit}`,route,note:[concentration?`Preparation ${concentration}`:'',calculated?`Calculated ${calculated}`:'',retrospective?`Documented later ${formatClock(docAt)}`:'',note].filter(Boolean).join(' • '),meta:{drugAdministrationId:id},epoch,elapsedMs:elapsed,clock});
   if(ev)entry.eventId=ev.id;
   addAudit('DRUG_ADMINISTERED',`${drug} • ${fmtDose(entry.actual)} ${unit}${route?' • '+route:''}${administeredBy?' • by '+administeredBy:''}`,administeredBy||'');
   save();renderDrugAdministrationAudit();renderEvents();renderProcedureTimeline();renderOrLive();return entry;
@@ -1963,7 +1976,7 @@ function voidDrugAdministration(id){
 function renderDrugAdministrationAudit(){
   const arr=state.drugAdministrations||[],box=$('drugAdministrationAudit');if($('drugAuditCount')){$('drugAuditCount').textContent=`${arr.filter(x=>!x.voidedAt).length} ADMIN`;$('drugAuditCount').className=`status-pill ${arr.some(x=>x.voidedAt)?'warn':'good'}`}
   if(!box)return;if(!arr.length){box.className='drug-audit-list empty-state';box.textContent='ยังไม่มีการยืนยัน administration';return}
-  box.className='drug-audit-list';box.innerHTML=arr.map(a=>`<div class="drug-audit-row ${a.voidedAt?'voided':''}"><div class="drug-audit-time"><b>${escapeHtml(formatShortElapsed(a.elapsedMs))}</b><small>${escapeHtml(a.clock||'')}</small></div><div class="drug-audit-main"><b>${escapeHtml(a.drug)} • ${escapeHtml(fmtDose(a.actual))} ${escapeHtml(a.unit||'')}</b><span>${escapeHtml([a.route,a.concentration,a.administeredBy?`by ${a.administeredBy}`:'',a.source].filter(Boolean).join(' • '))}</span><small>${escapeHtml(a.calculated?`Calculated ${a.calculated}${a.note?' • '+a.note:''}`:(a.note||''))}</small>${a.voidedAt?`<em>VOID • ${escapeHtml(a.voidReason||'—')} • ${escapeHtml(a.voidedBy||'—')}</em>`:''}</div>${a.voidedAt?'':`<button class="btn danger-outline drug-admin-void" data-id="${escapeHtml(a.id)}" type="button">Void</button>`}</div>`).join('');
+  box.className='drug-audit-list';box.innerHTML=arr.map(a=>`<div class="drug-audit-row ${a.voidedAt?'voided':''}"><div class="drug-audit-time"><b>${escapeHtml(formatShortElapsed(a.elapsedMs))}</b><small>${escapeHtml(a.clock||'')}</small></div><div class="drug-audit-main"><b>${escapeHtml(a.drug)} • ${escapeHtml(fmtDose(a.actual))} ${escapeHtml(a.unit||'')}</b><span>${escapeHtml([a.route,a.concentration,a.administeredBy?`by ${a.administeredBy}`:'',a.source].filter(Boolean).join(' • '))}</span><small>${escapeHtml([a.calculated?`Calculated ${a.calculated}`:'',a.retrospective&&a.documentedAt?`Documented later ${formatClock(a.documentedAt)}`:'',a.note||''].filter(Boolean).join(' • '))}</small>${a.voidedAt?`<em>VOID • ${escapeHtml(a.voidReason||'—')} • ${escapeHtml(a.voidedBy||'—')}</em>`:''}</div>${a.voidedAt?'':`<button class="btn danger-outline drug-admin-void" data-id="${escapeHtml(a.id)}" type="button">Void</button>`}</div>`).join('');
   $$('.drug-admin-void').forEach(b=>b.addEventListener('click',()=>voidDrugAdministration(b.dataset.id)));
 }
 $('drugAdminCloseBtn')?.addEventListener('click',closeDrugAdministration);
@@ -2016,11 +2029,12 @@ function renderComplications(){
 }
 $('complicationCloseBtn')?.addEventListener('click',closeComplicationDialog);$('complicationCancelBtn')?.addEventListener('click',closeComplicationDialog);$('complicationSaveBtn')?.addEventListener('click',startComplicationRecord);$('addComplicationBtn')?.addEventListener('click',()=>openComplicationDialog('Hypotension'));$$('.quick-complication').forEach(btn=>btn.addEventListener('click',()=>openComplicationDialog(btn.dataset.complication||'')));
 
-function addEvent({category,name,dose='',route='',note='',meta={}}){
+function addEvent({category,name,dose='',route='',note='',meta={},epoch=null,elapsedMs=null,clock=null}){
   if(!ensureTimerStarted())return false;
+  const eventEpoch=Number.isFinite(Number(epoch))?Number(epoch):Date.now(),eventElapsed=Number.isFinite(Number(elapsedMs))?Number(elapsedMs):currentElapsed(),eventClock=clock||formatClock(eventEpoch);
   const ev={
     id:crypto.randomUUID?crypto.randomUUID():String(Date.now()+Math.random()),
-    epoch:Date.now(),elapsedMs:currentElapsed(),clock:formatClock(),
+    epoch:eventEpoch,elapsedMs:eventElapsed,clock:eventClock,
     category,name,dose,route,note,...(meta||{})
   };
   state.events.push(ev);state.events.sort((a,b)=>a.epoch-b.epoch);
@@ -2743,7 +2757,7 @@ async function verifyBackupPayloadIntegrity(raw){
 
 async function backupAllData(){
   save();await initArchiveDb();await initPatientMaster();
-  const payload={format:'ANESVET_BACKUP',version:'14.7.1',exportedAt:Date.now(),current:state,archive:getArchive(),patients:getPatients(),breedAliases:loadBreedAliases(),settings:(()=>{try{return JSON.parse(localStorage.getItem(SETTINGS_KEY)||'null')}catch(e){return null}})(),drugLibrary:loadDrugLibraryData(),quickPresets:loadQuickPresets(),protocolAudit:getProtocolAudit()};
+  const payload={format:'ANESVET_BACKUP',version:'14.7.2',exportedAt:Date.now(),current:state,archive:getArchive(),patients:getPatients(),breedAliases:loadBreedAliases(),settings:(()=>{try{return JSON.parse(localStorage.getItem(SETTINGS_KEY)||'null')}catch(e){return null}})(),drugLibrary:loadDrugLibraryData(),quickPresets:loadQuickPresets(),protocolAudit:getProtocolAudit()};
   downloadBlob(JSON.stringify(payload,null,2),'application/json',`ANESVET_BACKUP_${formatDate(Date.now())}.json`);
   const backupEpoch=Date.now();localStorage.setItem(LAST_BACKUP_KEY,String(backupEpoch));
   if($('backupStatus'))$('backupStatus').textContent=`Backup created ${formatClock(backupEpoch)} • ${payload.archive.length} cases • ${payload.patients.length} patients`;
@@ -2884,7 +2898,7 @@ function appRootUrl(){
   let path=here.pathname;
   if(!path.endsWith('/')) path=path.replace(/\/[^/]*$/,'/');
   const url=new URL(path, here.origin);
-  url.searchParams.set('v','14.7.1');
+  url.searchParams.set('v','14.7.2');
   return url.href;
 }
 function restartAtAppRoot(){
@@ -3253,7 +3267,7 @@ function freshState(){
     createdAt:Date.now(),
     timer:{running:false,startedEpoch:null,elapsedMs:0},
     records:[],events:[],responses:[],corrections:[],complications:[],drugAdministrations:[],alertEpisodes:[],recoveryScores:[],recoveryRecords:[],fluidRateHistory:[],
-    alertProtocolOverride:null,alertProtocolHistory:[],recoveryHandoffs:[],
+    alertProtocolOverride:null,alertProtocolHistory:[],recoveryHandoffs:[],inductionDocumentationMode:'',inductionMedicationReviewCompletedAt:null,
     recoveryChecks:[false,false,false,false,false,false],recoveryNA:[false,false,false,false,false,false],recoveryObservationNA:{spo2:false,temp:false,extubation:false},preopChecks:{},preopNA:{},
     patientSaved:false,patientMasterId:'',
     patientName:'',hospitalId:'',visitId:'',species:'',sex:'',reproductiveStatus:'',microchip:'',breed:'',
@@ -3342,7 +3356,7 @@ $('updateNowBtn')?.addEventListener('click',()=>{const reg=pendingServiceWorkerR
 $('updateLaterBtn')?.addEventListener('click',()=>{if($('updateBanner'))$('updateBanner').hidden=true});
 window.addEventListener('load',setupServiceWorkerUpdates);
 
-// V14.7.1 workflow integration; V14.7 clinical logic retained, OR LIVE interaction simplified.
+// V14.7.2 workflow integration; deferred multi-drug induction documentation + compact handoff.
 const WF=globalThis.AnesvetWorkflow;
 const ALERT_KEYS={map:'hypotension',spo2:'hypoxemia',etco2:'ventilation',temp:'hypothermia'};
 let alertProtocolEditScope='hospital',pendingProblem=null,orQuickOptions=[],orQuickBasis=null,orQuickContext=null;
@@ -3460,34 +3474,54 @@ function preferredQuickDrugIndex(options,phase=''){
   for(const pid of presetIds){const target=presetMap[pid]||('library:'+pid),i=options.findIndex(d=>d.id===target);if(i>=0&&(phase!=='induction'||isPrimaryInduction(options[i])))return i}
   return -1;
 }
+function inductionQuickDrugIndexes(options){
+  const presetIds=state.protocolSnapshot?.quickPresets?.induction||[],presetMap={builtin_diazepam:'diazepamDose',builtin_propofol:'propofolDose'};const indexes=[];
+  for(const pid of presetIds){const target=presetMap[pid]||('library:'+pid),i=options.findIndex(d=>d.id===target);if(i>=0&&!indexes.includes(i))indexes.push(i)}
+  options.forEach((_,i)=>{if(!indexes.includes(i))indexes.push(i)});return indexes;
+}
+function nextInductionQuickDrugIndex(options){
+  const recorded=new Set(inductionMedicationRecords().map(d=>String(d.drug||'').toLowerCase()));
+  return inductionQuickDrugIndexes(options).find(i=>!recorded.has(String(options[i]?.name||'').toLowerCase()))??-1;
+}
+function renderOrQuickDrugBatchStatus(){
+  const box=$('orQuickDrugBatchStatus');if(!box)return;const induction=orQuickContext?.purpose==='induction';box.hidden=!induction;if(!induction)return;
+  const meds=inductionMedicationRecords(),m=procedureMilestoneEvent('Induction'),time=m?.clock||formatClock(state.caseStartedAt||Date.now());
+  box.className=`quick-drug-batch-status ${meds.length?'':'warn'}`;
+  box.innerHTML=`<b>Induction ${escapeHtml(time)} • ลงย้อนหลังได้หลายยา</b>${meds.length?`บันทึกแล้ว: ${meds.map(d=>`${escapeHtml(d.drug)} ${escapeHtml(fmtDose(d.actual))} ${escapeHtml(d.unit||'mL')}`).join(' • ')}`:'ยังไม่ได้บันทึกปริมาณยา'}<br><small>เลือกยา → Save medication → เลือกยาตัวถัดไป • กด Done เมื่อทบทวนยา induction ครบ</small>`;
+}
 function openOrQuickDrug(options={}){
-  const phase=typeof options==='object'&&options?options.phase||'':'',purpose=typeof options==='object'&&options?options.purpose||'':'';
-  if(!clinicalWriteAllowed()||!requireCurrentWeight('using OR Quick Drug'))return;if(orLiveLockedByRecovery()){toast('OR Quick Drug is available in OR LIVE / Emergency return');return}if(!state.caseStartedAt||!state.protocolSnapshot){toast('Start Case to freeze the protocol before using OR Quick Drug');return}
-  orQuickContext={phase,purpose};const all=frozenQuickDrugs();orQuickOptions=phase?all.filter(d=>d.phase===phase):all;if(!orQuickOptions.length)orQuickOptions=all;
-  const preferred=preferredQuickDrugIndex(orQuickOptions,phase),sel=$('orQuickDrugSelect');
+  const phase=typeof options==='object'&&options?options.phase||'':'',purpose=typeof options==='object'&&options?options.purpose||'':'',allowRecovery=!!(typeof options==='object'&&options?.allowRecovery);
+  if(!clinicalWriteAllowed()||!requireCurrentWeight('using medication record'))return;if(purpose==='recovery'&&state.casePhase!=='recovery'){toast('Begin Recovery ก่อนบันทึก Recovery medication');return}if(orLiveLockedByRecovery()&&!allowRecovery){toast('ใช้ปุ่ม Medication ในหน้า Recovery สำหรับยาที่ให้หลัง Extubation');return}if(!state.caseStartedAt||!state.protocolSnapshot){toast('Start Case to freeze the protocol before using medication record');return}
+  orQuickContext={phase,purpose,allowRecovery};const all=frozenQuickDrugs();orQuickOptions=phase?all.filter(d=>d.phase===phase):all;if(!orQuickOptions.length)orQuickOptions=all;
+  let preferred=purpose==='induction'?nextInductionQuickDrugIndex(orQuickOptions):preferredQuickDrugIndex(orQuickOptions,phase),sel=$('orQuickDrugSelect');
   sel.innerHTML='<option value="">— Select drug —</option>'+orQuickOptions.map((d,i)=>`<option value="${i}">${escapeHtml(d.name)}</option>`).join('');sel.value=preferred>=0?String(preferred):'';
-  $('orQuickDrugTitle').textContent=purpose==='induction'?'Induction medication':'OR Quick Drug';$('orQuickDrugBy').value=$('anesthetist')?.value.trim()||'';$('orQuickDrugNote').value='';
-  if($('orQuickInductionSkipBtn'))$('orQuickInductionSkipBtn').hidden=purpose!=='induction';renderOrQuickDrug();$('orQuickDrugDialog').showModal();
+  $('orQuickDrugTitle').textContent=purpose==='induction'?'Induction medications':purpose==='recovery'?'Recovery medication':'Medication';$('orQuickDrugBy').value=$('anesthetist')?.value.trim()||'';$('orQuickDrugNote').value='';
+  if($('orQuickInductionSkipBtn'))$('orQuickInductionSkipBtn').hidden=purpose!=='induction';if($('orQuickDrugDoneBtn'))$('orQuickDrugDoneBtn').hidden=purpose!=='induction';renderOrQuickDrugBatchStatus();renderOrQuickDrug();$('orQuickDrugDialog').showModal();
 }
 function renderOrQuickDrug(){
   const idx=$('orQuickDrugSelect').value===''?-1:Number($('orQuickDrugSelect').value),d=idx>=0?orQuickOptions[idx]:null,w=currentWeightReady()?currentWeightKg():null;
   if(!d){orQuickBasis=null;$('orQuickDrugBasis').textContent=`Current BW ${w??'—'} kg • Frozen protocol ${state.protocolSnapshot?.version||'unversioned'}`;$('orQuickDrugCalculation').textContent=orQuickContext?.purpose==='induction'?'เลือกยา induction จาก frozen protocol':'เลือกยาที่ต้องการบันทึก';$('orQuickDrugActual').value='';$('orQuickDrugRoute').value='';$('orQuickDrugConcentration').value='';$('orQuickDrugConcentration').readOnly=false;$('orQuickDrugError').textContent='';$('orQuickDrugSaveBtn').disabled=true;return}
-  const r=calculateLibraryDrug(d,w,d.dose,d.conc),valid=w!==null&&Number.isFinite(r.ml)&&r.ml>0;
-  orQuickBasis={caseId:state.caseId,weightKg:w,protocolCapturedAt:state.protocolSnapshot?.capturedAt,protocolVersion:state.protocolSnapshot?.version,drug:WF.clone(d),calculatedMl:valid?r.ml:null};
-  $('orQuickDrugBasis').textContent=`Current BW ${w??'—'} kg • Frozen protocol ${state.protocolSnapshot?.version||'unversioned'} • ${state.protocolSnapshot?.capturedAt?new Date(state.protocolSnapshot.capturedAt).toLocaleString():'legacy snapshot'}`;
-  $('orQuickDrugCalculation').textContent=valid?`${r.total} • ${fmtDose(r.ml)} mL${d.note?' • '+d.note:''}`:'ไม่พบ dose/concentration ที่ใช้คำนวณได้ใน frozen protocol';$('orQuickDrugActual').value='';$('orQuickDrugRoute').value=d.route||'';$('orQuickDrugConcentration').value=d.conc?`${d.conc} ${d.concUnit}`:'';$('orQuickDrugConcentration').readOnly=!!d.conc;$('orQuickDrugError').textContent='';$('orQuickDrugSaveBtn').disabled=!valid;
+  const r=calculateLibraryDrug(d,w,d.dose,d.conc),valid=w!==null&&Number.isFinite(r.ml)&&r.ml>0,induction=orQuickContext?.purpose==='induction',m=induction?procedureMilestoneEvent('Induction'):null,adminEpoch=induction?(m?.epoch||state.caseStartedAt||Date.now()):Date.now(),adminElapsed=induction?(m?.elapsedMs??0):currentElapsed(),adminClock=induction?(m?.clock||formatClock(adminEpoch)):formatClock();
+  orQuickBasis={caseId:state.caseId,weightKg:w,protocolCapturedAt:state.protocolSnapshot?.capturedAt,protocolVersion:state.protocolSnapshot?.version,drug:WF.clone(d),calculatedMl:valid?r.ml:null,adminEpoch,adminElapsedMs:adminElapsed,adminClock};
+  $('orQuickDrugBasis').textContent=induction?`Administration time: Induction ${adminClock} • Current BW ${w??'—'} kg • Frozen ${state.protocolSnapshot?.version||'unversioned'}`:`Current BW ${w??'—'} kg • Frozen protocol ${state.protocolSnapshot?.version||'unversioned'} • ${state.protocolSnapshot?.capturedAt?new Date(state.protocolSnapshot.capturedAt).toLocaleString():'legacy snapshot'}`;
+  $('orQuickDrugCalculation').textContent=valid?`${r.total} • ${fmtDose(r.ml)} mL${d.note?' • '+d.note:''}`:'ไม่พบ dose/concentration ที่ใช้คำนวณได้ใน frozen protocol';$('orQuickDrugActual').value='';$('orQuickDrugRoute').value=d.route||'';$('orQuickDrugConcentration').value=d.conc?`${d.conc} ${d.concUnit}`:'';$('orQuickDrugConcentration').readOnly=!!d.conc;$('orQuickDrugError').textContent='';$('orQuickDrugSaveBtn').disabled=!valid;renderOrQuickDrugBatchStatus();
 }
-function recordInductionWithoutDrug(){
-  if(!clinicalWriteAllowed()||orQuickContext?.purpose!=='induction')return;const note=$('orQuickDrugNote')?.value.trim()||'Induction recorded without linked injectable drug administration';
-  if(!hasProcedureMilestone('Induction'))triggerOrMilestone('Induction');addAudit('INDUCTION_WITHOUT_LINKED_DRUG',note);$('orQuickDrugDialog').close();orQuickBasis=null;orQuickContext=null;save();renderOrPrimaryFlow();toast('Induction milestone recorded');
+function finishInductionMedicationReview(noInjectable=false){
+  if(!clinicalWriteAllowed()||orQuickContext?.purpose!=='induction')return;const meds=inductionMedicationRecords();if(noInjectable&&meds.length&&!confirm('มีการบันทึกยา induction แล้ว ต้องการ mark review complete ต่อหรือไม่?'))return;if(!noInjectable&&!meds.length&&!confirm('ยังไม่มีการบันทึกยา induction — ยืนยันว่า review เสร็จโดยไม่มีรายการยา?'))return;
+  state.inductionDocumentationMode='deferred-v1472';state.inductionMedicationReviewCompletedAt=Date.now();addAudit('INDUCTION_MEDICATION_REVIEW_COMPLETED',noInjectable?'No injectable induction medication documented':`${meds.length} induction medication(s) reviewed`,$('anesthetist')?.value.trim()||'');$('orQuickDrugDialog').close();orQuickBasis=null;orQuickContext=null;save();renderOrPrimaryFlow();toast(noInjectable?'Induction medication review complete • no injectable meds':'Induction medications reviewed');
 }
+function recordInductionWithoutDrug(){finishInductionMedicationReview(true)}
 function saveOrQuickDrug(){
-  if(!clinicalWriteAllowed()||!requireCurrentWeight('recording OR Quick Drug')||!orQuickBasis)return;if(orLiveLockedByRecovery()){toast('OR LIVE is closed during recovery');return}const b=orQuickBasis;
+  if(!clinicalWriteAllowed()||!requireCurrentWeight('recording medication')||!orQuickBasis)return;const allowRecovery=!!orQuickContext?.allowRecovery;if(orLiveLockedByRecovery()&&!allowRecovery){toast('OR LIVE is closed during recovery');return}const b=orQuickBasis;
   if(b.caseId!==state.caseId||b.weightKg!==currentWeightKg()||b.protocolCapturedAt!==state.protocolSnapshot?.capturedAt){renderOrQuickDrug();$('orQuickDrugError').textContent='BW/protocol changed — calculation refreshed; review actual amount again';return}
   const actual=WF.numeric($('orQuickDrugActual').value),route=$('orQuickDrugRoute').value.trim(),by=$('orQuickDrugBy').value.trim(),concentration=$('orQuickDrugConcentration').value.trim(),note=$('orQuickDrugNote').value.trim();if(!(actual>0)||!route||!by||!concentration){$('orQuickDrugError').textContent='กรอก actual mL (>0), route, ผู้ให้ยา และ concentration';return}if(!Number.isFinite(b.calculatedMl)||b.calculatedMl<=0)return;
-  if(!confirm(`Confirm actual administration\n${b.drug.name}: ${actual} mL • ${route}\n${concentration} • By ${by}\nCalculated amount is a reference, not an administration record.`))return;
-  const induction=orQuickContext?.purpose==='induction';const entry=recordDrugAdministration({drug:b.drug.name,calculated:`${fmtDose(b.calculatedMl)} mL • BW ${b.weightKg} kg • frozen ${b.protocolVersion||'unversioned'}`,actual,unit:'mL',route,administeredBy:by,concentration,note,source:induction?'OR Induction':'OR Quick Drug',calculationBasis:WF.clone(b)});
-  if(entry){if(induction&&!hasProcedureMilestone('Induction'))triggerOrMilestone('Induction');$('orQuickDrugDialog').close();orQuickBasis=null;orQuickContext=null;renderOrPrimaryFlow();toast(induction?'Induction drug + milestone saved':'Actual administration saved • OR LIVE')}
+  const induction=orQuickContext?.purpose==='induction',recovery=orQuickContext?.purpose==='recovery';if(!confirm(`Confirm actual administration\n${b.drug.name}: ${actual} mL • ${route}\n${concentration} • By ${by}${induction?`\nAdministration time linked to Induction ${b.adminClock}`:''}\nCalculated amount is a reference, not an administration record.`))return;
+  const entry=recordDrugAdministration({drug:b.drug.name,calculated:`${fmtDose(b.calculatedMl)} mL • BW ${b.weightKg} kg • frozen ${b.protocolVersion||'unversioned'}`,actual,unit:'mL',route,administeredBy:by,concentration,note,source:induction?'OR Induction':recovery?'Recovery Medication':'OR Quick Drug',calculationBasis:WF.clone(b),...(induction?{adminEpoch:b.adminEpoch,adminElapsedMs:b.adminElapsedMs,adminClock:b.adminClock,documentedAt:Date.now(),retrospective:Date.now()-b.adminEpoch>30000}:{})});
+  if(!entry)return;
+  if(induction){
+    const next=nextInductionQuickDrugIndex(orQuickOptions);renderOrQuickDrugBatchStatus();$('orQuickDrugSelect').value=next>=0?String(next):'';renderOrQuickDrug();toast('Induction medication saved • เพิ่มตัวถัดไปหรือกด Done');return;
+  }
+  $('orQuickDrugDialog').close();orQuickBasis=null;orQuickContext=null;renderOrPrimaryFlow();toast(recovery?'Recovery medication saved':'Medication saved • OR LIVE');
 }
 function captureRecoveryHandoff(reason){if(sessionMode!=='active'||state.caseLocked)return;save();const h=WF.buildHandoff(state);h.reason=reason;state.recoveryHandoffs??=[];state.recoveryHandoffs.push(h);addAudit('RECOVERY_HANDOFF_CREATED',`${reason} • ${h.administrations.length} administered drugs • ${h.alerts.length+h.complications.length} unresolved items`);save();renderRecoveryHandoff()}
 function handoffText(h){
@@ -3509,7 +3543,24 @@ function handoffText(h){
     `Frozen protocol: ${h.protocol.name||'legacy'} • ${h.protocol.version||'unversioned'}\n${h.protocol.override?'Case override: '+h.protocol.override.reason+' • '+h.protocol.override.actor:'No case alert override'}`
   ].join('\n\n');
 }
-function renderRecoveryHandoff(){if($('recoveryHandoffText'))$('recoveryHandoffText').textContent=handoffText(WF.buildHandoff(state));const arr=state.recoveryHandoffs||[];if($('recoveryHandoffHistory'))$('recoveryHandoffHistory').innerHTML=arr.length?arr.map((h,i)=>`<details><summary>Handoff ${i+1} • ${escapeHtml(formatClock(h.generatedAt))} • ${escapeHtml(h.reason)}</summary><pre>${escapeHtml(handoffText(h))}</pre></details>`).join(''):'<p>Snapshot จะถูกสร้างอัตโนมัติเมื่อเริ่ม Recovery</p>'}
+function renderRecoveryHandoffSummary(h){
+  const box=$('recoveryHandoffSummary');if(!box)return;const vit=h.latestRecovery||h.latestAnesthesia,open=(h.alerts?.length||0)+(h.complications?.length||0),duration=h.caseStartedAt?Math.max(0,(h.recoveryStartedAt||Date.now())-h.caseStartedAt):null;
+  const airway=[h.airway?.ett?`ETT ${h.airway.ett} mm`:'',h.airway?.difficulty||'',h.airway?.ventilation||''].filter(Boolean).join(' • ')||'—';
+  const vitalText=vit?`MAP ${vit.map??'—'} • SpO₂ ${vit.spo2??'—'}% • Temp ${vit.temp==null?'—':tempTextF(vit.temp)}`:'No recorded vitals';
+  const meds=(h.administrations||[]),names=[...new Set(meds.map(d=>d.drug))],medText=names.length?names.slice(0,3).join(' • ')+(names.length>3?` +${names.length-3}`:''):'None recorded';
+  const fluidText=[h.fluids?.actualTotal!=null?`Crystalloid ${h.fluids.actualTotal} mL`:h.fluids?.crystalloid!=null?`Crystalloid ${h.fluids.crystalloid} mL`:'',h.fluids?.bolus!=null?`Bolus ${h.fluids.bolus} mL`:'',h.fluids?.bloodLoss!=null?`Blood loss ${h.fluids.bloodLoss} mL`:''].filter(Boolean).join(' • ')||'—';
+  const cards=[
+    ['Anesthesia',duration!=null?formatElapsed(duration):'—',h.extubatedAt?`Extubated ${formatClock(h.extubatedAt)}`:'Extubation not recorded',''],
+    ['Airway',airway,'',''],
+    ['Latest vitals',vitalText,vit?.clock||'',''],
+    ['Fluids / loss',fluidText,'',''],
+    ['Medications',`${meds.length} administration${meds.length===1?'':'s'}`,medText,''],
+    ['Open problems',String(open),open?'Review below before handoff':'No unresolved alerts / problems',open?'warn':'']
+  ];
+  box.innerHTML=cards.map(([label,value,small,cls])=>`<div class="handoff-summary-card ${cls}"><span>${escapeHtml(label)}</span><b>${escapeHtml(value)}</b>${small?`<small>${escapeHtml(small)}</small>`:''}</div>`).join('');
+  if($('recoveryHandoffProblemBadge')){$('recoveryHandoffProblemBadge').textContent=`${open} OPEN`;$('recoveryHandoffProblemBadge').className=`status-pill ${open?'warn':'good'}`}
+}
+function renderRecoveryHandoff(){const h=WF.buildHandoff(state);renderRecoveryHandoffSummary(h);if($('recoveryHandoffText'))$('recoveryHandoffText').textContent=handoffText(h);const arr=state.recoveryHandoffs||[];if($('recoveryHandoffHistory'))$('recoveryHandoffHistory').innerHTML=arr.length?arr.map((x,i)=>`<details><summary>Handoff ${i+1} • ${escapeHtml(formatClock(x.generatedAt))} • ${escapeHtml(x.reason)}</summary><pre>${escapeHtml(handoffText(x))}</pre></details>`).join(''):'<p>Snapshot จะถูกสร้างอัตโนมัติเมื่อเริ่ม Recovery</p>'}
 document.addEventListener('input',e=>{const key=OR_SYNC[e.target.id]||e.target.id;if(WF.metrics.includes(key))alertObservationRevision[key]=(alertObservationRevision[key]||0)+1},true);
 $('editHospitalAlertBtn')?.addEventListener('click',()=>openAlertProtocolEditor('hospital'));
 $('editCaseAlertBtn')?.addEventListener('click',()=>openAlertProtocolEditor('case'));
@@ -3519,6 +3570,8 @@ $('saveProblemActionBtn')?.addEventListener('click',saveProblemAction);
 $('orQuickDrugSelect')?.addEventListener('change',renderOrQuickDrug);
 $('orQuickDrugSaveBtn')?.addEventListener('click',saveOrQuickDrug);
 $('orQuickInductionSkipBtn')?.addEventListener('click',recordInductionWithoutDrug);
+$('orQuickDrugDoneBtn')?.addEventListener('click',()=>finishInductionMedicationReview(false));
+$('recoveryMedicationBtn')?.addEventListener('click',()=>openOrQuickDrug({purpose:'recovery',allowRecovery:true}));
 $$('[data-close-dialog]').forEach(b=>b.addEventListener('click',()=>$(b.dataset.closeDialog)?.close()));
 for(const id of ['orProblemPanel','recoveryProblemPanel'])$(id)?.addEventListener('click',e=>{const b=e.target.closest('[data-problem-action]');if(b)openProblemAction(b.dataset.kind,b.dataset.id,b.dataset.problemAction)});
 for(const id of ['map','spo2','etco2','temp','orMap','orSpo2','orEtco2','orTemp'])$(id)?.addEventListener('blur',()=>setTimeout(()=>{maybeShowCriticalClinicalAlert();save()},0));

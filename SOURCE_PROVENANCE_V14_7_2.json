@@ -1,0 +1,18 @@
+{
+  "release": "ANESVET V14.7.2",
+  "release_focus": "Faster Induction & Medication Workflow",
+  "base_artifact": "ANESVET_V14_7_1.zip",
+  "base_sha256": "0cc7e70af1ddc1f1b9108fe4e4e2a861e4342fec7edf14c858edbd3496fb757c",
+  "base_version": "14.7.1",
+  "storage_keys_changed": false,
+  "indexeddb_schema_changed": false,
+  "clinical_defaults_changed": false,
+  "clinical_dose_or_threshold_changes": [],
+  "primary_changes": [
+    "one-tap induction timestamp without forced dose entry",
+    "deferred multi-drug induction medication documentation",
+    "separate administration and documentation timestamps for retrospective induction entries",
+    "persistent OR LIVE medication access and Recovery medication access",
+    "compact Recovery Handoff cards with full details collapsed"
+  ]
+}

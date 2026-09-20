@@ -1,14 +1,14 @@
 {
-  "name": "anesvet-v14-7-1",
-  "version": "14.7.1",
+  "name": "anesvet-v14-7-2",
+  "version": "14.7.2",
   "private": true,
-  "description": "ANESVET V14.7.1 OR LIVE Workflow UX; runtime requires no build",
+  "description": "ANESVET V14.7.2 faster induction & medication workflow; runtime requires no build",
   "engines": {
     "node": ">=22"
   },
   "scripts": {
     "test:syntax": "node tests/syntax.mjs",
-    "test:regression": "node tests/regression.mjs",
+    "test:regression": "node tests/regression.mjs && node tests/ux_v1472_static.mjs",
     "test:workflow": "node tests/workflow_scenarios.mjs && node tests/clinical_workflow.mjs && node tests/dom_workflow.mjs && node tests/compatibility.mjs && node tests/governance.mjs && node tests/final_lock.mjs",
     "test": "npm run test:syntax && npm run test:regression && npm run test:workflow",
     "test:browser": "node tests/e2e_browser.mjs"

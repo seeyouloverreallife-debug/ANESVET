@@ -1,8 +1,8 @@
 {
-  "name": "ANESVET V14.7.1 — OR LIVE Workflow UX",
+  "name": "ANESVET V14.7.2 — Faster Induction & Medication Workflow",
   "short_name": "ANESVET",
   "description": "Workflow-first OR LIVE with contextual induction, airway, surgery milestones, configurable alerts, Quick Drug and recovery handoff",
-  "start_url": "./?v=14.7.1",
+  "start_url": "./?v=14.7.2",
   "scope": "./",
   "display": "standalone",
   "background_color": "#f3f7f8",

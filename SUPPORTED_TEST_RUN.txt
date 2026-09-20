@@ -1,34 +1,10 @@
-ANESVET V14.7.1 — supported tests executed in this runtime
-UTC: 2026-09-19T15:34:46Z
+ANESVET V14.7.2 — supported tests executed in this runtime
 
-$ node --check app.js
-PASS
-
-$ node --check clinical-workflow.js
-PASS
-
-$ node --check service-worker.js
-PASS
-
-$ node tests/syntax.mjs
-Syntax + JSON: PASS (13 JavaScript files)
-
-$ node tests/regression.mjs
-ANESVET V14.7.1 regression checks: PASS (672 unique HTML ids, 355 unique named functions)
-V14.7.1 integration and storage contracts: PASS
-
-$ node tests/workflow_scenarios.mjs
-ANESVET V14.6.4 workflow model scenarios: PASS (4 scenarios)
-
-$ node tests/clinical_workflow.mjs
+Syntax + JSON: PASS
+ANESVET V14.7.2 regression checks: PASS
+V14.7.2 integration and storage contracts: PASS
+V14.7.2 UX contracts: PASS (13 assertions)
+ANESVET workflow model scenarios: PASS (4 scenarios)
 Production clinical helpers: PASS (73 assertions)
 
-$ npm test
-The syntax/regression/model/helper stages above pass, then the full DOM suite cannot start:
-Error: Cannot find module 'jsdom'
-This runtime could not complete npm dependency installation, so this is not reported as a
-product failure and the V14.7.1 DOM suites are not reported as passed.
-
-Supplemental real-Chromium OR LIVE UI/workflow smoke: PASS using page.set_content of the
-production source because direct local-origin navigation is blocked by administrator policy.
-See TEST_RESULTS.txt and BROWSER_E2E_STATUS.txt for scope/limitations.
+DOM/browser claims are intentionally excluded because the required runtime paths were blocked or unavailable.

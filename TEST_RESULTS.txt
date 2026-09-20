@@ -1,61 +1,21 @@
-ANESVET V14.7.1 — OR LIVE Workflow UX validation
-UTC: 2026-09-19T15:34:46Z
-Source: supplied ANESVET_V14_7(1).zip (see SOURCE_PROVENANCE_V14_7_1.json)
+ANESVET V14.7.2 — Faster Induction & Medication Workflow validation
 
-PASS — node --check app.js
-PASS — node --check clinical-workflow.js
-PASS — node --check service-worker.js
-PASS — tests/syntax.mjs: Syntax + JSON (13 JavaScript files)
-PASS — tests/regression.mjs: 672 unique HTML IDs, 355 unique named functions
-PASS — V14.7.1 integration / storage contracts
-PASS — original workflow model: 4 scenarios
-PASS — production clinical helper logic: 73 assertions
+PASS — node tests/syntax.mjs
+PASS — node tests/regression.mjs
+PASS — node tests/ux_v1472_static.mjs (13 UX contract assertions)
+PASS — node tests/workflow_scenarios.mjs
+PASS — node tests/clinical_workflow.mjs
 
-V14.7.1 OR LIVE UX static regression coverage includes:
-PASS — top NEXT CLINICAL STEP controls are present
-PASS — induction action opens induction-filtered Quick Drug workflow
-PASS — actual administered amount remains manual confirmation
-PASS — induction administration creates the Induction milestone without a second entry
-PASS — Airway / Intubation is promoted into the primary workflow
-PASS — saved intubation can create the Intubation milestone
-PASS — legacy milestone hooks remain in DOM for compatibility
-PASS — duplicate OR status / prioritized-alert / active-complication workspaces are hidden
-PASS — Fluid, Airway and Event/Problem panels are collapsible by default
-PASS — SAP/DAP remain available in stored/advanced views but are hidden from the primary OR cockpit
-PASS — clinical defaults, persistent storage keys and IndexedDB schema are unchanged
+Regression coverage includes:
+- one-tap Start Induction without forced dose entry
+- deferred induction medication review state
+- multi-drug induction dialog controls
+- retrospective administration timestamp fields
+- persistent OR MEDS access and Recovery Medication control
+- compact Recovery Handoff cards + full-detail fallback
+- V14.7 alert/protocol/storage compatibility anchors
 
-REAL CHROMIUM — SUPPLEMENTAL OR LIVE UI/WORKFLOW SMOKE: PASS
-Method: production HTML/CSS/JS loaded into an installed headless Chromium page with
-page.set_content because direct localhost/file navigation is administratively blocked.
-Only localStorage/sessionStorage and crypto.randomUUID were polyfilled for the opaque
-about:blank origin; clinical functions were not replaced.
-Covered:
-- New patient setup -> OR LIVE
-- Induction + Drug primary action
-- Frozen induction protocol preselects Propofol from default primary induction preset
-- calculated dose/volume displayed; actual mL remains blank until user entry
-- actual administration -> Drug record + Induction milestone
-- Airway/Intubation -> airway save + Intubation milestone
-- Surgery start -> intraoperative phase
-- vital recording
-- Surgery end -> emergence
-- Extubation -> Recovery + Recovery Handoff
-- duplicate OR workspaces hidden; Airway panel auto-collapses after save
-Artifacts: tests/artifacts/or_live_v14_7_1_induction.png and induction_dialog_v14_7_1.png
-
-NOT PASSED / ENVIRONMENT BLOCKED — full origin-based browser/PWA acceptance
-- Direct http://127.0.0.1 / localhost navigation is blocked by administrator policy.
-- file:// navigation is also blocked.
-- Therefore service-worker install/update, real IndexedDB/localStorage origin persistence,
-  offline cache behavior, native PWA upgrade V14.7 -> V14.7.1 and print/PDF pagination
-  still require acceptance on an authorized host/browser.
-
-NOT COMPLETED IN THIS RUNTIME — jsdom full npm suite
-- npm test reaches the DOM suites but fails because npm dependency installation was not
-  available in this runtime (Cannot find module 'jsdom').
-- This is an environment/dependency-availability limitation; no claim is made that the
-  jsdom DOM suite passed for V14.7.1 in this runtime.
-
-Overall: RELEASE CANDIDATE / CLINICAL UX BUILD.
-Recommended before live surgical use: run npm ci + npm test + npm run test:browser on an
-authorized workstation, then perform one complete simulated case and PWA upgrade check.
+BLOCKED / NOT CLAIMED:
+- npm ci timed out, so jsdom/fake-indexeddb DOM suites were not run in this runtime
+- Chromium navigation to localhost/file URL returned ERR_BLOCKED_BY_ADMINISTRATOR
+- native service-worker/PWA update/offline and print/PDF pagination require deployment-host acceptance

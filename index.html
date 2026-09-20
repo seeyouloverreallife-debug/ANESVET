@@ -4,12 +4,12 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#0d5265">
-  <meta name="description" content="ANESVET V14.7.1 — OR LIVE workflow-first veterinary anesthesia workstation">
+  <meta name="description" content="ANESVET V14.7.2 — Faster Induction & Medication Workflow">
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" href="./icon-192.png">
   <link rel="apple-touch-icon" href="./icon-192.png">
-  <link rel="stylesheet" href="./style.css?v=14.7.1">
-  <title>ANESVET V14.7.1</title>
+  <link rel="stylesheet" href="./style.css?v=14.7.2">
+  <title>ANESVET V14.7.2</title>
 </head>
 <body>
 <header class="topbar">
@@ -17,7 +17,7 @@
     <img class="brand-logo" src="./icon-192.png" alt="ANESVET logo">
     <div>
       <div class="eyebrow">GENOVI PET CARE • DIGITAL ANESTHESIA RECORD</div>
-      <h1>ANESVET <span>V14.7.1</span></h1>
+      <h1>ANESVET <span>V14.7.2</span></h1>
     </div>
   </div>
   <div class="top-actions">
@@ -374,6 +374,7 @@
       <div><span>STATUS</span><b id="orStickyPhase">SETUP</b></div>
       <div><span>CASE TIME</span><b id="orStickyClock">00:00:00</b></div>
       <div><span>NEXT VITALS</span><b id="orStickyDue">Not started</b></div>
+      <button id="orStickyDrugBtn" class="btn or-sticky-med" type="button" hidden>💉 MEDS</button>
       <button id="orStickyRecordBtn" class="btn primary">＋ RECORD NOW</button>
     </section>
 
@@ -381,12 +382,12 @@
       <div class="or-primary-copy">
         <span>NEXT CLINICAL STEP</span>
         <b id="orPrimaryActionTitle">Start induction</b>
-        <small id="orPrimaryActionHelp">เริ่มจับเวลาและบันทึกยาสลบโดยใช้ Current BW + frozen protocol</small>
+        <small id="orPrimaryActionHelp">กดครั้งเดียวเพื่อ timestamp Induction + เริ่มจับเวลา — ปริมาณยาค่อยลงย้อนหลังได้หลัง airway stable</small>
       </div>
       <div class="or-primary-buttons">
-        <button id="orPrimaryActionBtn" class="or-primary-action" type="button">💉 Induction + Drug</button>
+        <button id="orPrimaryActionBtn" class="or-primary-action" type="button">▶ Start induction</button>
         <button id="orSecondaryPhaseBtn" class="btn or-secondary-action" type="button" hidden></button>
-        <button id="orPrimaryDrugBtn" class="btn or-secondary-action" type="button" hidden>💉 Drug</button>
+        <button id="orPrimaryDrugBtn" class="btn or-secondary-action" type="button" hidden>💉 Medications</button>
       </div>
     </section>
 
@@ -786,7 +787,7 @@
       <div class="section-heading">
         <div>
           <h2>Legacy monitoring workspace</h2>
-          <p>V14.7.1 ใช้ Patient & Case Setup + OR LIVE เป็น workflow หลัก หน้านี้คงไว้เพื่อ compatibility ของระบบเดิม</p>
+          <p>V14.7.2 ใช้ Patient & Case Setup + OR LIVE เป็น workflow หลัก หน้านี้คงไว้เพื่อ compatibility ของระบบเดิม</p>
         </div>
       </div>
     </section>
@@ -1436,17 +1437,20 @@
     </section>
   </section>
 
-  <section id="recovery" class="tabpage"><section class="panel handoff-panel"><h2>Recovery Handoff Summary</h2><p>สรุปจากข้อมูลที่บันทึก • ค่าที่ไม่ได้บันทึกจะแสดงชัดเจน</p><pre id="recoveryHandoffText"></pre><details><summary>Snapshots at transfer</summary><div id="recoveryHandoffHistory"></div></details></section><section class="panel"><h2>Unresolved alerts / problems</h2><div id="recoveryProblemPanel"></div></section>
+  <section id="recovery" class="tabpage">
     <section class="recovery-command">
       <div><div class="eyebrow dark">RECOVERY MODE</div><h2>Post-anesthetic recovery</h2><p>ติดตาม airway, oxygenation, temperature, comfort และ mentation จน recovery complete</p></div>
       <div class="recovery-command-actions">
         <span id="recoveryPhaseBadge" class="status-pill warn">NOT STARTED</span>
         <strong id="recoveryElapsed">00:00:00</strong>
         <button id="beginRecoveryBtn" class="btn primary">Begin recovery</button>
+        <button id="recoveryMedicationBtn" class="btn" type="button">💉 Medication</button>
         <button id="completeRecoveryBtn" class="btn">Recovery complete</button>
         <button id="emergencyReturnOrBtn" class="btn recovery-emergency-btn">⚠ Emergency return to OR LIVE</button>
       </div>
     </section>
+    <section class="panel handoff-panel"><div class="section-heading"><div><h2>Recovery Handoff</h2><p>เฉพาะข้อมูลที่ต้องเห็นทันทีตอนรับช่วงต่อ</p></div><span id="recoveryHandoffProblemBadge" class="status-pill good">0 OPEN</span></div><div id="recoveryHandoffSummary" class="handoff-summary-grid"></div><details class="handoff-full-details"><summary>ดูรายละเอียด Handoff ทั้งหมด</summary><pre id="recoveryHandoffText"></pre></details><details><summary>Snapshots at transfer</summary><div id="recoveryHandoffHistory"></div></details></section>
+    <section class="panel"><h2>Unresolved alerts / problems</h2><div id="recoveryProblemPanel"></div></section>
     <div class="dashboard-grid">
       <section class="panel">
         <h2>Recovery observations</h2>
@@ -1899,7 +1903,7 @@
 
 <dialog id="alertProtocolDialog" class="workflow-dialog" aria-labelledby="alertProtocolTitle"><div class="workflow-dialog-body"><h2 id="alertProtocolTitle">Alert Protocol</h2><p id="alertProtocolContext"></p><p>Temperature thresholds use °F for exact compatibility (°C = (°F − 32) ÷ 1.8). Leave both upper fields blank to disable upper alerts. Comparisons are strictly below / above.</p><div id="alertThresholdFields"></div><label>Changed by<input id="alertProtocolActor" autocomplete="off"></label><label>Reason (required)<textarea id="alertProtocolReason"></textarea></label><p id="alertProtocolError" class="workflow-error" role="alert"></p><div class="workflow-dialog-actions"><button class="btn" data-close-dialog="alertProtocolDialog">Cancel</button><button class="btn" id="clearCaseAlertOverrideBtn">Return to frozen defaults</button><button class="btn primary" id="saveAlertProtocolBtn">Save with audit</button></div></div></dialog>
 <dialog id="problemActionDialog" class="workflow-dialog" aria-labelledby="problemActionTitle"><div class="workflow-dialog-body"><h2 id="problemActionTitle"></h2><label>Recorded by<input id="problemActionActor"></label><label>Intervention / outcome / reason<textarea id="problemActionNote"></textarea></label><p id="problemActionError" class="workflow-error" role="alert"></p><div class="workflow-dialog-actions"><button class="btn" data-close-dialog="problemActionDialog">Cancel</button><button id="saveProblemActionBtn" class="btn primary">Save action</button></div></div></dialog>
-<dialog id="orQuickDrugDialog" class="workflow-dialog" aria-labelledby="orQuickDrugTitle"><div class="workflow-dialog-body"><h2 id="orQuickDrugTitle">OR Quick Drug</h2><p id="orQuickDrugBasis"></p><label>Frozen protocol drug<select id="orQuickDrugSelect"></select></label><div class="quick-drug-calculation" id="orQuickDrugCalculation"></div><p>ค่าคำนวณเป็นข้อมูลอ้างอิง กรุณาระบุปริมาณที่ให้จริงและตรวจ preparation ก่อนยืนยัน</p><div class="quick-drug-fields"><label>Actual administered (mL)<input id="orQuickDrugActual" type="number" min="0" step="any" inputmode="decimal"></label><label>Route<input id="orQuickDrugRoute" placeholder="IV / IM / SC ..."></label><label>Administered by<input id="orQuickDrugBy"></label><label>Preparation / concentration<input id="orQuickDrugConcentration" placeholder="Confirm preparation used"></label></div><label>Note<textarea id="orQuickDrugNote"></textarea></label><p class="workflow-error" id="orQuickDrugError" role="alert"></p><div class="workflow-dialog-actions"><button class="btn" data-close-dialog="orQuickDrugDialog">Cancel</button><button id="orQuickInductionSkipBtn" class="btn" type="button" hidden>Induction without injectable drug</button><button id="orQuickDrugSaveBtn" class="btn primary">Confirm actual administration</button></div></div></dialog>
+<dialog id="orQuickDrugDialog" class="workflow-dialog" aria-labelledby="orQuickDrugTitle"><div class="workflow-dialog-body"><h2 id="orQuickDrugTitle">Medication</h2><p id="orQuickDrugBasis"></p><div id="orQuickDrugBatchStatus" class="quick-drug-batch-status" hidden></div><label>Frozen protocol drug<select id="orQuickDrugSelect"></select></label><div class="quick-drug-calculation" id="orQuickDrugCalculation"></div><p>ค่าคำนวณเป็นข้อมูลอ้างอิง • Actual administered สามารถลงย้อนหลังได้ โดยระบบเก็บทั้งเวลาที่ให้ยาและเวลาที่บันทึก</p><div class="quick-drug-fields"><label>Actual administered (mL)<input id="orQuickDrugActual" type="number" min="0" step="any" inputmode="decimal"></label><label>Route<input id="orQuickDrugRoute" placeholder="IV / IM / SC ..."></label><label>Administered by<input id="orQuickDrugBy"></label><label>Preparation / concentration<input id="orQuickDrugConcentration" placeholder="Confirm preparation used"></label></div><label>Note<textarea id="orQuickDrugNote"></textarea></label><p class="workflow-error" id="orQuickDrugError" role="alert"></p><div class="workflow-dialog-actions"><button class="btn" data-close-dialog="orQuickDrugDialog">Close</button><button id="orQuickInductionSkipBtn" class="btn" type="button" hidden>No injectable induction meds</button><button id="orQuickDrugDoneBtn" class="btn" type="button" hidden>Done</button><button id="orQuickDrugSaveBtn" class="btn primary">Save medication</button></div></div></dialog>
 
 <dialog id="drugAdminDialog" class="drug-admin-dialog">
   <form method="dialog" class="drug-admin-card" onsubmit="return false;">
@@ -2025,7 +2029,7 @@
 </dialog>
 
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
-<script src="./clinical-workflow.js?v=14.7.1"></script>
-<script src="./app.js?v=14.7.1"></script>
+<script src="./clinical-workflow.js?v=14.7.2"></script>
+<script src="./app.js?v=14.7.2"></script>
 </body>
 </html>
