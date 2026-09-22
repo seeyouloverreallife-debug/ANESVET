@@ -1,16 +1,15 @@
-ANESVET V14.8.0 — Adaptive Clinical Workflow
+ANESVET V14.8.1 — Pre-anesthetic Physical Examination
 Build date: 2026-09-22
-Baseline: ANESVET V14.7.2 supplied by user
+Baseline: ANESVET V14.8.0 Adaptive Clinical Workflow
 
 IMPLEMENTED
-- Per-case OR workflow profile: Routine / Elective, Emergency / Critical, C-section, Custom
-- Adaptive OR LIVE context panel and workflow badge
-- Critical pre-anesthetic stabilization/support checkpoints without starting anesthesia timer
-- C-section First neonate / Last neonate milestones and elapsed timing
-- C-section primary intraoperative action advances through delivery milestones, while Surgery end remains available
-- Legacy cases without workflow profile migrate to Routine / Elective
-- V14.7.2 deferred induction medications, medication audit, alerts, recovery handoff retained
-- Version/cache/backup metadata updated to 14.8.0
+- Structured pre-anesthetic physical examination panel
+- Exam timestamp + examiner + audit trail
+- Save exam -> mark physical-exam checklist Done
+- Edit-after-save invalidates stale exam attestation
+- PDF/print physical-exam section
+- Pre-op temperature integrated with existing C/F display and canonical-F storage
+- V14.8.0 adaptive Routine/Critical/C-section/Custom workflow retained
 
 UNCHANGED CLINICAL DEFAULTS
 - Drug doses/concentrations
@@ -26,7 +25,6 @@ PASS: V14.7.2 UX backward-compatibility static contracts
 PASS: V14.8 adaptive workflow static contracts
 PASS: production clinical helper tests
 PASS: workflow model scenarios
-BLOCKED: jsdom DOM suite (original archive contains empty node_modules directories; npm dependency install timed out in this runtime)
-BLOCKED: native browser smoke (headless Chromium file load timed out in this runtime)
+BLOCKED: jsdom-dependent DOM/integration suite (jsdom is not installed in this runtime)
 
 Do not treat blocked tests as passed. Acceptance-test the build on the deployment browser/device before clinical production use.

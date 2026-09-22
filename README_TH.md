@@ -1,4 +1,18 @@
-# ANESVET V14.8.0 — Adaptive Clinical Workflow
+# ANESVET V14.8.1 — Pre-anesthetic Physical Examination
+
+## V14.8.1 — Structured Pre-anesthetic Physical Examination
+
+เพิ่มแบบบันทึกผลตรวจร่างกายก่อนวางยาในหน้า **Pre-anesthetic** โดยไม่เปลี่ยน dose, alert threshold หรือ clinical protocol เดิม
+
+- Structured findings: mentation, HR, pulse, cardiac auscultation, RR, respiratory effort, lung auscultation, temperature, mucous membrane, CRT, hydration และ pain/discomfort
+- ช่อง `Abnormal findings / relevant physical exam notes` และ `Examined by`
+- ปุ่ม **Save exam & mark checklist Done** บันทึกเวลา/ผู้ตรวจและติ๊ก `Pre-anesthetic physical exam` ให้อัตโนมัติ
+- หากแก้ผลตรวจหลังบันทึก สถานะ recorded จะถูกยกเลิกและต้องกดบันทึกใหม่ เพื่อไม่ให้ timestamp เก่าถูกตีความว่าเป็นผลล่าสุด
+- Temperature ใช้ระบบ °C/°F เดียวกับ ANESVET และเก็บ canonical Fahrenheit ภายในตาม architecture เดิม
+- Structured physical examination ถูกนำไปแสดงใน PDF/print report ของเคส
+- เคสเก่าไม่มีฟิลด์ชุดนี้ยังเปิดได้ตาม backward compatibility เดิม
+
+ดูรายละเอียดที่ `RELEASE_NOTES_V14_8_1.md`
 
 ## V14.8.0 — Adaptive Clinical Workflow
 

@@ -1,8 +1,8 @@
 {
-  "name": "anesvet-v14-8-0",
-  "version": "14.8.0",
+  "name": "anesvet-v14-8-1",
+  "version": "14.8.1",
   "private": true,
-  "description": "ANESVET V14.8.0 adaptive clinical workflow; runtime requires no build",
+  "description": "ANESVET V14.8.1 adaptive clinical workflow; runtime requires no build",
   "engines": {
     "node": ">=22"
   },

@@ -1,0 +1,14 @@
+{
+  "release": "ANESVET V14.8.1",
+  "baseline": "ANESVET V14.8.0 Adaptive Clinical Workflow supplied/approved in this conversation",
+  "buildDate": "2026-09-22",
+  "scope": [
+    "structured pre-anesthetic physical examination",
+    "exam attestation timestamp/examiner/audit",
+    "PDF report integration",
+    "temperature unit integration"
+  ],
+  "clinicalDefaultsChanged": false,
+  "storageKeysChanged": false,
+  "indexedDbSchemaChanged": false
+}

@@ -1,4 +1,4 @@
-ANESVET V14.8.0 — validation summary
+ANESVET V14.8.1 — validation summary
 Date: 2026-09-22
 
 PASS
@@ -15,7 +15,6 @@ BLOCKED / NOT CLAIMED
 - tests/compatibility.mjs
 - tests/governance.mjs
 - tests/final_lock.mjs
-Reason: jsdom/fake-indexeddb dependencies were not present in the supplied archive; npm ci timed out in this runtime.
-- native Chromium smoke: file navigation timed out in this runtime.
+Reason: jsdom/fake-indexeddb dependencies are not installed in this runtime.
 
-Clinical values were not changed in V14.8.0. The new profile layer controls documentation workflow only.
+Clinical values were not changed in V14.8.1. This release adds structured pre-anesthetic physical-examination documentation.

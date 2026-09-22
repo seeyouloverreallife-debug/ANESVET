@@ -1,0 +1,846 @@
+diff -ruN /mnt/data/anesvet_v1480_base/BUILD_STATUS.txt /mnt/data/anesvet_v1481/BUILD_STATUS.txt
+--- /mnt/data/anesvet_v1480_base/BUILD_STATUS.txt	2026-09-22 15:00:04.000000000 +0000
++++ /mnt/data/anesvet_v1481/BUILD_STATUS.txt	2026-09-22 15:25:01.693648469 +0000
+@@ -1,16 +1,15 @@
+-ANESVET V14.8.0 — Adaptive Clinical Workflow
++ANESVET V14.8.1 — Pre-anesthetic Physical Examination
+ Build date: 2026-09-22
+-Baseline: ANESVET V14.7.2 supplied by user
++Baseline: ANESVET V14.8.0 Adaptive Clinical Workflow
+ 
+ IMPLEMENTED
+-- Per-case OR workflow profile: Routine / Elective, Emergency / Critical, C-section, Custom
+-- Adaptive OR LIVE context panel and workflow badge
+-- Critical pre-anesthetic stabilization/support checkpoints without starting anesthesia timer
+-- C-section First neonate / Last neonate milestones and elapsed timing
+-- C-section primary intraoperative action advances through delivery milestones, while Surgery end remains available
+-- Legacy cases without workflow profile migrate to Routine / Elective
+-- V14.7.2 deferred induction medications, medication audit, alerts, recovery handoff retained
+-- Version/cache/backup metadata updated to 14.8.0
++- Structured pre-anesthetic physical examination panel
++- Exam timestamp + examiner + audit trail
++- Save exam -> mark physical-exam checklist Done
++- Edit-after-save invalidates stale exam attestation
++- PDF/print physical-exam section
++- Pre-op temperature integrated with existing C/F display and canonical-F storage
++- V14.8.0 adaptive Routine/Critical/C-section/Custom workflow retained
+ 
+ UNCHANGED CLINICAL DEFAULTS
+ - Drug doses/concentrations
+@@ -26,7 +25,6 @@
+ PASS: V14.8 adaptive workflow static contracts
+ PASS: production clinical helper tests
+ PASS: workflow model scenarios
+-BLOCKED: jsdom DOM suite (original archive contains empty node_modules directories; npm dependency install timed out in this runtime)
+-BLOCKED: native browser smoke (headless Chromium file load timed out in this runtime)
++BLOCKED: jsdom-dependent DOM/integration suite (jsdom is not installed in this runtime)
+ 
+ Do not treat blocked tests as passed. Acceptance-test the build on the deployment browser/device before clinical production use.
+diff -ruN /mnt/data/anesvet_v1480_base/README_TH.md /mnt/data/anesvet_v1481/README_TH.md
+--- /mnt/data/anesvet_v1480_base/README_TH.md	2026-09-22 14:57:37.000000000 +0000
++++ /mnt/data/anesvet_v1481/README_TH.md	2026-09-22 15:25:01.693473535 +0000
+@@ -1,4 +1,18 @@
+-# ANESVET V14.8.0 — Adaptive Clinical Workflow
++# ANESVET V14.8.1 — Pre-anesthetic Physical Examination
++
++## V14.8.1 — Structured Pre-anesthetic Physical Examination
++
++เพิ่มแบบบันทึกผลตรวจร่างกายก่อนวางยาในหน้า **Pre-anesthetic** โดยไม่เปลี่ยน dose, alert threshold หรือ clinical protocol เดิม
++
++- Structured findings: mentation, HR, pulse, cardiac auscultation, RR, respiratory effort, lung auscultation, temperature, mucous membrane, CRT, hydration และ pain/discomfort
++- ช่อง `Abnormal findings / relevant physical exam notes` และ `Examined by`
++- ปุ่ม **Save exam & mark checklist Done** บันทึกเวลา/ผู้ตรวจและติ๊ก `Pre-anesthetic physical exam` ให้อัตโนมัติ
++- หากแก้ผลตรวจหลังบันทึก สถานะ recorded จะถูกยกเลิกและต้องกดบันทึกใหม่ เพื่อไม่ให้ timestamp เก่าถูกตีความว่าเป็นผลล่าสุด
++- Temperature ใช้ระบบ °C/°F เดียวกับ ANESVET และเก็บ canonical Fahrenheit ภายในตาม architecture เดิม
++- Structured physical examination ถูกนำไปแสดงใน PDF/print report ของเคส
++- เคสเก่าไม่มีฟิลด์ชุดนี้ยังเปิดได้ตาม backward compatibility เดิม
++
++ดูรายละเอียดที่ `RELEASE_NOTES_V14_8_1.md`
+ 
+ ## V14.8.0 — Adaptive Clinical Workflow
+ 
+diff -ruN /mnt/data/anesvet_v1480_base/RELEASE_NOTES_V14_8_1.md /mnt/data/anesvet_v1481/RELEASE_NOTES_V14_8_1.md
+--- /mnt/data/anesvet_v1480_base/RELEASE_NOTES_V14_8_1.md	1970-01-01 00:00:00.000000000 +0000
++++ /mnt/data/anesvet_v1481/RELEASE_NOTES_V14_8_1.md	2026-09-22 15:25:01.693611693 +0000
+@@ -0,0 +1,32 @@
++# ANESVET V14.8.1 — Pre-anesthetic Physical Examination
++
++Baseline: ANESVET V14.8.0 Adaptive Clinical Workflow.
++
++## Added
++
++- Structured pre-anesthetic physical examination in the Pre-anesthetic page.
++- Fields for mentation/general status, HR, pulse quality, cardiac auscultation, RR, respiratory pattern/effort, lung auscultation, temperature, mucous membrane, CRT, hydration impression, pain/discomfort, abnormal/relevant findings and examiner.
++- `Save exam & mark checklist Done` records the examination timestamp and examiner, writes an audit entry and completes the existing physical-exam checklist item.
++- Editing a formally recorded examination invalidates the previous recorded timestamp and reopens the checklist item until the exam is saved again.
++- Structured examination output is included in the printable/PDF Pre-anesthetic Assessment section.
++- Pre-op temperature follows the existing Celsius/Fahrenheit display preference and is stored as canonical Fahrenheit internally.
++
++## Compatibility / unchanged behavior
++
++- Existing V14.8.0 case workflow profiles (Routine, Critical, C-section, Custom) are unchanged.
++- No drug dose, concentration, alert threshold, fluid reference, recovery score or treatment recommendation was changed.
++- Existing storage keys and IndexedDB schema are unchanged. Older cases without the new fields load with blank physical-exam fields.
++
++## Validation in this runtime
++
++PASS:
++- JavaScript syntax + JSON validation
++- Source regression / unique HTML IDs / storage and version contracts
++- V14.7.2 UX static contracts
++- V14.8 adaptive-workflow static contracts
++- Production clinical helper tests
++- Workflow model scenarios
++
++BLOCKED / NOT CLAIMED:
++- jsdom-dependent DOM/integration suites because `jsdom` is not installed in this runtime.
++- Browser/PWA end-to-end acceptance should still be performed on the deployment browser/device before clinical production use.
+diff -ruN /mnt/data/anesvet_v1480_base/SHA256SUMS.txt /mnt/data/anesvet_v1481/SHA256SUMS.txt
+--- /mnt/data/anesvet_v1480_base/SHA256SUMS.txt	2026-09-22 15:00:23.000000000 +0000
++++ /mnt/data/anesvet_v1481/SHA256SUMS.txt	1970-01-01 00:00:00.000000000 +0000
+@@ -1,46 +0,0 @@
+-5ef30b37469270be8a0e48045567c8aa80437326ed044d6898fdcbba7d80f0cb  ./ARCHITECTURE_V14_7.md
+-f526aaba44cc52c49601c40f54fde928d1f3002af7cc2be5d7ff0b62303c571a  ./BUILD_STATUS.txt
+-6375451b55895721609c04ce7e531a7a06f6831c08c1f796424fb4f822e0e612  ./README_TH.md
+-1f23b84b1584ac2a5033dec1a7b342fb4495251825a3264837be75bc0b1b808e  ./RELEASE_NOTES_V14_7.md
+-e9e001496a2a2f5100fe987dc98eb9f74b57e3d02b958b8b76b45376e9562619  ./RELEASE_NOTES_V14_7_1.md
+-2a339ca4f7708d136c132f84126e43faaebbb159ef7b2d12e3224251795a68e6  ./RELEASE_NOTES_V14_7_2.md
+-839d17a8f9a4b78467b8ec065da6218ae340a6c055e6bf081ebfb7aefe214ebf  ./RELEASE_NOTES_V14_8_0.md
+-049c6821002916c493759d192700577672814c918a01264fced2bc4758160726  ./SOURCE_CHANGES.patch
+-4d6df624f16e40a934a2d9868928077f325b370de2b423aa41c6b6ec5f0e8ccd  ./SOURCE_CHANGES_V14_7_1.patch
+-422ce99ac9dda80615c6b86069ae831fdb13a0a4fe6defada447abd765e5ee66  ./SOURCE_CHANGES_V14_7_2.patch
+-cc37cefe2476d6de0bd25f51b3f9344d194e18af2f2344f195981d6b4a17b1c8  ./SOURCE_CHANGES_V14_8_0.patch
+-8dfb6466ba0ef33176c11861eb520e0a6355cb87bcd863c838c30eae6f80e060  ./SOURCE_PROVENANCE.json
+-d710da133b04be2516d4d3cd149fd256a28e3955b1b639d3486570c7f7de55a6  ./SOURCE_PROVENANCE_V14_7_1.json
+-46633c444e5a4f6ab492b459285cf27bd9ed7c72163e8c699f8eeb28736849d9  ./SOURCE_PROVENANCE_V14_7_2.json
+-db28c92d9d74d7d19db72ed7b1ffef7498fe564b02a18f9cc7e6b4d2b63bb451  ./SOURCE_PROVENANCE_V14_8_0.json
+-4d340eaf3b2208c0c199f93b19f65de0258aa24e0ebda5fca33e74ab1f9ec12e  ./app.js
+-6ac11b5973d23fd50eee3cd53d8de10a0506fc158b326d004691072c2ae04656  ./clinical-workflow.js
+-f65b90ac4c309c7c7a50076e736205906e582976560a2cedb97d633c9a9c59a0  ./icon-192.png
+-cd44ea51009a31097f59d0b6976cbc437802aa757a8f5f172b7cea944be6a919  ./icon-512.png
+-cd44ea51009a31097f59d0b6976cbc437802aa757a8f5f172b7cea944be6a919  ./icon-maskable-512.png
+-d61d5aa3c29f2b33e1da121df3acb8060c2c13f1d46976616e607777eb9f32a4  ./index.html
+-d83c2ebcbbb9d3cb1749945b67b98df8ca3deda9a681d7818c777510e1470af6  ./manifest.webmanifest
+-627084f3fa278b538d0b226f9393fbc2d89332b14d6cf5da644093193ae2173e  ./package-lock.json
+-4e20ba6520698ab91c474abadde579cbd1bf16efd60ee976d97c15a5bd68ad03  ./package.json
+-214890d90fa720d7c02821d78a13c579ab18a05492b9e51583b8bf06db01e05e  ./service-worker.js
+-f943e13ee99ffd75be049dd03ad62dd958232e75566d611370e7ecc153927559  ./style.css
+-2869cc8e57e4111d34aff40de6584f51f2c9e44ae24f863d271b19b634451098  ./tests/BROWSER_E2E_STATUS.txt
+-225fece192ef272c583a85c38ea3ac406d1d2e2e574a0af09ab5abc188ca8efe  ./tests/SUPPORTED_TEST_RUN.txt
+-50182805544cdb5658eb48cffd56997edbd65dd1269996c286d8d850676ce07b  ./tests/TEST_RESULTS.txt
+-404a9d47bd2d91375890c17cfc281fcb5a2f24ab0d4adf986e46029ba51ca215  ./tests/adaptive_workflow_v148.mjs
+-b9bf325429907ee9bd43483cfdc540a492e026a74d30764a114b18c59143f58c  ./tests/artifacts/induction_dialog_v14_7_1.png
+-e6d7c25f5ab5b3ec165a07eed74aff767720ccf2ad0f5c6b2777ca8d25f039d3  ./tests/artifacts/or_live_v14_7_1.png
+-56403877e27e963d1a6f36ca4e42a53ce717dda49ea9b66585dd6519dc565991  ./tests/artifacts/or_live_v14_7_1_induction.png
+-b434a12b0bfac45cb870cf56dc059cbf5cc9faacf80ddcfa11d9de16e93ea60a  ./tests/clinical_workflow.mjs
+-a46d63fbb39df836ce164a0f5795b1b51d571a0e92f4c965c58d3ad800cceb18  ./tests/compatibility.mjs
+-abe2a37c8d13176e8c8375ae61cbd9a454d3119c2cc22fbc13987934fcb130cd  ./tests/dom_harness.mjs
+-6736635c38baa46ceb22679b17bae5a19009b5d092419e0176143d819c64778d  ./tests/dom_workflow.mjs
+-50434186020ede2248f90495a53438903be8732711449a4ef375d8d18297fb22  ./tests/e2e_browser.mjs
+-ec4518cd0c1539846de738cd1d70d1006087a5da4c4c9ce5a594c260c487c10d  ./tests/final_lock.mjs
+-9b2e42c35a2116b4138a14a190e3004f57552e46d4899a4245fc396aea6123c6  ./tests/governance.mjs
+-777e1f8792c3bdca592f09969355fefdf65405d8d8f1a9a28d9b5b474a13f942  ./tests/pdf_stress_fixture.html
+-bcd58fd5349676278217ccc9f469c1bbf0cf414f76a5c6f7c8d7a9a47a549383  ./tests/regression.mjs
+-760685678cf7582171cd6ce685646f96dd2dce32c0006e70a453d7882ea35787  ./tests/syntax.mjs
+-f4c0e4fa57e692cac25da0975640db242528fa0641a68185e7df627d4d914c37  ./tests/ux_v1472_static.mjs
+-dba6a96d3dcd1333a9145c6a6714a98866522e33b6a0720c4e5a7ef108d9b584  ./tests/ux_v148_static.mjs
+-22b42ae83c9435c634a71c6659f60267f129843c065ab1d22a18a3f6241268b5  ./tests/workflow_scenarios.mjs
+diff -ruN /mnt/data/anesvet_v1480_base/SOURCE_CHANGES_V14_8_1.patch /mnt/data/anesvet_v1481/SOURCE_CHANGES_V14_8_1.patch
+--- /mnt/data/anesvet_v1480_base/SOURCE_CHANGES_V14_8_1.patch	1970-01-01 00:00:00.000000000 +0000
++++ /mnt/data/anesvet_v1481/SOURCE_CHANGES_V14_8_1.patch	2026-09-22 15:25:44.741315309 +0000
+@@ -0,0 +1,147 @@
++diff -ruN /mnt/data/anesvet_v1480_base/BUILD_STATUS.txt /mnt/data/anesvet_v1481/BUILD_STATUS.txt
++--- /mnt/data/anesvet_v1480_base/BUILD_STATUS.txt	2026-09-22 15:00:04.000000000 +0000
+++++ /mnt/data/anesvet_v1481/BUILD_STATUS.txt	2026-09-22 15:25:01.693648469 +0000
++@@ -1,16 +1,15 @@
++-ANESVET V14.8.0 — Adaptive Clinical Workflow
+++ANESVET V14.8.1 — Pre-anesthetic Physical Examination
++ Build date: 2026-09-22
++-Baseline: ANESVET V14.7.2 supplied by user
+++Baseline: ANESVET V14.8.0 Adaptive Clinical Workflow
++ 
++ IMPLEMENTED
++-- Per-case OR workflow profile: Routine / Elective, Emergency / Critical, C-section, Custom
++-- Adaptive OR LIVE context panel and workflow badge
++-- Critical pre-anesthetic stabilization/support checkpoints without starting anesthesia timer
++-- C-section First neonate / Last neonate milestones and elapsed timing
++-- C-section primary intraoperative action advances through delivery milestones, while Surgery end remains available
++-- Legacy cases without workflow profile migrate to Routine / Elective
++-- V14.7.2 deferred induction medications, medication audit, alerts, recovery handoff retained
++-- Version/cache/backup metadata updated to 14.8.0
+++- Structured pre-anesthetic physical examination panel
+++- Exam timestamp + examiner + audit trail
+++- Save exam -> mark physical-exam checklist Done
+++- Edit-after-save invalidates stale exam attestation
+++- PDF/print physical-exam section
+++- Pre-op temperature integrated with existing C/F display and canonical-F storage
+++- V14.8.0 adaptive Routine/Critical/C-section/Custom workflow retained
++ 
++ UNCHANGED CLINICAL DEFAULTS
++ - Drug doses/concentrations
++@@ -26,7 +25,6 @@
++ PASS: V14.8 adaptive workflow static contracts
++ PASS: production clinical helper tests
++ PASS: workflow model scenarios
++-BLOCKED: jsdom DOM suite (original archive contains empty node_modules directories; npm dependency install timed out in this runtime)
++-BLOCKED: native browser smoke (headless Chromium file load timed out in this runtime)
+++BLOCKED: jsdom-dependent DOM/integration suite (jsdom is not installed in this runtime)
++ 
++ Do not treat blocked tests as passed. Acceptance-test the build on the deployment browser/device before clinical production use.
++diff -ruN /mnt/data/anesvet_v1480_base/README_TH.md /mnt/data/anesvet_v1481/README_TH.md
++--- /mnt/data/anesvet_v1480_base/README_TH.md	2026-09-22 14:57:37.000000000 +0000
+++++ /mnt/data/anesvet_v1481/README_TH.md	2026-09-22 15:25:01.693473535 +0000
++@@ -1,4 +1,18 @@
++-# ANESVET V14.8.0 — Adaptive Clinical Workflow
+++# ANESVET V14.8.1 — Pre-anesthetic Physical Examination
+++
+++## V14.8.1 — Structured Pre-anesthetic Physical Examination
+++
+++เพิ่มแบบบันทึกผลตรวจร่างกายก่อนวางยาในหน้า **Pre-anesthetic** โดยไม่เปลี่ยน dose, alert threshold หรือ clinical protocol เดิม
+++
+++- Structured findings: mentation, HR, pulse, cardiac auscultation, RR, respiratory effort, lung auscultation, temperature, mucous membrane, CRT, hydration และ pain/discomfort
+++- ช่อง `Abnormal findings / relevant physical exam notes` และ `Examined by`
+++- ปุ่ม **Save exam & mark checklist Done** บันทึกเวลา/ผู้ตรวจและติ๊ก `Pre-anesthetic physical exam` ให้อัตโนมัติ
+++- หากแก้ผลตรวจหลังบันทึก สถานะ recorded จะถูกยกเลิกและต้องกดบันทึกใหม่ เพื่อไม่ให้ timestamp เก่าถูกตีความว่าเป็นผลล่าสุด
+++- Temperature ใช้ระบบ °C/°F เดียวกับ ANESVET และเก็บ canonical Fahrenheit ภายในตาม architecture เดิม
+++- Structured physical examination ถูกนำไปแสดงใน PDF/print report ของเคส
+++- เคสเก่าไม่มีฟิลด์ชุดนี้ยังเปิดได้ตาม backward compatibility เดิม
+++
+++ดูรายละเอียดที่ `RELEASE_NOTES_V14_8_1.md`
++ 
++ ## V14.8.0 — Adaptive Clinical Workflow
++ 
++diff -ruN /mnt/data/anesvet_v1480_base/RELEASE_NOTES_V14_8_1.md /mnt/data/anesvet_v1481/RELEASE_NOTES_V14_8_1.md
++--- /mnt/data/anesvet_v1480_base/RELEASE_NOTES_V14_8_1.md	1970-01-01 00:00:00.000000000 +0000
+++++ /mnt/data/anesvet_v1481/RELEASE_NOTES_V14_8_1.md	2026-09-22 15:25:01.693611693 +0000
++@@ -0,0 +1,32 @@
+++# ANESVET V14.8.1 — Pre-anesthetic Physical Examination
+++
+++Baseline: ANESVET V14.8.0 Adaptive Clinical Workflow.
+++
+++## Added
+++
+++- Structured pre-anesthetic physical examination in the Pre-anesthetic page.
+++- Fields for mentation/general status, HR, pulse quality, cardiac auscultation, RR, respiratory pattern/effort, lung auscultation, temperature, mucous membrane, CRT, hydration impression, pain/discomfort, abnormal/relevant findings and examiner.
+++- `Save exam & mark checklist Done` records the examination timestamp and examiner, writes an audit entry and completes the existing physical-exam checklist item.
+++- Editing a formally recorded examination invalidates the previous recorded timestamp and reopens the checklist item until the exam is saved again.
+++- Structured examination output is included in the printable/PDF Pre-anesthetic Assessment section.
+++- Pre-op temperature follows the existing Celsius/Fahrenheit display preference and is stored as canonical Fahrenheit internally.
+++
+++## Compatibility / unchanged behavior
+++
+++- Existing V14.8.0 case workflow profiles (Routine, Critical, C-section, Custom) are unchanged.
+++- No drug dose, concentration, alert threshold, fluid reference, recovery score or treatment recommendation was changed.
+++- Existing storage keys and IndexedDB schema are unchanged. Older cases without the new fields load with blank physical-exam fields.
+++
+++## Validation in this runtime
+++
+++PASS:
+++- JavaScript syntax + JSON validation
+++- Source regression / unique HTML IDs / storage and version contracts
+++- V14.7.2 UX static contracts
+++- V14.8 adaptive-workflow static contracts
+++- Production clinical helper tests
+++- Workflow model scenarios
+++
+++BLOCKED / NOT CLAIMED:
+++- jsdom-dependent DOM/integration suites because `jsdom` is not installed in this runtime.
+++- Browser/PWA end-to-end acceptance should still be performed on the deployment browser/device before clinical production use.
++diff -ruN /mnt/data/anesvet_v1480_base/SHA256SUMS.txt /mnt/data/anesvet_v1481/SHA256SUMS.txt
++--- /mnt/data/anesvet_v1480_base/SHA256SUMS.txt	2026-09-22 15:00:23.000000000 +0000
+++++ /mnt/data/anesvet_v1481/SHA256SUMS.txt	1970-01-01 00:00:00.000000000 +0000
++@@ -1,46 +0,0 @@
++-5ef30b37469270be8a0e48045567c8aa80437326ed044d6898fdcbba7d80f0cb  ./ARCHITECTURE_V14_7.md
++-f526aaba44cc52c49601c40f54fde928d1f3002af7cc2be5d7ff0b62303c571a  ./BUILD_STATUS.txt
++-6375451b55895721609c04ce7e531a7a06f6831c08c1f796424fb4f822e0e612  ./README_TH.md
++-1f23b84b1584ac2a5033dec1a7b342fb4495251825a3264837be75bc0b1b808e  ./RELEASE_NOTES_V14_7.md
++-e9e001496a2a2f5100fe987dc98eb9f74b57e3d02b958b8b76b45376e9562619  ./RELEASE_NOTES_V14_7_1.md
++-2a339ca4f7708d136c132f84126e43faaebbb159ef7b2d12e3224251795a68e6  ./RELEASE_NOTES_V14_7_2.md
++-839d17a8f9a4b78467b8ec065da6218ae340a6c055e6bf081ebfb7aefe214ebf  ./RELEASE_NOTES_V14_8_0.md
++-049c6821002916c493759d192700577672814c918a01264fced2bc4758160726  ./SOURCE_CHANGES.patch
++-4d6df624f16e40a934a2d9868928077f325b370de2b423aa41c6b6ec5f0e8ccd  ./SOURCE_CHANGES_V14_7_1.patch
++-422ce99ac9dda80615c6b86069ae831fdb13a0a4fe6defada447abd765e5ee66  ./SOURCE_CHANGES_V14_7_2.patch
++-cc37cefe2476d6de0bd25f51b3f9344d194e18af2f2344f195981d6b4a17b1c8  ./SOURCE_CHANGES_V14_8_0.patch
++-8dfb6466ba0ef33176c11861eb520e0a6355cb87bcd863c838c30eae6f80e060  ./SOURCE_PROVENANCE.json
++-d710da133b04be2516d4d3cd149fd256a28e3955b1b639d3486570c7f7de55a6  ./SOURCE_PROVENANCE_V14_7_1.json
++-46633c444e5a4f6ab492b459285cf27bd9ed7c72163e8c699f8eeb28736849d9  ./SOURCE_PROVENANCE_V14_7_2.json
++-db28c92d9d74d7d19db72ed7b1ffef7498fe564b02a18f9cc7e6b4d2b63bb451  ./SOURCE_PROVENANCE_V14_8_0.json
++-4d340eaf3b2208c0c199f93b19f65de0258aa24e0ebda5fca33e74ab1f9ec12e  ./app.js
++-6ac11b5973d23fd50eee3cd53d8de10a0506fc158b326d004691072c2ae04656  ./clinical-workflow.js
++-f65b90ac4c309c7c7a50076e736205906e582976560a2cedb97d633c9a9c59a0  ./icon-192.png
++-cd44ea51009a31097f59d0b6976cbc437802aa757a8f5f172b7cea944be6a919  ./icon-512.png
++-cd44ea51009a31097f59d0b6976cbc437802aa757a8f5f172b7cea944be6a919  ./icon-maskable-512.png
++-d61d5aa3c29f2b33e1da121df3acb8060c2c13f1d46976616e607777eb9f32a4  ./index.html
++-d83c2ebcbbb9d3cb1749945b67b98df8ca3deda9a681d7818c777510e1470af6  ./manifest.webmanifest
++-627084f3fa278b538d0b226f9393fbc2d89332b14d6cf5da644093193ae2173e  ./package-lock.json
++-4e20ba6520698ab91c474abadde579cbd1bf16efd60ee976d97c15a5bd68ad03  ./package.json
++-214890d90fa720d7c02821d78a13c579ab18a05492b9e51583b8bf06db01e05e  ./service-worker.js
++-f943e13ee99ffd75be049dd03ad62dd958232e75566d611370e7ecc153927559  ./style.css
++-2869cc8e57e4111d34aff40de6584f51f2c9e44ae24f863d271b19b634451098  ./tests/BROWSER_E2E_STATUS.txt
++-225fece192ef272c583a85c38ea3ac406d1d2e2e574a0af09ab5abc188ca8efe  ./tests/SUPPORTED_TEST_RUN.txt
++-50182805544cdb5658eb48cffd56997edbd65dd1269996c286d8d850676ce07b  ./tests/TEST_RESULTS.txt
++-404a9d47bd2d91375890c17cfc281fcb5a2f24ab0d4adf986e46029ba51ca215  ./tests/adaptive_workflow_v148.mjs
++-b9bf325429907ee9bd43483cfdc540a492e026a74d30764a114b18c59143f58c  ./tests/artifacts/induction_dialog_v14_7_1.png
++-e6d7c25f5ab5b3ec165a07eed74aff767720ccf2ad0f5c6b2777ca8d25f039d3  ./tests/artifacts/or_live_v14_7_1.png
++-56403877e27e963d1a6f36ca4e42a53ce717dda49ea9b66585dd6519dc565991  ./tests/artifacts/or_live_v14_7_1_induction.png
++-b434a12b0bfac45cb870cf56dc059cbf5cc9faacf80ddcfa11d9de16e93ea60a  ./tests/clinical_workflow.mjs
++-a46d63fbb39df836ce164a0f5795b1b51d571a0e92f4c965c58d3ad800cceb18  ./tests/compatibility.mjs
++-abe2a37c8d13176e8c8375ae61cbd9a454d3119c2cc22fbc13987934fcb130cd  ./tests/dom_harness.mjs
++-6736635c38baa46ceb22679b17bae5a19009b5d092419e0176143d819c64778d  ./tests/dom_workflow.mjs
++-50434186020ede2248f90495a53438903be8732711449a4ef375d8d18297fb22  ./tests/e2e_browser.mjs
++-ec4518cd0c1539846de738cd1d70d1006087a5da4c4c9ce5a594c260c487c10d  ./tests/final_lock.mjs
++-9b2e42c35a2116b4138a14a190e3004f57552e46d4899a4245fc396aea6123c6  ./tests/governance.mjs
++-777e1f8792c3bdca592f09969355fefdf65405d8d8f1a9a28d9b5b474a13f942  ./tests/pdf_stress_fixture.html
++-bcd58fd5349676278217ccc9f469c1bbf0cf414f76a5c6f7c8d7a9a47a549383  ./tests/regression.mjs
++-760685678cf7582171cd6ce685646f96dd2dce32c0006e70a453d7882ea35787  ./tests/syntax.mjs
++-f4c0e4fa57e692cac25da0975640db242528fa0641a68185e7df627d4d914c37  ./tests/ux_v1472_static.mjs
++-dba6a96d3dcd1333a9145c6a6714a98866522e33b6a0720c4e5a7ef108d9b584  ./tests/ux_v148_static.mjs
++-22b42ae83c9435c634a71c6659f60267f129843c065ab1d22a18a3f6241268b5  ./tests/workflow_scenarios.mjs
+diff -ruN /mnt/data/anesvet_v1480_base/SOURCE_PROVENANCE_V14_8_1.json /mnt/data/anesvet_v1481/SOURCE_PROVENANCE_V14_8_1.json
+--- /mnt/data/anesvet_v1480_base/SOURCE_PROVENANCE_V14_8_1.json	1970-01-01 00:00:00.000000000 +0000
++++ /mnt/data/anesvet_v1481/SOURCE_PROVENANCE_V14_8_1.json	2026-09-22 15:25:01.693750833 +0000
+@@ -0,0 +1,14 @@
++{
++  "release": "ANESVET V14.8.1",
++  "baseline": "ANESVET V14.8.0 Adaptive Clinical Workflow supplied/approved in this conversation",
++  "buildDate": "2026-09-22",
++  "scope": [
++    "structured pre-anesthetic physical examination",
++    "exam attestation timestamp/examiner/audit",
++    "PDF report integration",
++    "temperature unit integration"
++  ],
++  "clinicalDefaultsChanged": false,
++  "storageKeysChanged": false,
++  "indexedDbSchemaChanged": false
++}
+diff -ruN /mnt/data/anesvet_v1480_base/app.js /mnt/data/anesvet_v1481/app.js
+--- /mnt/data/anesvet_v1480_base/app.js	2026-09-22 14:57:37.000000000 +0000
++++ /mnt/data/anesvet_v1481/app.js	2026-09-22 15:23:54.661536988 +0000
+@@ -21,9 +21,9 @@
+ const DB_NAME='ANESVET_DB';
+ const DB_VERSION=2;
+ 
+-const numericFields = ['weight','hr','rr','sap','map','dap','spo2','etco2','temp','vaporizer','o2flow','fluidRateInput','fluidTotal','recHR','recRR','recMAP','recSpO2','recTemp'];
++const numericFields = ['weight','preopHR','preopRR','preopTemp','hr','rr','sap','map','dap','spo2','etco2','temp','vaporizer','o2flow','fluidRateInput','fluidTotal','recHR','recRR','recMAP','recSpO2','recTemp'];
+ const dataFields = [
+-  'patientName','hospitalId','visitId','patientMasterId','species','sex','reproductiveStatus','microchip','breed','weight','age','birthDate','birthDateEstimated','ageSource','estimatedBirthPeriod','approxAgeYears','approxAgeMonths','approxAgeWeeks','bcs','asa','emergency','patientProcedure','patientAllergies','patientComorbidities','patientPrecautions','caseWorkflowProfile','procedure','surgeon','anesthetist','surgicalAssistant',
++  'patientName','hospitalId','visitId','patientMasterId','species','sex','reproductiveStatus','microchip','breed','weight','age','birthDate','birthDateEstimated','ageSource','estimatedBirthPeriod','approxAgeYears','approxAgeMonths','approxAgeWeeks','bcs','asa','emergency','patientProcedure','patientAllergies','patientComorbidities','patientPrecautions','caseWorkflowProfile','procedure','surgeon','anesthetist','surgicalAssistant','preopMentation','preopHR','preopPulse','preopHeart','preopRR','preopRespEffort','preopLungs','preopTemp','preopMM','preopCRT','preopHydration','preopPain','preopExamNotes','preopExaminer',
+   'hr','rr','sap','map','dap','spo2','etco2','temp','vaporizer','o2flow','fluidRateInput','fluidTotal',
+   'depth','ventilation','bradyPoorPerf','bloodLoss','cardiacRisk','respRisk','recordInterval','reminderOn',
+   'recordNote','recHR','recRR','recMAP','recSpO2','recTemp','recExtubation','recOxygen','recMentation','recPain','recNaReason','recRecordInterval','recScoreAirway','recScoreOxygen','recScoreTemp','recScoreMentation','recScoreComfort','recScoreNote','planPremed','planInduction','planMaintenance','planAnalgesia','planAntibiotic','planNSAID','planBlock','planNote','actualDiazepamMl','actualPropofolMl','actualTramadolMl','balanceCrystalloid','balanceBolus','balanceBloodIn','balanceBloodLoss','balanceUrine','fluidActualTotal','airwayEttSize','airwayEttDepth','airwayCuff','airwayDifficulty','airwayCircuit','airwayVentMode','airwayVt','airwayPip','airwayPeep','airwayVentRr','diazepamConc','propofolConc','tramadolConc','rimadylConc','metacamConc','adrenalineConc','atropineConc','atropineMode','dopamineDose','dopamineConc'
+@@ -59,7 +59,7 @@
+   approxAgeYears:'0',
+   approxAgeMonths:'0',
+   approxAgeWeeks:'0',
+-  preopChecks:{},preopNA:{},
++  preopChecks:{},preopNA:{},preopExamRecordedAt:null,preopExamRecordedBy:'',
+   caseStartedAt:null,
+   responses:[],
+   corrections:[],
+@@ -142,7 +142,7 @@
+ }
+ function readSessionLock(){try{const x=JSON.parse(localStorage.getItem(SESSION_LOCK_KEY)||'null');return x&&x.tabId?x:null}catch(e){return null}}
+ function sessionLockIsFresh(lock){return !!(lock&&lock.tabId&&Number(lock.heartbeatAt)>0&&(Date.now()-Number(lock.heartbeatAt))<SESSION_TTL_MS)}
+-function writeSessionLock(){if(sessionMode!=='active')return;const lock={tabId:sessionTabId,heartbeatAt:Date.now(),caseId:state?.caseId||'',patientName:state?.patientName||'',version:'14.8.0'};try{localStorage.setItem(SESSION_LOCK_KEY,JSON.stringify(lock))}catch(e){};try{sessionChannel?.postMessage({type:'HEARTBEAT',...lock})}catch(e){}}
++function writeSessionLock(){if(sessionMode!=='active')return;const lock={tabId:sessionTabId,heartbeatAt:Date.now(),caseId:state?.caseId||'',patientName:state?.patientName||'',version:'14.8.1'};try{localStorage.setItem(SESSION_LOCK_KEY,JSON.stringify(lock))}catch(e){};try{sessionChannel?.postMessage({type:'HEARTBEAT',...lock})}catch(e){}}
+ function releaseSessionLock(){const lock=readSessionLock();if(lock?.tabId===sessionTabId){try{localStorage.removeItem(SESSION_LOCK_KEY)}catch(e){};try{sessionChannel?.postMessage({type:'RELEASE',tabId:sessionTabId})}catch(e){}}}
+ function sessionSafeTarget(target){return !!target?.closest?.('.session-safe,[data-tab],[data-more-tab],#moreMenuBtn,.archive-pdf,.verify-integrity')}
+ function renderSessionMode(){
+@@ -546,7 +546,7 @@
+   try{
+     dataFields.forEach(id=>{
+       const el=$(id);if(!el)return;
+-      if(id==='temp'||id==='recTemp') state[id]=el.value===''?'':(tempDisplayToStoredF(el.value)??'');
++      if(id==='temp'||id==='recTemp'||id==='preopTemp') state[id]=el.value===''?'':(tempDisplayToStoredF(el.value)??'');
+       else state[id]=el.type==='checkbox'?el.checked:el.value;
+     });
+     state.recoveryChecks=$$('.recovery-check').map(x=>x.checked);
+@@ -573,13 +573,14 @@
+ function tempDeltaTextF(deltaF){const n=Number(deltaF);if(!Number.isFinite(n))return '—';const d=activeTempDisplayUnit==='C'?n*5/9:n;return `${d.toFixed(1)}${tempSymbol()}`}
+ function setTemperatureDisplayUnit(unit,{convertInputs=true,rerender=true}={}){
+   const next=normalizeTempUnit(unit),prev=activeTempDisplayUnit;
+-  const ids=['temp','orTemp','recTemp'];
++  const ids=['temp','orTemp','recTemp','preopTemp'];
+   if(convertInputs&&next!==prev){ids.forEach(id=>{const el=$(id);if(!el||el.value==='')return;const n=Number(el.value);if(!Number.isFinite(n))return;const storedF=prev==='C'?cToF(n):n;el.value=next==='C'?fToC(storedF).toFixed(1):Number(storedF).toFixed(1)});}
+   activeTempDisplayUnit=next;
+   ids.forEach(id=>{const el=$(id);if(!el)return;el.min=next==='C'?'25':'77';el.max=next==='C'?'45':'113';el.step='0.1'});
+   if($('orTempUnit'))$('orTempUnit').textContent=tempSymbol();
+   if($('tempUnitLabel'))$('tempUnitLabel').textContent=tempSymbol();
+   if($('recTempUnitLabel'))$('recTempUnitLabel').textContent=tempSymbol();
++  if($('preopTempUnitLabel'))$('preopTempUnitLabel').textContent=tempSymbol();
+   if($('chartTempUnit'))$('chartTempUnit').textContent=tempSymbol();
+   if($('recordTempHeader'))$('recordTempHeader').textContent=`Temp ${tempSymbol()}`;
+   if($('recoveryTempHeader'))$('recoveryTempHeader').textContent=`Temp ${tempSymbol()}`;
+@@ -682,6 +683,8 @@
+     if(!('protocolSnapshot' in state))state.protocolSnapshot=null;
+     if(!('visitId' in state))state.visitId='';
+     if(!state.caseWorkflowProfile)state.caseWorkflowProfile='routine';
++    if(!('preopExamRecordedAt' in state))state.preopExamRecordedAt=null;
++    if(!('preopExamRecordedBy' in state))state.preopExamRecordedBy='';
+     if(!state.caseStartedAt && !(state.timer?.elapsedMs>0) && !state.recoveryStartedAt && !state.recoveryCompletedAt && !state.caseLocked)state.casePhase='setup';
+   }catch(e){}
+   dataFields.forEach(id=>{
+@@ -1161,12 +1164,42 @@
+   state.patientSaved=false;updatePatientSaveStatus();save();renderWorkflowContext();renderOrPrimaryFlow();renderCaseSummary();
+ });
+ 
++const PREOP_EXAM_FIELD_IDS=['preopMentation','preopHR','preopPulse','preopHeart','preopRR','preopRespEffort','preopLungs','preopTemp','preopMM','preopCRT','preopHydration','preopPain','preopExamNotes','preopExaminer'];
++function preopExamEnteredCount(){return PREOP_EXAM_FIELD_IDS.filter(id=>{const el=$(id);return !!(el&&String(el.value??'').trim())}).length}
++function renderPreopExam(){
++  const panel=document.querySelector('.preop-exam-panel'),badge=$('preopExamStatus'),meta=$('preopExamSavedMeta');if(!badge)return;
++  const checked=!!document.querySelector('#preop .preop-check[data-key="exam"]')?.checked,stamp=state.preopExamRecordedAt;
++  panel?.classList.toggle('exam-saved',!!stamp);
++  if(stamp){badge.className='status-pill good';badge.textContent='RECORDED';if(meta)meta.textContent=`บันทึก ${formatDate(stamp)} ${formatClock(stamp)} • ${state.preopExamRecordedBy||$('preopExaminer')?.value||'examiner not specified'}`;return}
++  if(checked){badge.className='status-pill warn';badge.textContent='CHECKED • NO STRUCTURED RECORD';if(meta)meta.textContent='Checklist ถูกติ๊กแล้ว แต่ยังไม่มี structured physical examination';return}
++  badge.className='status-pill warn';badge.textContent=preopExamEnteredCount()?'UNSAVED CHANGES':'NOT RECORDED';if(meta)meta.textContent=preopExamEnteredCount()?'มีข้อมูลที่ยังไม่ได้กดบันทึกผลตรวจ':'ยังไม่ได้บันทึกผลตรวจ';
++}
++function markPreopExamDirty(){
++  if(state.preopExamRecordedAt){state.preopExamRecordedAt=null;state.preopExamRecordedBy='';const cb=document.querySelector('#preop .preop-check[data-key="exam"]');if(cb)cb.checked=false;document.querySelector('#preop .preop-item[data-preop-key="exam"]')?.classList.remove('na')}
++  renderPreopExam();renderPreop();
++}
++function savePreopPhysicalExam(){
++  if(!clinicalWriteAllowed())return;
++  const count=preopExamEnteredCount(),examiner=$('preopExaminer')?.value.trim()||$('anesthetist')?.value.trim()||'';
++  if(!count){toast('กรุณาบันทึกผลตรวจร่างกายอย่างน้อย 1 รายการ');return}
++  if(!examiner){toast('กรุณาระบุผู้ตรวจร่างกาย');$('preopExaminer')?.focus();return}
++  if(count<5&&!confirm(`มี structured findings ${count} รายการ\nต้องการบันทึก Physical Examination และ mark checklist Done ต่อหรือไม่?`))return;
++  if($('preopExaminer')&&!$('preopExaminer').value.trim())$('preopExaminer').value=examiner;
++  save();state.preopExamRecordedAt=Date.now();state.preopExamRecordedBy=examiner;
++  const item=document.querySelector('#preop .preop-item[data-preop-key="exam"]'),cb=item?.querySelector('.preop-check');item?.classList.remove('na');if(cb){cb.disabled=false;cb.checked=true}
++  addAudit('PREANESTHETIC_PHYSICAL_EXAM_RECORDED',`${count} structured finding(s) recorded`,examiner);save();renderPreop();renderPreopExam();renderCaseSummary();toast('Physical examination saved • checklist marked Done');
++}
++function preopExamReportHtml(){
++  const val=id=>{const v=$(id)?.value??state[id]??'';return v===null||v===undefined||String(v).trim()===''?'—':String(v)};
++  const items=[['Mentation',val('preopMentation')],['HR',val('preopHR')==='—'?'—':`${val('preopHR')} bpm`],['Pulse',val('preopPulse')],['Heart',val('preopHeart')],['RR',val('preopRR')==='—'?'—':`${val('preopRR')} bpm`],['Respiratory effort',val('preopRespEffort')],['Lungs',val('preopLungs')],['Temperature',state.preopTemp!==''&&state.preopTemp!=null?tempTextF(state.preopTemp):'—'],['Mucous membrane',val('preopMM')],['CRT',val('preopCRT')],['Hydration',val('preopHydration')],['Pain / discomfort',val('preopPain')],['Examined by',val('preopExaminer')],['Recorded at',state.preopExamRecordedAt?`${formatDate(state.preopExamRecordedAt)} ${formatClock(state.preopExamRecordedAt)}`:'Not formally recorded']];
++  return `<div class="report-physical-exam"><div class="report-physical-exam-grid">${items.map(([l,v])=>`<div class="report-physical-exam-item"><span>${escapeHtml(l)}</span><b>${escapeHtml(v)}</b></div>`).join('')}</div><div class="report-physical-exam-note"><b>Abnormal / relevant findings:</b> ${escapeHtml(val('preopExamNotes'))}</div></div>`;
++}
+ function renderPreop(){
+   const checks=$$('.preop-check'),total=checks.length;
+   const done=checks.filter(x=>x.checked).length,na=$$('.preop-item.na').length,reviewed=done+na;
+   if($('preopProgress')){$('preopProgress').textContent=`${reviewed}/${total} REVIEWED`;$('preopProgress').className=`status-pill ${reviewed===total?'good':'warn'}`;}
+   if($('preopWarning'))$('preopWarning').textContent=reviewed===total?'Pre-anesthetic checklist reviewed':'ยังมีรายการที่ต้องเลือก Done หรือ N/A';
+-  save();
++  renderPreopExam();save();
+ }
+ $$('.preop-check').forEach(el=>el.addEventListener('change',()=>{
+   if(el.checked)el.closest('.preop-item')?.classList.remove('na');
+@@ -2686,7 +2719,7 @@
+     airway:'Airway equipment ready',suction:'Suction available',monitor:'Monitor attached / functional',
+     warming:'Active warming ready',emergency:'Emergency drugs / crash plan ready'
+   };
+-  $('reportPreop').innerHTML=`<div class="report-preop-grid">${Object.entries(preopLabels).map(([k,label])=>{const mark=(state.preopChecks||{})[k]?'☑':(state.preopNA||{})[k]?'N/A':'☐';return `<div class="report-preop-item"><span class="mark">${mark}</span><span>${escapeHtml(label)}</span></div>`}).join('')}</div>`;
++  $('reportPreop').innerHTML=preopExamReportHtml()+`<div class="report-preop-grid">${Object.entries(preopLabels).map(([k,label])=>{const mark=(state.preopChecks||{})[k]?'☑':(state.preopNA||{})[k]?'N/A':'☐';return `<div class="report-preop-item"><span class="mark">${mark}</span><span>${escapeHtml(label)}</span></div>`}).join('')}</div>`;
+ 
+   $('reportPlanGrid').innerHTML=[reportInfoItem('Premedication',$('planPremed').value||'—'),reportInfoItem('Induction',$('planInduction').value||'—'),reportInfoItem('Maintenance',$('planMaintenance').value||'—'),reportInfoItem('Analgesia',$('planAnalgesia').value||'—'),reportInfoItem('Antibiotic',$('planAntibiotic').value||'—'),reportInfoItem('NSAID',$('planNSAID').value||'—'),reportInfoItem('Block',$('planBlock').value||'—'),reportInfoItem('Plan note',$('planNote').value||'—')].join('');const fmReport=getFluidMetrics(),bw=fmReport.w;
+   $('reportBalanceGrid').innerHTML=[
+@@ -2836,7 +2869,7 @@
+ 
+ async function backupAllData(){
+   save();await initArchiveDb();await initPatientMaster();
+-  const payload={format:'ANESVET_BACKUP',version:'14.8.0',exportedAt:Date.now(),current:state,archive:getArchive(),patients:getPatients(),breedAliases:loadBreedAliases(),settings:(()=>{try{return JSON.parse(localStorage.getItem(SETTINGS_KEY)||'null')}catch(e){return null}})(),drugLibrary:loadDrugLibraryData(),quickPresets:loadQuickPresets(),protocolAudit:getProtocolAudit()};
++  const payload={format:'ANESVET_BACKUP',version:'14.8.1',exportedAt:Date.now(),current:state,archive:getArchive(),patients:getPatients(),breedAliases:loadBreedAliases(),settings:(()=>{try{return JSON.parse(localStorage.getItem(SETTINGS_KEY)||'null')}catch(e){return null}})(),drugLibrary:loadDrugLibraryData(),quickPresets:loadQuickPresets(),protocolAudit:getProtocolAudit()};
+   downloadBlob(JSON.stringify(payload,null,2),'application/json',`ANESVET_BACKUP_${formatDate(Date.now())}.json`);
+   const backupEpoch=Date.now();localStorage.setItem(LAST_BACKUP_KEY,String(backupEpoch));
+   if($('backupStatus'))$('backupStatus').textContent=`Backup created ${formatClock(backupEpoch)} • ${payload.archive.length} cases • ${payload.patients.length} patients`;
+@@ -2977,7 +3010,7 @@
+   let path=here.pathname;
+   if(!path.endsWith('/')) path=path.replace(/\/[^/]*$/,'/');
+   const url=new URL(path, here.origin);
+-  url.searchParams.set('v','14.8.0');
++  url.searchParams.set('v','14.8.1');
+   return url.href;
+ }
+ function restartAtAppRoot(){
+@@ -3347,13 +3380,14 @@
+     timer:{running:false,startedEpoch:null,elapsedMs:0},
+     records:[],events:[],responses:[],corrections:[],complications:[],drugAdministrations:[],alertEpisodes:[],recoveryScores:[],recoveryRecords:[],fluidRateHistory:[],
+     alertProtocolOverride:null,alertProtocolHistory:[],recoveryHandoffs:[],inductionDocumentationMode:'',inductionMedicationReviewCompletedAt:null,
+-    recoveryChecks:[false,false,false,false,false,false],recoveryNA:[false,false,false,false,false,false],recoveryObservationNA:{spo2:false,temp:false,extubation:false},preopChecks:{},preopNA:{},
++    recoveryChecks:[false,false,false,false,false,false],recoveryNA:[false,false,false,false,false,false],recoveryObservationNA:{spo2:false,temp:false,extubation:false},preopChecks:{},preopNA:{},preopExamRecordedAt:null,preopExamRecordedBy:'',
+     patientSaved:false,patientMasterId:'',caseWorkflowProfile:'routine',
+     patientName:'',hospitalId:'',visitId:'',species:'',sex:'',reproductiveStatus:'',microchip:'',breed:'',
+     weight:'',age:'',birthDate:'',birthDateEstimated:false,ageSource:'',estimatedBirthPeriod:'',
+     approxAgeYears:'',approxAgeMonths:'',approxAgeWeeks:'',bcs:'',asa:'',emergency:false,
+     patientProcedure:'',procedure:'',patientAllergies:'',patientComorbidities:'',patientPrecautions:'',
+     surgeon:'',anesthetist:'',surgicalAssistant:'',
++    preopMentation:'',preopHR:'',preopPulse:'',preopHeart:'',preopRR:'',preopRespEffort:'',preopLungs:'',preopTemp:'',preopMM:'',preopCRT:'',preopHydration:'',preopPain:'',preopExamNotes:'',preopExaminer:'',
+     hr:'',rr:'',sap:'',map:'',dap:'',spo2:'',etco2:'',temp:'',vaporizer:'',o2flow:'',
+     fluidRateInput:'',fluidTotal:'',depth:'',ventilation:'',
+     bradyPoorPerf:false,bloodLoss:false,cardiacRisk:false,respRisk:false,recordNote:'',
+@@ -3409,6 +3443,9 @@
+ });
+ $('pauseCaseBtn').addEventListener('click',()=>{pauseTimer();renderOrLive()});
+ 
++PREOP_EXAM_FIELD_IDS.forEach(id=>{const el=$(id);if(!el)return;el.addEventListener(el.tagName==='SELECT'?'change':'input',markPreopExamDirty)});
++$('savePreopExamBtn')?.addEventListener('click',savePreopPhysicalExam);
++
+ dataFields.forEach(id=>{
+   const el=$(id);if(!el)return;
+   el.addEventListener(el.type==='checkbox'||el.tagName==='SELECT'?'change':'input',updateDashboard);
+@@ -3435,7 +3472,7 @@
+ $('updateLaterBtn')?.addEventListener('click',()=>{if($('updateBanner'))$('updateBanner').hidden=true});
+ window.addEventListener('load',setupServiceWorkerUpdates);
+ 
+-// V14.8.0 workflow integration; adaptive case profiles on top of deferred medication + compact handoff.
++// V14.8.1 workflow integration; adaptive case profiles on top of deferred medication + compact handoff.
+ const WF=globalThis.AnesvetWorkflow;
+ const ALERT_KEYS={map:'hypotension',spo2:'hypoxemia',etco2:'ventilation',temp:'hypothermia'};
+ let alertProtocolEditScope='hospital',pendingProblem=null,orQuickOptions=[],orQuickBasis=null,orQuickContext=null;
+@@ -3671,6 +3708,6 @@
+ const initialTab=state.patientSaved?(state.casePhase==='complete'?'endcase':state.casePhase==='recovery'?'recovery':((state.timer.running||(state.timer.elapsedMs||0)>0)?'orlive':storedTab)):'patient';
+ setTab(initialTab);
+ if(sessionMode==='active')writeSessionLock();renderPatientRiskBanner();renderSessionMode();renderAirwayPanel();renderFavoriteDrugButtons();renderQuickPresetSettings();renderQuickPresetSummary();renderOrFluidPanel();renderCaseSummary();renderCasePhase();renderOrPhaseTracker();renderRecoveryRecords();renderWorkflowLocks();renderAlertFeedbackState();renderProtocolGovernance();renderStorageStatus();renderFinalSignoff();renderBackupHealth();renderLinkedPatient();renderPatientMaster();
+-updateDashboard();renderPreop();renderRecords();renderCorrections();renderEvents();renderComplications();renderDrugAdministrationAudit();renderTrends();renderProcedureTimeline();renderRecovery();renderRecoveryState();renderRecoveryScores();renderArchives();updateDue();renderTimerState();updateDoseSpotlights();renderEndCase();renderOrLive();renderSaveState();
++updateDashboard();renderPreop();renderPreopExam();renderRecords();renderCorrections();renderEvents();renderComplications();renderDrugAdministrationAudit();renderTrends();renderProcedureTimeline();renderRecovery();renderRecoveryState();renderRecoveryScores();renderArchives();updateDue();renderTimerState();updateDoseSpotlights();renderEndCase();renderOrLive();renderSaveState();
+ if(state.timer.running && state.timer.startedEpoch && sessionMode==='active') startTimerLoop();
+ })();
+diff -ruN /mnt/data/anesvet_v1480_base/index.html /mnt/data/anesvet_v1481/index.html
+--- /mnt/data/anesvet_v1480_base/index.html	2026-09-22 14:56:50.000000000 +0000
++++ /mnt/data/anesvet_v1481/index.html	2026-09-22 15:23:54.658723762 +0000
+@@ -4,12 +4,12 @@
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+   <meta name="theme-color" content="#0d5265">
+-  <meta name="description" content="ANESVET V14.8.0 — Adaptive Clinical Workflow">
++  <meta name="description" content="ANESVET V14.8.1 — Adaptive Clinical Workflow">
+   <link rel="manifest" href="./manifest.webmanifest">
+   <link rel="icon" href="./icon-192.png">
+   <link rel="apple-touch-icon" href="./icon-192.png">
+-  <link rel="stylesheet" href="./style.css?v=14.8.0">
+-  <title>ANESVET V14.8.0</title>
++  <link rel="stylesheet" href="./style.css?v=14.8.1">
++  <title>ANESVET V14.8.1</title>
+ </head>
+ <body>
+ <header class="topbar">
+@@ -17,7 +17,7 @@
+     <img class="brand-logo" src="./icon-192.png" alt="ANESVET logo">
+     <div>
+       <div class="eyebrow">GENOVI PET CARE • DIGITAL ANESTHESIA RECORD</div>
+-      <h1>ANESVET <span>V14.8.0</span></h1>
++      <h1>ANESVET <span>V14.8.1</span></h1>
+     </div>
+   </div>
+   <div class="top-actions">
+@@ -711,6 +711,124 @@
+         <span id="preopProgress" class="status-pill warn">0/14 REVIEWED</span>
+       </div>
+ 
++      <section class="preop-exam-panel" aria-labelledby="preopExamHeading">
++        <div class="section-heading compact">
++          <div>
++            <h3 id="preopExamHeading">Pre-anesthetic Physical Examination</h3>
++            <p>บันทึกผลตรวจร่างกายที่ตรวจจริงก่อนวางยา • Structured findings จะถูกเก็บในเวชระเบียนและ PDF</p>
++          </div>
++          <span id="preopExamStatus" class="status-pill warn">NOT RECORDED</span>
++        </div>
++
++        <div class="preop-exam-grid">
++          <label>Mentation / general status
++            <select id="preopMentation">
++              <option value="">— Select —</option>
++              <option>BAR / bright & responsive</option>
++              <option>QAR / quiet but responsive</option>
++              <option>Depressed</option>
++              <option>Obtunded / stuporous</option>
++              <option>Other / abnormal</option>
++            </select>
++          </label>
++          <label>Heart rate (bpm)<input id="preopHR" type="number" min="0" step="1" inputmode="numeric" placeholder="e.g. 110"></label>
++          <label>Pulse quality
++            <select id="preopPulse">
++              <option value="">— Select —</option>
++              <option>Strong / synchronous</option>
++              <option>Weak</option>
++              <option>Bounding</option>
++              <option>Irregular / non-synchronous</option>
++              <option>Not assessed</option>
++            </select>
++          </label>
++          <label>Cardiac auscultation
++            <select id="preopHeart">
++              <option value="">— Select —</option>
++              <option>No obvious abnormality</option>
++              <option>Murmur</option>
++              <option>Arrhythmia</option>
++              <option>Other abnormality</option>
++              <option>Not assessed</option>
++            </select>
++          </label>
++
++          <label>Respiratory rate (bpm)<input id="preopRR" type="number" min="0" step="1" inputmode="numeric" placeholder="e.g. 24"></label>
++          <label>Respiratory pattern / effort
++            <select id="preopRespEffort">
++              <option value="">— Select —</option>
++              <option>Normal / unlabored</option>
++              <option>Increased effort</option>
++              <option>Panting</option>
++              <option>Abnormal pattern</option>
++              <option>Other abnormality</option>
++            </select>
++          </label>
++          <label>Lung auscultation
++            <select id="preopLungs">
++              <option value="">— Select —</option>
++              <option>Clear / no obvious abnormality</option>
++              <option>Crackles</option>
++              <option>Wheezes</option>
++              <option>Reduced sounds</option>
++              <option>Other abnormality</option>
++              <option>Not assessed</option>
++            </select>
++          </label>
++          <label>Temperature <span id="preopTempUnitLabel">°F</span><input id="preopTemp" type="number" min="77" max="113" step="0.1" inputmode="decimal" placeholder="—"></label>
++
++          <label>Mucous membrane
++            <select id="preopMM">
++              <option value="">— Select —</option>
++              <option>Pink</option>
++              <option>Pale</option>
++              <option>Hyperemic</option>
++              <option>Cyanotic</option>
++              <option>Icteric</option>
++              <option>Other abnormality</option>
++            </select>
++          </label>
++          <label>CRT
++            <select id="preopCRT">
++              <option value="">— Select —</option>
++              <option>&lt; 2 sec</option>
++              <option>2–3 sec</option>
++              <option>&gt; 3 sec</option>
++              <option>Not assessed</option>
++            </select>
++          </label>
++          <label>Hydration impression
++            <select id="preopHydration">
++              <option value="">— Select —</option>
++              <option>Adequate / no obvious dehydration</option>
++              <option>Mild dehydration suspected</option>
++              <option>Moderate dehydration suspected</option>
++              <option>Severe dehydration suspected</option>
++              <option>Not assessed</option>
++            </select>
++          </label>
++          <label>Pain / discomfort
++            <select id="preopPain">
++              <option value="">— Select —</option>
++              <option>No obvious pain</option>
++              <option>Mild</option>
++              <option>Moderate</option>
++              <option>Severe</option>
++              <option>Not assessed</option>
++            </select>
++          </label>
++
++          <label class="span2">Abnormal findings / relevant physical exam notes
++            <textarea id="preopExamNotes" rows="3" placeholder="เช่น grade III/VI systolic murmur, increased respiratory effort, pale MM, abdominal pain หรือข้อจำกัดของการตรวจ"></textarea>
++          </label>
++          <label>Examined by<input id="preopExaminer" type="text" placeholder="Veterinarian / anesthetist"></label>
++          <div class="preop-exam-action">
++            <button id="savePreopExamBtn" type="button" class="btn primary">Save exam & mark checklist Done</button>
++            <small id="preopExamSavedMeta">ยังไม่ได้บันทึกผลตรวจ</small>
++          </div>
++        </div>
++      </section>
++
+       <div class="checklist-grid">
+         <div class="preop-item" data-preop-key="consent">
+           <label class="preop-main"><input class="preop-check" type="checkbox" data-key="consent"><span><b>Consent / owner discussion</b><small>มีใบยินยอมและอธิบายความเสี่ยงแล้ว</small></span></label>
+@@ -2050,7 +2168,7 @@
+ </dialog>
+ 
+ <div id="toast" class="toast" role="status" aria-live="polite"></div>
+-<script src="./clinical-workflow.js?v=14.8.0"></script>
+-<script src="./app.js?v=14.8.0"></script>
++<script src="./clinical-workflow.js?v=14.8.1"></script>
++<script src="./app.js?v=14.8.1"></script>
+ </body>
+ </html>
+diff -ruN /mnt/data/anesvet_v1480_base/manifest.webmanifest /mnt/data/anesvet_v1481/manifest.webmanifest
+--- /mnt/data/anesvet_v1480_base/manifest.webmanifest	2026-09-22 14:56:03.000000000 +0000
++++ /mnt/data/anesvet_v1481/manifest.webmanifest	2026-09-22 15:23:54.658897253 +0000
+@@ -1,8 +1,8 @@
+ {
+-  "name": "ANESVET V14.8.0 — Adaptive Clinical Workflow",
++  "name": "ANESVET V14.8.1 — Adaptive Clinical Workflow",
+   "short_name": "ANESVET",
+   "description": "Adaptive OR LIVE with Routine, Critical and C-section workflow profiles, contextual milestones, Quick Drug and recovery handoff",
+-  "start_url": "./?v=14.8.0",
++  "start_url": "./?v=14.8.1",
+   "scope": "./",
+   "display": "standalone",
+   "background_color": "#f3f7f8",
+diff -ruN /mnt/data/anesvet_v1480_base/package-lock.json /mnt/data/anesvet_v1481/package-lock.json
+--- /mnt/data/anesvet_v1480_base/package-lock.json	2026-09-22 14:57:37.000000000 +0000
++++ /mnt/data/anesvet_v1481/package-lock.json	2026-09-22 15:23:54.659094751 +0000
+@@ -1,12 +1,12 @@
+ {
+-  "name": "anesvet-v14-8-0",
+-  "version": "14.8.0",
++  "name": "anesvet-v14-8-1",
++  "version": "14.8.1",
+   "lockfileVersion": 3,
+   "requires": true,
+   "packages": {
+     "": {
+-      "name": "anesvet-v14-8-0",
+-      "version": "14.8.0",
++      "name": "anesvet-v14-8-1",
++      "version": "14.8.1",
+       "devDependencies": {
+         "fake-indexeddb": "6.2.5",
+         "jsdom": "30.1.0",
+diff -ruN /mnt/data/anesvet_v1480_base/package.json /mnt/data/anesvet_v1481/package.json
+--- /mnt/data/anesvet_v1480_base/package.json	2026-09-22 14:57:06.000000000 +0000
++++ /mnt/data/anesvet_v1481/package.json	2026-09-22 15:23:54.658955842 +0000
+@@ -1,8 +1,8 @@
+ {
+-  "name": "anesvet-v14-8-0",
+-  "version": "14.8.0",
++  "name": "anesvet-v14-8-1",
++  "version": "14.8.1",
+   "private": true,
+-  "description": "ANESVET V14.8.0 adaptive clinical workflow; runtime requires no build",
++  "description": "ANESVET V14.8.1 adaptive clinical workflow; runtime requires no build",
+   "engines": {
+     "node": ">=22"
+   },
+diff -ruN /mnt/data/anesvet_v1480_base/service-worker.js /mnt/data/anesvet_v1481/service-worker.js
+--- /mnt/data/anesvet_v1480_base/service-worker.js	2026-09-22 14:56:03.000000000 +0000
++++ /mnt/data/anesvet_v1481/service-worker.js	2026-09-22 15:23:54.659176093 +0000
+@@ -1,5 +1,5 @@
+-const CACHE='anesvet-v14-8-0-adaptive-workflow';
+-const ASSETS=['./','./index.html','./style.css?v=14.8.0','./clinical-workflow.js?v=14.8.0','./app.js?v=14.8.0','./manifest.webmanifest','./icon-192.png','./icon-512.png','./icon-maskable-512.png'];
++const CACHE='anesvet-v14-8-1-adaptive-workflow';
++const ASSETS=['./','./index.html','./style.css?v=14.8.1','./clinical-workflow.js?v=14.8.1','./app.js?v=14.8.1','./manifest.webmanifest','./icon-192.png','./icon-512.png','./icon-maskable-512.png'];
+ self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)))});
+ self.addEventListener('message',e=>{if(e.data?.type==='SKIP_WAITING')self.skipWaiting()});
+ self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))));self.clients.claim()});
+diff -ruN /mnt/data/anesvet_v1480_base/style.css /mnt/data/anesvet_v1481/style.css
+--- /mnt/data/anesvet_v1480_base/style.css	2026-09-22 14:56:03.000000000 +0000
++++ /mnt/data/anesvet_v1481/style.css	2026-09-22 15:22:08.697502792 +0000
+@@ -735,3 +735,17 @@
+ .or-context-actions .btn.done{border-color:#99c8af;background:#eef9f2;color:#24623f}
+ @media(max-width:980px){.or-context-panel{grid-template-columns:1fr 1fr}.or-context-actions{grid-column:1/-1;justify-content:flex-start}}
+ @media(max-width:640px){.or-context-panel{grid-template-columns:1fr}.or-context-actions{grid-column:auto}.or-context-metrics{grid-template-columns:1fr 1fr}}
++
++/* V14.8.1 — structured pre-anesthetic physical examination */
++.preop-exam-panel{margin-top:14px;border:1px solid #bdd7df;border-radius:14px;background:linear-gradient(180deg,#fbfeff,#f5fafb);padding:14px}
++.preop-exam-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:12px}
++.preop-exam-grid label{display:flex;flex-direction:column;gap:5px;font-size:.76rem;font-weight:850;color:#314b55;min-width:0}
++.preop-exam-grid input,.preop-exam-grid select,.preop-exam-grid textarea{width:100%;box-sizing:border-box;border:1px solid #c9d8dd;border-radius:9px;background:#fff;padding:9px 10px;font:inherit;color:#173943}
++.preop-exam-grid textarea{resize:vertical;min-height:78px;line-height:1.4}
++.preop-exam-action{display:flex;flex-direction:column;justify-content:flex-end;gap:6px;min-width:0}
++.preop-exam-action .btn{min-height:42px}.preop-exam-action small{color:var(--muted);line-height:1.3}
++.preop-exam-panel.exam-saved{border-color:#9ccfb5;background:linear-gradient(180deg,#fbfffd,#f1faf5)}
++.report-physical-exam{margin-bottom:8px}.report-physical-exam-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:4px 8px;margin-bottom:7px}.report-physical-exam-item{border:1px solid #d8e1e4;border-radius:4px;padding:4px 5px;font-size:7.5px}.report-physical-exam-item span{display:block;color:#65757c;font-size:6.8px}.report-physical-exam-item b{display:block;margin-top:1px;overflow-wrap:anywhere}.report-physical-exam-note{border:1px solid #d8e1e4;border-radius:4px;padding:5px;font-size:7.5px;white-space:pre-wrap}
++@media(max-width:920px){.preop-exam-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
++@media(max-width:520px){.preop-exam-grid{grid-template-columns:1fr}.preop-exam-grid .span2{grid-column:span 1}.preop-exam-action .btn{width:100%}}
++@media print{.report-physical-exam-grid{grid-template-columns:repeat(3,1fr)}.report-physical-exam{break-inside:avoid;page-break-inside:avoid}}
+diff -ruN /mnt/data/anesvet_v1480_base/tests/SUPPORTED_TEST_RUN.txt /mnt/data/anesvet_v1481/tests/SUPPORTED_TEST_RUN.txt
+--- /mnt/data/anesvet_v1480_base/tests/SUPPORTED_TEST_RUN.txt	2026-09-22 15:00:04.000000000 +0000
++++ /mnt/data/anesvet_v1481/tests/SUPPORTED_TEST_RUN.txt	2026-09-22 15:25:37.637487106 +0000
+@@ -1,9 +1,10 @@
+-ANESVET V14.8.0 — supported tests executed in this runtime
++ANESVET V14.8.1 — supported tests executed in this runtime
+ Syntax + JSON: PASS
+-ANESVET V14.8.0 regression checks: PASS
+-V14.8.0 integration and storage contracts: PASS
+-V14.7.2 UX backward compatibility contracts: PASS
++ANESVET V14.8.1 regression checks: PASS
++V14.8.1 integration and storage contracts: PASS
++V14.7.2 UX contracts: PASS
+ V14.8 adaptive workflow contracts: PASS
+-Production clinical helpers: PASS
+-Workflow model scenarios: PASS
+-DOM/browser suites: NOT CLAIMED — dependencies/runtime blocked
++Production clinical helpers: PASS (73 assertions)
++ANESVET V14.6.4 workflow model scenarios: PASS (4 scenarios)
++
++DOM/integration tests requiring jsdom are BLOCKED / not claimed in this runtime.
+diff -ruN /mnt/data/anesvet_v1480_base/tests/TEST_RESULTS.txt /mnt/data/anesvet_v1481/tests/TEST_RESULTS.txt
+--- /mnt/data/anesvet_v1480_base/tests/TEST_RESULTS.txt	2026-09-22 15:00:04.000000000 +0000
++++ /mnt/data/anesvet_v1481/tests/TEST_RESULTS.txt	2026-09-22 15:25:01.693686476 +0000
+@@ -1,4 +1,4 @@
+-ANESVET V14.8.0 — validation summary
++ANESVET V14.8.1 — validation summary
+ Date: 2026-09-22
+ 
+ PASS
+@@ -15,7 +15,6 @@
+ - tests/compatibility.mjs
+ - tests/governance.mjs
+ - tests/final_lock.mjs
+-Reason: jsdom/fake-indexeddb dependencies were not present in the supplied archive; npm ci timed out in this runtime.
+-- native Chromium smoke: file navigation timed out in this runtime.
++Reason: jsdom/fake-indexeddb dependencies are not installed in this runtime.
+ 
+-Clinical values were not changed in V14.8.0. The new profile layer controls documentation workflow only.
++Clinical values were not changed in V14.8.1. This release adds structured pre-anesthetic physical-examination documentation.
+diff -ruN /mnt/data/anesvet_v1480_base/tests/regression.mjs /mnt/data/anesvet_v1481/tests/regression.mjs
+--- /mnt/data/anesvet_v1480_base/tests/regression.mjs	2026-09-22 14:57:37.000000000 +0000
++++ /mnt/data/anesvet_v1481/tests/regression.mjs	2026-09-22 15:24:10.426990534 +0000
+@@ -13,8 +13,8 @@
+ const must=(cond,msg)=>assert.ok(cond,msg);
+ 
+ // Core version / structure
+-must(manifest.name.includes('V14.8.0'),'manifest should be V14.8.0');
+-must(sw.includes('v14-8-0'),'service worker cache should identify V14.8.0');
++must(manifest.name.includes('V14.8.1'),'manifest should be V14.8.1');
++must(sw.includes('v14-8-1'),'service worker cache should identify V14.8.1');
+ must(count(app,/function\s+phaseLabel\s*\(/g)===1,'phaseLabel must be declared once');
+ const fnNames=[...app.matchAll(/\bfunction\s+([A-Za-z_$][\w$]*)\s*\(/g)].map(m=>m[1]);
+ const dupFns=[...new Set(fnNames.filter((n,i)=>fnNames.indexOf(n)!==i))];
+@@ -33,6 +33,14 @@
+ assert.ok(Math.abs(cToF(37)-98.6)<1e-9,'37 C -> 98.6 F');
+ assert.ok(Math.abs(fToC(98.6)-37)<1e-9,'98.6 F -> 37 C');
+ 
++// V14.8.1 structured pre-anesthetic physical examination
++for(const id of ['preopMentation','preopHR','preopPulse','preopHeart','preopRR','preopRespEffort','preopLungs','preopTemp','preopMM','preopCRT','preopHydration','preopPain','preopExamNotes','preopExaminer','savePreopExamBtn','preopExamStatus'])must(ids.includes(id),'pre-anesthetic physical exam UI missing '+id);
++must(app.includes('function savePreopPhysicalExam')&&app.includes("PREANESTHETIC_PHYSICAL_EXAM_RECORDED"),'structured pre-anesthetic exam save/audit path missing');
++must(app.includes("id==='temp'||id==='recTemp'||id==='preopTemp'"),'preop temperature must be canonicalized with other temperature inputs');
++must(app.includes("state.preopExamRecordedAt=Date.now()")&&app.includes("cb.checked=true"),'saving structured physical exam must timestamp and mark checklist done');
++must(app.includes('function markPreopExamDirty')&&app.includes("state.preopExamRecordedAt=null"),'editing a recorded physical exam must invalidate its recorded timestamp');
++must(app.includes('preopExamReportHtml()')&&css.includes('.report-physical-exam-grid'),'physical exam must be included in printable report');
++
+ // Fresh-case safety invariants
+ must(/id="weight"[^>]*value=/.test(html)===false,'weight must not have an HTML default value');
+ for(const id of ['hr','rr','sap','map','dap','spo2','etco2','temp']){
+@@ -90,7 +98,7 @@
+ must(app.includes('function getFluidMetrics'),'fluid integration missing');
+ 
+ // Backup / restore
+-must(app.includes("format:'ANESVET_BACKUP',version:'14.8.0'"),'backup version must be 14.8.0');
++must(app.includes("format:'ANESVET_BACKUP',version:'14.8.1'"),'backup version must be 14.8.1');
+ must(app.includes("raw.format!=='ANESVET_BACKUP'")&&app.includes('idbClearCases()'),'backup restore integrity path missing');
+ 
+ // Reset must preserve persistent stores by only resetting current case state.
+@@ -131,16 +139,16 @@
+ must(html.includes('id="updateBanner"')&&app.includes('Finish / archive current case before updating'),'safe PWA update UI missing');
+ must(app.includes('caseLowestMap')&&app.includes('caseLowestSpo2')&&app.includes('Emergency return to OR recorded'),'previous anesthesia warning expansion missing');
+ 
+-console.log(`ANESVET V14.8.0 regression checks: PASS (${ids.length} unique HTML ids, ${fnNames.length} unique named functions)`);
++console.log(`ANESVET V14.8.1 regression checks: PASS (${ids.length} unique HTML ids, ${fnNames.length} unique named functions)`);
+ 
+-// V14.8.0 compatibility and integration contracts.
++// V14.8.1 compatibility and integration contracts.
+ for(const key of ['anesvet_v14_3_current','anesvet_v14_3_settings','anesvet_v14_3_archive','anesvet_v14_3_protocol_audit'])must(app.includes(key),'original key retained: '+key);
+ must(html.indexOf('clinical-workflow.js')<html.indexOf('app.js'),'helper loads before application');
+-must(sw.includes('clinical-workflow.js?v=14.8.0'),'offline cache includes helper');
++must(sw.includes('clinical-workflow.js?v=14.8.1'),'offline cache includes helper');
+ must(count(app,/\$\('orStickyRecordBtn'\)\?\.addEventListener/g)===1,'sticky record listener must bind once');
+ for(const id of ['alertProtocolDialog','orQuickDrugDialog','orProblemPanel','recoveryProblemPanel','recoveryHandoffText','reportRecoveryHandoff'])must(ids.includes(id),'new UI '+id);
+ for(const file of [...sw.matchAll(/'\.\/([^']+)'/g)].map(x=>x[1].split('?')[0]))must(fs.existsSync(path.join(root,file)),'cache asset exists: '+file);
+-for(const id of ['orPrimaryActionBtn','orSecondaryPhaseBtn','orPrimaryDrugBtn','orStickyDrugBtn','orAirwayPanelDetails','orFluidPanelDetails','orQuickInductionSkipBtn','orQuickDrugDoneBtn','recoveryMedicationBtn','recoveryHandoffSummary'])must(ids.includes(id),'V14.8.0 OR LIVE UX control '+id);
++for(const id of ['orPrimaryActionBtn','orSecondaryPhaseBtn','orPrimaryDrugBtn','orStickyDrugBtn','orAirwayPanelDetails','orFluidPanelDetails','orQuickInductionSkipBtn','orQuickDrugDoneBtn','recoveryMedicationBtn','recoveryHandoffSummary'])must(ids.includes(id),'V14.8.1 OR LIVE UX control '+id);
+ must(app.includes("state.inductionDocumentationMode='deferred-v1472'")&&app.includes("triggerOrMilestone('Induction')"),'Start induction must timestamp the milestone without forcing dose entry');
+ must(app.includes('function nextInductionQuickDrugIndex')&&app.includes('Induction medications reviewed'),'multi-drug induction review flow missing');
+ must(app.includes("source:induction?'OR Induction':recovery?'Recovery Medication':'OR Quick Drug'"),'induction/recovery medication sources must be distinct');
+@@ -149,4 +157,4 @@
+ must(app.includes("airwayWorkflowContext==='intubation'")&&app.includes("triggerOrMilestone('Intubation')"),'Airway save must be able to create the Intubation milestone');
+ must(css.includes('.or-live-page>.or-status-row{display:none}')&&css.includes('.or-live-page .or-alert-panel,.or-live-page .complication-watch-panel{display:none}'),'duplicate OR LIVE workspaces should be visually suppressed');
+ must(count(html,/class="or-milestone"/g)>=5,'legacy milestone hooks must remain for compatibility');
+-console.log('V14.8.0 integration and storage contracts: PASS');
++console.log('V14.8.1 integration and storage contracts: PASS');

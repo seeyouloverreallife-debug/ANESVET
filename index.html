@@ -4,12 +4,12 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#0d5265">
-  <meta name="description" content="ANESVET V14.8.0 — Adaptive Clinical Workflow">
+  <meta name="description" content="ANESVET V14.8.1 — Adaptive Clinical Workflow">
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" href="./icon-192.png">
   <link rel="apple-touch-icon" href="./icon-192.png">
-  <link rel="stylesheet" href="./style.css?v=14.8.0">
-  <title>ANESVET V14.8.0</title>
+  <link rel="stylesheet" href="./style.css?v=14.8.1">
+  <title>ANESVET V14.8.1</title>
 </head>
 <body>
 <header class="topbar">
@@ -17,7 +17,7 @@
     <img class="brand-logo" src="./icon-192.png" alt="ANESVET logo">
     <div>
       <div class="eyebrow">GENOVI PET CARE • DIGITAL ANESTHESIA RECORD</div>
-      <h1>ANESVET <span>V14.8.0</span></h1>
+      <h1>ANESVET <span>V14.8.1</span></h1>
     </div>
   </div>
   <div class="top-actions">
@@ -710,6 +710,124 @@
         </div>
         <span id="preopProgress" class="status-pill warn">0/14 REVIEWED</span>
       </div>
+
+      <section class="preop-exam-panel" aria-labelledby="preopExamHeading">
+        <div class="section-heading compact">
+          <div>
+            <h3 id="preopExamHeading">Pre-anesthetic Physical Examination</h3>
+            <p>บันทึกผลตรวจร่างกายที่ตรวจจริงก่อนวางยา • Structured findings จะถูกเก็บในเวชระเบียนและ PDF</p>
+          </div>
+          <span id="preopExamStatus" class="status-pill warn">NOT RECORDED</span>
+        </div>
+
+        <div class="preop-exam-grid">
+          <label>Mentation / general status
+            <select id="preopMentation">
+              <option value="">— Select —</option>
+              <option>BAR / bright & responsive</option>
+              <option>QAR / quiet but responsive</option>
+              <option>Depressed</option>
+              <option>Obtunded / stuporous</option>
+              <option>Other / abnormal</option>
+            </select>
+          </label>
+          <label>Heart rate (bpm)<input id="preopHR" type="number" min="0" step="1" inputmode="numeric" placeholder="e.g. 110"></label>
+          <label>Pulse quality
+            <select id="preopPulse">
+              <option value="">— Select —</option>
+              <option>Strong / synchronous</option>
+              <option>Weak</option>
+              <option>Bounding</option>
+              <option>Irregular / non-synchronous</option>
+              <option>Not assessed</option>
+            </select>
+          </label>
+          <label>Cardiac auscultation
+            <select id="preopHeart">
+              <option value="">— Select —</option>
+              <option>No obvious abnormality</option>
+              <option>Murmur</option>
+              <option>Arrhythmia</option>
+              <option>Other abnormality</option>
+              <option>Not assessed</option>
+            </select>
+          </label>
+
+          <label>Respiratory rate (bpm)<input id="preopRR" type="number" min="0" step="1" inputmode="numeric" placeholder="e.g. 24"></label>
+          <label>Respiratory pattern / effort
+            <select id="preopRespEffort">
+              <option value="">— Select —</option>
+              <option>Normal / unlabored</option>
+              <option>Increased effort</option>
+              <option>Panting</option>
+              <option>Abnormal pattern</option>
+              <option>Other abnormality</option>
+            </select>
+          </label>
+          <label>Lung auscultation
+            <select id="preopLungs">
+              <option value="">— Select —</option>
+              <option>Clear / no obvious abnormality</option>
+              <option>Crackles</option>
+              <option>Wheezes</option>
+              <option>Reduced sounds</option>
+              <option>Other abnormality</option>
+              <option>Not assessed</option>
+            </select>
+          </label>
+          <label>Temperature <span id="preopTempUnitLabel">°F</span><input id="preopTemp" type="number" min="77" max="113" step="0.1" inputmode="decimal" placeholder="—"></label>
+
+          <label>Mucous membrane
+            <select id="preopMM">
+              <option value="">— Select —</option>
+              <option>Pink</option>
+              <option>Pale</option>
+              <option>Hyperemic</option>
+              <option>Cyanotic</option>
+              <option>Icteric</option>
+              <option>Other abnormality</option>
+            </select>
+          </label>
+          <label>CRT
+            <select id="preopCRT">
+              <option value="">— Select —</option>
+              <option>&lt; 2 sec</option>
+              <option>2–3 sec</option>
+              <option>&gt; 3 sec</option>
+              <option>Not assessed</option>
+            </select>
+          </label>
+          <label>Hydration impression
+            <select id="preopHydration">
+              <option value="">— Select —</option>
+              <option>Adequate / no obvious dehydration</option>
+              <option>Mild dehydration suspected</option>
+              <option>Moderate dehydration suspected</option>
+              <option>Severe dehydration suspected</option>
+              <option>Not assessed</option>
+            </select>
+          </label>
+          <label>Pain / discomfort
+            <select id="preopPain">
+              <option value="">— Select —</option>
+              <option>No obvious pain</option>
+              <option>Mild</option>
+              <option>Moderate</option>
+              <option>Severe</option>
+              <option>Not assessed</option>
+            </select>
+          </label>
+
+          <label class="span2">Abnormal findings / relevant physical exam notes
+            <textarea id="preopExamNotes" rows="3" placeholder="เช่น grade III/VI systolic murmur, increased respiratory effort, pale MM, abdominal pain หรือข้อจำกัดของการตรวจ"></textarea>
+          </label>
+          <label>Examined by<input id="preopExaminer" type="text" placeholder="Veterinarian / anesthetist"></label>
+          <div class="preop-exam-action">
+            <button id="savePreopExamBtn" type="button" class="btn primary">Save exam & mark checklist Done</button>
+            <small id="preopExamSavedMeta">ยังไม่ได้บันทึกผลตรวจ</small>
+          </div>
+        </div>
+      </section>
 
       <div class="checklist-grid">
         <div class="preop-item" data-preop-key="consent">
@@ -2050,7 +2168,7 @@
 </dialog>
 
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
-<script src="./clinical-workflow.js?v=14.8.0"></script>
-<script src="./app.js?v=14.8.0"></script>
+<script src="./clinical-workflow.js?v=14.8.1"></script>
+<script src="./app.js?v=14.8.1"></script>
 </body>
 </html>
