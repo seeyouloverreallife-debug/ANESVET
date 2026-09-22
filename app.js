@@ -23,7 +23,7 @@ const DB_VERSION=2;
 
 const numericFields = ['weight','preopHR','preopRR','preopTemp','hr','rr','sap','map','dap','spo2','etco2','temp','vaporizer','o2flow','fluidRateInput','fluidTotal','recHR','recRR','recMAP','recSpO2','recTemp'];
 const dataFields = [
-  'patientName','hospitalId','visitId','patientMasterId','species','sex','reproductiveStatus','microchip','breed','weight','age','birthDate','birthDateEstimated','ageSource','estimatedBirthPeriod','approxAgeYears','approxAgeMonths','approxAgeWeeks','bcs','asa','emergency','patientProcedure','patientAllergies','patientComorbidities','patientPrecautions','caseWorkflowProfile','procedure','surgeon','anesthetist','surgicalAssistant','preopMentation','preopHR','preopPulse','preopHeart','preopRR','preopRespEffort','preopLungs','preopTemp','preopMM','preopCRT','preopHydration','preopPain','preopExamNotes','preopExaminer',
+  'patientName','hospitalId','visitId','patientMasterId','species','sex','reproductiveStatus','microchip','breed','weight','age','birthDate','birthDateEstimated','ageSource','estimatedBirthPeriod','approxAgeYears','approxAgeMonths','approxAgeWeeks','bcs','asa','emergency','patientProcedure','patientAllergies','patientComorbidities','patientPrecautions','caseWorkflowProfile','procedure','surgeon','anesthetist','surgicalAssistant','preopMentation','preopHR','preopPulse','preopHeart','preopRR','preopRespEffort','preopLungs','preopTemp','preopMM','preopCRT','preopHydration','preopPain','preopExamNotes','preopExaminer','preopRiskNone','riskBrachycephalic','riskBOAS','riskDifficultAirway','riskUpperAirway','riskAspiration','riskCardiacDisease','riskArrhythmia','riskRespiratoryDisease','riskHypovolemia','riskAnemiaBleeding','riskRenal','riskHepatic','riskMetabolicElectrolyte','riskHypoglycemia','riskPediatric','riskGeriatric','riskObesity','riskPregnancy','riskPreviousAnesthetic','riskEmergency','riskMajorHemorrhage','riskBOASStertor','riskBOASStridor','riskBOASExerciseHeat','riskBOASSleep','riskBOASRegurg','riskBOASAirwaySurgery','riskBOASPreviousDifficultIntubation','riskBOASNotes','riskOther','preopRiskAssessor',
   'hr','rr','sap','map','dap','spo2','etco2','temp','vaporizer','o2flow','fluidRateInput','fluidTotal',
   'depth','ventilation','bradyPoorPerf','bloodLoss','cardiacRisk','respRisk','recordInterval','reminderOn',
   'recordNote','recHR','recRR','recMAP','recSpO2','recTemp','recExtubation','recOxygen','recMentation','recPain','recNaReason','recRecordInterval','recScoreAirway','recScoreOxygen','recScoreTemp','recScoreMentation','recScoreComfort','recScoreNote','planPremed','planInduction','planMaintenance','planAnalgesia','planAntibiotic','planNSAID','planBlock','planNote','actualDiazepamMl','actualPropofolMl','actualTramadolMl','balanceCrystalloid','balanceBolus','balanceBloodIn','balanceBloodLoss','balanceUrine','fluidActualTotal','airwayEttSize','airwayEttDepth','airwayCuff','airwayDifficulty','airwayCircuit','airwayVentMode','airwayVt','airwayPip','airwayPeep','airwayVentRr','diazepamConc','propofolConc','tramadolConc','rimadylConc','metacamConc','adrenalineConc','atropineConc','atropineMode','dopamineDose','dopamineConc'
@@ -59,7 +59,7 @@ let state = {
   approxAgeYears:'0',
   approxAgeMonths:'0',
   approxAgeWeeks:'0',
-  preopChecks:{},preopNA:{},preopExamRecordedAt:null,preopExamRecordedBy:'',
+  preopChecks:{},preopNA:{},preopExamRecordedAt:null,preopExamRecordedBy:'',preopRiskRecordedAt:null,preopRiskRecordedBy:'',
   caseStartedAt:null,
   responses:[],
   corrections:[],
@@ -142,7 +142,7 @@ function toast(msg){
 }
 function readSessionLock(){try{const x=JSON.parse(localStorage.getItem(SESSION_LOCK_KEY)||'null');return x&&x.tabId?x:null}catch(e){return null}}
 function sessionLockIsFresh(lock){return !!(lock&&lock.tabId&&Number(lock.heartbeatAt)>0&&(Date.now()-Number(lock.heartbeatAt))<SESSION_TTL_MS)}
-function writeSessionLock(){if(sessionMode!=='active')return;const lock={tabId:sessionTabId,heartbeatAt:Date.now(),caseId:state?.caseId||'',patientName:state?.patientName||'',version:'14.8.1'};try{localStorage.setItem(SESSION_LOCK_KEY,JSON.stringify(lock))}catch(e){};try{sessionChannel?.postMessage({type:'HEARTBEAT',...lock})}catch(e){}}
+function writeSessionLock(){if(sessionMode!=='active')return;const lock={tabId:sessionTabId,heartbeatAt:Date.now(),caseId:state?.caseId||'',patientName:state?.patientName||'',version:'14.8.2'};try{localStorage.setItem(SESSION_LOCK_KEY,JSON.stringify(lock))}catch(e){};try{sessionChannel?.postMessage({type:'HEARTBEAT',...lock})}catch(e){}}
 function releaseSessionLock(){const lock=readSessionLock();if(lock?.tabId===sessionTabId){try{localStorage.removeItem(SESSION_LOCK_KEY)}catch(e){};try{sessionChannel?.postMessage({type:'RELEASE',tabId:sessionTabId})}catch(e){}}}
 function sessionSafeTarget(target){return !!target?.closest?.('.session-safe,[data-tab],[data-more-tab],#moreMenuBtn,.archive-pdf,.verify-integrity')}
 function renderSessionMode(){
@@ -685,6 +685,8 @@ function load(){
     if(!state.caseWorkflowProfile)state.caseWorkflowProfile='routine';
     if(!('preopExamRecordedAt' in state))state.preopExamRecordedAt=null;
     if(!('preopExamRecordedBy' in state))state.preopExamRecordedBy='';
+    if(!('preopRiskRecordedAt' in state))state.preopRiskRecordedAt=null;
+    if(!('preopRiskRecordedBy' in state))state.preopRiskRecordedBy='';
     if(!state.caseStartedAt && !(state.timer?.elapsedMs>0) && !state.recoveryStartedAt && !state.recoveryCompletedAt && !state.caseLocked)state.casePhase='setup';
   }catch(e){}
   dataFields.forEach(id=>{
@@ -1121,11 +1123,15 @@ function renderPatientRiskBanner(){
   if(allergy)parts.push(`ALLERGY: ${allergy}`);
   if(disease)parts.push(`DISEASE: ${disease}`);
   if(caution)parts.push(`CAUTION: ${caution}`);
+  const structured=preopRiskSummaryLabels({compact:true});if(structured.length)parts.push(`RISK: ${structured.slice(0,5).join(', ')}${structured.length>5?` +${structured.length-5}`:''}`);
   const b=$('patientRiskBanner');if(!b)return;
   b.hidden=!parts.length;
   if($('patientRiskText'))$('patientRiskText').textContent=parts.join(' • ');
+  if($('editRiskBtn'))$('editRiskBtn').hidden=!(allergy||disease||caution);
+  if($('reviewAnestheticRiskBtn'))$('reviewAnestheticRiskBtn').hidden=!structured.length;
 }
 $('editRiskBtn')?.addEventListener('click',()=>setTab('patient'));
+$('reviewAnestheticRiskBtn')?.addEventListener('click',()=>setTab('preop'));
 
 function syncPatientProcedureToCase(){
   const v=$('patientProcedure')?.value??'';
@@ -1194,12 +1200,76 @@ function preopExamReportHtml(){
   const items=[['Mentation',val('preopMentation')],['HR',val('preopHR')==='—'?'—':`${val('preopHR')} bpm`],['Pulse',val('preopPulse')],['Heart',val('preopHeart')],['RR',val('preopRR')==='—'?'—':`${val('preopRR')} bpm`],['Respiratory effort',val('preopRespEffort')],['Lungs',val('preopLungs')],['Temperature',state.preopTemp!==''&&state.preopTemp!=null?tempTextF(state.preopTemp):'—'],['Mucous membrane',val('preopMM')],['CRT',val('preopCRT')],['Hydration',val('preopHydration')],['Pain / discomfort',val('preopPain')],['Examined by',val('preopExaminer')],['Recorded at',state.preopExamRecordedAt?`${formatDate(state.preopExamRecordedAt)} ${formatClock(state.preopExamRecordedAt)}`:'Not formally recorded']];
   return `<div class="report-physical-exam"><div class="report-physical-exam-grid">${items.map(([l,v])=>`<div class="report-physical-exam-item"><span>${escapeHtml(l)}</span><b>${escapeHtml(v)}</b></div>`).join('')}</div><div class="report-physical-exam-note"><b>Abnormal / relevant findings:</b> ${escapeHtml(val('preopExamNotes'))}</div></div>`;
 }
+const PREOP_RISK_FLAGS=[
+  {id:'riskBrachycephalic',group:'Airway',label:'Brachycephalic anatomy',short:'BRACHYCEPHALIC'},
+  {id:'riskBOAS',group:'Airway',label:'Suspected / known BOAS',short:'BOAS'},
+  {id:'riskDifficultAirway',group:'Airway',label:'Previous / anticipated difficult airway',short:'DIFFICULT AIRWAY'},
+  {id:'riskUpperAirway',group:'Airway',label:'Other upper-airway disease / obstruction risk',short:'UPPER AIRWAY'},
+  {id:'riskAspiration',group:'Aspiration / GI',label:'Regurgitation / vomiting / megaesophagus / full-stomach risk',short:'ASPIRATION'},
+  {id:'riskCardiacDisease',group:'Cardiovascular',label:'Known / suspected cardiac disease',short:'CARDIAC'},
+  {id:'riskArrhythmia',group:'Cardiovascular',label:'Clinically relevant arrhythmia',short:'ARRHYTHMIA'},
+  {id:'riskRespiratoryDisease',group:'Respiratory',label:'Respiratory disease / impaired respiratory reserve',short:'RESPIRATORY'},
+  {id:'riskHypovolemia',group:'Perfusion',label:'Dehydration / hypovolemia / poor perfusion',short:'HYPOVOLEMIA'},
+  {id:'riskAnemiaBleeding',group:'Perfusion',label:'Anemia / coagulopathy / bleeding concern',short:'ANEMIA/BLEEDING'},
+  {id:'riskRenal',group:'Organ / metabolic',label:'Renal disease / oliguria / anuria concern',short:'RENAL'},
+  {id:'riskHepatic',group:'Organ / metabolic',label:'Hepatic disease / impaired hepatic function',short:'HEPATIC'},
+  {id:'riskMetabolicElectrolyte',group:'Organ / metabolic',label:'Electrolyte / acid-base / metabolic abnormality',short:'METABOLIC'},
+  {id:'riskHypoglycemia',group:'Organ / metabolic',label:'Hypoglycemia risk',short:'HYPOGLYCEMIA'},
+  {id:'riskPediatric',group:'Patient',label:'Pediatric / neonatal',short:'PEDIATRIC'},
+  {id:'riskGeriatric',group:'Patient',label:'Geriatric / reduced physiologic reserve',short:'GERIATRIC'},
+  {id:'riskObesity',group:'Patient',label:'Obesity / body-condition concern',short:'OBESITY'},
+  {id:'riskPregnancy',group:'Patient',label:'Pregnancy / peripartum',short:'PREGNANCY'},
+  {id:'riskPreviousAnesthetic',group:'History',label:'Previous anesthetic / recovery adverse event',short:'PREV ANESTHETIC EVENT'},
+  {id:'riskEmergency',group:'Procedure',label:'Emergency / unstable / critical procedure context',short:'EMERGENCY'},
+  {id:'riskMajorHemorrhage',group:'Procedure',label:'Major hemorrhage / transfusion risk',short:'HEMORRHAGE'}
+];
+const BOAS_DETAIL_IDS=['riskBOASStertor','riskBOASStridor','riskBOASExerciseHeat','riskBOASSleep','riskBOASRegurg','riskBOASAirwaySurgery','riskBOASPreviousDifficultIntubation'];
+function preopRiskSelectedFlags(){return PREOP_RISK_FLAGS.filter(r=>!!$(r.id)?.checked)}
+function preopRiskEnteredCount(){return preopRiskSelectedFlags().length+(String($('riskOther')?.value||'').trim()?1:0)}
+function preopRiskSummaryLabels({compact=false}={}){
+  const labels=preopRiskSelectedFlags().map(r=>compact?r.short:r.label),other=String($('riskOther')?.value||'').trim();if(other)labels.push(compact?`OTHER: ${other}`:`Other: ${other}`);return labels;
+}
+function renderBOASRiskDetail(){
+  const show=!!($('riskBrachycephalic')?.checked||$('riskBOAS')?.checked);if($('boasRiskDetail'))$('boasRiskDetail').hidden=!show;
+}
+function renderPreopRisk(){
+  const badge=$('preopRiskStatus'),meta=$('preopRiskSavedMeta');if(!badge)return;renderBOASRiskDetail();
+  const count=preopRiskEnteredCount(),none=!!$('preopRiskNone')?.checked,stamp=state.preopRiskRecordedAt;
+  document.querySelector('.preop-risk-panel')?.classList.toggle('risk-saved',!!stamp);
+  if($('preopRiskCount'))$('preopRiskCount').textContent=none?'NO ADDITIONAL FLAGS':`${count} FLAG${count===1?'':'S'}`;
+  if(stamp){badge.className='status-pill good';badge.textContent='REVIEWED';if(meta)meta.textContent=`บันทึก ${formatDate(stamp)} ${formatClock(stamp)} • ${state.preopRiskRecordedBy||$('preopRiskAssessor')?.value||'reviewer not specified'}`;return}
+  const riskChecked=!!document.querySelector('#preop .preop-check[data-key="risk"]')?.checked;
+  if(riskChecked){badge.className='status-pill warn';badge.textContent='CHECKED • NO STRUCTURED REVIEW';if(meta)meta.textContent='Checklist ถูกติ๊กแล้ว แต่ยังไม่มี structured risk review';return}
+  badge.className='status-pill warn';badge.textContent=(none||count)?'UNSAVED CHANGES':'NOT REVIEWED';if(meta)meta.textContent=(none||count)?'มี Risk assessment ที่ยังไม่ได้กดบันทึก':'ยังไม่ได้ทบทวน Anesthetic Risk Flags';
+}
+function markPreopRiskDirty(){
+  if(state.preopRiskRecordedAt){state.preopRiskRecordedAt=null;state.preopRiskRecordedBy='';const cb=document.querySelector('#preop .preop-check[data-key="risk"]');if(cb)cb.checked=false;document.querySelector('#preop .preop-item[data-preop-key="risk"]')?.classList.remove('na')}
+  renderPreopRisk();renderPreop();
+}
+function savePreopRiskAssessment(){
+  if(!clinicalWriteAllowed())return;
+  const count=preopRiskEnteredCount(),none=!!$('preopRiskNone')?.checked,assessor=$('preopRiskAssessor')?.value.trim()||$('preopExaminer')?.value.trim()||$('anesthetist')?.value.trim()||'';
+  if(!none&&!count){toast('เลือก Risk flag อย่างน้อย 1 รายการ หรือเลือก No additional risk flags identified');return}
+  if(!assessor){toast('กรุณาระบุผู้ทบทวน Anesthetic Risk');$('preopRiskAssessor')?.focus();return}
+  if($('preopRiskAssessor')&&!$('preopRiskAssessor').value.trim())$('preopRiskAssessor').value=assessor;
+  save();state.preopRiskRecordedAt=Date.now();state.preopRiskRecordedBy=assessor;
+  const item=document.querySelector('#preop .preop-item[data-preop-key="risk"]'),cb=item?.querySelector('.preop-check');item?.classList.remove('na');if(cb){cb.disabled=false;cb.checked=true}
+  addAudit('PREANESTHETIC_RISK_REVIEW_RECORDED',none?'No additional structured risk flags':`${count} structured risk flag(s)`,assessor);save();renderPreop();renderPreopRisk();renderPatientRiskBanner();renderCaseSummary();renderOrLive();toast('Anesthetic risk review saved • checklist marked Done');
+}
+function riskAssessmentReportHtml(){
+  const none=!!state.preopRiskNone,flags=PREOP_RISK_FLAGS.filter(r=>!!state[r.id]);
+  const groups={};flags.forEach(r=>(groups[r.group]??=[]).push(r.label));
+  const groupHtml=Object.entries(groups).map(([g,items])=>`<div class="report-risk-group"><span>${escapeHtml(g)}</span><b>${escapeHtml(items.join(' • '))}</b></div>`).join('');
+  const boasDetails=[['Stertor / snoring',state.riskBOASStertor],['Stridor / inspiratory noise',state.riskBOASStridor],['Exercise / heat intolerance',state.riskBOASExerciseHeat],['Sleep-disordered breathing / collapse history',state.riskBOASSleep],['Regurgitation / reflux history',state.riskBOASRegurg],['Previous airway surgery',state.riskBOASAirwaySurgery],['Previous difficult intubation / airway recovery event',state.riskBOASPreviousDifficultIntubation]].filter(x=>x[1]).map(x=>x[0]);
+  const other=String(state.riskOther||'').trim(),boasNote=String(state.riskBOASNotes||'').trim();
+  return `<div class="report-risk-assessment"><h4>Anesthetic Risk Flags</h4>${none?'<div class="report-risk-none">☑ No additional structured risk flags identified</div>':(groupHtml||'<div class="report-risk-none">Not formally reviewed</div>')}${boasDetails.length?`<div class="report-risk-note"><b>Brachycephalic / BOAS details:</b> ${escapeHtml(boasDetails.join(' • '))}${boasNote?` • ${escapeHtml(boasNote)}`:''}</div>`:(boasNote?`<div class="report-risk-note"><b>Airway / BOAS note:</b> ${escapeHtml(boasNote)}</div>`:'')}${other?`<div class="report-risk-note"><b>Other risk:</b> ${escapeHtml(other)}</div>`:''}<div class="report-risk-meta">Reviewed by ${escapeHtml(state.preopRiskRecordedBy||state.preopRiskAssessor||'—')} • ${state.preopRiskRecordedAt?`${escapeHtml(formatDate(state.preopRiskRecordedAt))} ${escapeHtml(formatClock(state.preopRiskRecordedAt))}`:'Not formally recorded'}</div></div>`;
+}
 function renderPreop(){
   const checks=$$('.preop-check'),total=checks.length;
   const done=checks.filter(x=>x.checked).length,na=$$('.preop-item.na').length,reviewed=done+na;
   if($('preopProgress')){$('preopProgress').textContent=`${reviewed}/${total} REVIEWED`;$('preopProgress').className=`status-pill ${reviewed===total?'good':'warn'}`;}
   if($('preopWarning'))$('preopWarning').textContent=reviewed===total?'Pre-anesthetic checklist reviewed':'ยังมีรายการที่ต้องเลือก Done หรือ N/A';
-  renderPreopExam();save();
+  renderPreopExam();renderPreopRisk();save();
 }
 $$('.preop-check').forEach(el=>el.addEventListener('change',()=>{
   if(el.checked)el.closest('.preop-item')?.classList.remove('na');
@@ -1393,7 +1463,8 @@ function renderOrLive(){
   if($('patientAllergies')?.value.trim())riskParts.push(`Allergy: ${$('patientAllergies').value.trim()}`);
   if($('patientComorbidities')?.value.trim())riskParts.push(`Disease: ${$('patientComorbidities').value.trim()}`);
   if($('patientPrecautions')?.value.trim())riskParts.push(`Caution: ${$('patientPrecautions').value.trim()}`);
-  if($('orRiskLine')){$('orRiskLine').hidden=!riskParts.length;$('orRiskLine').textContent=riskParts.length?'⚠ '+riskParts.join(' • '):'';}
+  const structuredRisks=preopRiskSummaryLabels({compact:true});if(structuredRisks.length)riskParts.push(`Risk flags: ${structuredRisks.join(', ')}`);
+  if($('orRiskLine')){const airwayRisk=!!($('riskBrachycephalic')?.checked||$('riskBOAS')?.checked||$('riskDifficultAirway')?.checked||$('riskUpperAirway')?.checked||$('riskAspiration')?.checked);$('orRiskLine').hidden=!riskParts.length;$('orRiskLine').classList.toggle('airway-risk',airwayRisk);$('orRiskLine').textContent=riskParts.length?`${airwayRisk?'⚠ AIRWAY RISK • ':'⚠ '}${riskParts.join(' • ')}`:'';}
   if($('orStickyPhase'))$('orStickyPhase').textContent=phaseLabel();if($('orStickyClock'))$('orStickyClock').textContent=formatElapsed(currentElapsed());
     $('orPhaseBadge').textContent=phaseLabel();
   $('orPhaseBadge').className=`status-pill phase ${phaseClass()}`;
@@ -1560,6 +1631,7 @@ function renderCaseSummary(){
   if($('patientAllergies')?.value.trim())risks.push(`ALLERGY: ${$('patientAllergies').value.trim()}`);
   if($('patientComorbidities')?.value.trim())risks.push(`DISEASE: ${$('patientComorbidities').value.trim()}`);
   if($('patientPrecautions')?.value.trim())risks.push(`CAUTION: ${$('patientPrecautions').value.trim()}`);
+  const structuredRisks=preopRiskSummaryLabels({compact:true});if(structuredRisks.length)risks.push(`RISK FLAGS: ${structuredRisks.join(', ')}`);
   $('summaryRiskBox').hidden=!risks.length;
   $('summaryRiskText').textContent=risks.join(' • ')||'—';
 }
@@ -2713,13 +2785,13 @@ function buildPdfReport(){
 
   
   const preopLabels={
-    consent:'Consent / owner discussion',fasting:'Fasting / aspiration risk reviewed',exam:'Pre-anesthetic physical exam',
+    consent:'Consent / owner discussion',fasting:'Fasting / aspiration risk reviewed',exam:'Pre-anesthetic physical exam',risk:'Anesthetic risk flags reviewed',
     labs:'Lab / imaging reviewed',iv:'IV catheter patent',oxygen:'O₂ source + backup checked',
     machine:'Anesthesia machine leak check',vaporizer:'Vaporizer / agent checked',absorber:'CO₂ absorbent checked',
     airway:'Airway equipment ready',suction:'Suction available',monitor:'Monitor attached / functional',
     warming:'Active warming ready',emergency:'Emergency drugs / crash plan ready'
   };
-  $('reportPreop').innerHTML=preopExamReportHtml()+`<div class="report-preop-grid">${Object.entries(preopLabels).map(([k,label])=>{const mark=(state.preopChecks||{})[k]?'☑':(state.preopNA||{})[k]?'N/A':'☐';return `<div class="report-preop-item"><span class="mark">${mark}</span><span>${escapeHtml(label)}</span></div>`}).join('')}</div>`;
+  $('reportPreop').innerHTML=preopExamReportHtml()+riskAssessmentReportHtml()+`<div class="report-preop-grid">${Object.entries(preopLabels).map(([k,label])=>{const mark=(state.preopChecks||{})[k]?'☑':(state.preopNA||{})[k]?'N/A':'☐';return `<div class="report-preop-item"><span class="mark">${mark}</span><span>${escapeHtml(label)}</span></div>`}).join('')}</div>`;
 
   $('reportPlanGrid').innerHTML=[reportInfoItem('Premedication',$('planPremed').value||'—'),reportInfoItem('Induction',$('planInduction').value||'—'),reportInfoItem('Maintenance',$('planMaintenance').value||'—'),reportInfoItem('Analgesia',$('planAnalgesia').value||'—'),reportInfoItem('Antibiotic',$('planAntibiotic').value||'—'),reportInfoItem('NSAID',$('planNSAID').value||'—'),reportInfoItem('Block',$('planBlock').value||'—'),reportInfoItem('Plan note',$('planNote').value||'—')].join('');const fmReport=getFluidMetrics(),bw=fmReport.w;
   $('reportBalanceGrid').innerHTML=[
@@ -2869,7 +2941,7 @@ async function verifyBackupPayloadIntegrity(raw){
 
 async function backupAllData(){
   save();await initArchiveDb();await initPatientMaster();
-  const payload={format:'ANESVET_BACKUP',version:'14.8.1',exportedAt:Date.now(),current:state,archive:getArchive(),patients:getPatients(),breedAliases:loadBreedAliases(),settings:(()=>{try{return JSON.parse(localStorage.getItem(SETTINGS_KEY)||'null')}catch(e){return null}})(),drugLibrary:loadDrugLibraryData(),quickPresets:loadQuickPresets(),protocolAudit:getProtocolAudit()};
+  const payload={format:'ANESVET_BACKUP',version:'14.8.2',exportedAt:Date.now(),current:state,archive:getArchive(),patients:getPatients(),breedAliases:loadBreedAliases(),settings:(()=>{try{return JSON.parse(localStorage.getItem(SETTINGS_KEY)||'null')}catch(e){return null}})(),drugLibrary:loadDrugLibraryData(),quickPresets:loadQuickPresets(),protocolAudit:getProtocolAudit()};
   downloadBlob(JSON.stringify(payload,null,2),'application/json',`ANESVET_BACKUP_${formatDate(Date.now())}.json`);
   const backupEpoch=Date.now();localStorage.setItem(LAST_BACKUP_KEY,String(backupEpoch));
   if($('backupStatus'))$('backupStatus').textContent=`Backup created ${formatClock(backupEpoch)} • ${payload.archive.length} cases • ${payload.patients.length} patients`;
@@ -3010,7 +3082,7 @@ function appRootUrl(){
   let path=here.pathname;
   if(!path.endsWith('/')) path=path.replace(/\/[^/]*$/,'/');
   const url=new URL(path, here.origin);
-  url.searchParams.set('v','14.8.1');
+  url.searchParams.set('v','14.8.2');
   return url.href;
 }
 function restartAtAppRoot(){
@@ -3380,14 +3452,14 @@ function freshState(){
     timer:{running:false,startedEpoch:null,elapsedMs:0},
     records:[],events:[],responses:[],corrections:[],complications:[],drugAdministrations:[],alertEpisodes:[],recoveryScores:[],recoveryRecords:[],fluidRateHistory:[],
     alertProtocolOverride:null,alertProtocolHistory:[],recoveryHandoffs:[],inductionDocumentationMode:'',inductionMedicationReviewCompletedAt:null,
-    recoveryChecks:[false,false,false,false,false,false],recoveryNA:[false,false,false,false,false,false],recoveryObservationNA:{spo2:false,temp:false,extubation:false},preopChecks:{},preopNA:{},preopExamRecordedAt:null,preopExamRecordedBy:'',
+    recoveryChecks:[false,false,false,false,false,false],recoveryNA:[false,false,false,false,false,false],recoveryObservationNA:{spo2:false,temp:false,extubation:false},preopChecks:{},preopNA:{},preopExamRecordedAt:null,preopExamRecordedBy:'',preopRiskRecordedAt:null,preopRiskRecordedBy:'',
     patientSaved:false,patientMasterId:'',caseWorkflowProfile:'routine',
     patientName:'',hospitalId:'',visitId:'',species:'',sex:'',reproductiveStatus:'',microchip:'',breed:'',
     weight:'',age:'',birthDate:'',birthDateEstimated:false,ageSource:'',estimatedBirthPeriod:'',
     approxAgeYears:'',approxAgeMonths:'',approxAgeWeeks:'',bcs:'',asa:'',emergency:false,
     patientProcedure:'',procedure:'',patientAllergies:'',patientComorbidities:'',patientPrecautions:'',
     surgeon:'',anesthetist:'',surgicalAssistant:'',
-    preopMentation:'',preopHR:'',preopPulse:'',preopHeart:'',preopRR:'',preopRespEffort:'',preopLungs:'',preopTemp:'',preopMM:'',preopCRT:'',preopHydration:'',preopPain:'',preopExamNotes:'',preopExaminer:'',
+    preopMentation:'',preopHR:'',preopPulse:'',preopHeart:'',preopRR:'',preopRespEffort:'',preopLungs:'',preopTemp:'',preopMM:'',preopCRT:'',preopHydration:'',preopPain:'',preopExamNotes:'',preopExaminer:'',preopRiskNone:false,riskBrachycephalic:false,riskBOAS:false,riskDifficultAirway:false,riskUpperAirway:false,riskAspiration:false,riskCardiacDisease:false,riskArrhythmia:false,riskRespiratoryDisease:false,riskHypovolemia:false,riskAnemiaBleeding:false,riskRenal:false,riskHepatic:false,riskMetabolicElectrolyte:false,riskHypoglycemia:false,riskPediatric:false,riskGeriatric:false,riskObesity:false,riskPregnancy:false,riskPreviousAnesthetic:false,riskEmergency:false,riskMajorHemorrhage:false,riskBOASStertor:false,riskBOASStridor:false,riskBOASExerciseHeat:false,riskBOASSleep:false,riskBOASRegurg:false,riskBOASAirwaySurgery:false,riskBOASPreviousDifficultIntubation:false,riskBOASNotes:'',riskOther:'',preopRiskAssessor:'',
     hr:'',rr:'',sap:'',map:'',dap:'',spo2:'',etco2:'',temp:'',vaporizer:'',o2flow:'',
     fluidRateInput:'',fluidTotal:'',depth:'',ventilation:'',
     bradyPoorPerf:false,bloodLoss:false,cardiacRisk:false,respRisk:false,recordNote:'',
@@ -3445,6 +3517,10 @@ $('pauseCaseBtn').addEventListener('click',()=>{pauseTimer();renderOrLive()});
 
 PREOP_EXAM_FIELD_IDS.forEach(id=>{const el=$(id);if(!el)return;el.addEventListener(el.tagName==='SELECT'?'change':'input',markPreopExamDirty)});
 $('savePreopExamBtn')?.addEventListener('click',savePreopPhysicalExam);
+const PREOP_RISK_FIELD_IDS=[...PREOP_RISK_FLAGS.map(r=>r.id),...BOAS_DETAIL_IDS,'riskBOASNotes','riskOther','preopRiskAssessor'];
+PREOP_RISK_FIELD_IDS.forEach(id=>{const el=$(id);if(!el)return;el.addEventListener(el.type==='checkbox'||el.tagName==='SELECT'?'change':'input',()=>{if(id!=='preopRiskAssessor'&&$('preopRiskNone')?.checked)$('preopRiskNone').checked=false;markPreopRiskDirty();renderPatientRiskBanner();renderCaseSummary()})});
+$('preopRiskNone')?.addEventListener('change',()=>{if($('preopRiskNone').checked){PREOP_RISK_FLAGS.forEach(r=>{if($(r.id))$(r.id).checked=false});BOAS_DETAIL_IDS.forEach(id=>{if($(id))$(id).checked=false});if($('riskBOASNotes'))$('riskBOASNotes').value='';if($('riskOther'))$('riskOther').value=''}markPreopRiskDirty();renderPatientRiskBanner();renderCaseSummary()});
+$('savePreopRiskBtn')?.addEventListener('click',savePreopRiskAssessment);
 
 dataFields.forEach(id=>{
   const el=$(id);if(!el)return;
@@ -3472,7 +3548,7 @@ $('updateNowBtn')?.addEventListener('click',()=>{const reg=pendingServiceWorkerR
 $('updateLaterBtn')?.addEventListener('click',()=>{if($('updateBanner'))$('updateBanner').hidden=true});
 window.addEventListener('load',setupServiceWorkerUpdates);
 
-// V14.8.1 workflow integration; adaptive case profiles on top of deferred medication + compact handoff.
+// V14.8.2 workflow integration; adaptive case profiles on top of deferred medication + compact handoff.
 const WF=globalThis.AnesvetWorkflow;
 const ALERT_KEYS={map:'hypotension',spo2:'hypoxemia',etco2:'ventilation',temp:'hypothermia'};
 let alertProtocolEditScope='hospital',pendingProblem=null,orQuickOptions=[],orQuickBasis=null,orQuickContext=null;
@@ -3707,7 +3783,7 @@ let storedTab=localStorage.getItem(TAB_KEY)||'casesummary';
 // dashboard remains a supported legacy route under Advanced.
 const initialTab=state.patientSaved?(state.casePhase==='complete'?'endcase':state.casePhase==='recovery'?'recovery':((state.timer.running||(state.timer.elapsedMs||0)>0)?'orlive':storedTab)):'patient';
 setTab(initialTab);
-if(sessionMode==='active')writeSessionLock();renderPatientRiskBanner();renderSessionMode();renderAirwayPanel();renderFavoriteDrugButtons();renderQuickPresetSettings();renderQuickPresetSummary();renderOrFluidPanel();renderCaseSummary();renderCasePhase();renderOrPhaseTracker();renderRecoveryRecords();renderWorkflowLocks();renderAlertFeedbackState();renderProtocolGovernance();renderStorageStatus();renderFinalSignoff();renderBackupHealth();renderLinkedPatient();renderPatientMaster();
+if(sessionMode==='active')writeSessionLock();renderPatientRiskBanner();renderPreopRisk();renderSessionMode();renderAirwayPanel();renderFavoriteDrugButtons();renderQuickPresetSettings();renderQuickPresetSummary();renderOrFluidPanel();renderCaseSummary();renderCasePhase();renderOrPhaseTracker();renderRecoveryRecords();renderWorkflowLocks();renderAlertFeedbackState();renderProtocolGovernance();renderStorageStatus();renderFinalSignoff();renderBackupHealth();renderLinkedPatient();renderPatientMaster();
 updateDashboard();renderPreop();renderPreopExam();renderRecords();renderCorrections();renderEvents();renderComplications();renderDrugAdministrationAudit();renderTrends();renderProcedureTimeline();renderRecovery();renderRecoveryState();renderRecoveryScores();renderArchives();updateDue();renderTimerState();updateDoseSpotlights();renderEndCase();renderOrLive();renderSaveState();
 if(state.timer.running && state.timer.startedEpoch && sessionMode==='active') startTimerLoop();
 })();

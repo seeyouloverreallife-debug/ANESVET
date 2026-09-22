@@ -1,10 +1,12 @@
-ANESVET V14.7.2 — supported tests executed in this runtime
+ANESVET V14.8.2 — supported tests executed in this runtime
 
-Syntax + JSON: PASS
-ANESVET V14.7.2 regression checks: PASS
-V14.7.2 integration and storage contracts: PASS
-V14.7.2 UX contracts: PASS (13 assertions)
-ANESVET workflow model scenarios: PASS (4 scenarios)
-Production clinical helpers: PASS (73 assertions)
+PASS
+ANESVET V14.8.2 regression checks
+V14.8.2 integration and storage contracts
+V14.7.2 UX contracts
+V14.8 adaptive workflow static contracts (ux_v148_static)
+ANESVET V14.8.2 anesthetic risk flag contracts
+Production clinical helpers: 73 assertions
+Workflow model scenarios
 
-DOM/browser claims are intentionally excluded because the required runtime paths were blocked or unavailable.
+Browser/DOM-dependent tests requiring jsdom/fake-indexeddb are not claimed.

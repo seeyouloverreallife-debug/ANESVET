@@ -1,0 +1,16 @@
+{
+  "release": "ANESVET V14.8.2",
+  "baseline": "ANESVET V14.8.1 Pre-anesthetic Physical Examination supplied/approved in this conversation",
+  "baselineZipSha256": "94cf06cc383e92aac94379050ebb17da7d6991dc3bed0beb3ef0e088a7b08f18",
+  "buildDate": "2026-09-22",
+  "scope": [
+    "structured anesthetic risk flags",
+    "brachycephalic and BOAS documentation",
+    "risk attestation timestamp/reviewer/audit",
+    "OR LIVE and PDF risk visibility"
+  ],
+  "clinicalDefaultsChanged": false,
+  "automaticAsaAssignment": false,
+  "storageKeysChanged": false,
+  "indexedDbSchemaChanged": false
+}

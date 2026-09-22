@@ -13,8 +13,8 @@ const count=(s,re)=>(s.match(re)||[]).length;
 const must=(cond,msg)=>assert.ok(cond,msg);
 
 // Core version / structure
-must(manifest.name.includes('V14.7.2'),'manifest should be V14.7.2');
-must(sw.includes('v14-7-2'),'service worker cache should identify V14.7.2');
+must(manifest.name.includes('V14.8.2'),'manifest should be V14.8.2');
+must(sw.includes('v14-8-2'),'service worker cache should identify V14.8.2');
 must(count(app,/function\s+phaseLabel\s*\(/g)===1,'phaseLabel must be declared once');
 const fnNames=[...app.matchAll(/\bfunction\s+([A-Za-z_$][\w$]*)\s*\(/g)].map(m=>m[1]);
 const dupFns=[...new Set(fnNames.filter((n,i)=>fnNames.indexOf(n)!==i))];
@@ -32,6 +32,27 @@ const cToF=c=>Number(c)*9/5+32;
 const fToC=f=>(Number(f)-32)*5/9;
 assert.ok(Math.abs(cToF(37)-98.6)<1e-9,'37 C -> 98.6 F');
 assert.ok(Math.abs(fToC(98.6)-37)<1e-9,'98.6 F -> 37 C');
+
+// V14.8.1 structured pre-anesthetic physical examination
+for(const id of ['preopMentation','preopHR','preopPulse','preopHeart','preopRR','preopRespEffort','preopLungs','preopTemp','preopMM','preopCRT','preopHydration','preopPain','preopExamNotes','preopExaminer','savePreopExamBtn','preopExamStatus'])must(ids.includes(id),'pre-anesthetic physical exam UI missing '+id);
+must(app.includes('function savePreopPhysicalExam')&&app.includes("PREANESTHETIC_PHYSICAL_EXAM_RECORDED"),'structured pre-anesthetic exam save/audit path missing');
+must(app.includes("id==='temp'||id==='recTemp'||id==='preopTemp'"),'preop temperature must be canonicalized with other temperature inputs');
+must(app.includes("state.preopExamRecordedAt=Date.now()")&&app.includes("cb.checked=true"),'saving structured physical exam must timestamp and mark checklist done');
+must(app.includes('function markPreopExamDirty')&&app.includes("state.preopExamRecordedAt=null"),'editing a recorded physical exam must invalidate its recorded timestamp');
+must(app.includes('preopExamReportHtml()')&&css.includes('.report-physical-exam-grid'),'physical exam must be included in printable report');
+
+
+// V14.8.2 structured anesthetic risk flags
+for(const id of ['preopRiskNone','riskBrachycephalic','riskBOAS','riskDifficultAirway','riskAspiration','riskCardiacDisease','riskRespiratoryDisease','riskHypovolemia','riskAnemiaBleeding','riskRenal','riskHepatic','riskMetabolicElectrolyte','riskPediatric','riskGeriatric','riskObesity','riskPregnancy','riskPreviousAnesthetic','riskEmergency','riskMajorHemorrhage','riskBOASNotes','riskOther','preopRiskAssessor','savePreopRiskBtn','preopRiskStatus'])must(ids.includes(id),'anesthetic risk UI missing '+id);
+must(app.includes('const PREOP_RISK_FLAGS=')&&app.includes('function savePreopRiskAssessment'),'structured risk registry/save path missing');
+must(app.includes("PREANESTHETIC_RISK_REVIEW_RECORDED"),'risk assessment audit event missing');
+must(app.includes("state.preopRiskRecordedAt=Date.now()")&&app.includes("data-preop-key=\"risk\""),'risk review must timestamp and mark checklist done');
+must(app.includes('function riskAssessmentReportHtml')&&app.includes('riskAssessmentReportHtml()+'),'risk assessment must be included in PDF report');
+must(app.includes("$('riskBrachycephalic')?.checked||$('riskBOAS')?.checked")&&html.includes('id="boasRiskDetail"'),'BOAS detail panel must be contextual');
+must(app.includes("Risk flags: ${structuredRisks.join(', ')}")&&css.includes('.or-risk-line.airway-risk'),'structured risk flags must surface in OR LIVE');
+const riskSaveBody=app.slice(app.indexOf('function savePreopRiskAssessment'),app.indexOf('function riskAssessmentReportHtml'));
+must(!riskSaveBody.includes("$('asa').value=")&&!riskSaveBody.includes('state.asa='),'risk review must not auto-assign ASA');
+must(!html.includes('data-preop-key="risk">\n          <label class="preop-main"><input class="preop-check" type="checkbox" data-key="risk"')||html.includes('Anesthetic risk flags reviewed'),'risk checklist item must remain present');
 
 // Fresh-case safety invariants
 must(/id="weight"[^>]*value=/.test(html)===false,'weight must not have an HTML default value');
@@ -90,7 +111,7 @@ must(app.includes('function agePartsFromDob'),'age calculation missing');
 must(app.includes('function getFluidMetrics'),'fluid integration missing');
 
 // Backup / restore
-must(app.includes("format:'ANESVET_BACKUP',version:'14.7.2'"),'backup version must be 14.7.2');
+must(app.includes("format:'ANESVET_BACKUP',version:'14.8.2'"),'backup version must be 14.8.2');
 must(app.includes("raw.format!=='ANESVET_BACKUP'")&&app.includes('idbClearCases()'),'backup restore integrity path missing');
 
 // Reset must preserve persistent stores by only resetting current case state.
@@ -131,16 +152,16 @@ must(sw.includes("message")&&sw.includes('SKIP_WAITING')&&!sw.includes("install'
 must(html.includes('id="updateBanner"')&&app.includes('Finish / archive current case before updating'),'safe PWA update UI missing');
 must(app.includes('caseLowestMap')&&app.includes('caseLowestSpo2')&&app.includes('Emergency return to OR recorded'),'previous anesthesia warning expansion missing');
 
-console.log(`ANESVET V14.7.2 regression checks: PASS (${ids.length} unique HTML ids, ${fnNames.length} unique named functions)`);
+console.log(`ANESVET V14.8.2 regression checks: PASS (${ids.length} unique HTML ids, ${fnNames.length} unique named functions)`);
 
-// V14.7.2 compatibility and integration contracts.
+// V14.8.1 compatibility and integration contracts.
 for(const key of ['anesvet_v14_3_current','anesvet_v14_3_settings','anesvet_v14_3_archive','anesvet_v14_3_protocol_audit'])must(app.includes(key),'original key retained: '+key);
 must(html.indexOf('clinical-workflow.js')<html.indexOf('app.js'),'helper loads before application');
-must(sw.includes('clinical-workflow.js?v=14.7.2'),'offline cache includes helper');
+must(sw.includes('clinical-workflow.js?v=14.8.2'),'offline cache includes helper');
 must(count(app,/\$\('orStickyRecordBtn'\)\?\.addEventListener/g)===1,'sticky record listener must bind once');
 for(const id of ['alertProtocolDialog','orQuickDrugDialog','orProblemPanel','recoveryProblemPanel','recoveryHandoffText','reportRecoveryHandoff'])must(ids.includes(id),'new UI '+id);
 for(const file of [...sw.matchAll(/'\.\/([^']+)'/g)].map(x=>x[1].split('?')[0]))must(fs.existsSync(path.join(root,file)),'cache asset exists: '+file);
-for(const id of ['orPrimaryActionBtn','orSecondaryPhaseBtn','orPrimaryDrugBtn','orStickyDrugBtn','orAirwayPanelDetails','orFluidPanelDetails','orQuickInductionSkipBtn','orQuickDrugDoneBtn','recoveryMedicationBtn','recoveryHandoffSummary'])must(ids.includes(id),'V14.7.2 OR LIVE UX control '+id);
+for(const id of ['orPrimaryActionBtn','orSecondaryPhaseBtn','orPrimaryDrugBtn','orStickyDrugBtn','orAirwayPanelDetails','orFluidPanelDetails','orQuickInductionSkipBtn','orQuickDrugDoneBtn','recoveryMedicationBtn','recoveryHandoffSummary'])must(ids.includes(id),'V14.8.1 OR LIVE UX control '+id);
 must(app.includes("state.inductionDocumentationMode='deferred-v1472'")&&app.includes("triggerOrMilestone('Induction')"),'Start induction must timestamp the milestone without forcing dose entry');
 must(app.includes('function nextInductionQuickDrugIndex')&&app.includes('Induction medications reviewed'),'multi-drug induction review flow missing');
 must(app.includes("source:induction?'OR Induction':recovery?'Recovery Medication':'OR Quick Drug'"),'induction/recovery medication sources must be distinct');
@@ -149,4 +170,4 @@ must(app.includes('function renderRecoveryHandoffSummary')&&css.includes('.hando
 must(app.includes("airwayWorkflowContext==='intubation'")&&app.includes("triggerOrMilestone('Intubation')"),'Airway save must be able to create the Intubation milestone');
 must(css.includes('.or-live-page>.or-status-row{display:none}')&&css.includes('.or-live-page .or-alert-panel,.or-live-page .complication-watch-panel{display:none}'),'duplicate OR LIVE workspaces should be visually suppressed');
 must(count(html,/class="or-milestone"/g)>=5,'legacy milestone hooks must remain for compatibility');
-console.log('V14.7.2 integration and storage contracts: PASS');
+console.log('V14.8.2 integration and storage contracts: PASS');

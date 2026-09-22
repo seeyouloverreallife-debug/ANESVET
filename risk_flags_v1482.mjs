@@ -1,0 +1,16 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import assert from 'node:assert/strict';
+const root=path.resolve(path.dirname(new URL(import.meta.url).pathname),'..');
+const app=fs.readFileSync(path.join(root,'app.js'),'utf8');
+const html=fs.readFileSync(path.join(root,'index.html'),'utf8');
+const ids=[...html.matchAll(/\sid="([^"]+)"/g)].map(m=>m[1]);
+const must=(c,m)=>assert.ok(c,m);
+for(const id of ['riskBrachycephalic','riskBOAS','riskDifficultAirway','riskAspiration','riskCardiacDisease','riskRespiratoryDisease','riskHypovolemia','riskAnemiaBleeding','riskRenal','riskHepatic','riskMetabolicElectrolyte','riskPediatric','riskGeriatric','riskObesity','riskPregnancy','riskPreviousAnesthetic','riskEmergency','riskMajorHemorrhage']) must(ids.includes(id),`missing ${id}`);
+must(html.includes('Brachycephalic anatomy')&&html.includes('Suspected / known BOAS'),'brachycephalic anatomy and BOAS must be distinct');
+must(html.includes('ไม่ใช้แทนการวินิจฉัย BOAS'),'BOAS details must be framed as documentation, not diagnosis');
+must(app.includes("if(!none&&!count){toast('เลือก Risk flag"),'risk review requires explicit none or selected flag');
+must(app.includes("addAudit('PREANESTHETIC_RISK_REVIEW_RECORDED'"),'risk audit missing');
+must(app.includes("classList.toggle('airway-risk',airwayRisk)"),'airway risk emphasis missing in OR LIVE');
+must(app.includes("risk:'Anesthetic risk flags reviewed'"),'risk review missing from printable checklist');
+console.log('ANESVET V14.8.2 anesthetic risk flag contracts: PASS');

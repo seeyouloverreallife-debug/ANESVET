@@ -1,8 +1,8 @@
 {
-  "name": "ANESVET V14.8.1 — Adaptive Clinical Workflow",
+  "name": "ANESVET V14.8.2 — Anesthetic Risk Flags",
   "short_name": "ANESVET",
   "description": "Adaptive OR LIVE with Routine, Critical and C-section workflow profiles, contextual milestones, Quick Drug and recovery handoff",
-  "start_url": "./?v=14.8.1",
+  "start_url": "./?v=14.8.2",
   "scope": "./",
   "display": "standalone",
   "background_color": "#f3f7f8",

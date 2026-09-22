@@ -1,21 +1,21 @@
-ANESVET V14.7.2 — Faster Induction & Medication Workflow validation
+ANESVET V14.8.2 — validation summary
+Date: 2026-09-22
 
-PASS — node tests/syntax.mjs
-PASS — node tests/regression.mjs
-PASS — node tests/ux_v1472_static.mjs (13 UX contract assertions)
-PASS — node tests/workflow_scenarios.mjs
-PASS — node tests/clinical_workflow.mjs
+PASS
+- node tests/syntax.mjs
+- node tests/regression.mjs
+- node tests/ux_v1472_static.mjs
+- node tests/ux_v148_static.mjs
+- node tests/risk_flags_v1482.mjs
+- node tests/clinical_workflow.mjs (73 assertions)
+- node tests/workflow_scenarios.mjs
 
-Regression coverage includes:
-- one-tap Start Induction without forced dose entry
-- deferred induction medication review state
-- multi-drug induction dialog controls
-- retrospective administration timestamp fields
-- persistent OR MEDS access and Recovery Medication control
-- compact Recovery Handoff cards + full-detail fallback
-- V14.7 alert/protocol/storage compatibility anchors
+BLOCKED / NOT CLAIMED
+- tests/adaptive_workflow_v148.mjs
+- tests/dom_workflow.mjs
+- tests/compatibility.mjs
+- tests/governance.mjs
+- tests/final_lock.mjs
+Reason: jsdom/fake-indexeddb dependencies are not installed in this runtime.
 
-BLOCKED / NOT CLAIMED:
-- npm ci timed out, so jsdom/fake-indexeddb DOM suites were not run in this runtime
-- Chromium navigation to localhost/file URL returned ERR_BLOCKED_BY_ADMINISTRATOR
-- native service-worker/PWA update/offline and print/PDF pagination require deployment-host acceptance
+Clinical values were not changed in V14.8.2. This release adds structured anesthetic risk documentation and visibility only.

@@ -1,4 +1,18 @@
-# ANESVET V14.8.1 — Pre-anesthetic Physical Examination
+# ANESVET V14.8.2 — Anesthetic Risk Flags
+
+
+## V14.8.2 — Structured Anesthetic Risk Flags
+
+เพิ่มการทบทวนความเสี่ยงเฉพาะตัวก่อนวางยา โดยแยก **Brachycephalic anatomy** ออกจาก **Suspected / known BOAS** และไม่วินิจฉัย BOAS หรือกำหนด ASA อัตโนมัติ
+
+- Risk groups: airway/BOAS, aspiration, cardiac/respiratory, perfusion/bleeding, renal/hepatic/metabolic, age/body condition, previous anesthetic event และ procedure risk
+- BOAS detail จะขยายเฉพาะเมื่อเลือก Brachycephalic/BOAS
+- มี `No additional risk flags identified` เพื่อแยก “ทบทวนแล้วไม่พบ flag เพิ่ม” ออกจาก “ยังไม่ได้ทบทวน”
+- ปุ่ม **Save risk review & mark checklist Done** บันทึก reviewer/timestamp/audit และ mark checklist
+- Risk flags แสดงต่อใน patient banner, Case Summary, OR LIVE และ PDF/print report
+- Airway-related risk มี visual emphasis ใน OR LIVE แต่ไม่เปลี่ยนยา dose/threshold/protocol
+
+ดูรายละเอียดที่ `RELEASE_NOTES_V14_8_2.md`
 
 ## V14.8.1 — Structured Pre-anesthetic Physical Examination
 

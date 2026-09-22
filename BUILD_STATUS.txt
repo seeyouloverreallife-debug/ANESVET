@@ -1,30 +1,34 @@
-ANESVET V14.8.1 — Pre-anesthetic Physical Examination
+ANESVET V14.8.2 — Anesthetic Risk Flags
 Build date: 2026-09-22
-Baseline: ANESVET V14.8.0 Adaptive Clinical Workflow
+Baseline: ANESVET V14.8.1 Pre-anesthetic Physical Examination
 
 IMPLEMENTED
-- Structured pre-anesthetic physical examination panel
-- Exam timestamp + examiner + audit trail
-- Save exam -> mark physical-exam checklist Done
-- Edit-after-save invalidates stale exam attestation
-- PDF/print physical-exam section
-- Pre-op temperature integrated with existing C/F display and canonical-F storage
-- V14.8.0 adaptive Routine/Critical/C-section/Custom workflow retained
+- Structured anesthetic risk flag panel
+- Brachycephalic anatomy and suspected/known BOAS kept as separate concepts
+- Contextual BOAS history/exam details
+- Explicit no-additional-risk review state
+- Reviewer + timestamp + audit trail
+- Save risk review -> mark risk checklist Done
+- Edit-after-save invalidates stale risk attestation
+- Risk flags surfaced in patient banner, Case Summary, OR LIVE and PDF/print
+- Airway-related flags receive stronger OR LIVE visual emphasis
 
 UNCHANGED CLINICAL DEFAULTS
 - Drug doses/concentrations
 - Alert thresholds
 - Fluid references
 - Recovery scoring
+- ASA is not assigned automatically
 - Existing storage keys and IndexedDB version
 
 VALIDATION
 PASS: syntax + JSON
 PASS: source regression / storage contracts
-PASS: V14.7.2 UX backward-compatibility static contracts
+PASS: V14.7.2 UX compatibility static contracts
 PASS: V14.8 adaptive workflow static contracts
-PASS: production clinical helper tests
+PASS: V14.8.2 anesthetic risk flag contracts
+PASS: production clinical helper tests (73 assertions)
 PASS: workflow model scenarios
-BLOCKED: jsdom-dependent DOM/integration suite (jsdom is not installed in this runtime)
+NOT CLAIMED: jsdom/browser-dependent DOM integration suite (jsdom/fake-indexeddb unavailable in this runtime)
 
-Do not treat blocked tests as passed. Acceptance-test the build on the deployment browser/device before clinical production use.
+Acceptance-test the build on the deployment browser/device before clinical production use.

@@ -1,0 +1,528 @@
+--- /mnt/data/anesvet_v1482_before/app.js	2026-09-22 15:23:54.000000000 +0000
++++ app.js	2026-09-22 15:43:11.373712507 +0000
+@@ -23,7 +23,7 @@
+ 
+ const numericFields = ['weight','preopHR','preopRR','preopTemp','hr','rr','sap','map','dap','spo2','etco2','temp','vaporizer','o2flow','fluidRateInput','fluidTotal','recHR','recRR','recMAP','recSpO2','recTemp'];
+ const dataFields = [
+-  'patientName','hospitalId','visitId','patientMasterId','species','sex','reproductiveStatus','microchip','breed','weight','age','birthDate','birthDateEstimated','ageSource','estimatedBirthPeriod','approxAgeYears','approxAgeMonths','approxAgeWeeks','bcs','asa','emergency','patientProcedure','patientAllergies','patientComorbidities','patientPrecautions','caseWorkflowProfile','procedure','surgeon','anesthetist','surgicalAssistant','preopMentation','preopHR','preopPulse','preopHeart','preopRR','preopRespEffort','preopLungs','preopTemp','preopMM','preopCRT','preopHydration','preopPain','preopExamNotes','preopExaminer',
++  'patientName','hospitalId','visitId','patientMasterId','species','sex','reproductiveStatus','microchip','breed','weight','age','birthDate','birthDateEstimated','ageSource','estimatedBirthPeriod','approxAgeYears','approxAgeMonths','approxAgeWeeks','bcs','asa','emergency','patientProcedure','patientAllergies','patientComorbidities','patientPrecautions','caseWorkflowProfile','procedure','surgeon','anesthetist','surgicalAssistant','preopMentation','preopHR','preopPulse','preopHeart','preopRR','preopRespEffort','preopLungs','preopTemp','preopMM','preopCRT','preopHydration','preopPain','preopExamNotes','preopExaminer','preopRiskNone','riskBrachycephalic','riskBOAS','riskDifficultAirway','riskUpperAirway','riskAspiration','riskCardiacDisease','riskArrhythmia','riskRespiratoryDisease','riskHypovolemia','riskAnemiaBleeding','riskRenal','riskHepatic','riskMetabolicElectrolyte','riskHypoglycemia','riskPediatric','riskGeriatric','riskObesity','riskPregnancy','riskPreviousAnesthetic','riskEmergency','riskMajorHemorrhage','riskBOASStertor','riskBOASStridor','riskBOASExerciseHeat','riskBOASSleep','riskBOASRegurg','riskBOASAirwaySurgery','riskBOASPreviousDifficultIntubation','riskBOASNotes','riskOther','preopRiskAssessor',
+   'hr','rr','sap','map','dap','spo2','etco2','temp','vaporizer','o2flow','fluidRateInput','fluidTotal',
+   'depth','ventilation','bradyPoorPerf','bloodLoss','cardiacRisk','respRisk','recordInterval','reminderOn',
+   'recordNote','recHR','recRR','recMAP','recSpO2','recTemp','recExtubation','recOxygen','recMentation','recPain','recNaReason','recRecordInterval','recScoreAirway','recScoreOxygen','recScoreTemp','recScoreMentation','recScoreComfort','recScoreNote','planPremed','planInduction','planMaintenance','planAnalgesia','planAntibiotic','planNSAID','planBlock','planNote','actualDiazepamMl','actualPropofolMl','actualTramadolMl','balanceCrystalloid','balanceBolus','balanceBloodIn','balanceBloodLoss','balanceUrine','fluidActualTotal','airwayEttSize','airwayEttDepth','airwayCuff','airwayDifficulty','airwayCircuit','airwayVentMode','airwayVt','airwayPip','airwayPeep','airwayVentRr','diazepamConc','propofolConc','tramadolConc','rimadylConc','metacamConc','adrenalineConc','atropineConc','atropineMode','dopamineDose','dopamineConc'
+@@ -59,7 +59,7 @@
+   approxAgeYears:'0',
+   approxAgeMonths:'0',
+   approxAgeWeeks:'0',
+-  preopChecks:{},preopNA:{},preopExamRecordedAt:null,preopExamRecordedBy:'',
++  preopChecks:{},preopNA:{},preopExamRecordedAt:null,preopExamRecordedBy:'',preopRiskRecordedAt:null,preopRiskRecordedBy:'',
+   caseStartedAt:null,
+   responses:[],
+   corrections:[],
+@@ -142,7 +142,7 @@
+ }
+ function readSessionLock(){try{const x=JSON.parse(localStorage.getItem(SESSION_LOCK_KEY)||'null');return x&&x.tabId?x:null}catch(e){return null}}
+ function sessionLockIsFresh(lock){return !!(lock&&lock.tabId&&Number(lock.heartbeatAt)>0&&(Date.now()-Number(lock.heartbeatAt))<SESSION_TTL_MS)}
+-function writeSessionLock(){if(sessionMode!=='active')return;const lock={tabId:sessionTabId,heartbeatAt:Date.now(),caseId:state?.caseId||'',patientName:state?.patientName||'',version:'14.8.1'};try{localStorage.setItem(SESSION_LOCK_KEY,JSON.stringify(lock))}catch(e){};try{sessionChannel?.postMessage({type:'HEARTBEAT',...lock})}catch(e){}}
++function writeSessionLock(){if(sessionMode!=='active')return;const lock={tabId:sessionTabId,heartbeatAt:Date.now(),caseId:state?.caseId||'',patientName:state?.patientName||'',version:'14.8.2'};try{localStorage.setItem(SESSION_LOCK_KEY,JSON.stringify(lock))}catch(e){};try{sessionChannel?.postMessage({type:'HEARTBEAT',...lock})}catch(e){}}
+ function releaseSessionLock(){const lock=readSessionLock();if(lock?.tabId===sessionTabId){try{localStorage.removeItem(SESSION_LOCK_KEY)}catch(e){};try{sessionChannel?.postMessage({type:'RELEASE',tabId:sessionTabId})}catch(e){}}}
+ function sessionSafeTarget(target){return !!target?.closest?.('.session-safe,[data-tab],[data-more-tab],#moreMenuBtn,.archive-pdf,.verify-integrity')}
+ function renderSessionMode(){
+@@ -685,6 +685,8 @@
+     if(!state.caseWorkflowProfile)state.caseWorkflowProfile='routine';
+     if(!('preopExamRecordedAt' in state))state.preopExamRecordedAt=null;
+     if(!('preopExamRecordedBy' in state))state.preopExamRecordedBy='';
++    if(!('preopRiskRecordedAt' in state))state.preopRiskRecordedAt=null;
++    if(!('preopRiskRecordedBy' in state))state.preopRiskRecordedBy='';
+     if(!state.caseStartedAt && !(state.timer?.elapsedMs>0) && !state.recoveryStartedAt && !state.recoveryCompletedAt && !state.caseLocked)state.casePhase='setup';
+   }catch(e){}
+   dataFields.forEach(id=>{
+@@ -1121,11 +1123,15 @@
+   if(allergy)parts.push(`ALLERGY: ${allergy}`);
+   if(disease)parts.push(`DISEASE: ${disease}`);
+   if(caution)parts.push(`CAUTION: ${caution}`);
++  const structured=preopRiskSummaryLabels({compact:true});if(structured.length)parts.push(`RISK: ${structured.slice(0,5).join(', ')}${structured.length>5?` +${structured.length-5}`:''}`);
+   const b=$('patientRiskBanner');if(!b)return;
+   b.hidden=!parts.length;
+   if($('patientRiskText'))$('patientRiskText').textContent=parts.join(' • ');
++  if($('editRiskBtn'))$('editRiskBtn').hidden=!(allergy||disease||caution);
++  if($('reviewAnestheticRiskBtn'))$('reviewAnestheticRiskBtn').hidden=!structured.length;
+ }
+ $('editRiskBtn')?.addEventListener('click',()=>setTab('patient'));
++$('reviewAnestheticRiskBtn')?.addEventListener('click',()=>setTab('preop'));
+ 
+ function syncPatientProcedureToCase(){
+   const v=$('patientProcedure')?.value??'';
+@@ -1194,12 +1200,76 @@
+   const items=[['Mentation',val('preopMentation')],['HR',val('preopHR')==='—'?'—':`${val('preopHR')} bpm`],['Pulse',val('preopPulse')],['Heart',val('preopHeart')],['RR',val('preopRR')==='—'?'—':`${val('preopRR')} bpm`],['Respiratory effort',val('preopRespEffort')],['Lungs',val('preopLungs')],['Temperature',state.preopTemp!==''&&state.preopTemp!=null?tempTextF(state.preopTemp):'—'],['Mucous membrane',val('preopMM')],['CRT',val('preopCRT')],['Hydration',val('preopHydration')],['Pain / discomfort',val('preopPain')],['Examined by',val('preopExaminer')],['Recorded at',state.preopExamRecordedAt?`${formatDate(state.preopExamRecordedAt)} ${formatClock(state.preopExamRecordedAt)}`:'Not formally recorded']];
+   return `<div class="report-physical-exam"><div class="report-physical-exam-grid">${items.map(([l,v])=>`<div class="report-physical-exam-item"><span>${escapeHtml(l)}</span><b>${escapeHtml(v)}</b></div>`).join('')}</div><div class="report-physical-exam-note"><b>Abnormal / relevant findings:</b> ${escapeHtml(val('preopExamNotes'))}</div></div>`;
+ }
++const PREOP_RISK_FLAGS=[
++  {id:'riskBrachycephalic',group:'Airway',label:'Brachycephalic anatomy',short:'BRACHYCEPHALIC'},
++  {id:'riskBOAS',group:'Airway',label:'Suspected / known BOAS',short:'BOAS'},
++  {id:'riskDifficultAirway',group:'Airway',label:'Previous / anticipated difficult airway',short:'DIFFICULT AIRWAY'},
++  {id:'riskUpperAirway',group:'Airway',label:'Other upper-airway disease / obstruction risk',short:'UPPER AIRWAY'},
++  {id:'riskAspiration',group:'Aspiration / GI',label:'Regurgitation / vomiting / megaesophagus / full-stomach risk',short:'ASPIRATION'},
++  {id:'riskCardiacDisease',group:'Cardiovascular',label:'Known / suspected cardiac disease',short:'CARDIAC'},
++  {id:'riskArrhythmia',group:'Cardiovascular',label:'Clinically relevant arrhythmia',short:'ARRHYTHMIA'},
++  {id:'riskRespiratoryDisease',group:'Respiratory',label:'Respiratory disease / impaired respiratory reserve',short:'RESPIRATORY'},
++  {id:'riskHypovolemia',group:'Perfusion',label:'Dehydration / hypovolemia / poor perfusion',short:'HYPOVOLEMIA'},
++  {id:'riskAnemiaBleeding',group:'Perfusion',label:'Anemia / coagulopathy / bleeding concern',short:'ANEMIA/BLEEDING'},
++  {id:'riskRenal',group:'Organ / metabolic',label:'Renal disease / oliguria / anuria concern',short:'RENAL'},
++  {id:'riskHepatic',group:'Organ / metabolic',label:'Hepatic disease / impaired hepatic function',short:'HEPATIC'},
++  {id:'riskMetabolicElectrolyte',group:'Organ / metabolic',label:'Electrolyte / acid-base / metabolic abnormality',short:'METABOLIC'},
++  {id:'riskHypoglycemia',group:'Organ / metabolic',label:'Hypoglycemia risk',short:'HYPOGLYCEMIA'},
++  {id:'riskPediatric',group:'Patient',label:'Pediatric / neonatal',short:'PEDIATRIC'},
++  {id:'riskGeriatric',group:'Patient',label:'Geriatric / reduced physiologic reserve',short:'GERIATRIC'},
++  {id:'riskObesity',group:'Patient',label:'Obesity / body-condition concern',short:'OBESITY'},
++  {id:'riskPregnancy',group:'Patient',label:'Pregnancy / peripartum',short:'PREGNANCY'},
++  {id:'riskPreviousAnesthetic',group:'History',label:'Previous anesthetic / recovery adverse event',short:'PREV ANESTHETIC EVENT'},
++  {id:'riskEmergency',group:'Procedure',label:'Emergency / unstable / critical procedure context',short:'EMERGENCY'},
++  {id:'riskMajorHemorrhage',group:'Procedure',label:'Major hemorrhage / transfusion risk',short:'HEMORRHAGE'}
++];
++const BOAS_DETAIL_IDS=['riskBOASStertor','riskBOASStridor','riskBOASExerciseHeat','riskBOASSleep','riskBOASRegurg','riskBOASAirwaySurgery','riskBOASPreviousDifficultIntubation'];
++function preopRiskSelectedFlags(){return PREOP_RISK_FLAGS.filter(r=>!!$(r.id)?.checked)}
++function preopRiskEnteredCount(){return preopRiskSelectedFlags().length+(String($('riskOther')?.value||'').trim()?1:0)}
++function preopRiskSummaryLabels({compact=false}={}){
++  const labels=preopRiskSelectedFlags().map(r=>compact?r.short:r.label),other=String($('riskOther')?.value||'').trim();if(other)labels.push(compact?`OTHER: ${other}`:`Other: ${other}`);return labels;
++}
++function renderBOASRiskDetail(){
++  const show=!!($('riskBrachycephalic')?.checked||$('riskBOAS')?.checked);if($('boasRiskDetail'))$('boasRiskDetail').hidden=!show;
++}
++function renderPreopRisk(){
++  const badge=$('preopRiskStatus'),meta=$('preopRiskSavedMeta');if(!badge)return;renderBOASRiskDetail();
++  const count=preopRiskEnteredCount(),none=!!$('preopRiskNone')?.checked,stamp=state.preopRiskRecordedAt;
++  document.querySelector('.preop-risk-panel')?.classList.toggle('risk-saved',!!stamp);
++  if($('preopRiskCount'))$('preopRiskCount').textContent=none?'NO ADDITIONAL FLAGS':`${count} FLAG${count===1?'':'S'}`;
++  if(stamp){badge.className='status-pill good';badge.textContent='REVIEWED';if(meta)meta.textContent=`บันทึก ${formatDate(stamp)} ${formatClock(stamp)} • ${state.preopRiskRecordedBy||$('preopRiskAssessor')?.value||'reviewer not specified'}`;return}
++  const riskChecked=!!document.querySelector('#preop .preop-check[data-key="risk"]')?.checked;
++  if(riskChecked){badge.className='status-pill warn';badge.textContent='CHECKED • NO STRUCTURED REVIEW';if(meta)meta.textContent='Checklist ถูกติ๊กแล้ว แต่ยังไม่มี structured risk review';return}
++  badge.className='status-pill warn';badge.textContent=(none||count)?'UNSAVED CHANGES':'NOT REVIEWED';if(meta)meta.textContent=(none||count)?'มี Risk assessment ที่ยังไม่ได้กดบันทึก':'ยังไม่ได้ทบทวน Anesthetic Risk Flags';
++}
++function markPreopRiskDirty(){
++  if(state.preopRiskRecordedAt){state.preopRiskRecordedAt=null;state.preopRiskRecordedBy='';const cb=document.querySelector('#preop .preop-check[data-key="risk"]');if(cb)cb.checked=false;document.querySelector('#preop .preop-item[data-preop-key="risk"]')?.classList.remove('na')}
++  renderPreopRisk();renderPreop();
++}
++function savePreopRiskAssessment(){
++  if(!clinicalWriteAllowed())return;
++  const count=preopRiskEnteredCount(),none=!!$('preopRiskNone')?.checked,assessor=$('preopRiskAssessor')?.value.trim()||$('preopExaminer')?.value.trim()||$('anesthetist')?.value.trim()||'';
++  if(!none&&!count){toast('เลือก Risk flag อย่างน้อย 1 รายการ หรือเลือก No additional risk flags identified');return}
++  if(!assessor){toast('กรุณาระบุผู้ทบทวน Anesthetic Risk');$('preopRiskAssessor')?.focus();return}
++  if($('preopRiskAssessor')&&!$('preopRiskAssessor').value.trim())$('preopRiskAssessor').value=assessor;
++  save();state.preopRiskRecordedAt=Date.now();state.preopRiskRecordedBy=assessor;
++  const item=document.querySelector('#preop .preop-item[data-preop-key="risk"]'),cb=item?.querySelector('.preop-check');item?.classList.remove('na');if(cb){cb.disabled=false;cb.checked=true}
++  addAudit('PREANESTHETIC_RISK_REVIEW_RECORDED',none?'No additional structured risk flags':`${count} structured risk flag(s)`,assessor);save();renderPreop();renderPreopRisk();renderPatientRiskBanner();renderCaseSummary();renderOrLive();toast('Anesthetic risk review saved • checklist marked Done');
++}
++function riskAssessmentReportHtml(){
++  const none=!!state.preopRiskNone,flags=PREOP_RISK_FLAGS.filter(r=>!!state[r.id]);
++  const groups={};flags.forEach(r=>(groups[r.group]??=[]).push(r.label));
++  const groupHtml=Object.entries(groups).map(([g,items])=>`<div class="report-risk-group"><span>${escapeHtml(g)}</span><b>${escapeHtml(items.join(' • '))}</b></div>`).join('');
++  const boasDetails=[['Stertor / snoring',state.riskBOASStertor],['Stridor / inspiratory noise',state.riskBOASStridor],['Exercise / heat intolerance',state.riskBOASExerciseHeat],['Sleep-disordered breathing / collapse history',state.riskBOASSleep],['Regurgitation / reflux history',state.riskBOASRegurg],['Previous airway surgery',state.riskBOASAirwaySurgery],['Previous difficult intubation / airway recovery event',state.riskBOASPreviousDifficultIntubation]].filter(x=>x[1]).map(x=>x[0]);
++  const other=String(state.riskOther||'').trim(),boasNote=String(state.riskBOASNotes||'').trim();
++  return `<div class="report-risk-assessment"><h4>Anesthetic Risk Flags</h4>${none?'<div class="report-risk-none">☑ No additional structured risk flags identified</div>':(groupHtml||'<div class="report-risk-none">Not formally reviewed</div>')}${boasDetails.length?`<div class="report-risk-note"><b>Brachycephalic / BOAS details:</b> ${escapeHtml(boasDetails.join(' • '))}${boasNote?` • ${escapeHtml(boasNote)}`:''}</div>`:(boasNote?`<div class="report-risk-note"><b>Airway / BOAS note:</b> ${escapeHtml(boasNote)}</div>`:'')}${other?`<div class="report-risk-note"><b>Other risk:</b> ${escapeHtml(other)}</div>`:''}<div class="report-risk-meta">Reviewed by ${escapeHtml(state.preopRiskRecordedBy||state.preopRiskAssessor||'—')} • ${state.preopRiskRecordedAt?`${escapeHtml(formatDate(state.preopRiskRecordedAt))} ${escapeHtml(formatClock(state.preopRiskRecordedAt))}`:'Not formally recorded'}</div></div>`;
++}
+ function renderPreop(){
+   const checks=$$('.preop-check'),total=checks.length;
+   const done=checks.filter(x=>x.checked).length,na=$$('.preop-item.na').length,reviewed=done+na;
+   if($('preopProgress')){$('preopProgress').textContent=`${reviewed}/${total} REVIEWED`;$('preopProgress').className=`status-pill ${reviewed===total?'good':'warn'}`;}
+   if($('preopWarning'))$('preopWarning').textContent=reviewed===total?'Pre-anesthetic checklist reviewed':'ยังมีรายการที่ต้องเลือก Done หรือ N/A';
+-  renderPreopExam();save();
++  renderPreopExam();renderPreopRisk();save();
+ }
+ $$('.preop-check').forEach(el=>el.addEventListener('change',()=>{
+   if(el.checked)el.closest('.preop-item')?.classList.remove('na');
+@@ -1393,7 +1463,8 @@
+   if($('patientAllergies')?.value.trim())riskParts.push(`Allergy: ${$('patientAllergies').value.trim()}`);
+   if($('patientComorbidities')?.value.trim())riskParts.push(`Disease: ${$('patientComorbidities').value.trim()}`);
+   if($('patientPrecautions')?.value.trim())riskParts.push(`Caution: ${$('patientPrecautions').value.trim()}`);
+-  if($('orRiskLine')){$('orRiskLine').hidden=!riskParts.length;$('orRiskLine').textContent=riskParts.length?'⚠ '+riskParts.join(' • '):'';}
++  const structuredRisks=preopRiskSummaryLabels({compact:true});if(structuredRisks.length)riskParts.push(`Risk flags: ${structuredRisks.join(', ')}`);
++  if($('orRiskLine')){const airwayRisk=!!($('riskBrachycephalic')?.checked||$('riskBOAS')?.checked||$('riskDifficultAirway')?.checked||$('riskUpperAirway')?.checked||$('riskAspiration')?.checked);$('orRiskLine').hidden=!riskParts.length;$('orRiskLine').classList.toggle('airway-risk',airwayRisk);$('orRiskLine').textContent=riskParts.length?`${airwayRisk?'⚠ AIRWAY RISK • ':'⚠ '}${riskParts.join(' • ')}`:'';}
+   if($('orStickyPhase'))$('orStickyPhase').textContent=phaseLabel();if($('orStickyClock'))$('orStickyClock').textContent=formatElapsed(currentElapsed());
+     $('orPhaseBadge').textContent=phaseLabel();
+   $('orPhaseBadge').className=`status-pill phase ${phaseClass()}`;
+@@ -1560,6 +1631,7 @@
+   if($('patientAllergies')?.value.trim())risks.push(`ALLERGY: ${$('patientAllergies').value.trim()}`);
+   if($('patientComorbidities')?.value.trim())risks.push(`DISEASE: ${$('patientComorbidities').value.trim()}`);
+   if($('patientPrecautions')?.value.trim())risks.push(`CAUTION: ${$('patientPrecautions').value.trim()}`);
++  const structuredRisks=preopRiskSummaryLabels({compact:true});if(structuredRisks.length)risks.push(`RISK FLAGS: ${structuredRisks.join(', ')}`);
+   $('summaryRiskBox').hidden=!risks.length;
+   $('summaryRiskText').textContent=risks.join(' • ')||'—';
+ }
+@@ -2713,13 +2785,13 @@
+ 
+   
+   const preopLabels={
+-    consent:'Consent / owner discussion',fasting:'Fasting / aspiration risk reviewed',exam:'Pre-anesthetic physical exam',
++    consent:'Consent / owner discussion',fasting:'Fasting / aspiration risk reviewed',exam:'Pre-anesthetic physical exam',risk:'Anesthetic risk flags reviewed',
+     labs:'Lab / imaging reviewed',iv:'IV catheter patent',oxygen:'O₂ source + backup checked',
+     machine:'Anesthesia machine leak check',vaporizer:'Vaporizer / agent checked',absorber:'CO₂ absorbent checked',
+     airway:'Airway equipment ready',suction:'Suction available',monitor:'Monitor attached / functional',
+     warming:'Active warming ready',emergency:'Emergency drugs / crash plan ready'
+   };
+-  $('reportPreop').innerHTML=preopExamReportHtml()+`<div class="report-preop-grid">${Object.entries(preopLabels).map(([k,label])=>{const mark=(state.preopChecks||{})[k]?'☑':(state.preopNA||{})[k]?'N/A':'☐';return `<div class="report-preop-item"><span class="mark">${mark}</span><span>${escapeHtml(label)}</span></div>`}).join('')}</div>`;
++  $('reportPreop').innerHTML=preopExamReportHtml()+riskAssessmentReportHtml()+`<div class="report-preop-grid">${Object.entries(preopLabels).map(([k,label])=>{const mark=(state.preopChecks||{})[k]?'☑':(state.preopNA||{})[k]?'N/A':'☐';return `<div class="report-preop-item"><span class="mark">${mark}</span><span>${escapeHtml(label)}</span></div>`}).join('')}</div>`;
+ 
+   $('reportPlanGrid').innerHTML=[reportInfoItem('Premedication',$('planPremed').value||'—'),reportInfoItem('Induction',$('planInduction').value||'—'),reportInfoItem('Maintenance',$('planMaintenance').value||'—'),reportInfoItem('Analgesia',$('planAnalgesia').value||'—'),reportInfoItem('Antibiotic',$('planAntibiotic').value||'—'),reportInfoItem('NSAID',$('planNSAID').value||'—'),reportInfoItem('Block',$('planBlock').value||'—'),reportInfoItem('Plan note',$('planNote').value||'—')].join('');const fmReport=getFluidMetrics(),bw=fmReport.w;
+   $('reportBalanceGrid').innerHTML=[
+@@ -2869,7 +2941,7 @@
+ 
+ async function backupAllData(){
+   save();await initArchiveDb();await initPatientMaster();
+-  const payload={format:'ANESVET_BACKUP',version:'14.8.1',exportedAt:Date.now(),current:state,archive:getArchive(),patients:getPatients(),breedAliases:loadBreedAliases(),settings:(()=>{try{return JSON.parse(localStorage.getItem(SETTINGS_KEY)||'null')}catch(e){return null}})(),drugLibrary:loadDrugLibraryData(),quickPresets:loadQuickPresets(),protocolAudit:getProtocolAudit()};
++  const payload={format:'ANESVET_BACKUP',version:'14.8.2',exportedAt:Date.now(),current:state,archive:getArchive(),patients:getPatients(),breedAliases:loadBreedAliases(),settings:(()=>{try{return JSON.parse(localStorage.getItem(SETTINGS_KEY)||'null')}catch(e){return null}})(),drugLibrary:loadDrugLibraryData(),quickPresets:loadQuickPresets(),protocolAudit:getProtocolAudit()};
+   downloadBlob(JSON.stringify(payload,null,2),'application/json',`ANESVET_BACKUP_${formatDate(Date.now())}.json`);
+   const backupEpoch=Date.now();localStorage.setItem(LAST_BACKUP_KEY,String(backupEpoch));
+   if($('backupStatus'))$('backupStatus').textContent=`Backup created ${formatClock(backupEpoch)} • ${payload.archive.length} cases • ${payload.patients.length} patients`;
+@@ -3010,7 +3082,7 @@
+   let path=here.pathname;
+   if(!path.endsWith('/')) path=path.replace(/\/[^/]*$/,'/');
+   const url=new URL(path, here.origin);
+-  url.searchParams.set('v','14.8.1');
++  url.searchParams.set('v','14.8.2');
+   return url.href;
+ }
+ function restartAtAppRoot(){
+@@ -3380,14 +3452,14 @@
+     timer:{running:false,startedEpoch:null,elapsedMs:0},
+     records:[],events:[],responses:[],corrections:[],complications:[],drugAdministrations:[],alertEpisodes:[],recoveryScores:[],recoveryRecords:[],fluidRateHistory:[],
+     alertProtocolOverride:null,alertProtocolHistory:[],recoveryHandoffs:[],inductionDocumentationMode:'',inductionMedicationReviewCompletedAt:null,
+-    recoveryChecks:[false,false,false,false,false,false],recoveryNA:[false,false,false,false,false,false],recoveryObservationNA:{spo2:false,temp:false,extubation:false},preopChecks:{},preopNA:{},preopExamRecordedAt:null,preopExamRecordedBy:'',
++    recoveryChecks:[false,false,false,false,false,false],recoveryNA:[false,false,false,false,false,false],recoveryObservationNA:{spo2:false,temp:false,extubation:false},preopChecks:{},preopNA:{},preopExamRecordedAt:null,preopExamRecordedBy:'',preopRiskRecordedAt:null,preopRiskRecordedBy:'',
+     patientSaved:false,patientMasterId:'',caseWorkflowProfile:'routine',
+     patientName:'',hospitalId:'',visitId:'',species:'',sex:'',reproductiveStatus:'',microchip:'',breed:'',
+     weight:'',age:'',birthDate:'',birthDateEstimated:false,ageSource:'',estimatedBirthPeriod:'',
+     approxAgeYears:'',approxAgeMonths:'',approxAgeWeeks:'',bcs:'',asa:'',emergency:false,
+     patientProcedure:'',procedure:'',patientAllergies:'',patientComorbidities:'',patientPrecautions:'',
+     surgeon:'',anesthetist:'',surgicalAssistant:'',
+-    preopMentation:'',preopHR:'',preopPulse:'',preopHeart:'',preopRR:'',preopRespEffort:'',preopLungs:'',preopTemp:'',preopMM:'',preopCRT:'',preopHydration:'',preopPain:'',preopExamNotes:'',preopExaminer:'',
++    preopMentation:'',preopHR:'',preopPulse:'',preopHeart:'',preopRR:'',preopRespEffort:'',preopLungs:'',preopTemp:'',preopMM:'',preopCRT:'',preopHydration:'',preopPain:'',preopExamNotes:'',preopExaminer:'',preopRiskNone:false,riskBrachycephalic:false,riskBOAS:false,riskDifficultAirway:false,riskUpperAirway:false,riskAspiration:false,riskCardiacDisease:false,riskArrhythmia:false,riskRespiratoryDisease:false,riskHypovolemia:false,riskAnemiaBleeding:false,riskRenal:false,riskHepatic:false,riskMetabolicElectrolyte:false,riskHypoglycemia:false,riskPediatric:false,riskGeriatric:false,riskObesity:false,riskPregnancy:false,riskPreviousAnesthetic:false,riskEmergency:false,riskMajorHemorrhage:false,riskBOASStertor:false,riskBOASStridor:false,riskBOASExerciseHeat:false,riskBOASSleep:false,riskBOASRegurg:false,riskBOASAirwaySurgery:false,riskBOASPreviousDifficultIntubation:false,riskBOASNotes:'',riskOther:'',preopRiskAssessor:'',
+     hr:'',rr:'',sap:'',map:'',dap:'',spo2:'',etco2:'',temp:'',vaporizer:'',o2flow:'',
+     fluidRateInput:'',fluidTotal:'',depth:'',ventilation:'',
+     bradyPoorPerf:false,bloodLoss:false,cardiacRisk:false,respRisk:false,recordNote:'',
+@@ -3445,6 +3517,10 @@
+ 
+ PREOP_EXAM_FIELD_IDS.forEach(id=>{const el=$(id);if(!el)return;el.addEventListener(el.tagName==='SELECT'?'change':'input',markPreopExamDirty)});
+ $('savePreopExamBtn')?.addEventListener('click',savePreopPhysicalExam);
++const PREOP_RISK_FIELD_IDS=[...PREOP_RISK_FLAGS.map(r=>r.id),...BOAS_DETAIL_IDS,'riskBOASNotes','riskOther','preopRiskAssessor'];
++PREOP_RISK_FIELD_IDS.forEach(id=>{const el=$(id);if(!el)return;el.addEventListener(el.type==='checkbox'||el.tagName==='SELECT'?'change':'input',()=>{if(id!=='preopRiskAssessor'&&$('preopRiskNone')?.checked)$('preopRiskNone').checked=false;markPreopRiskDirty();renderPatientRiskBanner();renderCaseSummary()})});
++$('preopRiskNone')?.addEventListener('change',()=>{if($('preopRiskNone').checked){PREOP_RISK_FLAGS.forEach(r=>{if($(r.id))$(r.id).checked=false});BOAS_DETAIL_IDS.forEach(id=>{if($(id))$(id).checked=false});if($('riskBOASNotes'))$('riskBOASNotes').value='';if($('riskOther'))$('riskOther').value=''}markPreopRiskDirty();renderPatientRiskBanner();renderCaseSummary()});
++$('savePreopRiskBtn')?.addEventListener('click',savePreopRiskAssessment);
+ 
+ dataFields.forEach(id=>{
+   const el=$(id);if(!el)return;
+@@ -3472,7 +3548,7 @@
+ $('updateLaterBtn')?.addEventListener('click',()=>{if($('updateBanner'))$('updateBanner').hidden=true});
+ window.addEventListener('load',setupServiceWorkerUpdates);
+ 
+-// V14.8.1 workflow integration; adaptive case profiles on top of deferred medication + compact handoff.
++// V14.8.2 workflow integration; adaptive case profiles on top of deferred medication + compact handoff.
+ const WF=globalThis.AnesvetWorkflow;
+ const ALERT_KEYS={map:'hypotension',spo2:'hypoxemia',etco2:'ventilation',temp:'hypothermia'};
+ let alertProtocolEditScope='hospital',pendingProblem=null,orQuickOptions=[],orQuickBasis=null,orQuickContext=null;
+@@ -3707,7 +3783,7 @@
+ // dashboard remains a supported legacy route under Advanced.
+ const initialTab=state.patientSaved?(state.casePhase==='complete'?'endcase':state.casePhase==='recovery'?'recovery':((state.timer.running||(state.timer.elapsedMs||0)>0)?'orlive':storedTab)):'patient';
+ setTab(initialTab);
+-if(sessionMode==='active')writeSessionLock();renderPatientRiskBanner();renderSessionMode();renderAirwayPanel();renderFavoriteDrugButtons();renderQuickPresetSettings();renderQuickPresetSummary();renderOrFluidPanel();renderCaseSummary();renderCasePhase();renderOrPhaseTracker();renderRecoveryRecords();renderWorkflowLocks();renderAlertFeedbackState();renderProtocolGovernance();renderStorageStatus();renderFinalSignoff();renderBackupHealth();renderLinkedPatient();renderPatientMaster();
++if(sessionMode==='active')writeSessionLock();renderPatientRiskBanner();renderPreopRisk();renderSessionMode();renderAirwayPanel();renderFavoriteDrugButtons();renderQuickPresetSettings();renderQuickPresetSummary();renderOrFluidPanel();renderCaseSummary();renderCasePhase();renderOrPhaseTracker();renderRecoveryRecords();renderWorkflowLocks();renderAlertFeedbackState();renderProtocolGovernance();renderStorageStatus();renderFinalSignoff();renderBackupHealth();renderLinkedPatient();renderPatientMaster();
+ updateDashboard();renderPreop();renderPreopExam();renderRecords();renderCorrections();renderEvents();renderComplications();renderDrugAdministrationAudit();renderTrends();renderProcedureTimeline();renderRecovery();renderRecoveryState();renderRecoveryScores();renderArchives();updateDue();renderTimerState();updateDoseSpotlights();renderEndCase();renderOrLive();renderSaveState();
+ if(state.timer.running && state.timer.startedEpoch && sessionMode==='active') startTimerLoop();
+ })();
+--- /mnt/data/anesvet_v1482_before/index.html	2026-09-22 15:23:54.000000000 +0000
++++ index.html	2026-09-22 15:43:28.378845980 +0000
+@@ -4,12 +4,12 @@
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+   <meta name="theme-color" content="#0d5265">
+-  <meta name="description" content="ANESVET V14.8.1 — Adaptive Clinical Workflow">
++  <meta name="description" content="ANESVET V14.8.2 — Adaptive Clinical Workflow">
+   <link rel="manifest" href="./manifest.webmanifest">
+   <link rel="icon" href="./icon-192.png">
+   <link rel="apple-touch-icon" href="./icon-192.png">
+-  <link rel="stylesheet" href="./style.css?v=14.8.1">
+-  <title>ANESVET V14.8.1</title>
++  <link rel="stylesheet" href="./style.css?v=14.8.2">
++  <title>ANESVET V14.8.2</title>
+ </head>
+ <body>
+ <header class="topbar">
+@@ -17,7 +17,7 @@
+     <img class="brand-logo" src="./icon-192.png" alt="ANESVET logo">
+     <div>
+       <div class="eyebrow">GENOVI PET CARE • DIGITAL ANESTHESIA RECORD</div>
+-      <h1>ANESVET <span>V14.8.1</span></h1>
++      <h1>ANESVET <span>V14.8.2</span></h1>
+     </div>
+   </div>
+   <div class="top-actions">
+@@ -81,7 +81,8 @@
+       <b>Patient-specific cautions</b>
+       <div id="patientRiskText">—</div>
+     </div>
+-    <button id="editRiskBtn" class="btn">แก้ไข</button>
++    <button id="editRiskBtn" class="btn">ข้อมูลผู้ป่วย</button>
++    <button id="reviewAnestheticRiskBtn" class="btn">Risk flags</button>
+   </section>
+ 
+   <nav class="tabs workflow-tabs" aria-label="ขั้นตอนการวางยาสลบ">
+@@ -708,7 +709,7 @@
+           <h2>Pre-anesthetic checklist</h2>
+           <p>ทบทวนแต่ละรายการเป็น Done หรือ N/A ก่อนเริ่มเคส</p>
+         </div>
+-        <span id="preopProgress" class="status-pill warn">0/14 REVIEWED</span>
++        <span id="preopProgress" class="status-pill warn">0/15 REVIEWED</span>
+       </div>
+ 
+       <section class="preop-exam-panel" aria-labelledby="preopExamHeading">
+@@ -829,6 +830,70 @@
+         </div>
+       </section>
+ 
++      <section class="preop-risk-panel" aria-labelledby="preopRiskHeading">
++        <div class="section-heading compact">
++          <div>
++            <h3 id="preopRiskHeading">⚠ Anesthetic Risk Flags</h3>
++            <p>ระบุความเสี่ยงเฉพาะตัวที่อาจเปลี่ยนแผนการวางยา การเตรียมอุปกรณ์ หรือ recovery • เป็น documentation aid ไม่ได้วินิจฉัยโรคหรือกำหนด ASA อัตโนมัติ</p>
++          </div>
++          <div class="risk-heading-badges"><span id="preopRiskCount" class="status-pill">0 FLAGS</span><span id="preopRiskStatus" class="status-pill warn">NOT REVIEWED</span></div>
++        </div>
++
++        <label class="risk-none-line"><input id="preopRiskNone" type="checkbox"> <span><b>No additional risk flags identified</b><small>เลือกเมื่อทบทวนแล้วและไม่มี structured risk เพิ่มเติมจากข้อมูลผู้ป่วย/ASA</small></span></label>
++
++        <div class="risk-groups">
++          <div class="risk-group"><h4>Airway / aspiration</h4><div class="risk-chip-grid">
++            <label><input id="riskBrachycephalic" type="checkbox"><span>Brachycephalic anatomy</span></label>
++            <label><input id="riskBOAS" type="checkbox"><span>Suspected / known BOAS</span></label>
++            <label><input id="riskDifficultAirway" type="checkbox"><span>Previous / anticipated difficult airway</span></label>
++            <label><input id="riskUpperAirway" type="checkbox"><span>Other upper-airway disease / obstruction risk</span></label>
++            <label><input id="riskAspiration" type="checkbox"><span>Aspiration / regurgitation / full-stomach risk</span></label>
++          </div></div>
++          <div class="risk-group"><h4>Cardiorespiratory</h4><div class="risk-chip-grid">
++            <label><input id="riskCardiacDisease" type="checkbox"><span>Cardiac disease</span></label>
++            <label><input id="riskArrhythmia" type="checkbox"><span>Clinically relevant arrhythmia</span></label>
++            <label><input id="riskRespiratoryDisease" type="checkbox"><span>Respiratory disease / low reserve</span></label>
++          </div></div>
++          <div class="risk-group"><h4>Perfusion / organ / metabolic</h4><div class="risk-chip-grid">
++            <label><input id="riskHypovolemia" type="checkbox"><span>Dehydration / hypovolemia / poor perfusion</span></label>
++            <label><input id="riskAnemiaBleeding" type="checkbox"><span>Anemia / coagulopathy / bleeding concern</span></label>
++            <label><input id="riskRenal" type="checkbox"><span>Renal disease / urine-output concern</span></label>
++            <label><input id="riskHepatic" type="checkbox"><span>Hepatic disease</span></label>
++            <label><input id="riskMetabolicElectrolyte" type="checkbox"><span>Electrolyte / acid-base / metabolic abnormality</span></label>
++            <label><input id="riskHypoglycemia" type="checkbox"><span>Hypoglycemia risk</span></label>
++          </div></div>
++          <div class="risk-group"><h4>Patient / history / procedure</h4><div class="risk-chip-grid">
++            <label><input id="riskPediatric" type="checkbox"><span>Pediatric / neonatal</span></label>
++            <label><input id="riskGeriatric" type="checkbox"><span>Geriatric / reduced reserve</span></label>
++            <label><input id="riskObesity" type="checkbox"><span>Obesity / body-condition concern</span></label>
++            <label><input id="riskPregnancy" type="checkbox"><span>Pregnancy / peripartum</span></label>
++            <label><input id="riskPreviousAnesthetic" type="checkbox"><span>Previous anesthetic / recovery adverse event</span></label>
++            <label><input id="riskEmergency" type="checkbox"><span>Emergency / unstable / critical context</span></label>
++            <label><input id="riskMajorHemorrhage" type="checkbox"><span>Major hemorrhage / transfusion risk</span></label>
++          </div></div>
++        </div>
++
++        <div id="boasRiskDetail" class="boas-risk-detail" hidden>
++          <div><b>Brachycephalic / BOAS details</b><small>ใช้บันทึกข้อมูลที่ตรวจพบหรือมีประวัติ ไม่ใช้แทนการวินิจฉัย BOAS</small></div>
++          <div class="risk-chip-grid compact">
++            <label><input id="riskBOASStertor" type="checkbox"><span>Stertor / snoring</span></label>
++            <label><input id="riskBOASStridor" type="checkbox"><span>Stridor / inspiratory noise</span></label>
++            <label><input id="riskBOASExerciseHeat" type="checkbox"><span>Exercise / heat intolerance</span></label>
++            <label><input id="riskBOASSleep" type="checkbox"><span>Sleep-disordered breathing / collapse history</span></label>
++            <label><input id="riskBOASRegurg" type="checkbox"><span>Regurgitation / reflux history</span></label>
++            <label><input id="riskBOASAirwaySurgery" type="checkbox"><span>Previous airway surgery</span></label>
++            <label><input id="riskBOASPreviousDifficultIntubation" type="checkbox"><span>Prior difficult intubation / airway recovery event</span></label>
++          </div>
++          <label>Airway / BOAS note<textarea id="riskBOASNotes" rows="2" placeholder="เช่น noisy breathing at rest, previous extubation obstruction, ETT difficulty หรือข้อสังเกตอื่น"></textarea></label>
++        </div>
++
++        <div class="risk-footer-grid">
++          <label>Other risk / relevant note<textarea id="riskOther" rows="2" placeholder="ความเสี่ยงอื่นที่ไม่มีในรายการ"></textarea></label>
++          <label>Reviewed by<input id="preopRiskAssessor" type="text" placeholder="Veterinarian / anesthetist"></label>
++          <div class="preop-risk-action"><button id="savePreopRiskBtn" type="button" class="btn primary">Save risk review & mark checklist Done</button><small id="preopRiskSavedMeta">ยังไม่ได้ทบทวน Anesthetic Risk Flags</small></div>
++        </div>
++      </section>
++
+       <div class="checklist-grid">
+         <div class="preop-item" data-preop-key="consent">
+           <label class="preop-main"><input class="preop-check" type="checkbox" data-key="consent"><span><b>Consent / owner discussion</b><small>มีใบยินยอมและอธิบายความเสี่ยงแล้ว</small></span></label>
+@@ -842,6 +907,9 @@
+           <label class="preop-main"><input class="preop-check" type="checkbox" data-key="exam"><span><b>Pre-anesthetic physical exam</b><small>HR/RR, pulse, MM/CRT, hydration, temperature, pain</small></span></label>
+           <button type="button" class="preop-na-btn" data-key="exam">N/A</button>
+         </div>
++        <div class="preop-item" data-preop-key="risk">
++          <label class="preop-main"><input class="preop-check" type="checkbox" data-key="risk"><span><b>Anesthetic risk flags reviewed</b><small>Airway/BOAS, cardiorespiratory, organ/metabolic, patient and procedure-specific risks</small></span></label>
++        </div>
+         <div class="preop-item" data-preop-key="labs">
+           <label class="preop-main"><input class="preop-check" type="checkbox" data-key="labs"><span><b>Lab / imaging reviewed</b><small>ผลตรวจที่จำเป็นเหมาะกับ ASA และ procedure</small></span></label>
+           <button type="button" class="preop-na-btn" data-key="labs">N/A</button>
+@@ -2168,7 +2236,7 @@
+ </dialog>
+ 
+ <div id="toast" class="toast" role="status" aria-live="polite"></div>
+-<script src="./clinical-workflow.js?v=14.8.1"></script>
+-<script src="./app.js?v=14.8.1"></script>
++<script src="./clinical-workflow.js?v=14.8.2"></script>
++<script src="./app.js?v=14.8.2"></script>
+ </body>
+ </html>
+--- /mnt/data/anesvet_v1482_before/style.css	2026-09-22 15:22:08.000000000 +0000
++++ style.css	2026-09-22 15:41:52.430687088 +0000
+@@ -749,3 +749,13 @@
+ @media(max-width:920px){.preop-exam-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+ @media(max-width:520px){.preop-exam-grid{grid-template-columns:1fr}.preop-exam-grid .span2{grid-column:span 1}.preop-exam-action .btn{width:100%}}
+ @media print{.report-physical-exam-grid{grid-template-columns:repeat(3,1fr)}.report-physical-exam{break-inside:avoid;page-break-inside:avoid}}
++\n\n/* V14.8.2 — structured anesthetic risk flags */
++.preop-risk-panel{margin-top:14px;border:1px solid #e6c98d;border-radius:14px;background:linear-gradient(180deg,#fffdf8,#fff9ed);padding:14px}
++.preop-risk-panel.risk-saved{border-color:#a9cfb9;background:linear-gradient(180deg,#fbfffd,#f4fbf7)}
++.risk-heading-badges{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}.risk-none-line{display:flex;align-items:flex-start;gap:10px;margin-top:10px;padding:10px 12px;border:1px solid #dcc99d;border-radius:11px;background:#fff}.risk-none-line input{width:19px;height:19px;accent-color:var(--primary2);margin-top:1px}.risk-none-line span{display:block}.risk-none-line b{display:block;font-size:.82rem}.risk-none-line small{display:block;color:var(--muted);margin-top:2px;line-height:1.35}
++.risk-groups{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:10px}.risk-group{border:1px solid #eadbb9;border-radius:11px;background:rgba(255,255,255,.82);padding:10px}.risk-group h4{margin:0 0 8px;font-size:.77rem;color:#6a4f1e;text-transform:uppercase;letter-spacing:.03em}.risk-chip-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.risk-chip-grid label{display:flex;align-items:flex-start;gap:7px;padding:8px;border:1px solid #d9e1e4;border-radius:9px;background:#fff;font-size:.75rem;font-weight:750;line-height:1.28;cursor:pointer}.risk-chip-grid label:has(input:checked){border-color:#d09b3a;background:#fff5de;color:#5d4215}.risk-chip-grid input{width:17px;height:17px;flex:0 0 auto;accent-color:#b7770d;margin-top:0}.boas-risk-detail{margin-top:10px;border:1px solid #d4b16e;border-radius:11px;background:#fff7e7;padding:11px}.boas-risk-detail>div:first-child{margin-bottom:8px}.boas-risk-detail b{display:block;color:#624817}.boas-risk-detail small{display:block;color:#786846;margin-top:2px}.boas-risk-detail label:not(.risk-chip-grid label){display:flex;flex-direction:column;gap:5px;margin-top:9px;font-size:.76rem;font-weight:850;color:#5f4a20}.boas-risk-detail textarea,.risk-footer-grid textarea,.risk-footer-grid input{width:100%;box-sizing:border-box;border:1px solid #d5dadd;border-radius:9px;background:#fff;padding:9px 10px;font:inherit;color:#173943}.risk-footer-grid{display:grid;grid-template-columns:2fr 1fr 1.3fr;gap:10px;margin-top:10px;align-items:end}.risk-footer-grid>label{display:flex;flex-direction:column;gap:5px;font-size:.76rem;font-weight:850;color:#5f4a20}.preop-risk-action{display:flex;flex-direction:column;gap:6px}.preop-risk-action .btn{min-height:42px}.preop-risk-action small{color:var(--muted);line-height:1.3}
++.report-risk-assessment{margin:7px 0;padding:7px;border:1px solid #d8c49a;border-radius:6px;background:#fffdf7}.report-risk-assessment h4{font-size:9px;margin:0 0 5px}.report-risk-group{display:grid;grid-template-columns:85px 1fr;gap:6px;font-size:8px;padding:2px 0}.report-risk-group span{color:#666}.report-risk-none,.report-risk-note,.report-risk-meta{font-size:8px;line-height:1.35}.report-risk-note{margin-top:4px}.report-risk-meta{margin-top:4px;color:#666}
++@media(max-width:920px){.risk-groups{grid-template-columns:1fr}.risk-footer-grid{grid-template-columns:1fr 1fr}.preop-risk-action{grid-column:1/-1}.preop-risk-action .btn{width:100%}}
++@media(max-width:560px){.risk-chip-grid{grid-template-columns:1fr}.risk-footer-grid{grid-template-columns:1fr}.risk-heading-badges{justify-content:flex-start}}
++
++.or-risk-line.airway-risk{border:1px solid rgba(255,208,119,.5);background:rgba(128,65,0,.30);font-weight:900}
+--- /mnt/data/anesvet_v1482_before/service-worker.js	2026-09-22 15:23:54.000000000 +0000
++++ service-worker.js	2026-09-22 15:41:52.430156469 +0000
+@@ -1,5 +1,5 @@
+-const CACHE='anesvet-v14-8-1-adaptive-workflow';
+-const ASSETS=['./','./index.html','./style.css?v=14.8.1','./clinical-workflow.js?v=14.8.1','./app.js?v=14.8.1','./manifest.webmanifest','./icon-192.png','./icon-512.png','./icon-maskable-512.png'];
++const CACHE='anesvet-v14-8-2-anesthetic-risk-flags';
++const ASSETS=['./','./index.html','./style.css?v=14.8.2','./clinical-workflow.js?v=14.8.2','./app.js?v=14.8.2','./manifest.webmanifest','./icon-192.png','./icon-512.png','./icon-maskable-512.png'];
+ self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)))});
+ self.addEventListener('message',e=>{if(e.data?.type==='SKIP_WAITING')self.skipWaiting()});
+ self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))));self.clients.claim()});
+--- /mnt/data/anesvet_v1482_before/manifest.webmanifest	2026-09-22 15:23:54.000000000 +0000
++++ manifest.webmanifest	2026-09-22 15:41:52.428815992 +0000
+@@ -1,8 +1,8 @@
+ {
+-  "name": "ANESVET V14.8.1 — Adaptive Clinical Workflow",
++  "name": "ANESVET V14.8.2 — Anesthetic Risk Flags",
+   "short_name": "ANESVET",
+   "description": "Adaptive OR LIVE with Routine, Critical and C-section workflow profiles, contextual milestones, Quick Drug and recovery handoff",
+-  "start_url": "./?v=14.8.1",
++  "start_url": "./?v=14.8.2",
+   "scope": "./",
+   "display": "standalone",
+   "background_color": "#f3f7f8",
+--- /mnt/data/anesvet_v1482_before/package.json	2026-09-22 15:23:54.000000000 +0000
++++ package.json	2026-09-22 15:41:52.431358869 +0000
+@@ -1,14 +1,14 @@
+ {
+-  "name": "anesvet-v14-8-1",
+-  "version": "14.8.1",
++  "name": "anesvet-v14-8-2",
++  "version": "14.8.2",
+   "private": true,
+-  "description": "ANESVET V14.8.1 adaptive clinical workflow; runtime requires no build",
++  "description": "ANESVET V14.8.2 anesthetic risk flags + adaptive clinical workflow; runtime requires no build",
+   "engines": {
+     "node": ">=22"
+   },
+   "scripts": {
+     "test:syntax": "node tests/syntax.mjs",
+-    "test:regression": "node tests/regression.mjs && node tests/ux_v1472_static.mjs && node tests/ux_v148_static.mjs",
++    "test:regression": "node tests/regression.mjs && node tests/ux_v1472_static.mjs && node tests/ux_v148_static.mjs && node tests/risk_flags_v1482.mjs",
+     "test:workflow": "node tests/workflow_scenarios.mjs && node tests/clinical_workflow.mjs && node tests/dom_workflow.mjs && node tests/adaptive_workflow_v148.mjs && node tests/compatibility.mjs && node tests/governance.mjs && node tests/final_lock.mjs",
+     "test": "npm run test:syntax && npm run test:regression && npm run test:workflow",
+     "test:browser": "node tests/e2e_browser.mjs"
+--- /mnt/data/anesvet_v1482_before/package-lock.json	2026-09-22 15:23:54.000000000 +0000
++++ package-lock.json	2026-09-22 15:41:52.429395223 +0000
+@@ -1,12 +1,12 @@
+ {
+-  "name": "anesvet-v14-8-1",
+-  "version": "14.8.1",
++  "name": "anesvet-v14-8-2",
++  "version": "14.8.2",
+   "lockfileVersion": 3,
+   "requires": true,
+   "packages": {
+     "": {
+-      "name": "anesvet-v14-8-1",
+-      "version": "14.8.1",
++      "name": "anesvet-v14-8-2",
++      "version": "14.8.2",
+       "devDependencies": {
+         "fake-indexeddb": "6.2.5",
+         "jsdom": "30.1.0",
+--- /mnt/data/anesvet_v1482_before/tests/regression.mjs	2026-09-22 15:24:10.000000000 +0000
++++ tests/regression.mjs	2026-09-22 15:41:52.430939638 +0000
+@@ -13,8 +13,8 @@
+ const must=(cond,msg)=>assert.ok(cond,msg);
+ 
+ // Core version / structure
+-must(manifest.name.includes('V14.8.1'),'manifest should be V14.8.1');
+-must(sw.includes('v14-8-1'),'service worker cache should identify V14.8.1');
++must(manifest.name.includes('V14.8.2'),'manifest should be V14.8.2');
++must(sw.includes('v14-8-2'),'service worker cache should identify V14.8.2');
+ must(count(app,/function\s+phaseLabel\s*\(/g)===1,'phaseLabel must be declared once');
+ const fnNames=[...app.matchAll(/\bfunction\s+([A-Za-z_$][\w$]*)\s*\(/g)].map(m=>m[1]);
+ const dupFns=[...new Set(fnNames.filter((n,i)=>fnNames.indexOf(n)!==i))];
+@@ -41,6 +41,19 @@
+ must(app.includes('function markPreopExamDirty')&&app.includes("state.preopExamRecordedAt=null"),'editing a recorded physical exam must invalidate its recorded timestamp');
+ must(app.includes('preopExamReportHtml()')&&css.includes('.report-physical-exam-grid'),'physical exam must be included in printable report');
+ 
++
++// V14.8.2 structured anesthetic risk flags
++for(const id of ['preopRiskNone','riskBrachycephalic','riskBOAS','riskDifficultAirway','riskAspiration','riskCardiacDisease','riskRespiratoryDisease','riskHypovolemia','riskAnemiaBleeding','riskRenal','riskHepatic','riskMetabolicElectrolyte','riskPediatric','riskGeriatric','riskObesity','riskPregnancy','riskPreviousAnesthetic','riskEmergency','riskMajorHemorrhage','riskBOASNotes','riskOther','preopRiskAssessor','savePreopRiskBtn','preopRiskStatus'])must(ids.includes(id),'anesthetic risk UI missing '+id);
++must(app.includes('const PREOP_RISK_FLAGS=')&&app.includes('function savePreopRiskAssessment'),'structured risk registry/save path missing');
++must(app.includes("PREANESTHETIC_RISK_REVIEW_RECORDED"),'risk assessment audit event missing');
++must(app.includes("state.preopRiskRecordedAt=Date.now()")&&app.includes("data-preop-key=\"risk\""),'risk review must timestamp and mark checklist done');
++must(app.includes('function riskAssessmentReportHtml')&&app.includes('riskAssessmentReportHtml()+'),'risk assessment must be included in PDF report');
++must(app.includes("$('riskBrachycephalic')?.checked||$('riskBOAS')?.checked")&&html.includes('id="boasRiskDetail"'),'BOAS detail panel must be contextual');
++must(app.includes("Risk flags: ${structuredRisks.join(', ')}")&&css.includes('.or-risk-line.airway-risk'),'structured risk flags must surface in OR LIVE');
++const riskSaveBody=app.slice(app.indexOf('function savePreopRiskAssessment'),app.indexOf('function riskAssessmentReportHtml'));
++must(!riskSaveBody.includes("$('asa').value=")&&!riskSaveBody.includes('state.asa='),'risk review must not auto-assign ASA');
++must(!html.includes('data-preop-key="risk">\n          <label class="preop-main"><input class="preop-check" type="checkbox" data-key="risk"')||html.includes('Anesthetic risk flags reviewed'),'risk checklist item must remain present');
++
+ // Fresh-case safety invariants
+ must(/id="weight"[^>]*value=/.test(html)===false,'weight must not have an HTML default value');
+ for(const id of ['hr','rr','sap','map','dap','spo2','etco2','temp']){
+@@ -98,7 +111,7 @@
+ must(app.includes('function getFluidMetrics'),'fluid integration missing');
+ 
+ // Backup / restore
+-must(app.includes("format:'ANESVET_BACKUP',version:'14.8.1'"),'backup version must be 14.8.1');
++must(app.includes("format:'ANESVET_BACKUP',version:'14.8.2'"),'backup version must be 14.8.2');
+ must(app.includes("raw.format!=='ANESVET_BACKUP'")&&app.includes('idbClearCases()'),'backup restore integrity path missing');
+ 
+ // Reset must preserve persistent stores by only resetting current case state.
+@@ -139,12 +152,12 @@
+ must(html.includes('id="updateBanner"')&&app.includes('Finish / archive current case before updating'),'safe PWA update UI missing');
+ must(app.includes('caseLowestMap')&&app.includes('caseLowestSpo2')&&app.includes('Emergency return to OR recorded'),'previous anesthesia warning expansion missing');
+ 
+-console.log(`ANESVET V14.8.1 regression checks: PASS (${ids.length} unique HTML ids, ${fnNames.length} unique named functions)`);
++console.log(`ANESVET V14.8.2 regression checks: PASS (${ids.length} unique HTML ids, ${fnNames.length} unique named functions)`);
+ 
+ // V14.8.1 compatibility and integration contracts.
+ for(const key of ['anesvet_v14_3_current','anesvet_v14_3_settings','anesvet_v14_3_archive','anesvet_v14_3_protocol_audit'])must(app.includes(key),'original key retained: '+key);
+ must(html.indexOf('clinical-workflow.js')<html.indexOf('app.js'),'helper loads before application');
+-must(sw.includes('clinical-workflow.js?v=14.8.1'),'offline cache includes helper');
++must(sw.includes('clinical-workflow.js?v=14.8.2'),'offline cache includes helper');
+ must(count(app,/\$\('orStickyRecordBtn'\)\?\.addEventListener/g)===1,'sticky record listener must bind once');
+ for(const id of ['alertProtocolDialog','orQuickDrugDialog','orProblemPanel','recoveryProblemPanel','recoveryHandoffText','reportRecoveryHandoff'])must(ids.includes(id),'new UI '+id);
+ for(const file of [...sw.matchAll(/'\.\/([^']+)'/g)].map(x=>x[1].split('?')[0]))must(fs.existsSync(path.join(root,file)),'cache asset exists: '+file);
+@@ -157,4 +170,4 @@
+ must(app.includes("airwayWorkflowContext==='intubation'")&&app.includes("triggerOrMilestone('Intubation')"),'Airway save must be able to create the Intubation milestone');
+ must(css.includes('.or-live-page>.or-status-row{display:none}')&&css.includes('.or-live-page .or-alert-panel,.or-live-page .complication-watch-panel{display:none}'),'duplicate OR LIVE workspaces should be visually suppressed');
+ must(count(html,/class="or-milestone"/g)>=5,'legacy milestone hooks must remain for compatibility');
+-console.log('V14.8.1 integration and storage contracts: PASS');
++console.log('V14.8.2 integration and storage contracts: PASS');
+--- /dev/null	2026-09-22 14:52:48.082055884 +0000
++++ tests/risk_flags_v1482.mjs	2026-09-22 15:41:52.431157526 +0000
+@@ -0,0 +1,16 @@
++import fs from 'node:fs';
++import path from 'node:path';
++import assert from 'node:assert/strict';
++const root=path.resolve(path.dirname(new URL(import.meta.url).pathname),'..');
++const app=fs.readFileSync(path.join(root,'app.js'),'utf8');
++const html=fs.readFileSync(path.join(root,'index.html'),'utf8');
++const ids=[...html.matchAll(/\sid="([^"]+)"/g)].map(m=>m[1]);
++const must=(c,m)=>assert.ok(c,m);
++for(const id of ['riskBrachycephalic','riskBOAS','riskDifficultAirway','riskAspiration','riskCardiacDisease','riskRespiratoryDisease','riskHypovolemia','riskAnemiaBleeding','riskRenal','riskHepatic','riskMetabolicElectrolyte','riskPediatric','riskGeriatric','riskObesity','riskPregnancy','riskPreviousAnesthetic','riskEmergency','riskMajorHemorrhage']) must(ids.includes(id),`missing ${id}`);
++must(html.includes('Brachycephalic anatomy')&&html.includes('Suspected / known BOAS'),'brachycephalic anatomy and BOAS must be distinct');
++must(html.includes('ไม่ใช้แทนการวินิจฉัย BOAS'),'BOAS details must be framed as documentation, not diagnosis');
++must(app.includes("if(!none&&!count){toast('เลือก Risk flag"),'risk review requires explicit none or selected flag');
++must(app.includes("addAudit('PREANESTHETIC_RISK_REVIEW_RECORDED'"),'risk audit missing');
++must(app.includes("classList.toggle('airway-risk',airwayRisk)"),'airway risk emphasis missing in OR LIVE');
++must(app.includes("risk:'Anesthetic risk flags reviewed'"),'risk review missing from printable checklist');
++console.log('ANESVET V14.8.2 anesthetic risk flag contracts: PASS');

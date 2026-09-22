@@ -4,12 +4,12 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#0d5265">
-  <meta name="description" content="ANESVET V14.8.1 — Adaptive Clinical Workflow">
+  <meta name="description" content="ANESVET V14.8.2 — Adaptive Clinical Workflow">
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" href="./icon-192.png">
   <link rel="apple-touch-icon" href="./icon-192.png">
-  <link rel="stylesheet" href="./style.css?v=14.8.1">
-  <title>ANESVET V14.8.1</title>
+  <link rel="stylesheet" href="./style.css?v=14.8.2">
+  <title>ANESVET V14.8.2</title>
 </head>
 <body>
 <header class="topbar">
@@ -17,7 +17,7 @@
     <img class="brand-logo" src="./icon-192.png" alt="ANESVET logo">
     <div>
       <div class="eyebrow">GENOVI PET CARE • DIGITAL ANESTHESIA RECORD</div>
-      <h1>ANESVET <span>V14.8.1</span></h1>
+      <h1>ANESVET <span>V14.8.2</span></h1>
     </div>
   </div>
   <div class="top-actions">
@@ -81,7 +81,8 @@
       <b>Patient-specific cautions</b>
       <div id="patientRiskText">—</div>
     </div>
-    <button id="editRiskBtn" class="btn">แก้ไข</button>
+    <button id="editRiskBtn" class="btn">ข้อมูลผู้ป่วย</button>
+    <button id="reviewAnestheticRiskBtn" class="btn">Risk flags</button>
   </section>
 
   <nav class="tabs workflow-tabs" aria-label="ขั้นตอนการวางยาสลบ">
@@ -708,7 +709,7 @@
           <h2>Pre-anesthetic checklist</h2>
           <p>ทบทวนแต่ละรายการเป็น Done หรือ N/A ก่อนเริ่มเคส</p>
         </div>
-        <span id="preopProgress" class="status-pill warn">0/14 REVIEWED</span>
+        <span id="preopProgress" class="status-pill warn">0/15 REVIEWED</span>
       </div>
 
       <section class="preop-exam-panel" aria-labelledby="preopExamHeading">
@@ -829,6 +830,70 @@
         </div>
       </section>
 
+      <section class="preop-risk-panel" aria-labelledby="preopRiskHeading">
+        <div class="section-heading compact">
+          <div>
+            <h3 id="preopRiskHeading">⚠ Anesthetic Risk Flags</h3>
+            <p>ระบุความเสี่ยงเฉพาะตัวที่อาจเปลี่ยนแผนการวางยา การเตรียมอุปกรณ์ หรือ recovery • เป็น documentation aid ไม่ได้วินิจฉัยโรคหรือกำหนด ASA อัตโนมัติ</p>
+          </div>
+          <div class="risk-heading-badges"><span id="preopRiskCount" class="status-pill">0 FLAGS</span><span id="preopRiskStatus" class="status-pill warn">NOT REVIEWED</span></div>
+        </div>
+
+        <label class="risk-none-line"><input id="preopRiskNone" type="checkbox"> <span><b>No additional risk flags identified</b><small>เลือกเมื่อทบทวนแล้วและไม่มี structured risk เพิ่มเติมจากข้อมูลผู้ป่วย/ASA</small></span></label>
+
+        <div class="risk-groups">
+          <div class="risk-group"><h4>Airway / aspiration</h4><div class="risk-chip-grid">
+            <label><input id="riskBrachycephalic" type="checkbox"><span>Brachycephalic anatomy</span></label>
+            <label><input id="riskBOAS" type="checkbox"><span>Suspected / known BOAS</span></label>
+            <label><input id="riskDifficultAirway" type="checkbox"><span>Previous / anticipated difficult airway</span></label>
+            <label><input id="riskUpperAirway" type="checkbox"><span>Other upper-airway disease / obstruction risk</span></label>
+            <label><input id="riskAspiration" type="checkbox"><span>Aspiration / regurgitation / full-stomach risk</span></label>
+          </div></div>
+          <div class="risk-group"><h4>Cardiorespiratory</h4><div class="risk-chip-grid">
+            <label><input id="riskCardiacDisease" type="checkbox"><span>Cardiac disease</span></label>
+            <label><input id="riskArrhythmia" type="checkbox"><span>Clinically relevant arrhythmia</span></label>
+            <label><input id="riskRespiratoryDisease" type="checkbox"><span>Respiratory disease / low reserve</span></label>
+          </div></div>
+          <div class="risk-group"><h4>Perfusion / organ / metabolic</h4><div class="risk-chip-grid">
+            <label><input id="riskHypovolemia" type="checkbox"><span>Dehydration / hypovolemia / poor perfusion</span></label>
+            <label><input id="riskAnemiaBleeding" type="checkbox"><span>Anemia / coagulopathy / bleeding concern</span></label>
+            <label><input id="riskRenal" type="checkbox"><span>Renal disease / urine-output concern</span></label>
+            <label><input id="riskHepatic" type="checkbox"><span>Hepatic disease</span></label>
+            <label><input id="riskMetabolicElectrolyte" type="checkbox"><span>Electrolyte / acid-base / metabolic abnormality</span></label>
+            <label><input id="riskHypoglycemia" type="checkbox"><span>Hypoglycemia risk</span></label>
+          </div></div>
+          <div class="risk-group"><h4>Patient / history / procedure</h4><div class="risk-chip-grid">
+            <label><input id="riskPediatric" type="checkbox"><span>Pediatric / neonatal</span></label>
+            <label><input id="riskGeriatric" type="checkbox"><span>Geriatric / reduced reserve</span></label>
+            <label><input id="riskObesity" type="checkbox"><span>Obesity / body-condition concern</span></label>
+            <label><input id="riskPregnancy" type="checkbox"><span>Pregnancy / peripartum</span></label>
+            <label><input id="riskPreviousAnesthetic" type="checkbox"><span>Previous anesthetic / recovery adverse event</span></label>
+            <label><input id="riskEmergency" type="checkbox"><span>Emergency / unstable / critical context</span></label>
+            <label><input id="riskMajorHemorrhage" type="checkbox"><span>Major hemorrhage / transfusion risk</span></label>
+          </div></div>
+        </div>
+
+        <div id="boasRiskDetail" class="boas-risk-detail" hidden>
+          <div><b>Brachycephalic / BOAS details</b><small>ใช้บันทึกข้อมูลที่ตรวจพบหรือมีประวัติ ไม่ใช้แทนการวินิจฉัย BOAS</small></div>
+          <div class="risk-chip-grid compact">
+            <label><input id="riskBOASStertor" type="checkbox"><span>Stertor / snoring</span></label>
+            <label><input id="riskBOASStridor" type="checkbox"><span>Stridor / inspiratory noise</span></label>
+            <label><input id="riskBOASExerciseHeat" type="checkbox"><span>Exercise / heat intolerance</span></label>
+            <label><input id="riskBOASSleep" type="checkbox"><span>Sleep-disordered breathing / collapse history</span></label>
+            <label><input id="riskBOASRegurg" type="checkbox"><span>Regurgitation / reflux history</span></label>
+            <label><input id="riskBOASAirwaySurgery" type="checkbox"><span>Previous airway surgery</span></label>
+            <label><input id="riskBOASPreviousDifficultIntubation" type="checkbox"><span>Prior difficult intubation / airway recovery event</span></label>
+          </div>
+          <label>Airway / BOAS note<textarea id="riskBOASNotes" rows="2" placeholder="เช่น noisy breathing at rest, previous extubation obstruction, ETT difficulty หรือข้อสังเกตอื่น"></textarea></label>
+        </div>
+
+        <div class="risk-footer-grid">
+          <label>Other risk / relevant note<textarea id="riskOther" rows="2" placeholder="ความเสี่ยงอื่นที่ไม่มีในรายการ"></textarea></label>
+          <label>Reviewed by<input id="preopRiskAssessor" type="text" placeholder="Veterinarian / anesthetist"></label>
+          <div class="preop-risk-action"><button id="savePreopRiskBtn" type="button" class="btn primary">Save risk review & mark checklist Done</button><small id="preopRiskSavedMeta">ยังไม่ได้ทบทวน Anesthetic Risk Flags</small></div>
+        </div>
+      </section>
+
       <div class="checklist-grid">
         <div class="preop-item" data-preop-key="consent">
           <label class="preop-main"><input class="preop-check" type="checkbox" data-key="consent"><span><b>Consent / owner discussion</b><small>มีใบยินยอมและอธิบายความเสี่ยงแล้ว</small></span></label>
@@ -841,6 +906,9 @@
         <div class="preop-item" data-preop-key="exam">
           <label class="preop-main"><input class="preop-check" type="checkbox" data-key="exam"><span><b>Pre-anesthetic physical exam</b><small>HR/RR, pulse, MM/CRT, hydration, temperature, pain</small></span></label>
           <button type="button" class="preop-na-btn" data-key="exam">N/A</button>
+        </div>
+        <div class="preop-item" data-preop-key="risk">
+          <label class="preop-main"><input class="preop-check" type="checkbox" data-key="risk"><span><b>Anesthetic risk flags reviewed</b><small>Airway/BOAS, cardiorespiratory, organ/metabolic, patient and procedure-specific risks</small></span></label>
         </div>
         <div class="preop-item" data-preop-key="labs">
           <label class="preop-main"><input class="preop-check" type="checkbox" data-key="labs"><span><b>Lab / imaging reviewed</b><small>ผลตรวจที่จำเป็นเหมาะกับ ASA และ procedure</small></span></label>
@@ -2168,7 +2236,7 @@
 </dialog>
 
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
-<script src="./clinical-workflow.js?v=14.8.1"></script>
-<script src="./app.js?v=14.8.1"></script>
+<script src="./clinical-workflow.js?v=14.8.2"></script>
+<script src="./app.js?v=14.8.2"></script>
 </body>
 </html>
