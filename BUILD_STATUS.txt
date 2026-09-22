@@ -1,29 +1,28 @@
-ANESVET V14.9.0 — Mobile/iPad OR Reliability
+ANESVET V15.0.0 — Hospital Pilot Release
 Build date: 2026-09-22
-Baseline: ANESVET V14.8.2 Anesthetic Risk Flags
+Baseline: ANESVET V14.9.0 Mobile/iPad OR Reliability
 
 IMPLEMENTED
-- Touch-first mobile OR LIVE bottom dock: NEXT / RECORD / MEDS / FLUID / EVENT
-- Sticky OR glance bar includes patient + current BW + phase + case time
-- Phone layout prioritizes thumb reach, large touch targets and reduced OR chrome
-- iPad/tablet touch targets enlarged; landscape OR layout remains dense and glanceable
-- Safe-area support for iPhone/iPad bottom/home indicator areas
-- 16px mobile form controls to reduce unwanted iOS input zoom
-- Debounced autosave after structured field edits
-- Active-case 15-second local checkpoint save
-- LocalStorage read-after-write verification before showing Saved locally
-- Dirty/save-failed UI state persists across OR timer rerenders
-- Online/offline local-first status
-- Existing screen Wake Lock retained for active anesthesia/recovery when supported
-- iOS/PWA standalone metadata
+- Verified active-case safety checkpoint separate from primary current-state save
+- Safety checkpoint read-after-write verification
+- Startup recovery from unreadable/older current save when checkpoint is newer and valid
+- Visible recovered-case banner + audit trail event
+- Safety checkpoint cleared on Reset / sealed final save / final archive
+- Active-case patient identity/current-BW snapshot captured at case start
+- Post-start identity/BW changes require reason + actor and create audit trail
+- Medication calculation context bound to caseId + current BW + frozen protocol timestamp/version
+- Safety stop if patient/BW/protocol context changes before medication confirmation
+- Rapid double-tap guard for structured medication confirmation
+- Recovery incomplete-readiness completion now requires reason + actor override
+- Final Lock requires formal Recovery completion
 
 UNCHANGED CLINICAL DEFAULTS
-- Drug doses/concentrations
+- Drug doses / concentrations
 - Alert thresholds
 - Fluid references
-- Recovery scoring
+- Recovery score algorithm
 - ASA / BOAS logic
-- Existing storage keys and IndexedDB schema
+- Existing LocalStorage keys and IndexedDB schema
 
 VALIDATION
 PASS: syntax + JSON
@@ -31,9 +30,10 @@ PASS: source regression / storage contracts
 PASS: V14.7.2 UX compatibility static contracts
 PASS: V14.8 adaptive workflow static contracts
 PASS: V14.8.2 anesthetic risk flag contracts
-PASS: V14.9.0 mobile/iPad OR reliability contracts
+PASS: V14.9 mobile/iPad compatibility contracts
+PASS: V15.0 hospital-pilot safety contracts
 PASS: production clinical helper tests (73 assertions)
 PASS: workflow model scenarios (4 scenarios)
-NOT CLAIMED: jsdom/browser-dependent DOM integration suite (jsdom/fake-indexeddb unavailable; npm dependency install timed out in this runtime)
+NOT CLAIMED: jsdom/browser-dependent DOM integration + Playwright E2E (dependencies unavailable in runtime)
 
-Acceptance-test the build on the actual phone/iPad and deployment browser before clinical production use.
+Hospital pilot recommendation: use alongside the existing anesthesia record/backup process until real-device acceptance and multiple real cases confirm no data-loss, wrong-patient, wrong-weight, medication-calculation or workflow-blocking defects.

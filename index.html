@@ -7,12 +7,12 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="description" content="ANESVET V14.9.0 — Mobile/iPad OR Reliability">
+  <meta name="description" content="ANESVET V15.0.0 — Hospital Pilot Release">
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" href="./icon-192.png">
   <link rel="apple-touch-icon" href="./icon-192.png">
-  <link rel="stylesheet" href="./style.css?v=14.9.0">
-  <title>ANESVET V14.9.0</title>
+  <link rel="stylesheet" href="./style.css?v=15.0.0">
+  <title>ANESVET V15.0.0</title>
 </head>
 <body>
 <header class="topbar">
@@ -20,7 +20,7 @@
     <img class="brand-logo" src="./icon-192.png" alt="ANESVET logo">
     <div>
       <div class="eyebrow">GENOVI PET CARE • DIGITAL ANESTHESIA RECORD</div>
-      <h1>ANESVET <span>V14.9.0</span></h1>
+      <h1>ANESVET <span>V15.0.0</span></h1>
     </div>
   </div>
   <div class="top-actions">
@@ -43,6 +43,13 @@
     <button id="sessionRefreshBtn" class="btn light session-safe" type="button">Refresh status</button>
     <button id="sessionTakeControlBtn" class="btn primary session-safe" type="button">Take control</button>
   </div>
+</section>
+<section id="safetyRecoveryBanner" class="safety-recovery-banner" hidden>
+  <div>
+    <b>Recovered active case from verified safety checkpoint</b>
+    <span id="safetyRecoveryText">A newer verified local checkpoint was restored.</span>
+  </div>
+  <div class="session-banner-actions"><button id="dismissSafetyRecoveryBtn" class="btn light" type="button">Dismiss</button></div>
 </section>
 <section id="updateBanner" class="update-banner" hidden>
   <div>
@@ -2249,7 +2256,7 @@
 </dialog>
 
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
-<script src="./clinical-workflow.js?v=14.9.0"></script>
-<script src="./app.js?v=14.9.0"></script>
+<script src="./clinical-workflow.js?v=15.0.0"></script>
+<script src="./app.js?v=15.0.0"></script>
 </body>
 </html>

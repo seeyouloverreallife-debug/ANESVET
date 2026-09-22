@@ -830,3 +830,8 @@ button,.btn,.tab,.or-primary-action,.or-record-button,.or-action-link,.or-compli
   .or-live-page .or-vital-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
   .or-live-page .or-secondary-grid{grid-template-columns:1.15fr .85fr}
 }
+
+/* V15.0 — Hospital Pilot safety */
+.safety-recovery-banner{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:11px 16px;background:#163f4b;color:#fff;border-top:1px solid rgba(255,255,255,.15)}
+.safety-recovery-banner[hidden]{display:none}.safety-recovery-banner b,.safety-recovery-banner span{display:block}.safety-recovery-banner span{font-size:.82rem;opacity:.9;margin-top:2px}
+@media(max-width:700px){.safety-recovery-banner{align-items:stretch;flex-direction:column}.safety-recovery-banner .btn{width:100%}}

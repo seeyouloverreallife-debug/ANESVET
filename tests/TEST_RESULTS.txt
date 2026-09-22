@@ -1,4 +1,4 @@
-ANESVET V14.8.1 — validation summary
+ANESVET V15.0.0 — validation summary
 Date: 2026-09-22
 
 PASS
@@ -6,15 +6,17 @@ PASS
 - node tests/regression.mjs
 - node tests/ux_v1472_static.mjs
 - node tests/ux_v148_static.mjs
-- node tests/clinical_workflow.mjs
-- node tests/workflow_scenarios.mjs
+- node tests/risk_flags_v1482.mjs
+- node tests/mobile_or_v149.mjs
+- node tests/hospital_pilot_v150.mjs
+- node tests/clinical_workflow.mjs (73 assertions)
+- node tests/workflow_scenarios.mjs (4 scenarios)
 
 BLOCKED / NOT CLAIMED
-- tests/dom_workflow.mjs
 - tests/adaptive_workflow_v148.mjs
+- tests/dom_workflow.mjs
 - tests/compatibility.mjs
 - tests/governance.mjs
 - tests/final_lock.mjs
-Reason: jsdom/fake-indexeddb dependencies are not installed in this runtime.
-
-Clinical values were not changed in V14.8.1. This release adds structured pre-anesthetic physical-examination documentation.
+- tests/e2e_browser.mjs
+Reason: jsdom/fake-indexeddb/playwright runtime dependencies are unavailable in this environment.

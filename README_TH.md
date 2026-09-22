@@ -1,4 +1,10 @@
-# ANESVET V14.9.0 — Mobile/iPad OR Reliability
+# ANESVET V15.0.0 — Hospital Pilot Release
+
+รุ่นนี้ต่อจาก V14.9.0 และเน้น **clinical pilot safety / data integrity** ก่อนใช้กับเคสจริงแบบมีระบบเดิมเป็น backup: verified active-case checkpoint, active-case identity/BW correction audit, stale medication-calculation guard, double-tap protection และ documented recovery override ก่อน Final Lock
+
+ดูรายละเอียดที่ `RELEASE_NOTES_V15_0_0.md`
+
+## V14.9.0 — Mobile/iPad OR Reliability
 
 รุ่นนี้ต่อจาก V14.8.2 โดยเน้นการใช้งานจริงบนมือถือและ iPad ในห้องผ่าตัด: touch-first OR LIVE, local-first autosave/recovery, safe-area และปุ่มสำคัญที่เข้าถึงด้วยนิ้วได้เร็ว โดยไม่เปลี่ยน clinical dose/threshold logic เดิม
 

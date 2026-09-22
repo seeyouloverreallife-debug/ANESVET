@@ -1,14 +1,14 @@
 {
-  "name": "anesvet-v14-9-0",
-  "version": "14.9.0",
+  "name": "anesvet-v15-0-0",
+  "version": "15.0.0",
   "private": true,
-  "description": "ANESVET V14.9.0 mobile/iPad OR reliability release; runtime requires no build",
+  "description": "ANESVET V15.0.0 hospital pilot safety release; runtime requires no build",
   "engines": {
     "node": ">=22"
   },
   "scripts": {
     "test:syntax": "node tests/syntax.mjs",
-    "test:regression": "node tests/regression.mjs && node tests/ux_v1472_static.mjs && node tests/ux_v148_static.mjs && node tests/risk_flags_v1482.mjs && node tests/mobile_or_v149.mjs",
+    "test:regression": "node tests/regression.mjs && node tests/ux_v1472_static.mjs && node tests/ux_v148_static.mjs && node tests/risk_flags_v1482.mjs && node tests/mobile_or_v149.mjs && node tests/hospital_pilot_v150.mjs",
     "test:workflow": "node tests/workflow_scenarios.mjs && node tests/clinical_workflow.mjs && node tests/dom_workflow.mjs && node tests/adaptive_workflow_v148.mjs && node tests/compatibility.mjs && node tests/governance.mjs && node tests/final_lock.mjs",
     "test": "npm run test:syntax && npm run test:regression && npm run test:workflow",
     "test:browser": "node tests/e2e_browser.mjs"

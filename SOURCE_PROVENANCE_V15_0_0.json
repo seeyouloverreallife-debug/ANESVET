@@ -1,0 +1,19 @@
+{
+  "release": "ANESVET V15.0.0",
+  "baseline": "ANESVET V14.9.0 Mobile/iPad OR Reliability",
+  "baselineCoreSha256": "359504e047c9d82c9bf04b44e3647098a74b301f00460048153f7c53f321dab2",
+  "buildDate": "2026-09-22",
+  "scope": [
+    "verified active-case safety checkpoint",
+    "active-case patient identity/BW snapshot and correction audit",
+    "stale medication calculation context guard",
+    "rapid medication double-tap protection",
+    "recovery completion override audit",
+    "final-lock recovery requirement"
+  ],
+  "clinicalDefaultsChanged": false,
+  "drugDoseLogicChanged": false,
+  "alertThresholdsChanged": false,
+  "storageKeysRenamedOrDeleted": false,
+  "indexedDbSchemaChanged": false
+}
