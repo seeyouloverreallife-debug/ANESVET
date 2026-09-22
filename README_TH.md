@@ -1,4 +1,16 @@
-# ANESVET V14.7.2 — Faster Induction & Medication Workflow
+# ANESVET V14.8.0 — Adaptive Clinical Workflow
+
+## V14.8.0 — Adaptive Clinical Workflow
+
+เพิ่ม `OR workflow profile` ต่อเคส: Routine / Elective, Emergency / Critical, C-section และ Custom โดย OR LIVE จะปรับ contextual actions และ metrics ตามบริบท แต่ **ไม่เปลี่ยนยา dose, threshold หรือ clinical protocol อัตโนมัติ**
+
+- Critical: บันทึก Stabilization / support checkpoint ก่อน induction ได้โดยไม่เริ่ม anesthesia timer
+- C-section: บันทึก First neonate / Last neonate และคำนวณ elapsed time จาก Induction
+- Routine: เก็บ fast path ของ V14.7.2 ให้สั้นและกด Record / Medication ได้เร็ว
+- เคสเก่าที่ไม่มี profile จะเปิดเป็น Routine เพื่อ backward compatibility
+
+ดูรายละเอียดที่ `RELEASE_NOTES_V14_8_0.md`
+
 
 พัฒนาต่อจาก ANESVET V14.7.1 โดยคง clinical workflow, storage keys, IndexedDB schema, alert protocol และ medication audit เดิมทั้งหมด รอบนี้แก้ workflow ตามการใช้งานจริงใน OR: เริ่ม induction ต้องเร็ว, ยา induction อาจมากกว่าหนึ่งตัว, ปริมาณยาสามารถลงย้อนหลังหลัง airway stable และต้องมีจุดบันทึกยาเพิ่มเติมที่มองเห็นง่ายตลอดเคส
 

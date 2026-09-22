@@ -1,0 +1,15 @@
+import fs from 'node:fs';import path from 'node:path';import assert from 'node:assert/strict';
+const root=path.resolve(path.dirname(new URL(import.meta.url).pathname),'..');
+const app=fs.readFileSync(path.join(root,'app.js'),'utf8'),html=fs.readFileSync(path.join(root,'index.html'),'utf8'),css=fs.readFileSync(path.join(root,'style.css'),'utf8');
+const ok=(c,m)=>assert.ok(c,m);
+ok(html.includes('id="caseWorkflowProfile"'),'case workflow profile selector missing');
+for(const v of ['routine','critical','csection','custom'])ok(html.includes(`value="${v}"`),`workflow profile ${v} missing`);
+ok(html.includes('id="orCaseContextPanel"')&&html.includes('id="orWorkflowBadge"'),'adaptive OR context UI missing');
+ok(app.includes('const OR_WORKFLOW_PROFILES=')&&app.includes('function renderWorkflowContext'),'workflow profile renderer missing');
+ok(app.includes("profile==='csection'&&!workflowEvent('First neonate delivered')"),'C-section first-neonate primary flow missing');
+ok(app.includes("recordWorkflowEvent('First neonate delivered'")&&app.includes("recordWorkflowEvent('Last neonate delivered'"),'C-section delivery milestone recording missing');
+ok(app.includes("recordPreAnestheticWorkflowEvent('Stabilization checkpoint'"),'Critical pre-anesthetic stabilization checkpoint missing');
+ok(app.includes("category:'Support'")||app.includes("'Support','Clinician-documented support workflow checkpoint'"),'Critical support event path missing');
+ok(app.includes("if(!state.caseWorkflowProfile)state.caseWorkflowProfile='routine'"),'legacy workflow migration missing');
+ok(css.includes('.or-context-panel.critical')&&css.includes('.or-context-panel.csection'),'profile-specific OR context styles missing');
+console.log('V14.8 adaptive workflow contracts: PASS');

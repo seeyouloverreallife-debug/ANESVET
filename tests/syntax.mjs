@@ -1,0 +1,3 @@
+import {spawnSync} from 'node:child_process';import fs from 'node:fs';import path from 'node:path';
+const root=path.resolve(path.dirname(new URL(import.meta.url).pathname),'..');const files=['app.js','clinical-workflow.js','service-worker.js',...fs.readdirSync(path.join(root,'tests')).filter(f=>f.endsWith('.mjs')).map(f=>'tests/'+f)];
+for(const f of files){const r=spawnSync(process.execPath,['--check',path.join(root,f)],{encoding:'utf8'});if(r.status!==0)throw Error(f+'\n'+r.stderr)}JSON.parse(fs.readFileSync(path.join(root,'manifest.webmanifest'),'utf8'));JSON.parse(fs.readFileSync(path.join(root,'package.json'),'utf8'));console.log(`Syntax + JSON: PASS (${files.length} JavaScript files)`);

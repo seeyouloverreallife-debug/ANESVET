@@ -23,7 +23,7 @@ const DB_VERSION=2;
 
 const numericFields = ['weight','hr','rr','sap','map','dap','spo2','etco2','temp','vaporizer','o2flow','fluidRateInput','fluidTotal','recHR','recRR','recMAP','recSpO2','recTemp'];
 const dataFields = [
-  'patientName','hospitalId','visitId','patientMasterId','species','sex','reproductiveStatus','microchip','breed','weight','age','birthDate','birthDateEstimated','ageSource','estimatedBirthPeriod','approxAgeYears','approxAgeMonths','approxAgeWeeks','bcs','asa','emergency','patientProcedure','patientAllergies','patientComorbidities','patientPrecautions','procedure','surgeon','anesthetist','surgicalAssistant',
+  'patientName','hospitalId','visitId','patientMasterId','species','sex','reproductiveStatus','microchip','breed','weight','age','birthDate','birthDateEstimated','ageSource','estimatedBirthPeriod','approxAgeYears','approxAgeMonths','approxAgeWeeks','bcs','asa','emergency','patientProcedure','patientAllergies','patientComorbidities','patientPrecautions','caseWorkflowProfile','procedure','surgeon','anesthetist','surgicalAssistant',
   'hr','rr','sap','map','dap','spo2','etco2','temp','vaporizer','o2flow','fluidRateInput','fluidTotal',
   'depth','ventilation','bradyPoorPerf','bloodLoss','cardiacRisk','respRisk','recordInterval','reminderOn',
   'recordNote','recHR','recRR','recMAP','recSpO2','recTemp','recExtubation','recOxygen','recMentation','recPain','recNaReason','recRecordInterval','recScoreAirway','recScoreOxygen','recScoreTemp','recScoreMentation','recScoreComfort','recScoreNote','planPremed','planInduction','planMaintenance','planAnalgesia','planAntibiotic','planNSAID','planBlock','planNote','actualDiazepamMl','actualPropofolMl','actualTramadolMl','balanceCrystalloid','balanceBolus','balanceBloodIn','balanceBloodLoss','balanceUrine','fluidActualTotal','airwayEttSize','airwayEttDepth','airwayCuff','airwayDifficulty','airwayCircuit','airwayVentMode','airwayVt','airwayPip','airwayPeep','airwayVentRr','diazepamConc','propofolConc','tramadolConc','rimadylConc','metacamConc','adrenalineConc','atropineConc','atropineMode','dopamineDose','dopamineConc'
@@ -46,6 +46,7 @@ let state = {
   recoveryNA: [false,false,false,false,false,false],
   recoveryObservationNA:{spo2:false,temp:false,extubation:false},
   patientSaved:false,
+  caseWorkflowProfile:'routine',
   patientMasterId:'',
   visitId:'',
   sex:'',
@@ -141,7 +142,7 @@ function toast(msg){
 }
 function readSessionLock(){try{const x=JSON.parse(localStorage.getItem(SESSION_LOCK_KEY)||'null');return x&&x.tabId?x:null}catch(e){return null}}
 function sessionLockIsFresh(lock){return !!(lock&&lock.tabId&&Number(lock.heartbeatAt)>0&&(Date.now()-Number(lock.heartbeatAt))<SESSION_TTL_MS)}
-function writeSessionLock(){if(sessionMode!=='active')return;const lock={tabId:sessionTabId,heartbeatAt:Date.now(),caseId:state?.caseId||'',patientName:state?.patientName||'',version:'14.7.2'};try{localStorage.setItem(SESSION_LOCK_KEY,JSON.stringify(lock))}catch(e){};try{sessionChannel?.postMessage({type:'HEARTBEAT',...lock})}catch(e){}}
+function writeSessionLock(){if(sessionMode!=='active')return;const lock={tabId:sessionTabId,heartbeatAt:Date.now(),caseId:state?.caseId||'',patientName:state?.patientName||'',version:'14.8.0'};try{localStorage.setItem(SESSION_LOCK_KEY,JSON.stringify(lock))}catch(e){};try{sessionChannel?.postMessage({type:'HEARTBEAT',...lock})}catch(e){}}
 function releaseSessionLock(){const lock=readSessionLock();if(lock?.tabId===sessionTabId){try{localStorage.removeItem(SESSION_LOCK_KEY)}catch(e){};try{sessionChannel?.postMessage({type:'RELEASE',tabId:sessionTabId})}catch(e){}}}
 function sessionSafeTarget(target){return !!target?.closest?.('.session-safe,[data-tab],[data-more-tab],#moreMenuBtn,.archive-pdf,.verify-integrity')}
 function renderSessionMode(){
@@ -680,6 +681,7 @@ function load(){
     if(!('voidedAt' in state))state.voidedAt=null;
     if(!('protocolSnapshot' in state))state.protocolSnapshot=null;
     if(!('visitId' in state))state.visitId='';
+    if(!state.caseWorkflowProfile)state.caseWorkflowProfile='routine';
     if(!state.caseStartedAt && !(state.timer?.elapsedMs>0) && !state.recoveryStartedAt && !state.recoveryCompletedAt && !state.caseLocked)state.casePhase='setup';
   }catch(e){}
   dataFields.forEach(id=>{
@@ -1139,7 +1141,7 @@ $('savePatientBtn').addEventListener('click',async()=>{
   if(!name){toast('กรุณาใส่ชื่อสัตว์');$('patientName').focus();return}
   if(!species){toast('กรุณาเลือก Species');$('species')?.focus();return}
   if(!Number.isFinite(weight)||weight<=0){toast('กรุณาใส่น้ำหนักที่ถูกต้อง');$('weight').focus();return}
-  syncPatientProcedureToCase();const master=await upsertPatientMasterFromCurrent();if(master===false)return;state.patientSaved=true;save();syncAsaCards();updatePatientSaveStatus();
+  syncPatientProcedureToCase();state.caseWorkflowProfile=$('caseWorkflowProfile')?.value||state.caseWorkflowProfile||'routine';const master=await upsertPatientMasterFromCurrent();if(master===false)return;state.patientSaved=true;save();syncAsaCards();updatePatientSaveStatus();
   // V14.6.4: current-weight dependent UI was calculated while patientSaved=false during typing.
   // Recalculate immediately after Save so a NEW patient's confirmed BW propagates to Drug/Fluid/Plan views
   // without requiring a reload, another field edit, or re-selecting the patient.
@@ -1147,13 +1149,17 @@ $('savePatientBtn').addEventListener('click',async()=>{
   toast('บันทึก Patient Master + Case Setup แล้ว');setTab('preop');
 });
 $('editPatientBtn').addEventListener('click',()=>setTab('patient'));
-['patientName','hospitalId','visitId','species','sex','reproductiveStatus','microchip','breed','birthDate','approxAgeYears','approxAgeMonths','approxAgeWeeks','weight','bcs','emergency','patientProcedure','patientAllergies','patientComorbidities','patientPrecautions','surgeon','anesthetist','surgicalAssistant'].forEach(id=>{
+['patientName','hospitalId','visitId','species','sex','reproductiveStatus','microchip','breed','birthDate','approxAgeYears','approxAgeMonths','approxAgeWeeks','weight','bcs','emergency','patientProcedure','patientAllergies','patientComorbidities','patientPrecautions','caseWorkflowProfile','surgeon','anesthetist','surgicalAssistant'].forEach(id=>{
   const el=$(id);if(!el)return;
   el.addEventListener(el.type==='checkbox'||el.tagName==='SELECT'?'change':'input',()=>{
     state.patientSaved=false;updatePatientSaveStatus();
   });
 });
 
+$('caseWorkflowProfile')?.addEventListener('change',()=>{
+  state.caseWorkflowProfile=$('caseWorkflowProfile').value||'routine';
+  state.patientSaved=false;updatePatientSaveStatus();save();renderWorkflowContext();renderOrPrimaryFlow();renderCaseSummary();
+});
 
 function renderPreop(){
   const checks=$$('.preop-check'),total=checks.length;
@@ -1194,6 +1200,60 @@ function renderOrTimerState(){if(!$('orTimerState'))return;if(state.timer.runnin
 
 function hasProcedureMilestone(label){return (state.events||[]).some(e=>e?.name===label)}
 function procedureMilestoneEvent(label){return (state.events||[]).find(e=>e?.name===label&&e?.note==='Procedure milestone')||(state.events||[]).find(e=>e?.name===label)||null}
+const OR_WORKFLOW_PROFILES={
+  routine:{label:'Routine / Elective',badge:'ROUTINE',help:'Fast documentation path for standard anesthesia workflow.'},
+  critical:{label:'Emergency / Critical',badge:'CRITICAL',help:'Keeps stabilization/support documentation visible without forcing treatment choices.'},
+  csection:{label:'Cesarean section / C-section',badge:'C-SECTION',help:'Adds delivery milestones and elapsed timing while preserving the standard anesthesia record.'},
+  custom:{label:'Custom / Other',badge:'CUSTOM',help:'Standard OR LIVE with neutral workflow controls.'}
+};
+function activeWorkflowProfile(){
+  const v=state.caseWorkflowProfile||$('caseWorkflowProfile')?.value||'routine';
+  return OR_WORKFLOW_PROFILES[v]?v:'routine';
+}
+function workflowProfileInfo(){return OR_WORKFLOW_PROFILES[activeWorkflowProfile()]||OR_WORKFLOW_PROFILES.routine}
+function workflowEvent(name){return (state.events||[]).find(e=>e?.name===name)||null}
+function workflowElapsed(fromEvent,toEvent){
+  const a=fromEvent?.epoch,b=toEvent?.epoch;
+  if(!Number.isFinite(Number(a))||!Number.isFinite(Number(b))||Number(b)<Number(a))return '—';
+  return formatElapsed(Number(b)-Number(a));
+}
+function recordWorkflowEvent(name,category='Workflow',note='Workflow milestone'){
+  if(!clinicalWriteAllowed())return false;
+  if(workflowEvent(name)){toast(`${name} already recorded`);return false}
+  if(!state.caseStartedAt){toast('Start case before recording this milestone');return false}
+  addEvent({category,name,note});return true;
+}
+function recordPreAnestheticWorkflowEvent(name,category='Workflow',note='Pre-anesthetic workflow event'){
+  if(!clinicalWriteAllowed())return false;
+  if(workflowEvent(name)){toast(`${name} already recorded`);return false}
+  if(state.caseStartedAt)return recordWorkflowEvent(name,category,note);
+  const epoch=Date.now(),ev={id:crypto.randomUUID?crypto.randomUUID():String(epoch+Math.random()),epoch,elapsedMs:0,clock:formatClock(epoch),category,name,note,preAnesthetic:true};
+  state.events.push(ev);state.events.sort((a,b)=>a.epoch-b.epoch);addAudit('PREANESTHETIC_WORKFLOW_EVENT',name);save();renderEvents();renderProcedureTimeline();renderOrLive();toast(`${name} • ${ev.clock}`);return true;
+}
+function renderWorkflowContext(){
+  const panel=$('orCaseContextPanel'),badge=$('orWorkflowBadge'),title=$('orContextTitle'),help=$('orContextHelp'),metrics=$('orContextMetrics'),actions=$('orContextActions');
+  if(!panel||!title||!help||!metrics||!actions)return;
+  const profile=activeWorkflowProfile(),info=workflowProfileInfo();
+  panel.className=`or-context-panel ${profile}`;title.textContent=info.label;help.textContent=info.help;
+  if(badge){badge.textContent=info.badge;badge.className=`status-pill workflow ${profile}`;}
+  const btn=(action,label,cls='')=>`<button type="button" class="btn ${cls}" data-workflow-action="${action}">${label}</button>`;
+  if(profile==='critical'){
+    const s=workflowEvent('Stabilization checkpoint'),support=(state.events||[]).filter(e=>e?.category==='Support').at(-1);
+    metrics.innerHTML=`<div><span>Stabilization</span><b>${s?`Recorded ${escapeHtml(s.clock||'')}`:'Not timestamped'}</b></div><div><span>Latest support event</span><b>${support?escapeHtml(`${support.name} • ${support.clock||''}`):'—'}</b></div>`;
+    actions.innerHTML=`${btn('stabilization','＋ Stabilization checkpoint',s?'done':'primary')}${btn('support-event','＋ Support event')}${btn('meds','💉 Medication')}${btn('record','＋ Record vitals')}`;
+  }else if(profile==='csection'){
+    const ind=procedureMilestoneEvent('Induction'),first=workflowEvent('First neonate delivered'),last=workflowEvent('Last neonate delivered');
+    metrics.innerHTML=`<div><span>Induction → first neonate</span><b>${workflowElapsed(ind,first)}</b></div><div><span>First → last neonate</span><b>${workflowElapsed(first,last)}</b></div><div><span>Delivered milestones</span><b>${first?'First ✓':'First —'} • ${last?'Last ✓':'Last —'}</b></div>`;
+    actions.innerHTML=`${btn('first-neonate','👶 First neonate',first?'done':'primary')}${btn('last-neonate','👶 Last neonate',last?'done':'')}${btn('neonatal-support','＋ Neonatal support event')}${btn('meds','💉 Maternal medication')}`;
+  }else if(profile==='routine'){
+    const airway=airwayRecorded(),surg=hasProcedureMilestone('Surgery start');
+    metrics.innerHTML=`<div><span>Fast path</span><b>${airway?'Airway ✓':'Airway —'} • ${surg?'Surgery ✓':'Surgery —'}</b></div><div><span>Documentation</span><b>Record • Meds • Recovery</b></div>`;
+    actions.innerHTML=`${btn('meds','💉 Medication')}${btn('record','＋ Record vitals')}`;
+  }else{
+    metrics.innerHTML=`<div><span>Workflow</span><b>Standard OR LIVE</b></div><div><span>Context</span><b>Custom / clinician-defined</b></div>`;
+    actions.innerHTML=`${btn('meds','💉 Medication')}${btn('record','＋ Record vitals')}`;
+  }
+}
 function inductionMedicationRecords(){return (state.drugAdministrations||[]).filter(d=>!d.voidedAt&&d.source==='OR Induction')}
 function inductionDrugRecorded(){return inductionMedicationRecords().length>0}
 function inductionMedicationComplete(){
@@ -1212,7 +1272,7 @@ function openAirwayWorkflow(context='edit'){
 }
 function renderOrPrimaryFlow(){
   const title=$('orPrimaryActionTitle'),help=$('orPrimaryActionHelp'),primary=$('orPrimaryActionBtn'),secondary=$('orSecondaryPhaseBtn'),drug=$('orPrimaryDrugBtn'),stickyDrug=$('orStickyDrugBtn');if(!title||!help||!primary)return;
-  const phase=state.caseLocked?'locked':(state.casePhase||'setup'),started=!!state.caseStartedAt,pendingInduction=started&&!inductionMedicationComplete();
+  const phase=state.caseLocked?'locked':(state.casePhase||'setup'),started=!!state.caseStartedAt,pendingInduction=started&&!inductionMedicationComplete(),profile=activeWorkflowProfile();
   primary.disabled=false;primary.hidden=false;secondary.hidden=true;secondary.textContent='';drug.hidden=true;if(stickyDrug){stickyDrug.hidden=!started||['recovery','complete','locked'].includes(phase);stickyDrug.classList.toggle('pending',pendingInduction);stickyDrug.textContent=pendingInduction?'💉 MEDS • induction pending':'💉 MEDS';}
   let t='Current step',h='',label='',action='';
   if(phase==='setup'){t='Start induction';h='กดครั้งเดียวเพื่อ timestamp Induction + เริ่มจับเวลา • ปริมาณยาค่อยลงย้อนหลังได้หลัง airway stable';label='▶ Start induction';action='start-induction';}
@@ -1220,7 +1280,12 @@ function renderOrPrimaryFlow(){
     drug.hidden=false;drug.textContent=pendingInduction?'💉 Induction meds • ใส่ทีหลัง':'💉 Medications';drug.dataset.mode=pendingInduction?'induction':'generic';
     if(!airwayRecorded()){t='Airway / Intubation';h=pendingInduction?'Induction ถูก timestamp แล้ว • ทำ airway ก่อน แล้วค่อยกลับมาลง Diazepam / Propofol / ยาอื่นภายหลัง':'บันทึก ETT / intubation แล้วระบบจะลง milestone ให้ทันที';label='🫁 Intubation / Airway';action='airway';}
     else{t='Ready for surgery';h=pendingInduction?'Airway บันทึกแล้ว • เริ่มผ่าตัดได้ ยา induction ยังขึ้น Pending ให้กลับมาลงภายหลัง':'Airway ถูกบันทึกแล้ว — กดเมื่อเริ่มผ่าตัด';label='▶ Surgery start';action='surgery-start';secondary.hidden=false;secondary.textContent='✎ Edit airway';secondary.dataset.action='airway-edit';}
-  }else if(phase==='intraop'){t='Intraoperative';h=pendingInduction?'บันทึก vitals ตามปกติ • Induction meds ยัง Pending และลงย้อนหลังได้จาก MEDS':'บันทึก vitals จาก RECORD NOW • MEDS ใช้ลงยาเพิ่มเติมได้ตลอดเคส';label='■ Surgery end';action='surgery-end';drug.hidden=false;drug.textContent=pendingInduction?'💉 Induction meds pending':'💉 Medications';drug.dataset.mode=pendingInduction?'induction':'generic';}
+  }else if(phase==='intraop'){
+    drug.hidden=false;drug.textContent=pendingInduction?'💉 Induction meds pending':'💉 Medications';drug.dataset.mode=pendingInduction?'induction':'generic';
+    if(profile==='csection'&&!workflowEvent('First neonate delivered')){t='C-section • delivery';h='บันทึกเวลาลูกตัวแรกเมื่อถูกนำออก เพื่อให้ timeline คำนวณจาก induction อัตโนมัติ';label='👶 First neonate delivered';action='first-neonate';secondary.hidden=false;secondary.textContent='■ Surgery end';secondary.dataset.action='surgery-end';}
+    else if(profile==='csection'&&!workflowEvent('Last neonate delivered')){t='C-section • delivery';h='ลูกตัวแรกถูกบันทึกแล้ว • บันทึกเวลาลูกตัวสุดท้าย หรือจบการผ่าตัดตาม clinical workflow จริง';label='👶 Last neonate delivered';action='last-neonate';secondary.hidden=false;secondary.textContent='■ Surgery end';secondary.dataset.action='surgery-end';}
+    else{t='Intraoperative';h=pendingInduction?'บันทึก vitals ตามปกติ • Induction meds ยัง Pending และลงย้อนหลังได้จาก MEDS':'บันทึก vitals จาก RECORD NOW • MEDS ใช้ลงยาเพิ่มเติมได้ตลอดเคส';label='■ Surgery end';action='surgery-end';}
+  }
   else if(phase==='emergence'){const intubated=airwayRecorded();t='Emergence';h=intubated?'กดเมื่อถอดท่อแล้ว ระบบจะสร้าง Recovery handoff และเข้า Recovery':'ไม่มี airway/intubation record — สามารถเริ่ม Recovery ได้โดยตรง';label=intubated?'🫁 Extubation → Recovery':'→ Begin Recovery';action=intubated?'extubation':'recovery';drug.hidden=false;drug.textContent=pendingInduction?'💉 Induction meds pending':'💉 Medications';drug.dataset.mode=pendingInduction?'induction':'generic';}
   else if(phase==='emergency'){t='Emergency return';h='OR LIVE ใช้งานได้สำหรับ resuscitation / airway / medication';label='→ Return to Recovery';action='recovery';drug.hidden=false;drug.textContent='💉 Medications';drug.dataset.mode='generic';}
   else if(phase==='recovery'){t='Recovery active';h='บันทึก recovery vitals • หากมีการให้ยาเพิ่มใช้ปุ่ม Medication ในหน้า Recovery';label='Open Recovery';action='open-recovery';}
@@ -1237,6 +1302,8 @@ function handleOrWorkflowAction(action){
   if(action==='induction-drug'){openOrQuickDrug({phase:'induction',purpose:'induction'});return}
   if(action==='airway'||action==='airway-edit'){if(!state.caseStartedAt&&!startCaseFromOr())return;openAirwayWorkflow(action==='airway'?'intubation':'edit');return}
   if(action==='surgery-start'){if(!hasProcedureMilestone('Induction'))triggerOrMilestone('Induction');triggerOrMilestone('Surgery start');return}
+  if(action==='first-neonate'){recordWorkflowEvent('First neonate delivered','C-section','Delivery milestone');return}
+  if(action==='last-neonate'){recordWorkflowEvent('Last neonate delivered','C-section','Delivery milestone');return}
   if(action==='surgery-end'){triggerOrMilestone('Surgery end');return}
   if(action==='extubation'){triggerOrMilestone('Extubation');return}
   if(action==='recovery'){beginRecovery();return}
@@ -1247,6 +1314,16 @@ $('orPrimaryActionBtn')?.addEventListener('click',()=>handleOrWorkflowAction($('
 $('orSecondaryPhaseBtn')?.addEventListener('click',()=>handleOrWorkflowAction($('orSecondaryPhaseBtn').dataset.action));
 $('orPrimaryDrugBtn')?.addEventListener('click',()=>$('orPrimaryDrugBtn').dataset.mode==='induction'?openOrQuickDrug({phase:'induction',purpose:'induction'}):openOrQuickDrug());
 $('orStickyDrugBtn')?.addEventListener('click',()=>inductionMedicationComplete()?openOrQuickDrug():openOrQuickDrug({phase:'induction',purpose:'induction'}));
+$('orContextActions')?.addEventListener('click',e=>{
+  const b=e.target.closest('[data-workflow-action]');if(!b)return;const action=b.dataset.workflowAction;
+  if(action==='meds'){if(!state.caseStartedAt){toast('Start case before medication documentation');return}openOrQuickDrug();return}
+  if(action==='record'){if(!state.caseStartedAt&&!startCaseFromOr())return;addRecord('');renderOrLive();return}
+  if(action==='stabilization'){recordPreAnestheticWorkflowEvent('Stabilization checkpoint','Stabilization','Clinician-documented stabilization workflow checkpoint');return}
+  if(action==='support-event'){recordPreAnestheticWorkflowEvent('Critical care support event','Support','Clinician-documented support workflow checkpoint');return}
+  if(action==='first-neonate'){recordWorkflowEvent('First neonate delivered','C-section','Delivery milestone');return}
+  if(action==='last-neonate'){recordWorkflowEvent('Last neonate delivered','C-section','Delivery milestone');return}
+  if(action==='neonatal-support'){if(!clinicalWriteAllowed())return;addEvent({category:'Neonatal',name:'Neonatal support event',note:'C-section workflow timestamp'});renderOrLive();return}
+});
 
 function renderAirwayPanel(){
   const mode=$('airwayVentMode')?.value||'';
@@ -1289,6 +1366,7 @@ function renderOrLive(){
   $('orPhaseBadge').className=`status-pill phase ${phaseClass()}`;
   $('orlive').classList.toggle('recovery-mode',state.casePhase==='recovery');
   $('orlive').classList.toggle('emergency-return-mode',state.casePhase==='emergency');
+  renderWorkflowContext();
   const overall=$('globalStatus').textContent;$('orGlobalStatus').textContent=overall;$('orGlobalStatus').className=overall==='INTERVENE'?'or-status-danger':overall==='REASSESS'?'or-status-warn':overall==='NO DATA'?'or-status-neutral':'or-status-good';
   const latest=latestRecord();$('orLastRecord').textContent=latest?`${latest.clock} • ${formatShortElapsed(latest.elapsedMs)}`:'—';
   if(latest){
@@ -1436,6 +1514,7 @@ function renderCaseSummary(){
   $('summarySurgeon').textContent=$('surgeon')?.value.trim()||'—';
   $('summaryAnesthetist').textContent=$('anesthetist')?.value.trim()||'—';
   $('summaryAssistant').textContent=$('surgicalAssistant')?.value.trim()||'—';
+  if($('summaryWorkflow'))$('summaryWorkflow').textContent=workflowProfileInfo().label;
   $('summaryRecordCount').textContent=(state.records||[]).length;
   $('summaryEventCount').textContent=(state.events||[]).length;
   const fluidEntered=hasFluidCaseData();
@@ -2757,7 +2836,7 @@ async function verifyBackupPayloadIntegrity(raw){
 
 async function backupAllData(){
   save();await initArchiveDb();await initPatientMaster();
-  const payload={format:'ANESVET_BACKUP',version:'14.7.2',exportedAt:Date.now(),current:state,archive:getArchive(),patients:getPatients(),breedAliases:loadBreedAliases(),settings:(()=>{try{return JSON.parse(localStorage.getItem(SETTINGS_KEY)||'null')}catch(e){return null}})(),drugLibrary:loadDrugLibraryData(),quickPresets:loadQuickPresets(),protocolAudit:getProtocolAudit()};
+  const payload={format:'ANESVET_BACKUP',version:'14.8.0',exportedAt:Date.now(),current:state,archive:getArchive(),patients:getPatients(),breedAliases:loadBreedAliases(),settings:(()=>{try{return JSON.parse(localStorage.getItem(SETTINGS_KEY)||'null')}catch(e){return null}})(),drugLibrary:loadDrugLibraryData(),quickPresets:loadQuickPresets(),protocolAudit:getProtocolAudit()};
   downloadBlob(JSON.stringify(payload,null,2),'application/json',`ANESVET_BACKUP_${formatDate(Date.now())}.json`);
   const backupEpoch=Date.now();localStorage.setItem(LAST_BACKUP_KEY,String(backupEpoch));
   if($('backupStatus'))$('backupStatus').textContent=`Backup created ${formatClock(backupEpoch)} • ${payload.archive.length} cases • ${payload.patients.length} patients`;
@@ -2898,7 +2977,7 @@ function appRootUrl(){
   let path=here.pathname;
   if(!path.endsWith('/')) path=path.replace(/\/[^/]*$/,'/');
   const url=new URL(path, here.origin);
-  url.searchParams.set('v','14.7.2');
+  url.searchParams.set('v','14.8.0');
   return url.href;
 }
 function restartAtAppRoot(){
@@ -3269,7 +3348,7 @@ function freshState(){
     records:[],events:[],responses:[],corrections:[],complications:[],drugAdministrations:[],alertEpisodes:[],recoveryScores:[],recoveryRecords:[],fluidRateHistory:[],
     alertProtocolOverride:null,alertProtocolHistory:[],recoveryHandoffs:[],inductionDocumentationMode:'',inductionMedicationReviewCompletedAt:null,
     recoveryChecks:[false,false,false,false,false,false],recoveryNA:[false,false,false,false,false,false],recoveryObservationNA:{spo2:false,temp:false,extubation:false},preopChecks:{},preopNA:{},
-    patientSaved:false,patientMasterId:'',
+    patientSaved:false,patientMasterId:'',caseWorkflowProfile:'routine',
     patientName:'',hospitalId:'',visitId:'',species:'',sex:'',reproductiveStatus:'',microchip:'',breed:'',
     weight:'',age:'',birthDate:'',birthDateEstimated:false,ageSource:'',estimatedBirthPeriod:'',
     approxAgeYears:'',approxAgeMonths:'',approxAgeWeeks:'',bcs:'',asa:'',emergency:false,
@@ -3356,7 +3435,7 @@ $('updateNowBtn')?.addEventListener('click',()=>{const reg=pendingServiceWorkerR
 $('updateLaterBtn')?.addEventListener('click',()=>{if($('updateBanner'))$('updateBanner').hidden=true});
 window.addEventListener('load',setupServiceWorkerUpdates);
 
-// V14.7.2 workflow integration; deferred multi-drug induction documentation + compact handoff.
+// V14.8.0 workflow integration; adaptive case profiles on top of deferred medication + compact handoff.
 const WF=globalThis.AnesvetWorkflow;
 const ALERT_KEYS={map:'hypotension',spo2:'hypoxemia',etco2:'ventilation',temp:'hypothermia'};
 let alertProtocolEditScope='hospital',pendingProblem=null,orQuickOptions=[],orQuickBasis=null,orQuickContext=null;

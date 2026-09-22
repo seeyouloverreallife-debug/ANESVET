@@ -1,16 +1,32 @@
-ANESVET V14.7.2 — Faster Induction & Medication Workflow
+ANESVET V14.8.0 — Adaptive Clinical Workflow
+Build date: 2026-09-22
+Baseline: ANESVET V14.7.2 supplied by user
 
-STATUS: RELEASE CANDIDATE
+IMPLEMENTED
+- Per-case OR workflow profile: Routine / Elective, Emergency / Critical, C-section, Custom
+- Adaptive OR LIVE context panel and workflow badge
+- Critical pre-anesthetic stabilization/support checkpoints without starting anesthesia timer
+- C-section First neonate / Last neonate milestones and elapsed timing
+- C-section primary intraoperative action advances through delivery milestones, while Surgery end remains available
+- Legacy cases without workflow profile migrate to Routine / Elective
+- V14.7.2 deferred induction medications, medication audit, alerts, recovery handoff retained
+- Version/cache/backup metadata updated to 14.8.0
 
-PASS in this runtime:
-- JavaScript / JSON syntax
-- Source regression / integration contracts
-- Workflow model scenarios
-- Production clinical helper tests
+UNCHANGED CLINICAL DEFAULTS
+- Drug doses/concentrations
+- Alert thresholds
+- Fluid references
+- Recovery scoring
+- Existing storage keys and IndexedDB version
 
-BLOCKED / NOT CLAIMED:
-- npm DOM suite (dependency installation timed out)
-- Native Chromium HTTP/file navigation (ERR_BLOCKED_BY_ADMINISTRATOR)
-- PWA upgrade/offline behavior and PDF pagination acceptance
+VALIDATION
+PASS: syntax + JSON
+PASS: source regression / storage contracts
+PASS: V14.7.2 UX backward-compatibility static contracts
+PASS: V14.8 adaptive workflow static contracts
+PASS: production clinical helper tests
+PASS: workflow model scenarios
+BLOCKED: jsdom DOM suite (original archive contains empty node_modules directories; npm dependency install timed out in this runtime)
+BLOCKED: native browser smoke (headless Chromium file load timed out in this runtime)
 
-Clinical defaults, storage keys and IndexedDB schema unchanged from V14.7.1.
+Do not treat blocked tests as passed. Acceptance-test the build on the deployment browser/device before clinical production use.

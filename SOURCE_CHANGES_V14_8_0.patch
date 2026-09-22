@@ -1,0 +1,474 @@
+--- anesvet_v1472_full/index.html	2026-09-19 15:55:48.000000000 +0000
++++ anesvet_v148_work/index.html	2026-09-22 14:56:50.300399287 +0000
+@@ -4,12 +4,12 @@
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+   <meta name="theme-color" content="#0d5265">
+-  <meta name="description" content="ANESVET V14.7.2 — Faster Induction & Medication Workflow">
++  <meta name="description" content="ANESVET V14.8.0 — Adaptive Clinical Workflow">
+   <link rel="manifest" href="./manifest.webmanifest">
+   <link rel="icon" href="./icon-192.png">
+   <link rel="apple-touch-icon" href="./icon-192.png">
+-  <link rel="stylesheet" href="./style.css?v=14.7.2">
+-  <title>ANESVET V14.7.2</title>
++  <link rel="stylesheet" href="./style.css?v=14.8.0">
++  <title>ANESVET V14.8.0</title>
+ </head>
+ <body>
+ <header class="topbar">
+@@ -17,7 +17,7 @@
+     <img class="brand-logo" src="./icon-192.png" alt="ANESVET logo">
+     <div>
+       <div class="eyebrow">GENOVI PET CARE • DIGITAL ANESTHESIA RECORD</div>
+-      <h1>ANESVET <span>V14.7.2</span></h1>
++      <h1>ANESVET <span>V14.8.0</span></h1>
+     </div>
+   </div>
+   <div class="top-actions">
+@@ -258,6 +258,15 @@
+           <input id="patientProcedure" type="text" placeholder="เช่น OHE / Dental / Exploratory laparotomy">
+         </label>
+         <input id="procedure" type="hidden">
++        <label class="span2">OR workflow profile
++          <select id="caseWorkflowProfile">
++            <option value="routine">Routine / Elective</option>
++            <option value="critical">Emergency / Critical</option>
++            <option value="csection">Cesarean section / C-section</option>
++            <option value="custom">Custom / Other</option>
++          </select>
++          <small>เปลี่ยนลำดับและปุ่มใน OR LIVE เพื่อช่วย documentation เท่านั้น • ไม่เปลี่ยน dose, threshold หรือ clinical protocol</small>
++        </label>
+         <label class="span2">ประวัติแพ้ยา / สิ่งที่ต้องหลีกเลี่ยง
+           <input id="patientAllergies" type="text" placeholder="เช่น แพ้ amoxicillin / ไม่ทราบประวัติแพ้ยา">
+         </label>
+@@ -348,6 +357,7 @@
+           <h2 id="orPatientName">—</h2>
+           <span id="orPatientMeta">—</span>
+           <span id="orAsaBadge" class="status-pill good">ASA II</span>
++          <span id="orWorkflowBadge" class="status-pill workflow routine">ROUTINE</span>
+           <span id="orPhaseBadge" class="status-pill good">INTRAOP</span>
+         </div>
+         <div id="orProcedureLine" class="or-procedure-line">Procedure: —</div>
+@@ -391,6 +401,16 @@
+       </div>
+     </section>
+ 
++    <section id="orCaseContextPanel" class="or-context-panel routine" aria-label="Case-specific OR workflow">
++      <div class="or-context-copy">
++        <span id="orContextEyebrow">WORKFLOW PROFILE</span>
++        <b id="orContextTitle">Routine / Elective</b>
++        <small id="orContextHelp">Fast documentation path for standard anesthesia workflow.</small>
++      </div>
++      <div id="orContextMetrics" class="or-context-metrics"></div>
++      <div id="orContextActions" class="or-context-actions"></div>
++    </section>
++
+     <details class="or-phase-tracker-panel or-phase-details">
+       <summary>
+         <div class="or-phase-current">
+@@ -662,6 +682,7 @@
+         <div><span>Surgeon</span><b id="summarySurgeon">—</b></div>
+         <div><span>Anesthetist</span><b id="summaryAnesthetist">—</b></div>
+         <div><span>Assistant</span><b id="summaryAssistant">—</b></div>
++        <div><span>Workflow</span><b id="summaryWorkflow">Routine / Elective</b></div>
+       </div>
+ 
+       <div id="summaryRiskBox" class="summary-risk-box" hidden>
+@@ -2029,7 +2050,7 @@
+ </dialog>
+ 
+ <div id="toast" class="toast" role="status" aria-live="polite"></div>
+-<script src="./clinical-workflow.js?v=14.7.2"></script>
+-<script src="./app.js?v=14.7.2"></script>
++<script src="./clinical-workflow.js?v=14.8.0"></script>
++<script src="./app.js?v=14.8.0"></script>
+ </body>
+ </html>
+--- anesvet_v1472_full/app.js	2026-09-19 16:00:49.000000000 +0000
++++ anesvet_v148_work/app.js	2026-09-22 14:57:37.867868256 +0000
+@@ -23,7 +23,7 @@
+ 
+ const numericFields = ['weight','hr','rr','sap','map','dap','spo2','etco2','temp','vaporizer','o2flow','fluidRateInput','fluidTotal','recHR','recRR','recMAP','recSpO2','recTemp'];
+ const dataFields = [
+-  'patientName','hospitalId','visitId','patientMasterId','species','sex','reproductiveStatus','microchip','breed','weight','age','birthDate','birthDateEstimated','ageSource','estimatedBirthPeriod','approxAgeYears','approxAgeMonths','approxAgeWeeks','bcs','asa','emergency','patientProcedure','patientAllergies','patientComorbidities','patientPrecautions','procedure','surgeon','anesthetist','surgicalAssistant',
++  'patientName','hospitalId','visitId','patientMasterId','species','sex','reproductiveStatus','microchip','breed','weight','age','birthDate','birthDateEstimated','ageSource','estimatedBirthPeriod','approxAgeYears','approxAgeMonths','approxAgeWeeks','bcs','asa','emergency','patientProcedure','patientAllergies','patientComorbidities','patientPrecautions','caseWorkflowProfile','procedure','surgeon','anesthetist','surgicalAssistant',
+   'hr','rr','sap','map','dap','spo2','etco2','temp','vaporizer','o2flow','fluidRateInput','fluidTotal',
+   'depth','ventilation','bradyPoorPerf','bloodLoss','cardiacRisk','respRisk','recordInterval','reminderOn',
+   'recordNote','recHR','recRR','recMAP','recSpO2','recTemp','recExtubation','recOxygen','recMentation','recPain','recNaReason','recRecordInterval','recScoreAirway','recScoreOxygen','recScoreTemp','recScoreMentation','recScoreComfort','recScoreNote','planPremed','planInduction','planMaintenance','planAnalgesia','planAntibiotic','planNSAID','planBlock','planNote','actualDiazepamMl','actualPropofolMl','actualTramadolMl','balanceCrystalloid','balanceBolus','balanceBloodIn','balanceBloodLoss','balanceUrine','fluidActualTotal','airwayEttSize','airwayEttDepth','airwayCuff','airwayDifficulty','airwayCircuit','airwayVentMode','airwayVt','airwayPip','airwayPeep','airwayVentRr','diazepamConc','propofolConc','tramadolConc','rimadylConc','metacamConc','adrenalineConc','atropineConc','atropineMode','dopamineDose','dopamineConc'
+@@ -46,6 +46,7 @@
+   recoveryNA: [false,false,false,false,false,false],
+   recoveryObservationNA:{spo2:false,temp:false,extubation:false},
+   patientSaved:false,
++  caseWorkflowProfile:'routine',
+   patientMasterId:'',
+   visitId:'',
+   sex:'',
+@@ -141,7 +142,7 @@
+ }
+ function readSessionLock(){try{const x=JSON.parse(localStorage.getItem(SESSION_LOCK_KEY)||'null');return x&&x.tabId?x:null}catch(e){return null}}
+ function sessionLockIsFresh(lock){return !!(lock&&lock.tabId&&Number(lock.heartbeatAt)>0&&(Date.now()-Number(lock.heartbeatAt))<SESSION_TTL_MS)}
+-function writeSessionLock(){if(sessionMode!=='active')return;const lock={tabId:sessionTabId,heartbeatAt:Date.now(),caseId:state?.caseId||'',patientName:state?.patientName||'',version:'14.7.2'};try{localStorage.setItem(SESSION_LOCK_KEY,JSON.stringify(lock))}catch(e){};try{sessionChannel?.postMessage({type:'HEARTBEAT',...lock})}catch(e){}}
++function writeSessionLock(){if(sessionMode!=='active')return;const lock={tabId:sessionTabId,heartbeatAt:Date.now(),caseId:state?.caseId||'',patientName:state?.patientName||'',version:'14.8.0'};try{localStorage.setItem(SESSION_LOCK_KEY,JSON.stringify(lock))}catch(e){};try{sessionChannel?.postMessage({type:'HEARTBEAT',...lock})}catch(e){}}
+ function releaseSessionLock(){const lock=readSessionLock();if(lock?.tabId===sessionTabId){try{localStorage.removeItem(SESSION_LOCK_KEY)}catch(e){};try{sessionChannel?.postMessage({type:'RELEASE',tabId:sessionTabId})}catch(e){}}}
+ function sessionSafeTarget(target){return !!target?.closest?.('.session-safe,[data-tab],[data-more-tab],#moreMenuBtn,.archive-pdf,.verify-integrity')}
+ function renderSessionMode(){
+@@ -680,6 +681,7 @@
+     if(!('voidedAt' in state))state.voidedAt=null;
+     if(!('protocolSnapshot' in state))state.protocolSnapshot=null;
+     if(!('visitId' in state))state.visitId='';
++    if(!state.caseWorkflowProfile)state.caseWorkflowProfile='routine';
+     if(!state.caseStartedAt && !(state.timer?.elapsedMs>0) && !state.recoveryStartedAt && !state.recoveryCompletedAt && !state.caseLocked)state.casePhase='setup';
+   }catch(e){}
+   dataFields.forEach(id=>{
+@@ -1139,7 +1141,7 @@
+   if(!name){toast('กรุณาใส่ชื่อสัตว์');$('patientName').focus();return}
+   if(!species){toast('กรุณาเลือก Species');$('species')?.focus();return}
+   if(!Number.isFinite(weight)||weight<=0){toast('กรุณาใส่น้ำหนักที่ถูกต้อง');$('weight').focus();return}
+-  syncPatientProcedureToCase();const master=await upsertPatientMasterFromCurrent();if(master===false)return;state.patientSaved=true;save();syncAsaCards();updatePatientSaveStatus();
++  syncPatientProcedureToCase();state.caseWorkflowProfile=$('caseWorkflowProfile')?.value||state.caseWorkflowProfile||'routine';const master=await upsertPatientMasterFromCurrent();if(master===false)return;state.patientSaved=true;save();syncAsaCards();updatePatientSaveStatus();
+   // V14.6.4: current-weight dependent UI was calculated while patientSaved=false during typing.
+   // Recalculate immediately after Save so a NEW patient's confirmed BW propagates to Drug/Fluid/Plan views
+   // without requiring a reload, another field edit, or re-selecting the patient.
+@@ -1147,13 +1149,17 @@
+   toast('บันทึก Patient Master + Case Setup แล้ว');setTab('preop');
+ });
+ $('editPatientBtn').addEventListener('click',()=>setTab('patient'));
+-['patientName','hospitalId','visitId','species','sex','reproductiveStatus','microchip','breed','birthDate','approxAgeYears','approxAgeMonths','approxAgeWeeks','weight','bcs','emergency','patientProcedure','patientAllergies','patientComorbidities','patientPrecautions','surgeon','anesthetist','surgicalAssistant'].forEach(id=>{
++['patientName','hospitalId','visitId','species','sex','reproductiveStatus','microchip','breed','birthDate','approxAgeYears','approxAgeMonths','approxAgeWeeks','weight','bcs','emergency','patientProcedure','patientAllergies','patientComorbidities','patientPrecautions','caseWorkflowProfile','surgeon','anesthetist','surgicalAssistant'].forEach(id=>{
+   const el=$(id);if(!el)return;
+   el.addEventListener(el.type==='checkbox'||el.tagName==='SELECT'?'change':'input',()=>{
+     state.patientSaved=false;updatePatientSaveStatus();
+   });
+ });
+ 
++$('caseWorkflowProfile')?.addEventListener('change',()=>{
++  state.caseWorkflowProfile=$('caseWorkflowProfile').value||'routine';
++  state.patientSaved=false;updatePatientSaveStatus();save();renderWorkflowContext();renderOrPrimaryFlow();renderCaseSummary();
++});
+ 
+ function renderPreop(){
+   const checks=$$('.preop-check'),total=checks.length;
+@@ -1194,6 +1200,60 @@
+ 
+ function hasProcedureMilestone(label){return (state.events||[]).some(e=>e?.name===label)}
+ function procedureMilestoneEvent(label){return (state.events||[]).find(e=>e?.name===label&&e?.note==='Procedure milestone')||(state.events||[]).find(e=>e?.name===label)||null}
++const OR_WORKFLOW_PROFILES={
++  routine:{label:'Routine / Elective',badge:'ROUTINE',help:'Fast documentation path for standard anesthesia workflow.'},
++  critical:{label:'Emergency / Critical',badge:'CRITICAL',help:'Keeps stabilization/support documentation visible without forcing treatment choices.'},
++  csection:{label:'Cesarean section / C-section',badge:'C-SECTION',help:'Adds delivery milestones and elapsed timing while preserving the standard anesthesia record.'},
++  custom:{label:'Custom / Other',badge:'CUSTOM',help:'Standard OR LIVE with neutral workflow controls.'}
++};
++function activeWorkflowProfile(){
++  const v=state.caseWorkflowProfile||$('caseWorkflowProfile')?.value||'routine';
++  return OR_WORKFLOW_PROFILES[v]?v:'routine';
++}
++function workflowProfileInfo(){return OR_WORKFLOW_PROFILES[activeWorkflowProfile()]||OR_WORKFLOW_PROFILES.routine}
++function workflowEvent(name){return (state.events||[]).find(e=>e?.name===name)||null}
++function workflowElapsed(fromEvent,toEvent){
++  const a=fromEvent?.epoch,b=toEvent?.epoch;
++  if(!Number.isFinite(Number(a))||!Number.isFinite(Number(b))||Number(b)<Number(a))return '—';
++  return formatElapsed(Number(b)-Number(a));
++}
++function recordWorkflowEvent(name,category='Workflow',note='Workflow milestone'){
++  if(!clinicalWriteAllowed())return false;
++  if(workflowEvent(name)){toast(`${name} already recorded`);return false}
++  if(!state.caseStartedAt){toast('Start case before recording this milestone');return false}
++  addEvent({category,name,note});return true;
++}
++function recordPreAnestheticWorkflowEvent(name,category='Workflow',note='Pre-anesthetic workflow event'){
++  if(!clinicalWriteAllowed())return false;
++  if(workflowEvent(name)){toast(`${name} already recorded`);return false}
++  if(state.caseStartedAt)return recordWorkflowEvent(name,category,note);
++  const epoch=Date.now(),ev={id:crypto.randomUUID?crypto.randomUUID():String(epoch+Math.random()),epoch,elapsedMs:0,clock:formatClock(epoch),category,name,note,preAnesthetic:true};
++  state.events.push(ev);state.events.sort((a,b)=>a.epoch-b.epoch);addAudit('PREANESTHETIC_WORKFLOW_EVENT',name);save();renderEvents();renderProcedureTimeline();renderOrLive();toast(`${name} • ${ev.clock}`);return true;
++}
++function renderWorkflowContext(){
++  const panel=$('orCaseContextPanel'),badge=$('orWorkflowBadge'),title=$('orContextTitle'),help=$('orContextHelp'),metrics=$('orContextMetrics'),actions=$('orContextActions');
++  if(!panel||!title||!help||!metrics||!actions)return;
++  const profile=activeWorkflowProfile(),info=workflowProfileInfo();
++  panel.className=`or-context-panel ${profile}`;title.textContent=info.label;help.textContent=info.help;
++  if(badge){badge.textContent=info.badge;badge.className=`status-pill workflow ${profile}`;}
++  const btn=(action,label,cls='')=>`<button type="button" class="btn ${cls}" data-workflow-action="${action}">${label}</button>`;
++  if(profile==='critical'){
++    const s=workflowEvent('Stabilization checkpoint'),support=(state.events||[]).filter(e=>e?.category==='Support').at(-1);
++    metrics.innerHTML=`<div><span>Stabilization</span><b>${s?`Recorded ${escapeHtml(s.clock||'')}`:'Not timestamped'}</b></div><div><span>Latest support event</span><b>${support?escapeHtml(`${support.name} • ${support.clock||''}`):'—'}</b></div>`;
++    actions.innerHTML=`${btn('stabilization','＋ Stabilization checkpoint',s?'done':'primary')}${btn('support-event','＋ Support event')}${btn('meds','💉 Medication')}${btn('record','＋ Record vitals')}`;
++  }else if(profile==='csection'){
++    const ind=procedureMilestoneEvent('Induction'),first=workflowEvent('First neonate delivered'),last=workflowEvent('Last neonate delivered');
++    metrics.innerHTML=`<div><span>Induction → first neonate</span><b>${workflowElapsed(ind,first)}</b></div><div><span>First → last neonate</span><b>${workflowElapsed(first,last)}</b></div><div><span>Delivered milestones</span><b>${first?'First ✓':'First —'} • ${last?'Last ✓':'Last —'}</b></div>`;
++    actions.innerHTML=`${btn('first-neonate','👶 First neonate',first?'done':'primary')}${btn('last-neonate','👶 Last neonate',last?'done':'')}${btn('neonatal-support','＋ Neonatal support event')}${btn('meds','💉 Maternal medication')}`;
++  }else if(profile==='routine'){
++    const airway=airwayRecorded(),surg=hasProcedureMilestone('Surgery start');
++    metrics.innerHTML=`<div><span>Fast path</span><b>${airway?'Airway ✓':'Airway —'} • ${surg?'Surgery ✓':'Surgery —'}</b></div><div><span>Documentation</span><b>Record • Meds • Recovery</b></div>`;
++    actions.innerHTML=`${btn('meds','💉 Medication')}${btn('record','＋ Record vitals')}`;
++  }else{
++    metrics.innerHTML=`<div><span>Workflow</span><b>Standard OR LIVE</b></div><div><span>Context</span><b>Custom / clinician-defined</b></div>`;
++    actions.innerHTML=`${btn('meds','💉 Medication')}${btn('record','＋ Record vitals')}`;
++  }
++}
+ function inductionMedicationRecords(){return (state.drugAdministrations||[]).filter(d=>!d.voidedAt&&d.source==='OR Induction')}
+ function inductionDrugRecorded(){return inductionMedicationRecords().length>0}
+ function inductionMedicationComplete(){
+@@ -1212,7 +1272,7 @@
+ }
+ function renderOrPrimaryFlow(){
+   const title=$('orPrimaryActionTitle'),help=$('orPrimaryActionHelp'),primary=$('orPrimaryActionBtn'),secondary=$('orSecondaryPhaseBtn'),drug=$('orPrimaryDrugBtn'),stickyDrug=$('orStickyDrugBtn');if(!title||!help||!primary)return;
+-  const phase=state.caseLocked?'locked':(state.casePhase||'setup'),started=!!state.caseStartedAt,pendingInduction=started&&!inductionMedicationComplete();
++  const phase=state.caseLocked?'locked':(state.casePhase||'setup'),started=!!state.caseStartedAt,pendingInduction=started&&!inductionMedicationComplete(),profile=activeWorkflowProfile();
+   primary.disabled=false;primary.hidden=false;secondary.hidden=true;secondary.textContent='';drug.hidden=true;if(stickyDrug){stickyDrug.hidden=!started||['recovery','complete','locked'].includes(phase);stickyDrug.classList.toggle('pending',pendingInduction);stickyDrug.textContent=pendingInduction?'💉 MEDS • induction pending':'💉 MEDS';}
+   let t='Current step',h='',label='',action='';
+   if(phase==='setup'){t='Start induction';h='กดครั้งเดียวเพื่อ timestamp Induction + เริ่มจับเวลา • ปริมาณยาค่อยลงย้อนหลังได้หลัง airway stable';label='▶ Start induction';action='start-induction';}
+@@ -1220,7 +1280,12 @@
+     drug.hidden=false;drug.textContent=pendingInduction?'💉 Induction meds • ใส่ทีหลัง':'💉 Medications';drug.dataset.mode=pendingInduction?'induction':'generic';
+     if(!airwayRecorded()){t='Airway / Intubation';h=pendingInduction?'Induction ถูก timestamp แล้ว • ทำ airway ก่อน แล้วค่อยกลับมาลง Diazepam / Propofol / ยาอื่นภายหลัง':'บันทึก ETT / intubation แล้วระบบจะลง milestone ให้ทันที';label='🫁 Intubation / Airway';action='airway';}
+     else{t='Ready for surgery';h=pendingInduction?'Airway บันทึกแล้ว • เริ่มผ่าตัดได้ ยา induction ยังขึ้น Pending ให้กลับมาลงภายหลัง':'Airway ถูกบันทึกแล้ว — กดเมื่อเริ่มผ่าตัด';label='▶ Surgery start';action='surgery-start';secondary.hidden=false;secondary.textContent='✎ Edit airway';secondary.dataset.action='airway-edit';}
+-  }else if(phase==='intraop'){t='Intraoperative';h=pendingInduction?'บันทึก vitals ตามปกติ • Induction meds ยัง Pending และลงย้อนหลังได้จาก MEDS':'บันทึก vitals จาก RECORD NOW • MEDS ใช้ลงยาเพิ่มเติมได้ตลอดเคส';label='■ Surgery end';action='surgery-end';drug.hidden=false;drug.textContent=pendingInduction?'💉 Induction meds pending':'💉 Medications';drug.dataset.mode=pendingInduction?'induction':'generic';}
++  }else if(phase==='intraop'){
++    drug.hidden=false;drug.textContent=pendingInduction?'💉 Induction meds pending':'💉 Medications';drug.dataset.mode=pendingInduction?'induction':'generic';
++    if(profile==='csection'&&!workflowEvent('First neonate delivered')){t='C-section • delivery';h='บันทึกเวลาลูกตัวแรกเมื่อถูกนำออก เพื่อให้ timeline คำนวณจาก induction อัตโนมัติ';label='👶 First neonate delivered';action='first-neonate';secondary.hidden=false;secondary.textContent='■ Surgery end';secondary.dataset.action='surgery-end';}
++    else if(profile==='csection'&&!workflowEvent('Last neonate delivered')){t='C-section • delivery';h='ลูกตัวแรกถูกบันทึกแล้ว • บันทึกเวลาลูกตัวสุดท้าย หรือจบการผ่าตัดตาม clinical workflow จริง';label='👶 Last neonate delivered';action='last-neonate';secondary.hidden=false;secondary.textContent='■ Surgery end';secondary.dataset.action='surgery-end';}
++    else{t='Intraoperative';h=pendingInduction?'บันทึก vitals ตามปกติ • Induction meds ยัง Pending และลงย้อนหลังได้จาก MEDS':'บันทึก vitals จาก RECORD NOW • MEDS ใช้ลงยาเพิ่มเติมได้ตลอดเคส';label='■ Surgery end';action='surgery-end';}
++  }
+   else if(phase==='emergence'){const intubated=airwayRecorded();t='Emergence';h=intubated?'กดเมื่อถอดท่อแล้ว ระบบจะสร้าง Recovery handoff และเข้า Recovery':'ไม่มี airway/intubation record — สามารถเริ่ม Recovery ได้โดยตรง';label=intubated?'🫁 Extubation → Recovery':'→ Begin Recovery';action=intubated?'extubation':'recovery';drug.hidden=false;drug.textContent=pendingInduction?'💉 Induction meds pending':'💉 Medications';drug.dataset.mode=pendingInduction?'induction':'generic';}
+   else if(phase==='emergency'){t='Emergency return';h='OR LIVE ใช้งานได้สำหรับ resuscitation / airway / medication';label='→ Return to Recovery';action='recovery';drug.hidden=false;drug.textContent='💉 Medications';drug.dataset.mode='generic';}
+   else if(phase==='recovery'){t='Recovery active';h='บันทึก recovery vitals • หากมีการให้ยาเพิ่มใช้ปุ่ม Medication ในหน้า Recovery';label='Open Recovery';action='open-recovery';}
+@@ -1237,6 +1302,8 @@
+   if(action==='induction-drug'){openOrQuickDrug({phase:'induction',purpose:'induction'});return}
+   if(action==='airway'||action==='airway-edit'){if(!state.caseStartedAt&&!startCaseFromOr())return;openAirwayWorkflow(action==='airway'?'intubation':'edit');return}
+   if(action==='surgery-start'){if(!hasProcedureMilestone('Induction'))triggerOrMilestone('Induction');triggerOrMilestone('Surgery start');return}
++  if(action==='first-neonate'){recordWorkflowEvent('First neonate delivered','C-section','Delivery milestone');return}
++  if(action==='last-neonate'){recordWorkflowEvent('Last neonate delivered','C-section','Delivery milestone');return}
+   if(action==='surgery-end'){triggerOrMilestone('Surgery end');return}
+   if(action==='extubation'){triggerOrMilestone('Extubation');return}
+   if(action==='recovery'){beginRecovery();return}
+@@ -1247,6 +1314,16 @@
+ $('orSecondaryPhaseBtn')?.addEventListener('click',()=>handleOrWorkflowAction($('orSecondaryPhaseBtn').dataset.action));
+ $('orPrimaryDrugBtn')?.addEventListener('click',()=>$('orPrimaryDrugBtn').dataset.mode==='induction'?openOrQuickDrug({phase:'induction',purpose:'induction'}):openOrQuickDrug());
+ $('orStickyDrugBtn')?.addEventListener('click',()=>inductionMedicationComplete()?openOrQuickDrug():openOrQuickDrug({phase:'induction',purpose:'induction'}));
++$('orContextActions')?.addEventListener('click',e=>{
++  const b=e.target.closest('[data-workflow-action]');if(!b)return;const action=b.dataset.workflowAction;
++  if(action==='meds'){if(!state.caseStartedAt){toast('Start case before medication documentation');return}openOrQuickDrug();return}
++  if(action==='record'){if(!state.caseStartedAt&&!startCaseFromOr())return;addRecord('');renderOrLive();return}
++  if(action==='stabilization'){recordPreAnestheticWorkflowEvent('Stabilization checkpoint','Stabilization','Clinician-documented stabilization workflow checkpoint');return}
++  if(action==='support-event'){recordPreAnestheticWorkflowEvent('Critical care support event','Support','Clinician-documented support workflow checkpoint');return}
++  if(action==='first-neonate'){recordWorkflowEvent('First neonate delivered','C-section','Delivery milestone');return}
++  if(action==='last-neonate'){recordWorkflowEvent('Last neonate delivered','C-section','Delivery milestone');return}
++  if(action==='neonatal-support'){if(!clinicalWriteAllowed())return;addEvent({category:'Neonatal',name:'Neonatal support event',note:'C-section workflow timestamp'});renderOrLive();return}
++});
+ 
+ function renderAirwayPanel(){
+   const mode=$('airwayVentMode')?.value||'';
+@@ -1289,6 +1366,7 @@
+   $('orPhaseBadge').className=`status-pill phase ${phaseClass()}`;
+   $('orlive').classList.toggle('recovery-mode',state.casePhase==='recovery');
+   $('orlive').classList.toggle('emergency-return-mode',state.casePhase==='emergency');
++  renderWorkflowContext();
+   const overall=$('globalStatus').textContent;$('orGlobalStatus').textContent=overall;$('orGlobalStatus').className=overall==='INTERVENE'?'or-status-danger':overall==='REASSESS'?'or-status-warn':overall==='NO DATA'?'or-status-neutral':'or-status-good';
+   const latest=latestRecord();$('orLastRecord').textContent=latest?`${latest.clock} • ${formatShortElapsed(latest.elapsedMs)}`:'—';
+   if(latest){
+@@ -1436,6 +1514,7 @@
+   $('summarySurgeon').textContent=$('surgeon')?.value.trim()||'—';
+   $('summaryAnesthetist').textContent=$('anesthetist')?.value.trim()||'—';
+   $('summaryAssistant').textContent=$('surgicalAssistant')?.value.trim()||'—';
++  if($('summaryWorkflow'))$('summaryWorkflow').textContent=workflowProfileInfo().label;
+   $('summaryRecordCount').textContent=(state.records||[]).length;
+   $('summaryEventCount').textContent=(state.events||[]).length;
+   const fluidEntered=hasFluidCaseData();
+@@ -2757,7 +2836,7 @@
+ 
+ async function backupAllData(){
+   save();await initArchiveDb();await initPatientMaster();
+-  const payload={format:'ANESVET_BACKUP',version:'14.7.2',exportedAt:Date.now(),current:state,archive:getArchive(),patients:getPatients(),breedAliases:loadBreedAliases(),settings:(()=>{try{return JSON.parse(localStorage.getItem(SETTINGS_KEY)||'null')}catch(e){return null}})(),drugLibrary:loadDrugLibraryData(),quickPresets:loadQuickPresets(),protocolAudit:getProtocolAudit()};
++  const payload={format:'ANESVET_BACKUP',version:'14.8.0',exportedAt:Date.now(),current:state,archive:getArchive(),patients:getPatients(),breedAliases:loadBreedAliases(),settings:(()=>{try{return JSON.parse(localStorage.getItem(SETTINGS_KEY)||'null')}catch(e){return null}})(),drugLibrary:loadDrugLibraryData(),quickPresets:loadQuickPresets(),protocolAudit:getProtocolAudit()};
+   downloadBlob(JSON.stringify(payload,null,2),'application/json',`ANESVET_BACKUP_${formatDate(Date.now())}.json`);
+   const backupEpoch=Date.now();localStorage.setItem(LAST_BACKUP_KEY,String(backupEpoch));
+   if($('backupStatus'))$('backupStatus').textContent=`Backup created ${formatClock(backupEpoch)} • ${payload.archive.length} cases • ${payload.patients.length} patients`;
+@@ -2898,7 +2977,7 @@
+   let path=here.pathname;
+   if(!path.endsWith('/')) path=path.replace(/\/[^/]*$/,'/');
+   const url=new URL(path, here.origin);
+-  url.searchParams.set('v','14.7.2');
++  url.searchParams.set('v','14.8.0');
+   return url.href;
+ }
+ function restartAtAppRoot(){
+@@ -3269,7 +3348,7 @@
+     records:[],events:[],responses:[],corrections:[],complications:[],drugAdministrations:[],alertEpisodes:[],recoveryScores:[],recoveryRecords:[],fluidRateHistory:[],
+     alertProtocolOverride:null,alertProtocolHistory:[],recoveryHandoffs:[],inductionDocumentationMode:'',inductionMedicationReviewCompletedAt:null,
+     recoveryChecks:[false,false,false,false,false,false],recoveryNA:[false,false,false,false,false,false],recoveryObservationNA:{spo2:false,temp:false,extubation:false},preopChecks:{},preopNA:{},
+-    patientSaved:false,patientMasterId:'',
++    patientSaved:false,patientMasterId:'',caseWorkflowProfile:'routine',
+     patientName:'',hospitalId:'',visitId:'',species:'',sex:'',reproductiveStatus:'',microchip:'',breed:'',
+     weight:'',age:'',birthDate:'',birthDateEstimated:false,ageSource:'',estimatedBirthPeriod:'',
+     approxAgeYears:'',approxAgeMonths:'',approxAgeWeeks:'',bcs:'',asa:'',emergency:false,
+@@ -3356,7 +3435,7 @@
+ $('updateLaterBtn')?.addEventListener('click',()=>{if($('updateBanner'))$('updateBanner').hidden=true});
+ window.addEventListener('load',setupServiceWorkerUpdates);
+ 
+-// V14.7.2 workflow integration; deferred multi-drug induction documentation + compact handoff.
++// V14.8.0 workflow integration; adaptive case profiles on top of deferred medication + compact handoff.
+ const WF=globalThis.AnesvetWorkflow;
+ const ALERT_KEYS={map:'hypotension',spo2:'hypoxemia',etco2:'ventilation',temp:'hypothermia'};
+ let alertProtocolEditScope='hospital',pendingProblem=null,orQuickOptions=[],orQuickBasis=null,orQuickContext=null;
+--- anesvet_v1472_full/style.css	2026-09-19 15:52:03.000000000 +0000
++++ anesvet_v148_work/style.css	2026-09-22 14:56:03.462682802 +0000
+@@ -714,3 +714,24 @@
+ .handoff-full-details>summary{color:#0d5265}
+ @media(max-width:780px){.handoff-summary-grid{grid-template-columns:1fr 1fr}.or-sticky-mini{grid-template-columns:1fr 1fr auto auto}.or-sticky-mini>div:nth-child(3){display:none}.or-sticky-mini button{grid-column:auto}}
+ @media(max-width:520px){.handoff-summary-grid{grid-template-columns:1fr}.or-sticky-mini{grid-template-columns:1fr 1fr}.or-sticky-mini button{grid-column:auto}}
++
++/* V14.8 adaptive case workflow */
++.status-pill.workflow{background:#e8f3f5;color:#174d5a;border:1px solid #b7d9df}
++.status-pill.workflow.critical{background:#fff1e8;color:#8b4215;border-color:#efc7aa}
++.status-pill.workflow.csection{background:#f3edff;color:#5f4292;border-color:#d6c5f2}
++.status-pill.workflow.custom{background:#f1f3f5;color:#4f5961;border-color:#d5dade}
++.or-context-panel{display:grid;grid-template-columns:minmax(230px,1.1fr) minmax(260px,1fr) auto;gap:12px;align-items:center;padding:12px 14px;margin:0 0 11px;border:1px solid #cbdfe4;border-left:5px solid #3a8da0;border-radius:15px;background:#fff;box-shadow:0 5px 16px rgba(13,82,101,.05)}
++.or-context-panel.critical{border-left-color:#c56a2a;background:linear-gradient(90deg,#fffaf6,#fff)}
++.or-context-panel.csection{border-left-color:#7655ad;background:linear-gradient(90deg,#fbf9ff,#fff)}
++.or-context-copy span{display:block;font-size:.66rem;letter-spacing:.08em;font-weight:900;color:var(--muted)}
++.or-context-copy b{display:block;font-size:1.02rem;margin-top:2px}
++.or-context-copy small{display:block;color:var(--muted);margin-top:3px;line-height:1.35}
++.or-context-metrics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
++.or-context-metrics>div{padding:8px 9px;border:1px solid var(--line);border-radius:10px;background:rgba(255,255,255,.8)}
++.or-context-metrics span{display:block;color:var(--muted);font-size:.63rem;font-weight:850;text-transform:uppercase}
++.or-context-metrics b{display:block;margin-top:2px;font-size:.83rem}
++.or-context-actions{display:flex;justify-content:flex-end;gap:7px;flex-wrap:wrap}
++.or-context-actions .btn{min-height:38px;white-space:nowrap}
++.or-context-actions .btn.done{border-color:#99c8af;background:#eef9f2;color:#24623f}
++@media(max-width:980px){.or-context-panel{grid-template-columns:1fr 1fr}.or-context-actions{grid-column:1/-1;justify-content:flex-start}}
++@media(max-width:640px){.or-context-panel{grid-template-columns:1fr}.or-context-actions{grid-column:auto}.or-context-metrics{grid-template-columns:1fr 1fr}}
+--- anesvet_v1472_full/service-worker.js	2026-09-19 15:54:42.000000000 +0000
++++ anesvet_v148_work/service-worker.js	2026-09-22 14:56:03.463431534 +0000
+@@ -1,5 +1,5 @@
+-const CACHE='anesvet-v14-7-2-or-live-ux';
+-const ASSETS=['./','./index.html','./style.css?v=14.7.2','./clinical-workflow.js?v=14.7.2','./app.js?v=14.7.2','./manifest.webmanifest','./icon-192.png','./icon-512.png','./icon-maskable-512.png'];
++const CACHE='anesvet-v14-8-0-adaptive-workflow';
++const ASSETS=['./','./index.html','./style.css?v=14.8.0','./clinical-workflow.js?v=14.8.0','./app.js?v=14.8.0','./manifest.webmanifest','./icon-192.png','./icon-512.png','./icon-maskable-512.png'];
+ self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)))});
+ self.addEventListener('message',e=>{if(e.data?.type==='SKIP_WAITING')self.skipWaiting()});
+ self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))));self.clients.claim()});
+--- anesvet_v1472_full/manifest.webmanifest	2026-09-19 15:54:42.000000000 +0000
++++ anesvet_v148_work/manifest.webmanifest	2026-09-22 14:56:03.462886018 +0000
+@@ -1,8 +1,8 @@
+ {
+-  "name": "ANESVET V14.7.2 — Faster Induction & Medication Workflow",
++  "name": "ANESVET V14.8.0 — Adaptive Clinical Workflow",
+   "short_name": "ANESVET",
+-  "description": "Workflow-first OR LIVE with contextual induction, airway, surgery milestones, configurable alerts, Quick Drug and recovery handoff",
+-  "start_url": "./?v=14.7.2",
++  "description": "Adaptive OR LIVE with Routine, Critical and C-section workflow profiles, contextual milestones, Quick Drug and recovery handoff",
++  "start_url": "./?v=14.8.0",
+   "scope": "./",
+   "display": "standalone",
+   "background_color": "#f3f7f8",
+--- anesvet_v1472_full/package.json	2026-09-19 16:01:20.000000000 +0000
++++ anesvet_v148_work/package.json	2026-09-22 14:57:06.075573386 +0000
+@@ -1,15 +1,15 @@
+ {
+-  "name": "anesvet-v14-7-2",
+-  "version": "14.7.2",
++  "name": "anesvet-v14-8-0",
++  "version": "14.8.0",
+   "private": true,
+-  "description": "ANESVET V14.7.2 faster induction & medication workflow; runtime requires no build",
++  "description": "ANESVET V14.8.0 adaptive clinical workflow; runtime requires no build",
+   "engines": {
+     "node": ">=22"
+   },
+   "scripts": {
+     "test:syntax": "node tests/syntax.mjs",
+-    "test:regression": "node tests/regression.mjs && node tests/ux_v1472_static.mjs",
+-    "test:workflow": "node tests/workflow_scenarios.mjs && node tests/clinical_workflow.mjs && node tests/dom_workflow.mjs && node tests/compatibility.mjs && node tests/governance.mjs && node tests/final_lock.mjs",
++    "test:regression": "node tests/regression.mjs && node tests/ux_v1472_static.mjs && node tests/ux_v148_static.mjs",
++    "test:workflow": "node tests/workflow_scenarios.mjs && node tests/clinical_workflow.mjs && node tests/dom_workflow.mjs && node tests/adaptive_workflow_v148.mjs && node tests/compatibility.mjs && node tests/governance.mjs && node tests/final_lock.mjs",
+     "test": "npm run test:syntax && npm run test:regression && npm run test:workflow",
+     "test:browser": "node tests/e2e_browser.mjs"
+   },
+--- anesvet_v1472_full/package-lock.json	2026-09-19 16:00:11.000000000 +0000
++++ anesvet_v148_work/package-lock.json	2026-09-22 14:57:37.869113290 +0000
+@@ -1,12 +1,12 @@
+ {
+-  "name": "anesvet-v14-7-2",
+-  "version": "14.7.2",
++  "name": "anesvet-v14-8-0",
++  "version": "14.8.0",
+   "lockfileVersion": 3,
+   "requires": true,
+   "packages": {
+     "": {
+-      "name": "anesvet-v14-7-2",
+-      "version": "14.7.2",
++      "name": "anesvet-v14-8-0",
++      "version": "14.8.0",
+       "devDependencies": {
+         "fake-indexeddb": "6.2.5",
+         "jsdom": "30.1.0",
+--- anesvet_v1472_full/README_TH.md	2026-09-19 15:59:48.000000000 +0000
++++ anesvet_v148_work/README_TH.md	2026-09-22 14:57:37.869711550 +0000
+@@ -1,4 +1,16 @@
+-# ANESVET V14.7.2 — Faster Induction & Medication Workflow
++# ANESVET V14.8.0 — Adaptive Clinical Workflow
++
++## V14.8.0 — Adaptive Clinical Workflow
++
++เพิ่ม `OR workflow profile` ต่อเคส: Routine / Elective, Emergency / Critical, C-section และ Custom โดย OR LIVE จะปรับ contextual actions และ metrics ตามบริบท แต่ **ไม่เปลี่ยนยา dose, threshold หรือ clinical protocol อัตโนมัติ**
++
++- Critical: บันทึก Stabilization / support checkpoint ก่อน induction ได้โดยไม่เริ่ม anesthesia timer
++- C-section: บันทึก First neonate / Last neonate และคำนวณ elapsed time จาก Induction
++- Routine: เก็บ fast path ของ V14.7.2 ให้สั้นและกด Record / Medication ได้เร็ว
++- เคสเก่าที่ไม่มี profile จะเปิดเป็น Routine เพื่อ backward compatibility
++
++ดูรายละเอียดที่ `RELEASE_NOTES_V14_8_0.md`
++
+ 
+ พัฒนาต่อจาก ANESVET V14.7.1 โดยคง clinical workflow, storage keys, IndexedDB schema, alert protocol และ medication audit เดิมทั้งหมด รอบนี้แก้ workflow ตามการใช้งานจริงใน OR: เริ่ม induction ต้องเร็ว, ยา induction อาจมากกว่าหนึ่งตัว, ปริมาณยาสามารถลงย้อนหลังหลัง airway stable และต้องมีจุดบันทึกยาเพิ่มเติมที่มองเห็นง่ายตลอดเคส
+ 
+--- anesvet_v1472_full/tests/regression.mjs	2026-09-19 15:55:23.000000000 +0000
++++ anesvet_v148_work/tests/regression.mjs	2026-09-22 14:57:37.868431554 +0000
+@@ -13,8 +13,8 @@
+ const must=(cond,msg)=>assert.ok(cond,msg);
+ 
+ // Core version / structure
+-must(manifest.name.includes('V14.7.2'),'manifest should be V14.7.2');
+-must(sw.includes('v14-7-2'),'service worker cache should identify V14.7.2');
++must(manifest.name.includes('V14.8.0'),'manifest should be V14.8.0');
++must(sw.includes('v14-8-0'),'service worker cache should identify V14.8.0');
+ must(count(app,/function\s+phaseLabel\s*\(/g)===1,'phaseLabel must be declared once');
+ const fnNames=[...app.matchAll(/\bfunction\s+([A-Za-z_$][\w$]*)\s*\(/g)].map(m=>m[1]);
+ const dupFns=[...new Set(fnNames.filter((n,i)=>fnNames.indexOf(n)!==i))];
+@@ -90,7 +90,7 @@
+ must(app.includes('function getFluidMetrics'),'fluid integration missing');
+ 
+ // Backup / restore
+-must(app.includes("format:'ANESVET_BACKUP',version:'14.7.2'"),'backup version must be 14.7.2');
++must(app.includes("format:'ANESVET_BACKUP',version:'14.8.0'"),'backup version must be 14.8.0');
+ must(app.includes("raw.format!=='ANESVET_BACKUP'")&&app.includes('idbClearCases()'),'backup restore integrity path missing');
+ 
+ // Reset must preserve persistent stores by only resetting current case state.
+@@ -131,16 +131,16 @@
+ must(html.includes('id="updateBanner"')&&app.includes('Finish / archive current case before updating'),'safe PWA update UI missing');
+ must(app.includes('caseLowestMap')&&app.includes('caseLowestSpo2')&&app.includes('Emergency return to OR recorded'),'previous anesthesia warning expansion missing');
+ 
+-console.log(`ANESVET V14.7.2 regression checks: PASS (${ids.length} unique HTML ids, ${fnNames.length} unique named functions)`);
++console.log(`ANESVET V14.8.0 regression checks: PASS (${ids.length} unique HTML ids, ${fnNames.length} unique named functions)`);
+ 
+-// V14.7.2 compatibility and integration contracts.
++// V14.8.0 compatibility and integration contracts.
+ for(const key of ['anesvet_v14_3_current','anesvet_v14_3_settings','anesvet_v14_3_archive','anesvet_v14_3_protocol_audit'])must(app.includes(key),'original key retained: '+key);
+ must(html.indexOf('clinical-workflow.js')<html.indexOf('app.js'),'helper loads before application');
+-must(sw.includes('clinical-workflow.js?v=14.7.2'),'offline cache includes helper');
++must(sw.includes('clinical-workflow.js?v=14.8.0'),'offline cache includes helper');
+ must(count(app,/\$\('orStickyRecordBtn'\)\?\.addEventListener/g)===1,'sticky record listener must bind once');
+ for(const id of ['alertProtocolDialog','orQuickDrugDialog','orProblemPanel','recoveryProblemPanel','recoveryHandoffText','reportRecoveryHandoff'])must(ids.includes(id),'new UI '+id);
+ for(const file of [...sw.matchAll(/'\.\/([^']+)'/g)].map(x=>x[1].split('?')[0]))must(fs.existsSync(path.join(root,file)),'cache asset exists: '+file);
+-for(const id of ['orPrimaryActionBtn','orSecondaryPhaseBtn','orPrimaryDrugBtn','orStickyDrugBtn','orAirwayPanelDetails','orFluidPanelDetails','orQuickInductionSkipBtn','orQuickDrugDoneBtn','recoveryMedicationBtn','recoveryHandoffSummary'])must(ids.includes(id),'V14.7.2 OR LIVE UX control '+id);
++for(const id of ['orPrimaryActionBtn','orSecondaryPhaseBtn','orPrimaryDrugBtn','orStickyDrugBtn','orAirwayPanelDetails','orFluidPanelDetails','orQuickInductionSkipBtn','orQuickDrugDoneBtn','recoveryMedicationBtn','recoveryHandoffSummary'])must(ids.includes(id),'V14.8.0 OR LIVE UX control '+id);
+ must(app.includes("state.inductionDocumentationMode='deferred-v1472'")&&app.includes("triggerOrMilestone('Induction')"),'Start induction must timestamp the milestone without forcing dose entry');
+ must(app.includes('function nextInductionQuickDrugIndex')&&app.includes('Induction medications reviewed'),'multi-drug induction review flow missing');
+ must(app.includes("source:induction?'OR Induction':recovery?'Recovery Medication':'OR Quick Drug'"),'induction/recovery medication sources must be distinct');
+@@ -149,4 +149,4 @@
+ must(app.includes("airwayWorkflowContext==='intubation'")&&app.includes("triggerOrMilestone('Intubation')"),'Airway save must be able to create the Intubation milestone');
+ must(css.includes('.or-live-page>.or-status-row{display:none}')&&css.includes('.or-live-page .or-alert-panel,.or-live-page .complication-watch-panel{display:none}'),'duplicate OR LIVE workspaces should be visually suppressed');
+ must(count(html,/class="or-milestone"/g)>=5,'legacy milestone hooks must remain for compatibility');
+-console.log('V14.7.2 integration and storage contracts: PASS');
++console.log('V14.8.0 integration and storage contracts: PASS');

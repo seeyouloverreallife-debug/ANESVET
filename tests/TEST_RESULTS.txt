@@ -1,0 +1,21 @@
+ANESVET V14.8.0 — validation summary
+Date: 2026-09-22
+
+PASS
+- node tests/syntax.mjs
+- node tests/regression.mjs
+- node tests/ux_v1472_static.mjs
+- node tests/ux_v148_static.mjs
+- node tests/clinical_workflow.mjs
+- node tests/workflow_scenarios.mjs
+
+BLOCKED / NOT CLAIMED
+- tests/dom_workflow.mjs
+- tests/adaptive_workflow_v148.mjs
+- tests/compatibility.mjs
+- tests/governance.mjs
+- tests/final_lock.mjs
+Reason: jsdom/fake-indexeddb dependencies were not present in the supplied archive; npm ci timed out in this runtime.
+- native Chromium smoke: file navigation timed out in this runtime.
+
+Clinical values were not changed in V14.8.0. The new profile layer controls documentation workflow only.

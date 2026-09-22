@@ -1,0 +1,16 @@
+ANESVET V14.7.2 BROWSER STATUS
+
+NOT PASSED IN THIS RUNTIME.
+
+Attempts:
+- Native Chromium via Python Playwright + localhost -> ERR_BLOCKED_BY_ADMINISTRATOR
+- Native Chromium via file:// -> ERR_BLOCKED_BY_ADMINISTRATOR
+- npm dependency install for Node Playwright/jsdom -> timeout
+
+Required acceptance on deployment host:
+1. Upgrade V14.7.1 -> V14.7.2 on the same origin/storage.
+2. New patient -> Start Induction must timestamp immediately without opening dose form.
+3. After airway stabilization, open MEDS and record at least Diazepam + Propofol; both should retain the Induction administration time while storing later documentation time.
+4. Verify MEDS remains available during intra-op/emergence and Medication works in Recovery.
+5. Verify Recovery Handoff shows compact cards first; full details remain collapsed.
+6. Verify refresh/reload, offline/service worker, PWA update, final lock/checksum and PDF pagination.

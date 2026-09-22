@@ -1,0 +1,18 @@
+{
+  "release": "ANESVET V14.8.0",
+  "build_date": "2026-09-22",
+  "baseline": {
+    "file": "ANESVET_V14_7_2.zip",
+    "sha256": "b442e5b5315ea22df3683b8696d9b53804a4f37854544ce4ec96d8dbda7891ba"
+  },
+  "implementation": "Additive modification of the user-supplied V14.7.2 source; not rebuilt from scratch.",
+  "clinical_defaults_changed": false,
+  "storage_keys_changed": false,
+  "indexeddb_version_changed": false,
+  "primary_files": {
+    "index.html": "d61d5aa3c29f2b33e1da121df3acb8060c2c13f1d46976616e607777eb9f32a4",
+    "app.js": "4d340eaf3b2208c0c199f93b19f65de0258aa24e0ebda5fca33e74ab1f9ec12e",
+    "style.css": "f943e13ee99ffd75be049dd03ad62dd958232e75566d611370e7ecc153927559",
+    "clinical-workflow.js": "6ac11b5973d23fd50eee3cd53d8de10a0506fc158b326d004691072c2ae04656"
+  }
+}

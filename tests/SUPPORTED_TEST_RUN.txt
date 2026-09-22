@@ -1,0 +1,9 @@
+ANESVET V14.8.0 — supported tests executed in this runtime
+Syntax + JSON: PASS
+ANESVET V14.8.0 regression checks: PASS
+V14.8.0 integration and storage contracts: PASS
+V14.7.2 UX backward compatibility contracts: PASS
+V14.8 adaptive workflow contracts: PASS
+Production clinical helpers: PASS
+Workflow model scenarios: PASS
+DOM/browser suites: NOT CLAIMED — dependencies/runtime blocked
