@@ -1,4 +1,4 @@
-ANESVET V14.8.2 — validation summary
+ANESVET V14.9.0 — validation summary
 Date: 2026-09-22
 
 PASS
@@ -7,8 +7,9 @@ PASS
 - node tests/ux_v1472_static.mjs
 - node tests/ux_v148_static.mjs
 - node tests/risk_flags_v1482.mjs
+- node tests/mobile_or_v149.mjs
 - node tests/clinical_workflow.mjs (73 assertions)
-- node tests/workflow_scenarios.mjs
+- node tests/workflow_scenarios.mjs (4 scenarios)
 
 BLOCKED / NOT CLAIMED
 - tests/adaptive_workflow_v148.mjs
@@ -16,6 +17,6 @@ BLOCKED / NOT CLAIMED
 - tests/compatibility.mjs
 - tests/governance.mjs
 - tests/final_lock.mjs
-Reason: jsdom/fake-indexeddb dependencies are not installed in this runtime.
+Reason: jsdom/fake-indexeddb dependencies are not installed in this runtime. npm ci was attempted and timed out.
 
-Clinical values were not changed in V14.8.2. This release adds structured anesthetic risk documentation and visibility only.
+Clinical values were not changed in V14.9.0. This release focuses on mobile/iPad OR usability and local-save reliability.

@@ -20,6 +20,9 @@ const SESSION_TTL_MS=30000;
 const SESSION_HEARTBEAT_MS=5000;
 const DB_NAME='ANESVET_DB';
 const DB_VERSION=2;
+const APP_VERSION='14.9.0';
+const AUTOSAVE_DELAY_MS=450;
+const ACTIVE_CHECKPOINT_MS=15000;
 
 const numericFields = ['weight','preopHR','preopRR','preopTemp','hr','rr','sap','map','dap','spo2','etco2','temp','vaporizer','o2flow','fluidRateInput','fluidTotal','recHR','recRR','recMAP','recSpO2','recTemp'];
 const dataFields = [
@@ -142,7 +145,7 @@ function toast(msg){
 }
 function readSessionLock(){try{const x=JSON.parse(localStorage.getItem(SESSION_LOCK_KEY)||'null');return x&&x.tabId?x:null}catch(e){return null}}
 function sessionLockIsFresh(lock){return !!(lock&&lock.tabId&&Number(lock.heartbeatAt)>0&&(Date.now()-Number(lock.heartbeatAt))<SESSION_TTL_MS)}
-function writeSessionLock(){if(sessionMode!=='active')return;const lock={tabId:sessionTabId,heartbeatAt:Date.now(),caseId:state?.caseId||'',patientName:state?.patientName||'',version:'14.8.2'};try{localStorage.setItem(SESSION_LOCK_KEY,JSON.stringify(lock))}catch(e){};try{sessionChannel?.postMessage({type:'HEARTBEAT',...lock})}catch(e){}}
+function writeSessionLock(){if(sessionMode!=='active')return;const lock={tabId:sessionTabId,heartbeatAt:Date.now(),caseId:state?.caseId||'',patientName:state?.patientName||'',version:APP_VERSION};try{localStorage.setItem(SESSION_LOCK_KEY,JSON.stringify(lock))}catch(e){};try{sessionChannel?.postMessage({type:'HEARTBEAT',...lock})}catch(e){}}
 function releaseSessionLock(){const lock=readSessionLock();if(lock?.tabId===sessionTabId){try{localStorage.removeItem(SESSION_LOCK_KEY)}catch(e){};try{sessionChannel?.postMessage({type:'RELEASE',tabId:sessionTabId})}catch(e){}}}
 function sessionSafeTarget(target){return !!target?.closest?.('.session-safe,[data-tab],[data-more-tab],#moreMenuBtn,.archive-pdf,.verify-integrity')}
 function renderSessionMode(){
@@ -395,18 +398,38 @@ function pauseTimer(){
   renderTimerState();
   save();
 }
-function renderSaveState(mode='saved'){
-  const el=$('saveState');if(!el)return;
-  if(mode==='error'){el.className='save-state error';el.textContent='⚠ Save failed';return}
+function renderSaveState(mode=null){
+  const el=$('saveState');if(!el)return;if(mode)saveUiMode=mode;mode=mode||saveUiMode;
+  if(mode==='error'){el.className='save-state error';el.textContent='⚠ SAVE FAILED';return}
   if(mode==='saving'){el.className='save-state saving';el.textContent='Saving…';return}
+  if(mode==='dirty'){el.className='save-state dirty';el.textContent='● Unsaved changes';return}
   const t=state.lastSavedAt?formatClock(state.lastSavedAt):'—';
   el.className='save-state saved';el.textContent=`✓ Saved locally ${t}`;
+}
+function renderConnectivityState(){
+  const el=$('connectivityState');if(!el)return;const online=navigator.onLine!==false;
+  el.className=`connectivity-state ${online?'local':'offline'}`;
+  el.textContent=online?'● Local-first':'● Offline • local save';
+  el.title=online?'Clinical data saves locally first; internet is not required for OR documentation.':'Offline mode: current case continues saving on this device.';
+}
+function scheduleAutosave(){
+  if(resetInProgress||sessionMode!=='active'||state.caseLocked)return;
+  renderSaveState('dirty');clearTimeout(autosaveTimer);autosaveTimer=setTimeout(()=>{autosaveTimer=null;save()},AUTOSAVE_DELAY_MS);
+}
+function startActiveCheckpoint(){
+  clearInterval(activeCheckpointTimer);activeCheckpointTimer=setInterval(()=>{
+    if(resetInProgress||sessionMode!=='active'||state.caseLocked)return;
+    if(state.timer.running||state.casePhase==='recovery'||hasActiveCaseData())save();
+  },ACTIVE_CHECKPOINT_MS);
 }
 
 let archiveDbPromise=null;
 let archiveCache=[];
 let archiveBackend='initializing';
 let currentMirrorTimer=null;
+let autosaveTimer=null;
+let activeCheckpointTimer=null;
+let saveUiMode='saved';
 function openAnesvetDb(){
   if(archiveDbPromise)return archiveDbPromise;
   archiveDbPromise=new Promise((resolve,reject)=>{
@@ -536,6 +559,7 @@ async function initArchiveDb(){
 function renderStorageStatus(){const el=$('storageStatus');if(el)el.textContent=`Storage: ${archiveBackend} • ${archiveCache.length} archived case${archiveCache.length===1?'':'s'} • no 50-case cap`}
 
 function save({persistLocked=false}={}){
+  if(autosaveTimer){clearTimeout(autosaveTimer);autosaveTimer=null}
   if(sessionMode!=='active'){renderSaveState('saved');return false}
   // Only the final-lock transaction may persist the sealed payload; never resample UI fields.
   if(state.caseLocked){
@@ -555,11 +579,14 @@ function save({persistLocked=false}={}){
     state.preopChecks={};$$('.preop-check').forEach(x=>state.preopChecks[x.dataset.key]=x.checked);
     state.preopNA={};$$('.preop-na-btn').forEach(x=>state.preopNA[x.dataset.key]=x.closest('.preop-item')?.classList.contains('na')||false);
     state.lastSavedAt=Date.now();
-    localStorage.setItem(CURRENT_KEY, JSON.stringify(state));
+    const payload=JSON.stringify(state);
+    localStorage.setItem(CURRENT_KEY,payload);
+    const verify=JSON.parse(localStorage.getItem(CURRENT_KEY)||'null');
+    if(!verify||verify.caseId!==state.caseId||Number(verify.lastSavedAt)!==Number(state.lastSavedAt))throw new Error('Local save verification failed');
     queueCurrentMirror();
     renderSaveState('saved');
     return true;
-  }catch(e){renderSaveState('error');return false}
+  }catch(e){console.error('ANESVET save failed',e);renderSaveState('error');return false}
 }
 function cToF(c){return (Number(c)*9/5)+32}
 function fToC(f){return (Number(f)-32)*5/9}
@@ -1465,7 +1492,7 @@ function renderOrLive(){
   if($('patientPrecautions')?.value.trim())riskParts.push(`Caution: ${$('patientPrecautions').value.trim()}`);
   const structuredRisks=preopRiskSummaryLabels({compact:true});if(structuredRisks.length)riskParts.push(`Risk flags: ${structuredRisks.join(', ')}`);
   if($('orRiskLine')){const airwayRisk=!!($('riskBrachycephalic')?.checked||$('riskBOAS')?.checked||$('riskDifficultAirway')?.checked||$('riskUpperAirway')?.checked||$('riskAspiration')?.checked);$('orRiskLine').hidden=!riskParts.length;$('orRiskLine').classList.toggle('airway-risk',airwayRisk);$('orRiskLine').textContent=riskParts.length?`${airwayRisk?'⚠ AIRWAY RISK • ':'⚠ '}${riskParts.join(' • ')}`:'';}
-  if($('orStickyPhase'))$('orStickyPhase').textContent=phaseLabel();if($('orStickyClock'))$('orStickyClock').textContent=formatElapsed(currentElapsed());
+  if($('orStickyPatient'))$('orStickyPatient').textContent=`${name} • ${weight??'—'} kg`;if($('orStickyPhase'))$('orStickyPhase').textContent=phaseLabel();if($('orStickyClock'))$('orStickyClock').textContent=formatElapsed(currentElapsed());
     $('orPhaseBadge').textContent=phaseLabel();
   $('orPhaseBadge').className=`status-pill phase ${phaseClass()}`;
   $('orlive').classList.toggle('recovery-mode',state.casePhase==='recovery');
@@ -1506,10 +1533,23 @@ function renderOrLive(){
   const total=immediateWithAdvice.length+trends.length;$('orAlertCount').textContent=`${total} ALERT${total===1?'':'S'}`;$('orAlertCount').className=`status-pill ${immediateWithAdvice.some(a=>a.level==='danger')||trends.some(a=>a.level==='danger')?'danger':total?'warn':'good'}`;
   const group=(title,kind,arr)=>arr.length?`<div class="or-alert-group ${kind}"><div class="or-alert-group-title">${title}</div>${arr.map(a=>`<div class="or-alert-item ${a.level}"><b>${escapeHtml(a.title)}</b><span>${escapeHtml(a.text)}</span>${a.advice?`<small class="alert-advice">Suggested first checks: ${escapeHtml(a.advice)}</small>`:''}</div>`).join('')}</div>`:'';
   $('orAlertList').innerHTML=total?group('Immediate','immediate',immediateWithAdvice)+group('Trend','trend',trends):'<div class="empty-state compact">No active alerts</div>';
-  renderOrFluidPanel();renderOrMiniTrends();renderOrRecent();renderOrTimerState();renderSaveState();renderRecoveryState();renderComplications();renderAlertProtocolStatus();renderActiveProblems();renderAirwayPanel();renderOrPrimaryFlow();
+  renderOrFluidPanel();renderOrMiniTrends();renderOrRecent();renderOrTimerState();renderSaveState();renderRecoveryState();renderComplications();renderAlertProtocolStatus();renderActiveProblems();renderAirwayPanel();renderOrPrimaryFlow();renderOrMobileDock();
+}
+function renderOrMobileDock(){
+  const next=$('orMobileNextBtn'),record=$('orMobileRecordBtn');
+  if(next){next.disabled=!!$('orPrimaryActionBtn')?.disabled;next.classList.toggle('danger',state.casePhase==='emergency');}
+  if(record){const due=!!$('orRecordNowBtn')?.classList.contains('due');record.classList.toggle('due',due);record.querySelector('b').textContent=due?'RECORD DUE':'RECORD';}
+}
+function openOrDetailsAndScroll(selector){
+  const el=document.querySelector(selector);if(!el)return;el.open=true;requestAnimationFrame(()=>el.scrollIntoView({behavior:'smooth',block:'center'}));
 }
 function startCaseFromOr(){if(!clinicalWriteAllowed())return false;if(state.timer.running)return true;if(!validateCaseReadyToStart())return false;const preopTotal=$$('.preop-check').length,preopDone=$$('.preop-check').filter(x=>x.checked).length,preopNA=$$('.preop-item.na').length,preopReviewed=preopDone+preopNA;if(preopReviewed<preopTotal&&!confirm(`Pre-op checklist ยัง review ไม่ครบ (${preopReviewed}/${preopTotal}) — ต้องการเริ่มเคสต่อหรือไม่?`))return false;const firstStart=(state.timer.elapsedMs||0)===0&&!state.caseStartedAt;state.timer.running=true;state.timer.startedEpoch=Date.now();if(firstStart){state.caseStartedAt=state.timer.startedEpoch;state.casePhase='induction';captureProtocolSnapshot();addAudit('CASE_STARTED','Anesthesia case timer started');}startTimerLoop();renderTimerState();renderOrTimerState();renderCasePhase();save();if(autoWakeEnabled())requestScreenWakeLock(true);if(firstStart)addEvent({category:'Case',name:'Case started',note:'Anesthesia case timer started'});toast(firstStart?'Case timer started':'Case timer resumed');return true}
 $('orStartBtn')?.addEventListener('click',startCaseFromOr);$('orPauseBtn')?.addEventListener('click',()=>{pauseTimer();renderOrLive()});$('orRecordNowBtn')?.addEventListener('click',()=>{if(!state.timer.running&&(state.timer.elapsedMs||0)===0){if(!startCaseFromOr())return}addRecord('');renderOrLive()});$('openOrLiveBtn')?.addEventListener('click',()=>setTab('orlive'));$('orOpenDrugBtn')?.addEventListener('click',openOrQuickDrug);$('orOpenTrendsBtn')?.addEventListener('click',()=>setTab('trends'));$('orOpenTimelineBtn')?.addEventListener('click',()=>setTab('timeline'));
+$('orMobileNextBtn')?.addEventListener('click',()=>$('orPrimaryActionBtn')?.click());
+$('orMobileRecordBtn')?.addEventListener('click',()=>$('orRecordNowBtn')?.click());
+$('orMobileDrugBtn')?.addEventListener('click',()=>openOrQuickDrug());
+$('orMobileFluidBtn')?.addEventListener('click',()=>openOrDetailsAndScroll('#orFluidPanelDetails'));
+$('orMobileEventBtn')?.addEventListener('click',()=>openOrDetailsAndScroll('.or-event-problem-menu'));
 $$('.or-milestone').forEach(btn=>btn.addEventListener('click',()=>{markMilestone(btn);renderOrLive()}));$$('.or-event').forEach(btn=>btn.addEventListener('click',()=>{addEvent({category:btn.dataset.cat,name:btn.dataset.label});renderOrLive()}));$$('.or-complication').forEach(btn=>btn.addEventListener('click',()=>openComplicationDialog(btn.dataset.complication||'')));
 $('orFullscreenBtn')?.addEventListener('click',async()=>{try{if(!document.fullscreenElement){if(document.documentElement.requestFullscreen)await document.documentElement.requestFullscreen();document.body.classList.add('or-fullscreen');$('orFullscreenBtn').textContent='Exit full screen'}else{if(document.exitFullscreen)await document.exitFullscreen();document.body.classList.remove('or-fullscreen');$('orFullscreenBtn').textContent='⛶ Full screen'}}catch(e){document.body.classList.toggle('or-fullscreen')}});document.addEventListener('fullscreenchange',()=>{if(!document.fullscreenElement){document.body.classList.remove('or-fullscreen');if($('orFullscreenBtn'))$('orFullscreenBtn').textContent='⛶ Full screen'}});
 function renderBuiltInProtocolChips(cfg=currentSettingsObject()){
@@ -1664,6 +1704,7 @@ function setTab(id,opts={}){
   closeMoreMenu();
   $$('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===id));
   $$('.tabpage').forEach(p=>p.classList.toggle('active',p.id===id));
+  document.body.classList.toggle('or-mobile-active',id==='orlive');
   localStorage.setItem(TAB_KEY,id);
   if(id==='trends') renderTrends();
   if(id==='cases'){renderArchives();renderBackupHealth();}
@@ -2941,7 +2982,7 @@ async function verifyBackupPayloadIntegrity(raw){
 
 async function backupAllData(){
   save();await initArchiveDb();await initPatientMaster();
-  const payload={format:'ANESVET_BACKUP',version:'14.8.2',exportedAt:Date.now(),current:state,archive:getArchive(),patients:getPatients(),breedAliases:loadBreedAliases(),settings:(()=>{try{return JSON.parse(localStorage.getItem(SETTINGS_KEY)||'null')}catch(e){return null}})(),drugLibrary:loadDrugLibraryData(),quickPresets:loadQuickPresets(),protocolAudit:getProtocolAudit()};
+  const payload={format:'ANESVET_BACKUP',version:APP_VERSION,exportedAt:Date.now(),current:state,archive:getArchive(),patients:getPatients(),breedAliases:loadBreedAliases(),settings:(()=>{try{return JSON.parse(localStorage.getItem(SETTINGS_KEY)||'null')}catch(e){return null}})(),drugLibrary:loadDrugLibraryData(),quickPresets:loadQuickPresets(),protocolAudit:getProtocolAudit()};
   downloadBlob(JSON.stringify(payload,null,2),'application/json',`ANESVET_BACKUP_${formatDate(Date.now())}.json`);
   const backupEpoch=Date.now();localStorage.setItem(LAST_BACKUP_KEY,String(backupEpoch));
   if($('backupStatus'))$('backupStatus').textContent=`Backup created ${formatClock(backupEpoch)} • ${payload.archive.length} cases • ${payload.patients.length} patients`;
@@ -3082,7 +3123,7 @@ function appRootUrl(){
   let path=here.pathname;
   if(!path.endsWith('/')) path=path.replace(/\/[^/]*$/,'/');
   const url=new URL(path, here.origin);
-  url.searchParams.set('v','14.8.2');
+  url.searchParams.set('v',APP_VERSION);
   return url.href;
 }
 function restartAtAppRoot(){
@@ -3524,12 +3565,14 @@ $('savePreopRiskBtn')?.addEventListener('click',savePreopRiskAssessment);
 
 dataFields.forEach(id=>{
   const el=$(id);if(!el)return;
-  el.addEventListener(el.type==='checkbox'||el.tagName==='SELECT'?'change':'input',updateDashboard);
+  el.addEventListener(el.type==='checkbox'||el.tagName==='SELECT'?'change':'input',()=>{updateDashboard();scheduleAutosave()});
 });
 
 window.addEventListener('beforeunload',e=>{if(resetInProgress)return;if(sessionMode==='active'&&state.timer.running){save();e.preventDefault();e.returnValue=''}});
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden'){if(!resetInProgress&&sessionMode==='active')save()}else{if(sessionMode==='active')writeSessionLock();if(sessionMode==='active'&&(state.timer.running||state.casePhase==='recovery')&&autoWakeEnabled())requestScreenWakeLock(true)}});
 window.addEventListener('pagehide',e=>{if(!resetInProgress&&sessionMode==='active')save();if(!e.persisted)releaseSessionLock()});
+window.addEventListener('online',renderConnectivityState);window.addEventListener('offline',renderConnectivityState);
+renderConnectivityState();startActiveCheckpoint();
 let deferredPrompt=null;
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;$('installBtn').hidden=false});
 $('installBtn').addEventListener('click',async()=>{if(!deferredPrompt)return;deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null;$('installBtn').hidden=true});
@@ -3548,7 +3591,7 @@ $('updateNowBtn')?.addEventListener('click',()=>{const reg=pendingServiceWorkerR
 $('updateLaterBtn')?.addEventListener('click',()=>{if($('updateBanner'))$('updateBanner').hidden=true});
 window.addEventListener('load',setupServiceWorkerUpdates);
 
-// V14.8.2 workflow integration; adaptive case profiles on top of deferred medication + compact handoff.
+// V14.9.0 mobile/iPad OR reliability on top of V14.8.2 workflow integration; adaptive case profiles on top of deferred medication + compact handoff.
 const WF=globalThis.AnesvetWorkflow;
 const ALERT_KEYS={map:'hypotension',spo2:'hypoxemia',etco2:'ventilation',temp:'hypothermia'};
 let alertProtocolEditScope='hospital',pendingProblem=null,orQuickOptions=[],orQuickBasis=null,orQuickContext=null;

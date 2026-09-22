@@ -13,8 +13,8 @@ const count=(s,re)=>(s.match(re)||[]).length;
 const must=(cond,msg)=>assert.ok(cond,msg);
 
 // Core version / structure
-must(manifest.name.includes('V14.8.2'),'manifest should be V14.8.2');
-must(sw.includes('v14-8-2'),'service worker cache should identify V14.8.2');
+must(manifest.name.includes('V14.9.0'),'manifest should be V14.9.0');
+must(sw.includes('v14-9-0'),'service worker cache should identify V14.9.0');
 must(count(app,/function\s+phaseLabel\s*\(/g)===1,'phaseLabel must be declared once');
 const fnNames=[...app.matchAll(/\bfunction\s+([A-Za-z_$][\w$]*)\s*\(/g)].map(m=>m[1]);
 const dupFns=[...new Set(fnNames.filter((n,i)=>fnNames.indexOf(n)!==i))];
@@ -111,7 +111,7 @@ must(app.includes('function agePartsFromDob'),'age calculation missing');
 must(app.includes('function getFluidMetrics'),'fluid integration missing');
 
 // Backup / restore
-must(app.includes("format:'ANESVET_BACKUP',version:'14.8.2'"),'backup version must be 14.8.2');
+must(app.includes("format:'ANESVET_BACKUP',version:APP_VERSION"),'backup version must use APP_VERSION');
 must(app.includes("raw.format!=='ANESVET_BACKUP'")&&app.includes('idbClearCases()'),'backup restore integrity path missing');
 
 // Reset must preserve persistent stores by only resetting current case state.
@@ -152,12 +152,12 @@ must(sw.includes("message")&&sw.includes('SKIP_WAITING')&&!sw.includes("install'
 must(html.includes('id="updateBanner"')&&app.includes('Finish / archive current case before updating'),'safe PWA update UI missing');
 must(app.includes('caseLowestMap')&&app.includes('caseLowestSpo2')&&app.includes('Emergency return to OR recorded'),'previous anesthesia warning expansion missing');
 
-console.log(`ANESVET V14.8.2 regression checks: PASS (${ids.length} unique HTML ids, ${fnNames.length} unique named functions)`);
+console.log(`ANESVET V14.9.0 regression checks: PASS (${ids.length} unique HTML ids, ${fnNames.length} unique named functions)`);
 
 // V14.8.1 compatibility and integration contracts.
 for(const key of ['anesvet_v14_3_current','anesvet_v14_3_settings','anesvet_v14_3_archive','anesvet_v14_3_protocol_audit'])must(app.includes(key),'original key retained: '+key);
 must(html.indexOf('clinical-workflow.js')<html.indexOf('app.js'),'helper loads before application');
-must(sw.includes('clinical-workflow.js?v=14.8.2'),'offline cache includes helper');
+must(sw.includes('clinical-workflow.js?v=14.9.0'),'offline cache includes helper');
 must(count(app,/\$\('orStickyRecordBtn'\)\?\.addEventListener/g)===1,'sticky record listener must bind once');
 for(const id of ['alertProtocolDialog','orQuickDrugDialog','orProblemPanel','recoveryProblemPanel','recoveryHandoffText','reportRecoveryHandoff'])must(ids.includes(id),'new UI '+id);
 for(const file of [...sw.matchAll(/'\.\/([^']+)'/g)].map(x=>x[1].split('?')[0]))must(fs.existsSync(path.join(root,file)),'cache asset exists: '+file);
@@ -170,4 +170,4 @@ must(app.includes('function renderRecoveryHandoffSummary')&&css.includes('.hando
 must(app.includes("airwayWorkflowContext==='intubation'")&&app.includes("triggerOrMilestone('Intubation')"),'Airway save must be able to create the Intubation milestone');
 must(css.includes('.or-live-page>.or-status-row{display:none}')&&css.includes('.or-live-page .or-alert-panel,.or-live-page .complication-watch-panel{display:none}'),'duplicate OR LIVE workspaces should be visually suppressed');
 must(count(html,/class="or-milestone"/g)>=5,'legacy milestone hooks must remain for compatibility');
-console.log('V14.8.2 integration and storage contracts: PASS');
+console.log('V14.9.0 integration and storage contracts: PASS');

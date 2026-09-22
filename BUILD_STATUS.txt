@@ -1,25 +1,29 @@
-ANESVET V14.8.2 — Anesthetic Risk Flags
+ANESVET V14.9.0 — Mobile/iPad OR Reliability
 Build date: 2026-09-22
-Baseline: ANESVET V14.8.1 Pre-anesthetic Physical Examination
+Baseline: ANESVET V14.8.2 Anesthetic Risk Flags
 
 IMPLEMENTED
-- Structured anesthetic risk flag panel
-- Brachycephalic anatomy and suspected/known BOAS kept as separate concepts
-- Contextual BOAS history/exam details
-- Explicit no-additional-risk review state
-- Reviewer + timestamp + audit trail
-- Save risk review -> mark risk checklist Done
-- Edit-after-save invalidates stale risk attestation
-- Risk flags surfaced in patient banner, Case Summary, OR LIVE and PDF/print
-- Airway-related flags receive stronger OR LIVE visual emphasis
+- Touch-first mobile OR LIVE bottom dock: NEXT / RECORD / MEDS / FLUID / EVENT
+- Sticky OR glance bar includes patient + current BW + phase + case time
+- Phone layout prioritizes thumb reach, large touch targets and reduced OR chrome
+- iPad/tablet touch targets enlarged; landscape OR layout remains dense and glanceable
+- Safe-area support for iPhone/iPad bottom/home indicator areas
+- 16px mobile form controls to reduce unwanted iOS input zoom
+- Debounced autosave after structured field edits
+- Active-case 15-second local checkpoint save
+- LocalStorage read-after-write verification before showing Saved locally
+- Dirty/save-failed UI state persists across OR timer rerenders
+- Online/offline local-first status
+- Existing screen Wake Lock retained for active anesthesia/recovery when supported
+- iOS/PWA standalone metadata
 
 UNCHANGED CLINICAL DEFAULTS
 - Drug doses/concentrations
 - Alert thresholds
 - Fluid references
 - Recovery scoring
-- ASA is not assigned automatically
-- Existing storage keys and IndexedDB version
+- ASA / BOAS logic
+- Existing storage keys and IndexedDB schema
 
 VALIDATION
 PASS: syntax + JSON
@@ -27,8 +31,9 @@ PASS: source regression / storage contracts
 PASS: V14.7.2 UX compatibility static contracts
 PASS: V14.8 adaptive workflow static contracts
 PASS: V14.8.2 anesthetic risk flag contracts
+PASS: V14.9.0 mobile/iPad OR reliability contracts
 PASS: production clinical helper tests (73 assertions)
-PASS: workflow model scenarios
-NOT CLAIMED: jsdom/browser-dependent DOM integration suite (jsdom/fake-indexeddb unavailable in this runtime)
+PASS: workflow model scenarios (4 scenarios)
+NOT CLAIMED: jsdom/browser-dependent DOM integration suite (jsdom/fake-indexeddb unavailable; npm dependency install timed out in this runtime)
 
-Acceptance-test the build on the deployment browser/device before clinical production use.
+Acceptance-test the build on the actual phone/iPad and deployment browser before clinical production use.

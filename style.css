@@ -759,3 +759,74 @@ body.hide-sap-dap .record-table td.sap-dap-helper,body.hide-sap-dap .record-tabl
 @media(max-width:560px){.risk-chip-grid{grid-template-columns:1fr}.risk-footer-grid{grid-template-columns:1fr}.risk-heading-badges{justify-content:flex-start}}
 
 .or-risk-line.airway-risk{border:1px solid rgba(255,208,119,.5);background:rgba(128,65,0,.30);font-weight:900}
+
+
+/* V14.9.0 — Mobile/iPad OR Reliability */
+html{-webkit-text-size-adjust:100%;touch-action:manipulation}
+button,.btn,.tab,.or-primary-action,.or-record-button,.or-action-link,.or-complication,.or-event{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.connectivity-state{display:inline-flex;align-items:center;min-height:28px;padding:4px 8px;border-radius:999px;font-size:.69rem;font-weight:900;white-space:nowrap;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);color:#fff}
+.connectivity-state.offline{background:rgba(255,196,85,.16);border-color:rgba(255,219,151,.34)}
+.save-state.dirty{background:rgba(255,196,85,.16)!important;color:#fff3d1!important}
+.or-sticky-patient{min-width:0}
+.or-mobile-dock{display:none}
+
+/* iPad/tablet: keep OR cockpit dense enough to glance without desktop-style tiny targets. */
+@media (min-width:768px) and (max-width:1180px){
+  .or-live-page .btn,.or-live-page button{min-height:46px}
+  .or-command-bar{padding:14px 15px}
+  .or-context-actions .btn{min-height:44px}
+  .or-vital-card{padding:11px}
+  .or-vital-card input{min-height:52px!important}
+}
+
+/* Phone / narrow portrait OR mode */
+@media(max-width:780px){
+  body.or-mobile-active{padding-bottom:calc(78px + env(safe-area-inset-bottom))}
+  main{padding-left:10px;padding-right:10px}
+  .topbar{padding:10px 12px;padding-top:calc(10px + env(safe-area-inset-top));gap:8px}
+  .brand-logo{width:42px;height:42px}.brand h1{font-size:1.28rem}.brand .eyebrow{display:none}
+  .top-actions{gap:6px}.timer-status-wrap{gap:5px}.case-clock{font-size:.95rem;padding:6px 8px}
+  #alertFeedbackBtn,#installBtn{display:none}
+  .save-state,.connectivity-state{font-size:.62rem;padding:4px 6px}
+  .case-strip{padding:9px 10px;margin-bottom:8px}.case-summary{grid-template-columns:1.2fr .55fr 1fr;gap:9px}.case-summary>div:nth-child(4){display:none}
+  .case-strip-status #globalStatus{display:none}
+  .tabs{top:0;padding:5px 0 8px}.tab{min-height:44px;padding:9px 12px}
+  .or-command-bar{border-radius:14px;padding:12px;margin-bottom:8px}
+  .or-command-bar .or-team-line{display:none}.or-procedure-line{font-size:.8rem}.or-risk-line{font-size:.78rem;line-height:1.35}
+  .or-timer-block{display:flex;align-items:center;gap:8px;justify-content:space-between}.or-case-clock{font-size:1.55rem}
+  .or-tools-menu>summary{min-height:44px;display:flex;align-items:center}
+  .or-tools-menu-body{position:fixed;left:10px;right:10px;bottom:calc(82px + env(safe-area-inset-bottom));top:auto;width:auto;grid-template-columns:1fr 1fr;z-index:90}
+  .or-tools-menu-body .btn{min-height:50px}
+  .or-sticky-mini{top:4px;grid-template-columns:1.25fr .8fr .9fr;gap:6px;padding:7px 8px;border-radius:11px}
+  .or-sticky-mini>div{padding:1px 2px}.or-sticky-mini>div:nth-child(3){display:block}.or-sticky-mini span{font-size:.56rem}.or-sticky-mini b{font-size:.78rem}
+  .or-sticky-mini .or-sticky-due{display:none}.or-sticky-mini .or-sticky-med,.or-sticky-mini #orStickyRecordBtn{display:none!important}
+  .or-primary-flow{margin:8px 0;padding:11px 12px}.or-primary-copy>b{font-size:1rem}.or-primary-copy>small{font-size:.78rem}
+  .or-primary-buttons{display:none}
+  .or-context-panel{padding:10px 11px;margin-bottom:8px}.or-context-copy small{font-size:.75rem}.or-context-actions .btn{min-height:48px}
+  .or-phase-tracker-panel{margin:8px 0;padding:0}.or-phase-details>summary{min-height:48px}
+  .or-vital-grid{gap:7px;margin-bottom:8px}.or-vital-card{border-radius:13px;padding:10px}.or-vital-card.priority{min-height:128px}.or-vital-card.secondary{min-height:106px}
+  .or-vital-card input{font-size:2rem!important;min-height:54px!important}.or-vital-card footer{min-height:25px;font-size:.66rem}
+  .or-maint-grid label{font-size:.76rem}.or-maint-grid input,.or-maint-grid select{min-height:48px}
+  .or-collapsible-summary{min-height:52px}.quick-add-buttons button{min-height:48px}.fluid-rate-input-row .btn{min-height:48px}
+  .or-action-buttons button{min-height:50px}
+  input,select,textarea{font-size:16px}
+  .workflow-dialog{width:calc(100vw - 12px)!important;max-height:calc(100dvh - 20px)!important;margin:auto;border-radius:14px}
+  .workflow-dialog-body{padding:14px}.workflow-dialog-actions{padding-bottom:calc(8px + env(safe-area-inset-bottom))}
+  .or-mobile-dock{position:fixed;display:grid;grid-template-columns:repeat(5,1fr);left:0;right:0;bottom:0;z-index:85;padding:7px 7px calc(7px + env(safe-area-inset-bottom));gap:5px;background:rgba(248,253,254,.98);border-top:1px solid #b9d4db;box-shadow:0 -8px 26px rgba(9,54,68,.14);backdrop-filter:blur(10px)}
+  .or-mobile-dock-btn{min-width:0;min-height:58px;border:1px solid #c5d7dc;border-radius:11px;background:#fff;color:#174b59;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:5px 2px;font:inherit;font-weight:900}
+  .or-mobile-dock-btn span{font-size:1.05rem;line-height:1}.or-mobile-dock-btn b{font-size:.62rem;letter-spacing:.02em;white-space:nowrap}
+  .or-mobile-dock-btn.primary{background:#0d5265;color:#fff;border-color:#0d5265}.or-mobile-dock-btn.due{background:#fff0ef;color:#a12620;border-color:#dfaaa6}.or-mobile-dock-btn:disabled{opacity:.45}
+  .or-live-page:not(.active) .or-mobile-dock{display:none}
+}
+
+@media(max-width:430px){
+  .case-summary{grid-template-columns:1.25fr .55fr}.case-summary>div:nth-child(3){display:none}
+  .or-sticky-mini{grid-template-columns:1.35fr .75fr .85fr}
+  .or-mobile-dock{gap:4px;padding-left:5px;padding-right:5px}.or-mobile-dock-btn{min-height:56px;border-radius:10px}.or-mobile-dock-btn b{font-size:.58rem}
+}
+
+@media(orientation:landscape) and (min-width:768px) and (max-width:1180px){
+  .or-command-bar{position:sticky;top:0;z-index:34}
+  .or-live-page .or-vital-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .or-live-page .or-secondary-grid{grid-template-columns:1.15fr .85fr}
+}

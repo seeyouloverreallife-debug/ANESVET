@@ -1,12 +1,13 @@
-ANESVET V14.8.2 — supported tests executed in this runtime
+ANESVET V14.9.0 — supported tests executed in this runtime
 
-PASS
-ANESVET V14.8.2 regression checks
-V14.8.2 integration and storage contracts
-V14.7.2 UX contracts
-V14.8 adaptive workflow static contracts (ux_v148_static)
-ANESVET V14.8.2 anesthetic risk flag contracts
-Production clinical helpers: 73 assertions
-Workflow model scenarios
+PASS: Syntax + JSON
+PASS: ANESVET V14.9.0 regression checks
+PASS: V14.9.0 integration and storage contracts
+PASS: V14.7.2 UX contracts
+PASS: V14.8 adaptive workflow static contracts
+PASS: V14.8.2 anesthetic risk flag contracts
+PASS: V14.9.0 mobile/iPad OR reliability contracts
+PASS: Production clinical helpers — 73 assertions
+PASS: Workflow model scenarios — 4 scenarios
 
-Browser/DOM-dependent tests requiring jsdom/fake-indexeddb are not claimed.
+DOM/browser-dependent tests are not claimed because jsdom/fake-indexeddb are unavailable in this runtime.

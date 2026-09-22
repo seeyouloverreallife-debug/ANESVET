@@ -1,0 +1,19 @@
+{
+  "release": "ANESVET V14.9.0",
+  "baseline": "ANESVET V14.8.2 Anesthetic Risk Flags supplied/approved in this conversation",
+  "baselineZipSha256": "ccd7a4ecc9ce7f642c35dbb2f4fa2303244be916471735ec2dd73ab31a22535f",
+  "buildDate": "2026-09-22",
+  "scope": [
+    "touch-first mobile OR LIVE",
+    "iPad/tablet responsive OR layout",
+    "mobile bottom quick-action dock",
+    "local-first debounced autosave and active-case checkpoints",
+    "read-after-write local save verification",
+    "offline/local-first status and safe-area/PWA metadata"
+  ],
+  "clinicalDefaultsChanged": false,
+  "drugDoseLogicChanged": false,
+  "alertThresholdsChanged": false,
+  "storageKeysChanged": false,
+  "indexedDbSchemaChanged": false
+}
