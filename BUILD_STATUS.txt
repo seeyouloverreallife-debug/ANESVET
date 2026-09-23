@@ -1,33 +1,7 @@
-ANESVET V15.4.0 — Recovery UX Release
-Build date: 2026-09-23
-Baseline: ANESVET V15.3.0 Intraoperative Vitals & Timeline Release
-
-IMPLEMENTED
-- Recovery quick workspace with latest observations, elapsed time, due timer, and readiness glance
-- COPY LAST recovery observations without automatic record creation
-- Large guarded RECORD RECOVERY VITALS action
-- Mobile/iPad Recovery dock: RECORD VITALS / MEDS / MORE
-- Recovery More sheet for checklist, score, problems, handoff, events, completion, Undo, and emergency OR return
-- Mobile Recovery information hierarchy prioritizes observations and repeat records
-- Readiness display aligned with Recovery completion requirements, including saved score
-
-UNCHANGED CLINICAL / SAFETY LOGIC
-- Drug doses / concentrations
-- Alert thresholds
-- Fluid references
-- ASA / BOAS logic
-- Recovery score algorithm
-- Verified safety checkpoint
-- stale medication-calculation safety stop
-- workflow confirmation + audited Undo
-- Recovery completion override + Final Lock gate
-- LocalStorage keys / IndexedDB schema
-
-VALIDATION
-PASS: syntax + JSON
-PASS: regression / storage contracts
-PASS: V14.7.2 through V15.3 compatibility contracts
-PASS: V15.4 Recovery UX / mobile focus contracts
-PASS: clinical helper suite — 73 assertions
-PASS: workflow model scenarios — 4 scenarios
-NOT CLAIMED: DOM/browser automation (jsdom/fake-indexeddb/Playwright unavailable; Chromium smoke timed out)
+ANESVET V15.5.0
+Static/syntax regression: PASS
+Compatibility regression: PASS
+V15.5 feature-contract test: PASS
+Clinical helper tests: PASS (73 assertions)
+Workflow model tests: PASS (4 scenarios)
+DOM/browser automation: NOT CLAIMED — jsdom/fake-indexeddb/Playwright unavailable in runtime; direct Chromium smoke attempt timed out.

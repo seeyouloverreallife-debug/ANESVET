@@ -7,12 +7,12 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="description" content="ANESVET V15.4.0 — Recovery UX Release">
+  <meta name="description" content="ANESVET V15.5.0 — Case Drug Plan & Compact Report Release">
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" href="./icon-192.png">
   <link rel="apple-touch-icon" href="./icon-192.png">
-  <link rel="stylesheet" href="./style.css?v=15.4.0">
-  <title>ANESVET V15.4.0</title>
+  <link rel="stylesheet" href="./style.css?v=15.5.0">
+  <title>ANESVET V15.5.0</title>
 </head>
 <body>
 <header class="topbar">
@@ -20,7 +20,7 @@
     <img class="brand-logo" src="./icon-192.png" alt="ANESVET logo">
     <div>
       <div class="eyebrow">GENOVI PET CARE • DIGITAL ANESTHESIA RECORD</div>
-      <h1>ANESVET <span>V15.4.0</span></h1>
+      <h1>ANESVET <span>V15.5.0</span></h1>
     </div>
   </div>
   <div class="top-actions">
@@ -416,6 +416,7 @@
       <div class="or-vitals-focus-actions">
         <button id="orCopyLastVitalsBtn" class="btn or-copy-last" type="button">↻ COPY LAST</button>
         <button id="orVitalsFocusSaveBtn" class="or-vitals-save" type="button">＋ SAVE VITALS</button>
+        <div id="orVitalSaveFeedback" class="or-vital-save-feedback" role="status" aria-live="polite" hidden>✓ Vitals saved</div>
       </div>
       <div class="or-quick-med-strip">
         <span>QUICK MEDS</span>
@@ -1267,7 +1268,7 @@
         </div>
         <div class="button-row">
           <button id="exportCsvBtn" class="btn">Export CSV</button>
-          <button id="printBtn" class="btn">Export PDF</button>
+          <button id="printSummaryBtn" class="btn primary">1-page Summary PDF</button><button id="printBtn" class="btn">Full PDF</button>
           <button id="clearRecordsBtn" class="btn danger-outline">Clear records</button>
         </div>
       </div>
@@ -1413,6 +1414,30 @@
           <button id="saveQuickConcentrationBtn" class="btn primary">Save concentrations</button>
         </div>
       </div>
+    </section>
+
+    <section class="panel case-drug-plan-panel">
+      <div class="section-heading">
+        <div>
+          <div class="eyebrow">CASE MEDICATION WORKFLOW</div>
+          <h2>Case Drug Plan</h2>
+          <p>เริ่มจาก Hospital Protocol / Quick Presets แล้วปรับเฉพาะเคสนี้ได้ • เมื่อ Start Case ระบบจะ freeze แผนและดึงยาเข้า OR LIVE</p>
+        </div>
+        <div class="button-row case-drug-plan-actions">
+          <button id="autoCaseDrugPlanBtn" class="btn" type="button">↻ From hospital protocol</button>
+          <button id="reviewCaseDrugPlanBtn" class="btn primary" type="button">✓ Save / Review plan</button>
+        </div>
+      </div>
+      <div id="caseDrugPlanStatus" class="case-drug-plan-status">Plan not reviewed</div>
+      <div class="case-drug-plan-add">
+        <label>Add another / alternative drug
+          <select id="caseDrugPlanAddSelect"></select>
+        </label>
+        <button id="caseDrugPlanAddBtn" class="btn" type="button">＋ Add to case</button>
+        <button id="caseDrugPlanClearBtn" class="btn danger-outline" type="button">Clear</button>
+      </div>
+      <div id="caseDrugPlanList" class="case-drug-plan-list"></div>
+      <div class="settings-note">ยาในแผน = planned/standby only ไม่ถือว่าให้ยาแล้ว • OR LIVE จะบันทึกเฉพาะ actual administered หลังยืนยัน • Emergency items แสดงเป็น STANDBY</div>
     </section>
 
     <section class="panel dose-spotlight-panel">
@@ -1921,7 +1946,7 @@
         <button id="exportCsvBtn2" class="btn">Export Records CSV</button>
         <button id="exportEventsCsvBtn" class="btn">Export Events CSV</button>
         <button id="exportJsonBtn" class="btn">Export Full Case JSON</button>
-        <button id="printCaseBtn" class="btn primary">Export PDF Report</button>
+        <button id="printCaseSummaryBtn" class="btn primary">1-page Summary PDF</button><button id="printCaseBtn" class="btn">Full PDF Report</button>
       </div>
     </section>
 
@@ -1950,6 +1975,28 @@
     </section>
   </section>
 
+
+  <section id="printSummaryReport" class="print-report compact-report" aria-hidden="true">
+    <div class="report-header compact-report-header">
+      <div><div class="report-brand">ANESVET</div><h1>Anesthesia Case Summary</h1></div>
+      <div class="report-date" id="summaryReportDate"></div>
+    </div>
+    <div id="summaryVoidNotice" class="report-void-notice" hidden></div>
+    <section class="compact-summary-hero">
+      <div id="summaryPatientBlock"></div>
+      <div id="summaryCaseBlock"></div>
+    </section>
+    <section class="compact-report-grid">
+      <div class="compact-report-card"><h2>Key Times</h2><div id="summaryMilestones"></div></div>
+      <div class="compact-report-card"><h2>Vitals Overview</h2><div id="summaryVitals"></div></div>
+      <div class="compact-report-card span2"><h2>Medication Administration</h2><div id="summaryMedications"></div></div>
+      <div class="compact-report-card"><h2>Fluids / Blood Loss</h2><div id="summaryFluids"></div></div>
+      <div class="compact-report-card"><h2>Risk / Problems</h2><div id="summaryRisks"></div></div>
+      <div class="compact-report-card span2"><h2>Recovery / Handoff</h2><div id="summaryRecovery"></div></div>
+    </section>
+    <div class="compact-report-signoff" id="summarySignoff"></div>
+    <div class="report-disclaimer">Compact clinical summary. Full ANESVET record retains serial vital signs, events, corrections, audit trail and detailed recovery documentation.</div>
+  </section>
 
   <section id="printReport" class="print-report" aria-hidden="true">
     <div class="report-header">
@@ -2096,7 +2143,7 @@
       </div>
       <div class="end-case-actions">
         <button id="endBackupBtn" class="btn">⬇ Backup all data</button>
-        <button id="endExportPdfBtn" class="btn">Export PDF Report</button>
+        <button id="endExportSummaryPdfBtn" class="btn primary">1-page Summary PDF</button><button id="endExportPdfBtn" class="btn">Full PDF Report</button>
         <button id="endSaveArchiveBtn" class="btn primary">✓ End, Lock & Archive Case</button>
       </div>
       <div class="settings-note">End Case จะหยุด timer, mark เคสเป็น COMPLETE + LOCKED, archive เคส และกลับไปหน้าเริ่มเคสใหม่หลังยืนยัน</div>
@@ -2235,7 +2282,7 @@
 
 <dialog id="alertProtocolDialog" class="workflow-dialog" aria-labelledby="alertProtocolTitle"><div class="workflow-dialog-body"><h2 id="alertProtocolTitle">Alert Protocol</h2><p id="alertProtocolContext"></p><p>Temperature thresholds use °F for exact compatibility (°C = (°F − 32) ÷ 1.8). Leave both upper fields blank to disable upper alerts. Comparisons are strictly below / above.</p><div id="alertThresholdFields"></div><label>Changed by<input id="alertProtocolActor" autocomplete="off"></label><label>Reason (required)<textarea id="alertProtocolReason"></textarea></label><p id="alertProtocolError" class="workflow-error" role="alert"></p><div class="workflow-dialog-actions"><button class="btn" data-close-dialog="alertProtocolDialog">Cancel</button><button class="btn" id="clearCaseAlertOverrideBtn">Return to frozen defaults</button><button class="btn primary" id="saveAlertProtocolBtn">Save with audit</button></div></div></dialog>
 <dialog id="problemActionDialog" class="workflow-dialog" aria-labelledby="problemActionTitle"><div class="workflow-dialog-body"><h2 id="problemActionTitle"></h2><label>Recorded by<input id="problemActionActor"></label><label>Intervention / outcome / reason<textarea id="problemActionNote"></textarea></label><p id="problemActionError" class="workflow-error" role="alert"></p><div class="workflow-dialog-actions"><button class="btn" data-close-dialog="problemActionDialog">Cancel</button><button id="saveProblemActionBtn" class="btn primary">Save action</button></div></div></dialog>
-<dialog id="orQuickDrugDialog" class="workflow-dialog" aria-labelledby="orQuickDrugTitle"><div class="workflow-dialog-body"><h2 id="orQuickDrugTitle">Medication</h2><p id="orQuickDrugBasis"></p><div id="orQuickDrugBatchStatus" class="quick-drug-batch-status" hidden></div><label>Frozen protocol drug<select id="orQuickDrugSelect"></select></label><div class="quick-drug-calculation" id="orQuickDrugCalculation"></div><p>ค่าคำนวณเป็นข้อมูลอ้างอิง • Actual administered สามารถลงย้อนหลังได้ โดยระบบเก็บทั้งเวลาที่ให้ยาและเวลาที่บันทึก</p><div class="quick-drug-fields"><label>Actual administered (mL)<input id="orQuickDrugActual" type="number" min="0" step="any" inputmode="decimal"></label><label>Route<input id="orQuickDrugRoute" placeholder="IV / IM / SC ..."></label><label>Administered by<input id="orQuickDrugBy"></label><label>Preparation / concentration<input id="orQuickDrugConcentration" placeholder="Confirm preparation used"></label></div><label>Note<textarea id="orQuickDrugNote"></textarea></label><p class="workflow-error" id="orQuickDrugError" role="alert"></p><div class="workflow-dialog-actions"><button class="btn" data-close-dialog="orQuickDrugDialog">Close</button><button id="orQuickInductionSkipBtn" class="btn" type="button" hidden>No injectable induction meds</button><button id="orQuickDrugDoneBtn" class="btn" type="button" hidden>Done</button><button id="orQuickDrugSaveBtn" class="btn primary">Save medication</button></div></div></dialog>
+<dialog id="orQuickDrugDialog" class="workflow-dialog" aria-labelledby="orQuickDrugTitle"><div class="workflow-dialog-body"><h2 id="orQuickDrugTitle">Medication</h2><p id="orQuickDrugBasis"></p><div id="orQuickDrugBatchStatus" class="quick-drug-batch-status" hidden></div><label id="orQuickDrugSelectWrap">Medication<select id="orQuickDrugSelect"></select></label><div id="orQuickDrugPlannedName" class="quick-drug-planned-name" hidden></div><div class="quick-drug-calculation" id="orQuickDrugCalculation"></div><p>ค่าคำนวณเป็นข้อมูลอ้างอิง • Actual administered สามารถลงย้อนหลังได้ โดยระบบเก็บทั้งเวลาที่ให้ยาและเวลาที่บันทึก</p><div class="quick-drug-fields"><label>Actual administered (mL)<input id="orQuickDrugActual" type="number" min="0" step="any" inputmode="decimal"></label><label>Route<input id="orQuickDrugRoute" placeholder="IV / IM / SC ..."></label><label>Administered by<input id="orQuickDrugBy"></label><label>Preparation / concentration<input id="orQuickDrugConcentration" placeholder="Confirm preparation used"></label></div><label>Note<textarea id="orQuickDrugNote"></textarea></label><p class="workflow-error" id="orQuickDrugError" role="alert"></p><div class="workflow-dialog-actions"><button class="btn" data-close-dialog="orQuickDrugDialog">Close</button><button id="orQuickInductionSkipBtn" class="btn" type="button" hidden>No injectable induction meds</button><button id="orQuickDrugOtherBtn" class="btn" type="button" hidden>＋ Other medication</button><button id="orQuickDrugDoneBtn" class="btn" type="button" hidden>Done</button><button id="orQuickDrugSaveBtn" class="btn primary">Save actual administered</button></div></div></dialog>
 
 <dialog id="drugAdminDialog" class="drug-admin-dialog">
   <form method="dialog" class="drug-admin-card" onsubmit="return false;">
@@ -2361,7 +2408,7 @@
 </dialog>
 
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
-<script src="./clinical-workflow.js?v=15.4.0"></script>
-<script src="./app.js?v=15.4.0"></script>
+<script src="./clinical-workflow.js?v=15.5.0"></script>
+<script src="./app.js?v=15.5.0"></script>
 </body>
 </html>

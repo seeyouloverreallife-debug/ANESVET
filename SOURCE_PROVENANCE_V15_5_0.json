@@ -1,0 +1,21 @@
+{
+  "release": "ANESVET V15.5.0",
+  "base_release": "ANESVET V15.4.0",
+  "base_artifact": "ANESVET_V15_4_0_Recovery_UX.zip",
+  "changes": [
+    "Case Drug Plan frozen into protocol snapshot",
+    "planned induction actual-only workflow",
+    "emergency/standby OR quick meds",
+    "compact summary PDF",
+    "explicit anesthesia vital save feedback"
+  ],
+  "clinical_logic_statement": "No automatic change to configured dose, concentration, ASA, BOAS, alert thresholds, or fluid reference logic.",
+  "files": {
+    "app.js": "d5808f342eb783a2df74d15e2f46a61d617522443d0cea2612da0bb31e163738",
+    "index.html": "29b9e8edb4ded5e4da6d50e2dba6a6e619acfa5a56034363186018a9540461c1",
+    "style.css": "d669947541bfa8ead2183f22423cf51ec13ba7462d9aa7b53842cf66361ec3dd",
+    "clinical-workflow.js": "6ac11b5973d23fd50eee3cd53d8de10a0506fc158b326d004691072c2ae04656",
+    "manifest.webmanifest": "51b38383d4306f32f66d69556abb74a76ba569fe25f7589fa756135dc1aa168d",
+    "service-worker.js": "1b4a3f4153c79b767e01dfcaed361ed0c4680ea2984601e66275ddbdae564d31"
+  }
+}

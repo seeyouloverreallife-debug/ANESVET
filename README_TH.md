@@ -1,3 +1,18 @@
+# ANESVET V15.5.0 — Case Drug Plan & Compact Report Release
+
+รุ่นนี้ต่อจาก V15.4.0 โดยแก้ workflow ยาและ reporting จากการทดสอบใช้งานจริงบนมือถือ/iPad: Drug Calculator สร้าง **Case Drug Plan** แล้ว freeze เข้า OR LIVE, Induction ให้กรอก actual administered ตามแผนโดยไม่ต้องเลือกยาเดิมซ้ำ, เพิ่ม **1-page Summary PDF** และเพิ่ม feedback ที่เห็นชัดหลัง Save Vitals
+
+ดูรายละเอียดที่ `RELEASE_NOTES_V15_5_0.md`
+
+## V15.5.0 — Case Drug Plan & Compact Report
+
+- Case Drug Plan เริ่มจาก Hospital Protocol / Quick Presets และปรับเฉพาะเคสได้
+- planned induction drugs ถูกดึงเข้า OR LIVE โดยตรง; ยานอกแผนยังเพิ่มได้
+- Emergency / standby drugs สามารถเตรียมไว้ใน plan และขึ้นเป็น Quick meds ใน OR
+- แผนยาถูก freeze กับ case + BW + protocol snapshot เมื่อเริ่มเคส
+- เพิ่ม 1-page Summary PDF แยกจาก Full PDF รายละเอียดเต็ม
+- หลัง Save anesthesia vitals มี inline `✓ SAVED` feedback + save-button flash
+
 # ANESVET V15.4.0 — Recovery UX Release
 
 
