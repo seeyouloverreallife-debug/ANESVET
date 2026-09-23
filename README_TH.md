@@ -1,8 +1,8 @@
-# ANESVET V15.9.1 — Private Pilot Feedback Endpoint
+# ANESVET V15.9.3 — Feedback Endpoint Update
 
 รุ่นสำหรับ Hospital Pilot ที่ฝังปลายทางรับ report ของผู้พัฒนาไว้ภายในแอป ผู้ทดลองไม่ต้องตั้งค่า webhook และเมื่อ offline ระบบจะเก็บ report ใน local queue เพื่อ sync อัตโนมัติเมื่อออนไลน์
 
-ดู `RELEASE_NOTES_V15_9_1.md` สำหรับรายละเอียดรุ่นนี้
+ดู `RELEASE_NOTES_V15_9_3.md` สำหรับรายละเอียดรุ่นนี้
 
 ## Previous V15.8 notes
 
@@ -257,3 +257,16 @@ V14.7.1 เคยมี supplemental Chromium smoke test; สำหรับ V14
 Quick meds จะแสดงเฉพาะรายการ Favorite จาก Hospital Drug Library และการแตะจะเปิด medication dialog พร้อมเลือกยาให้เท่านั้น ไม่ได้บันทึก actual administration อัตโนมัติ
 
 ดูรายละเอียดที่ `RELEASE_NOTES_V15_3_0.md`
+
+
+## V15.9.2 Feedback delivery
+- ผู้ใช้เห็นสถานะ Sending / Submitted / Queued ชัดเจน
+- ถ้า Google Apps Script response ถูก CORS/redirect block ระบบ fallback เป็น no-CORS POST และ sendBeacon
+- report ถูกบันทึก local queue ก่อนส่งทุกครั้ง
+- หาก offline จะส่งซ้ำอัตโนมัติเมื่อกลับ online
+
+
+## V15.9.3 Feedback endpoint update
+- เปลี่ยน private Hospital Pilot feedback endpoint เป็น deployment ใหม่ที่ผู้พัฒนาให้มา
+- ผู้ใช้ยังไม่เห็น URL ใน Settings/UI
+- queue/retry และ delivery fallback จาก V15.9.2 ยังคงเดิม

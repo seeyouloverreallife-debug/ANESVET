@@ -7,12 +7,12 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="description" content="ANESVET V15.9.1 — Private Pilot Feedback Endpoint">
+  <meta name="description" content="ANESVET V15.9.3 — Private Pilot Feedback Endpoint">
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" href="./icon-192.png">
   <link rel="apple-touch-icon" href="./icon-192.png">
-  <link rel="stylesheet" href="./style.css?v=15.9.1">
-  <title>ANESVET V15.9.1</title>
+  <link rel="stylesheet" href="./style.css?v=15.9.3">
+  <title>ANESVET V15.9.3</title>
 </head>
 <body>
 <header class="topbar">
@@ -20,7 +20,7 @@
     <img class="brand-logo" src="./icon-192.png" alt="ANESVET logo">
     <div>
       <div class="eyebrow">GENOVI PET CARE • DIGITAL ANESTHESIA RECORD</div>
-      <h1>ANESVET <span>V15.9.1</span></h1>
+      <h1>ANESVET <span>V15.9.3</span></h1>
     </div>
   </div>
   <div class="top-actions">
@@ -2374,8 +2374,10 @@
     <label>Screenshot (optional, ≤ 1.5 MB)<input id="pilotFeedbackScreenshot" type="file" accept="image/png,image/jpeg,image/webp"></label>
     <div class="settings-note">ระบบไม่แนบชื่อผู้ป่วย, HN, microchip หรือข้อมูลเจ้าของอัตโนมัติ กรุณาหลีกเลี่ยงข้อมูลระบุตัวบุคคลในข้อความและ screenshot หากไม่จำเป็น</div>
     <p id="pilotFeedbackError" class="workflow-error" role="alert"></p>
+    <div id="pilotFeedbackSubmitState" class="pilot-feedback-submit-state" role="status" aria-live="polite" hidden></div>
     <div class="workflow-dialog-actions">
       <button id="pilotFeedbackSubmitBtn" class="btn primary" type="button">Submit report</button>
+      <button id="pilotFeedbackDoneBtn" class="btn" type="button" hidden>Done</button>
     </div>
   </div>
 </dialog>
@@ -2507,8 +2509,9 @@
   </form>
 </dialog>
 
+<div id="feedbackDeliveryBanner" class="feedback-delivery-banner" role="status" aria-live="assertive" hidden></div>
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
-<script src="./clinical-workflow.js?v=15.9.1"></script>
-<script src="./app.js?v=15.9.1"></script>
+<script src="./clinical-workflow.js?v=15.9.3"></script>
+<script src="./app.js?v=15.9.3"></script>
 </body>
 </html>

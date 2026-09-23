@@ -1,8 +1,8 @@
 {
-  "name": "ANESVET V15.9.1 — Private Pilot Feedback Endpoint",
+  "name": "ANESVET V15.9.3 — Feedback Endpoint Update",
   "short_name": "ANESVET",
-  "description": "Touch-first local-first anesthesia workflow with structured Hospital Pilot feedback collection for mobile phones and iPad",
-  "start_url": "./?v=15.9.1",
+  "description": "Touch-first local-first anesthesia workflow with resilient private Hospital Pilot feedback delivery",
+  "start_url": "./?v=15.9.3",
   "scope": "./",
   "display": "standalone",
   "background_color": "#f3f7f8",

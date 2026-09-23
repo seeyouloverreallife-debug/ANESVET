@@ -1,6 +1,8 @@
-ANESVET V15.9.1
-Private Pilot Feedback Endpoint
-Syntax/regression: PASS
-Clinical helpers: PASS (73 assertions)
-Workflow model: PASS (4 scenarios)
-Browser E2E remains environment-dependent / not claimed.
+ANESVET V15.9.3 Feedback Endpoint Update
+Syntax: PASS
+Manifest JSON: PASS
+Static feedback delivery/version contracts: PASS
+Endpoint replacement: PASS
+Old endpoint source check: PASS (not present)
+Endpoint UI exposure: PASS (not shown in UI/docs)
+Live Google Apps Script write verification: NOT RUN from build environment; verify with one test report on a real device
