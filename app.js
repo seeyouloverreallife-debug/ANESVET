@@ -20,7 +20,7 @@ const SESSION_TTL_MS=30000;
 const SESSION_HEARTBEAT_MS=5000;
 const DB_NAME='ANESVET_DB';
 const DB_VERSION=2;
-const APP_VERSION='15.6.0';
+const APP_VERSION='15.7.0';
 const AUTOSAVE_DELAY_MS=450;
 const ACTIVE_CHECKPOINT_MS=15000;
 const SAFETY_CHECKPOINT_KEY='anesvet_v15_active_safety_checkpoint';
@@ -83,6 +83,7 @@ let state = {
   lockedAt:null,
   protocolSnapshot:null,
   caseDrugPlan:[],caseDrugPlanInitialized:false,caseDrugPlanReviewedAt:null,caseDrugPlanReviewedBy:'',
+  preOrReadinessOverride:null,
   orLastTransition:null,
   auditTrail:[],
   amendments:[],
@@ -362,11 +363,65 @@ function requireCurrentWeight(action='continue'){
   setTab('patient');$('weight')?.focus();return false;
 }
 function confirmCaseDrugPlanBeforeStart(){ensureCaseDrugPlanInitialized();if(!(state.caseDrugPlan||[]).length)return confirm('Case Drug Plan ว่าง — ต้องการเริ่มเคสโดยไม่มี planned medications หรือ emergency standby list หรือไม่?');if(state.caseDrugPlanReviewedAt)return true;return confirm(`Case Drug Plan ยังไม่ได้ Save / Review (${state.caseDrugPlan.length} medication(s))\n\nเริ่มเคสและ freeze แผนปัจจุบันต่อหรือไม่?`)}
+const PRE_OR_REQUIRED_CHECK_KEYS=['consent','fasting','exam','risk','labs','iv','oxygen','machine','vaporizer','absorber','airway','suction','monitor','warming','emergency'];
+function preOrReadinessStatus(){
+  const hard=[],required=[],recommended=[];
+  const name=$('patientName')?.value.trim()||state.patientName||'';
+  const species=$('species')?.value||state.species||'';
+  const weight=(currentWeightKg()??Number(state.weight))||null;
+  const procedure=$('patientProcedure')?.value.trim()||state.patientProcedure||state.procedure||'';
+  const asa=$('asa')?.value||state.asa||'';
+  if(!name)hard.push({key:'patient-name',label:'Patient name',tab:'patient',target:'patientName'});
+  if(!species)hard.push({key:'species',label:'Species',tab:'patient',target:'species'});
+  if(!(Number.isFinite(Number(weight))&&Number(weight)>0))hard.push({key:'weight',label:'Current body weight',tab:'patient',target:'weight'});
+  if(!state.patientSaved)hard.push({key:'patient-save',label:'Save Patient & Case Setup',tab:'patient',target:'savePatientBtn'});
+  if(!procedure)required.push({key:'procedure',label:'Procedure',tab:'patient',target:'patientProcedure'});
+  if(!asa)required.push({key:'asa',label:'ASA Physical Status',tab:'patient',target:'asaGrid'});
+  if(!state.preopExamRecordedAt)required.push({key:'physical-exam',label:'Recorded pre-anesthetic physical exam',tab:'preop',target:'preopExamHeading'});
+  if(!state.preopRiskRecordedAt)required.push({key:'risk-review',label:'Recorded anesthetic risk review',tab:'preop',target:'preopRiskStatus'});
+  const checks=state.preopChecks||{},na=state.preopNA||{};
+  const missingChecks=PRE_OR_REQUIRED_CHECK_KEYS.filter(k=>!checks[k]&&!na[k]);
+  if(missingChecks.length)required.push({key:'preop-checklist',label:`Pre-op checklist reviewed (${PRE_OR_REQUIRED_CHECK_KEYS.length-missingChecks.length}/${PRE_OR_REQUIRED_CHECK_KEYS.length})`,tab:'preop',target:'preopProgress'});
+  if(!state.caseDrugPlanReviewedAt)recommended.push({key:'drug-plan',label:'Case Drug Plan not reviewed',tab:'drugs',target:'caseDrugPlanStatus'});
+  if(!String($('anesthetist')?.value||state.anesthetist||'').trim())recommended.push({key:'anesthetist',label:'Anesthetist not entered',tab:'patient',target:'anesthetist'});
+  if(!String($('surgeon')?.value||state.surgeon||'').trim())recommended.push({key:'surgeon',label:'Surgeon not entered',tab:'patient',target:'surgeon'});
+  const blockerKeys=[...hard,...required].map(x=>x.key).sort();
+  return {hard,required,recommended,blockerKeys,ready:hard.length===0&&required.length===0};
+}
+function readinessOverrideValid(status=preOrReadinessStatus()){
+  const o=state.preOrReadinessOverride;if(!o||!Array.isArray(o.blockerKeys)||status.hard.length)return false;
+  return JSON.stringify([...o.blockerKeys].sort())===JSON.stringify(status.blockerKeys);
+}
+let pendingPreOrTarget='orlive';
+function renderPreOrReadinessDialog(target='orlive'){
+  const d=$('preOrReadinessDialog');if(!d)return;pendingPreOrTarget=target;
+  const st=preOrReadinessStatus(),req=$('preOrRequiredList'),rec=$('preOrRecommendedList');
+  const item=x=>`<li><span>•</span><b>${escapeHtml(x.label)}</b></li>`;
+  if(req)req.innerHTML=[...st.hard,...st.required].length?[...st.hard,...st.required].map(item).join(''):'<li class="ready">✓ Required items complete</li>';
+  if(rec)rec.innerHTML=st.recommended.length?st.recommended.map(item).join(''):'<li class="ready">✓ No additional warnings</li>';
+  if($('preOrReadinessTitle'))$('preOrReadinessTitle').textContent=st.ready?'Ready for OR LIVE':'Complete required items before OR LIVE';
+  if($('preOrReadinessStatus')){$('preOrReadinessStatus').className=`readiness-status ${st.ready?'good':'warn'}`;$('preOrReadinessStatus').textContent=st.ready?'READY':`${st.hard.length+st.required.length} REQUIRED ITEM(S) MISSING`}
+  const first=[...st.hard,...st.required][0];
+  if($('preOrGoFixBtn')){$('preOrGoFixBtn').hidden=!first;$('preOrGoFixBtn').textContent=first?`Review: ${first.label}`:'Review setup';$('preOrGoFixBtn').dataset.tab=first?.tab||'preop';$('preOrGoFixBtn').dataset.target=first?.target||''}
+  const overrideBox=$('preOrOverrideBox');if(overrideBox)overrideBox.hidden=st.hard.length>0||st.required.length===0;
+  if($('preOrOverrideReason'))$('preOrOverrideReason').value='';
+  if($('preOrOverrideBy'))$('preOrOverrideBy').value=$('anesthetist')?.value.trim()||state.anesthetist||'';
+  if(typeof d.showModal==='function'&&!d.open)d.showModal();
+}
+function requestOrLiveAccess(opts={}){
+  if(state.caseStartedAt)return true;
+  const st=preOrReadinessStatus();if(st.ready||readinessOverrideValid(st))return true;
+  if(!opts.silent)renderPreOrReadinessDialog('orlive');return false;
+}
+function invalidatePreOrOverride(){if(state.caseStartedAt)return;if(state.preOrReadinessOverride){state.preOrReadinessOverride=null;save()}renderWorkflowLocks()}
+function recoveryAccessAllowed(){return !!state.caseStartedAt&&['recovery','complete'].includes(state.casePhase)&&!state.emergencyReturnActive;}
 function validateCaseReadyToStart(){
   if(!$('patientName')?.value.trim()){toast('กรุณากรอกชื่อผู้ป่วยก่อนเริ่มเคส');setTab('patient');$('patientName')?.focus();return false}
   if(!$('species')?.value){toast('กรุณาเลือก Species ก่อนเริ่มเคส');setTab('patient');$('species')?.focus();return false}
   if(!state.patientSaved){toast('Patient & Case Setup changed or not saved — Save setup before Start case');setTab('patient');$('savePatientBtn')?.focus();return false}
   if(currentWeightKg()===null){toast('Current BW required — enter today’s measured weight before Start case');setTab('patient');$('weight')?.focus();return false}
+  const readiness=preOrReadinessStatus();
+  if(!readiness.ready&&!readinessOverrideValid(readiness)){renderPreOrReadinessDialog('orlive');return false}
   return true;
 }
 function renderWeightSafetyState(){
@@ -732,6 +787,7 @@ function load(){
     if(!('caseDrugPlanInitialized' in state))state.caseDrugPlanInitialized=state.caseDrugPlan.length>0;
     if(!('caseDrugPlanReviewedAt' in state))state.caseDrugPlanReviewedAt=null;
     if(!('caseDrugPlanReviewedBy' in state))state.caseDrugPlanReviewedBy='';
+    if(!('preOrReadinessOverride' in state))state.preOrReadinessOverride=null;
     if(!('visitId' in state))state.visitId='';
     if(!('caseIdentitySnapshot' in state))state.caseIdentitySnapshot=null;
     if(state.caseStartedAt&&!state.caseIdentitySnapshot)state.caseIdentitySnapshot={patientMasterId:state.patientMasterId||'',patientName:state.patientName||'',hospitalId:state.hospitalId||'',visitId:state.visitId||'',species:state.species||'',microchip:state.microchip||'',weight:Number(state.weight)||null,capturedAt:state.caseStartedAt,legacyBootstrap:true};
@@ -1214,13 +1270,13 @@ $('savePatientBtn').addEventListener('click',async()=>{
   // Recalculate immediately after Save so a NEW patient's confirmed BW propagates to Drug/Fluid/Plan views
   // without requiring a reload, another field edit, or re-selecting the patient.
   updateDashboard();
-  toast('บันทึก Patient Master + Case Setup แล้ว');setTab('preop');
+  toast('บันทึก Patient Master + Case Setup แล้ว');renderWorkflowLocks();setTab('preop');
 });
 $('editPatientBtn').addEventListener('click',()=>setTab('patient'));
 ['patientName','hospitalId','visitId','species','sex','reproductiveStatus','microchip','breed','birthDate','approxAgeYears','approxAgeMonths','approxAgeWeeks','weight','bcs','emergency','patientProcedure','patientAllergies','patientComorbidities','patientPrecautions','caseWorkflowProfile','surgeon','anesthetist','surgicalAssistant'].forEach(id=>{
   const el=$(id);if(!el)return;
   el.addEventListener(el.type==='checkbox'||el.tagName==='SELECT'?'change':'input',()=>{
-    state.patientSaved=false;updatePatientSaveStatus();
+    state.patientSaved=false;invalidatePreOrOverride();updatePatientSaveStatus();
   });
 });
 
@@ -1240,6 +1296,7 @@ function renderPreopExam(){
   badge.className='status-pill warn';badge.textContent=preopExamEnteredCount()?'UNSAVED CHANGES':'NOT RECORDED';if(meta)meta.textContent=preopExamEnteredCount()?'มีข้อมูลที่ยังไม่ได้กดบันทึกผลตรวจ':'ยังไม่ได้บันทึกผลตรวจ';
 }
 function markPreopExamDirty(){
+  invalidatePreOrOverride();
   if(state.preopExamRecordedAt){state.preopExamRecordedAt=null;state.preopExamRecordedBy='';const cb=document.querySelector('#preop .preop-check[data-key="exam"]');if(cb)cb.checked=false;document.querySelector('#preop .preop-item[data-preop-key="exam"]')?.classList.remove('na')}
   renderPreopExam();renderPreop();
 }
@@ -1252,7 +1309,7 @@ function savePreopPhysicalExam(){
   if($('preopExaminer')&&!$('preopExaminer').value.trim())$('preopExaminer').value=examiner;
   save();state.preopExamRecordedAt=Date.now();state.preopExamRecordedBy=examiner;
   const item=document.querySelector('#preop .preop-item[data-preop-key="exam"]'),cb=item?.querySelector('.preop-check');item?.classList.remove('na');if(cb){cb.disabled=false;cb.checked=true}
-  addAudit('PREANESTHETIC_PHYSICAL_EXAM_RECORDED',`${count} structured finding(s) recorded`,examiner);save();renderPreop();renderPreopExam();renderCaseSummary();toast('Physical examination saved • checklist marked Done');
+  invalidatePreOrOverride();addAudit('PREANESTHETIC_PHYSICAL_EXAM_RECORDED',`${count} structured finding(s) recorded`,examiner);save();renderPreop();renderPreopExam();renderCaseSummary();toast('Physical examination saved • checklist marked Done');
 }
 function preopExamReportHtml(){
   const val=id=>{const v=$(id)?.value??state[id]??'';return v===null||v===undefined||String(v).trim()===''?'—':String(v)};
@@ -1302,6 +1359,7 @@ function renderPreopRisk(){
   badge.className='status-pill warn';badge.textContent=(none||count)?'UNSAVED CHANGES':'NOT REVIEWED';if(meta)meta.textContent=(none||count)?'มี Risk assessment ที่ยังไม่ได้กดบันทึก':'ยังไม่ได้ทบทวน Anesthetic Risk Flags';
 }
 function markPreopRiskDirty(){
+  invalidatePreOrOverride();
   if(state.preopRiskRecordedAt){state.preopRiskRecordedAt=null;state.preopRiskRecordedBy='';const cb=document.querySelector('#preop .preop-check[data-key="risk"]');if(cb)cb.checked=false;document.querySelector('#preop .preop-item[data-preop-key="risk"]')?.classList.remove('na')}
   renderPreopRisk();renderPreop();
 }
@@ -1313,7 +1371,7 @@ function savePreopRiskAssessment(){
   if($('preopRiskAssessor')&&!$('preopRiskAssessor').value.trim())$('preopRiskAssessor').value=assessor;
   save();state.preopRiskRecordedAt=Date.now();state.preopRiskRecordedBy=assessor;
   const item=document.querySelector('#preop .preop-item[data-preop-key="risk"]'),cb=item?.querySelector('.preop-check');item?.classList.remove('na');if(cb){cb.disabled=false;cb.checked=true}
-  addAudit('PREANESTHETIC_RISK_REVIEW_RECORDED',none?'No additional structured risk flags':`${count} structured risk flag(s)`,assessor);save();renderPreop();renderPreopRisk();renderPatientRiskBanner();renderCaseSummary();renderOrLive();toast('Anesthetic risk review saved • checklist marked Done');
+  invalidatePreOrOverride();addAudit('PREANESTHETIC_RISK_REVIEW_RECORDED',none?'No additional structured risk flags':`${count} structured risk flag(s)`,assessor);save();renderPreop();renderPreopRisk();renderPatientRiskBanner();renderCaseSummary();renderOrLive();toast('Anesthetic risk review saved • checklist marked Done');
 }
 function riskAssessmentReportHtml(){
   const none=!!state.preopRiskNone,flags=PREOP_RISK_FLAGS.filter(r=>!!state[r.id]);
@@ -1328,18 +1386,18 @@ function renderPreop(){
   const done=checks.filter(x=>x.checked).length,na=$$('.preop-item.na').length,reviewed=done+na;
   if($('preopProgress')){$('preopProgress').textContent=`${reviewed}/${total} REVIEWED`;$('preopProgress').className=`status-pill ${reviewed===total?'good':'warn'}`;}
   if($('preopWarning'))$('preopWarning').textContent=reviewed===total?'Pre-anesthetic checklist reviewed':'ยังมีรายการที่ต้องเลือก Done หรือ N/A';
-  renderPreopExam();renderPreopRisk();save();
+  renderPreopExam();renderPreopRisk();save();renderWorkflowLocks();
 }
 $$('.preop-check').forEach(el=>el.addEventListener('change',()=>{
   if(el.checked)el.closest('.preop-item')?.classList.remove('na');
-  renderPreop();
+  invalidatePreOrOverride();renderPreop();
 }));
 $$('.preop-na-btn').forEach(btn=>btn.addEventListener('click',e=>{
   e.preventDefault();e.stopPropagation();
   const item=btn.closest('.preop-item'),next=!item.classList.contains('na');
   item.classList.toggle('na',next);
   const cb=item.querySelector('.preop-check');if(next&&cb)cb.checked=false;
-  renderPreop();
+  invalidatePreOrOverride();renderPreop();
 }));
 $('goDrugCalculatorBtn')?.addEventListener('click',()=>setTab('drugs'));
 $('goOrLiveFromPreopBtn')?.addEventListener('click',()=>setTab('orlive'));
@@ -1678,7 +1736,7 @@ function renderOrMobileDock(){
 function openOrDetailsAndScroll(selector){
   const el=document.querySelector(selector);if(!el)return;el.open=true;requestAnimationFrame(()=>el.scrollIntoView({behavior:'smooth',block:'center'}));
 }
-function startCaseFromOr(){if(!clinicalWriteAllowed())return false;if(state.timer.running)return true;if(!validateCaseReadyToStart())return false;if(!state.caseStartedAt&&!confirmCaseDrugPlanBeforeStart())return false;const preopTotal=$$('.preop-check').length,preopDone=$$('.preop-check').filter(x=>x.checked).length,preopNA=$$('.preop-item.na').length,preopReviewed=preopDone+preopNA;if(preopReviewed<preopTotal&&!confirm(`Pre-op checklist ยัง review ไม่ครบ (${preopReviewed}/${preopTotal}) — ต้องการเริ่มเคสต่อหรือไม่?`))return false;const firstStart=(state.timer.elapsedMs||0)===0&&!state.caseStartedAt;state.timer.running=true;state.timer.startedEpoch=Date.now();if(firstStart){state.caseStartedAt=state.timer.startedEpoch;state.casePhase='induction';state.caseIdentitySnapshot={patientMasterId:state.patientMasterId||$('patientMasterId')?.value||'',patientName:$('patientName')?.value.trim()||state.patientName||'',hospitalId:$('hospitalId')?.value.trim()||state.hospitalId||'',visitId:$('visitId')?.value.trim()||state.visitId||'',species:$('species')?.value||state.species||'',microchip:$('microchip')?.value.trim()||state.microchip||'',weight:Number($('weight')?.value||state.weight)||null,capturedAt:state.timer.startedEpoch};captureProtocolSnapshot();addAudit('CASE_STARTED',`Anesthesia case timer started • patient ${state.caseIdentitySnapshot.patientName||'Unnamed'} • BW ${state.caseIdentitySnapshot.weight??'—'} kg`);}startTimerLoop();renderTimerState();renderOrTimerState();renderCasePhase();save();if(autoWakeEnabled())requestScreenWakeLock(true);if(firstStart)addEvent({category:'Case',name:'Case started',note:'Anesthesia case timer started'});toast(firstStart?'Case timer started':'Case timer resumed');return true}
+function startCaseFromOr(){if(!clinicalWriteAllowed())return false;if(state.timer.running)return true;if(!validateCaseReadyToStart())return false;if(!state.caseStartedAt&&!confirmCaseDrugPlanBeforeStart())return false;const firstStart=(state.timer.elapsedMs||0)===0&&!state.caseStartedAt;state.timer.running=true;state.timer.startedEpoch=Date.now();if(firstStart){state.caseStartedAt=state.timer.startedEpoch;state.casePhase='induction';state.caseIdentitySnapshot={patientMasterId:state.patientMasterId||$('patientMasterId')?.value||'',patientName:$('patientName')?.value.trim()||state.patientName||'',hospitalId:$('hospitalId')?.value.trim()||state.hospitalId||'',visitId:$('visitId')?.value.trim()||state.visitId||'',species:$('species')?.value||state.species||'',microchip:$('microchip')?.value.trim()||state.microchip||'',weight:Number($('weight')?.value||state.weight)||null,capturedAt:state.timer.startedEpoch};captureProtocolSnapshot();addAudit('CASE_STARTED',`Anesthesia case timer started • patient ${state.caseIdentitySnapshot.patientName||'Unnamed'} • BW ${state.caseIdentitySnapshot.weight??'—'} kg`);}startTimerLoop();renderTimerState();renderOrTimerState();renderCasePhase();save();if(autoWakeEnabled())requestScreenWakeLock(true);if(firstStart)addEvent({category:'Case',name:'Case started',note:'Anesthesia case timer started'});toast(firstStart?'Case timer started':'Case timer resumed');return true}
 $('orStartBtn')?.addEventListener('click',startCaseFromOr);$('orPauseBtn')?.addEventListener('click',()=>{pauseTimer();renderOrLive()});$('orRecordNowBtn')?.addEventListener('click',()=>{if(!state.timer.running&&(state.timer.elapsedMs||0)===0){if(!startCaseFromOr())return}addRecord('');renderOrLive()});$('openOrLiveBtn')?.addEventListener('click',()=>setTab('orlive'));$('orOpenDrugBtn')?.addEventListener('click',openOrQuickDrug);$('orOpenTrendsBtn')?.addEventListener('click',()=>setTab('trends'));$('orOpenTimelineBtn')?.addEventListener('click',()=>setTab('timeline'));
 function closeOrMoreDialog(){const d=$('orMoreDialog');if(d?.open){try{d.close()}catch(e){d.removeAttribute('open')}}}
 function openOrMoreDialog(){const d=$('orMoreDialog');if(!d)return;try{if(!d.open)d.showModal()}catch(e){d.setAttribute('open','')}}
@@ -1834,13 +1892,13 @@ function orLiveLockedByRecovery(){
   return ['recovery','complete'].includes(state.casePhase) && !state.emergencyReturnActive;
 }
 function renderWorkflowLocks(){
-  const tab=document.querySelector('.or-live-tab');
-  if(tab){
-    const locked=orLiveLockedByRecovery();
-    tab.classList.toggle('locked-step',locked);
-    tab.setAttribute('aria-disabled',locked?'true':'false');
-    tab.title=locked?'Recovery active — ใช้ Emergency return to OR LIVE เมื่อจำเป็น':'';
+  const orTab=document.querySelector('.or-live-tab'),recoveryTab=document.querySelector('.tab[data-tab="recovery"]');
+  if(orTab){
+    const recoveryLock=orLiveLockedByRecovery(),readinessLock=!state.caseStartedAt&&!preOrReadinessStatus().ready&&!readinessOverrideValid(preOrReadinessStatus());
+    const locked=recoveryLock||readinessLock;orTab.classList.toggle('locked-step',locked);orTab.setAttribute('aria-disabled',locked?'true':'false');
+    orTab.title=recoveryLock?'Recovery active — ใช้ Emergency return to OR LIVE เมื่อจำเป็น':readinessLock?'Complete required pre-anesthetic items before OR LIVE':'';
   }
+  if(recoveryTab){const locked=!recoveryAccessAllowed();recoveryTab.classList.toggle('locked-step',locked);recoveryTab.setAttribute('aria-disabled',locked?'true':'false');recoveryTab.title=locked?'Recovery opens after Extubation / Begin Recovery':''}
   if($('emergencyReturnOrBtn'))$('emergencyReturnOrBtn').disabled=state.casePhase!=='recovery'||!!state.recoveryCompletedAt;
 }
 function exitOrFullscreenForNavigation(id){
@@ -1854,6 +1912,11 @@ function setTab(id,opts={}){
   if(id==='orlive' && orLiveLockedByRecovery() && !opts.force){
     toast('Recovery active — OR LIVE ถูกล็อก หากฉุกเฉินให้กด Emergency return to OR LIVE');
     renderWorkflowLocks();scrollAppTop();return;
+  }
+  if(id==='orlive'&&!opts.force&&!requestOrLiveAccess()){renderWorkflowLocks();scrollAppTop();return;}
+  if(id==='recovery'&&!opts.force&&!recoveryAccessAllowed()){
+    const msg=!state.caseStartedAt?'Recovery ยังไม่เปิด — เริ่มเคสและดำเนิน workflow ก่อน':'Recovery จะเปิดหลัง Extubation / Begin Recovery';
+    toast(msg);renderWorkflowLocks();scrollAppTop();return;
   }
   exitOrFullscreenForNavigation(id);
   closeMoreMenu();closeRecoveryMoreDialog();
@@ -1874,6 +1937,12 @@ function setTab(id,opts={}){
   scrollAppTop();
 }
 $$('.tab[data-tab]').forEach(b=>b.addEventListener('click',()=>setTab(b.dataset.tab)));
+$('preOrReadinessCloseBtn')?.addEventListener('click',()=>{try{$('preOrReadinessDialog')?.close()}catch(e){}});
+$('preOrReadinessCancelBtn')?.addEventListener('click',()=>{try{$('preOrReadinessDialog')?.close()}catch(e){}});
+$('preOrGoFixBtn')?.addEventListener('click',()=>{const b=$('preOrGoFixBtn'),tab=b?.dataset.tab||'preop',target=b?.dataset.target||'';try{$('preOrReadinessDialog')?.close()}catch(e){}setTab(tab,{force:true});setTimeout(()=>{const el=$(target)||document.getElementById(target);el?.scrollIntoView?.({behavior:'smooth',block:'center'});el?.focus?.()},100)});
+$('preOrOverrideBtn')?.addEventListener('click',()=>{const st=preOrReadinessStatus();if(st.hard.length){toast('Patient identity / saved setup / current BW cannot be overridden');return}const reason=$('preOrOverrideReason')?.value.trim()||'',by=$('preOrOverrideBy')?.value.trim()||'';if(!reason){toast('กรุณาระบุเหตุผลที่ต้องเข้า OR ก่อน checklist ครบ');$('preOrOverrideReason')?.focus();return}if(!by){toast('กรุณาระบุผู้รับผิดชอบ');$('preOrOverrideBy')?.focus();return}state.preOrReadinessOverride={at:Date.now(),by,reason,blockerKeys:st.blockerKeys,missing:st.required.map(x=>x.label)};addAudit('PRE_OR_READINESS_OVERRIDE',`${st.required.map(x=>x.label).join(' • ')} • Reason: ${reason}`,by);save();try{$('preOrReadinessDialog')?.close()}catch(e){}toast('⚠ OR readiness override documented');setTab(pendingPreOrTarget,{force:true})});
+$('orLeaveFocusBtn')?.addEventListener('click',()=>setTab('casesummary',{force:true}));
+$('recoveryLeaveFocusBtn')?.addEventListener('click',()=>setTab('casesummary',{force:true}));
 
 function getVal(id, fallback=null){
   const el=$(id); if(!el) return fallback;
@@ -3830,7 +3899,7 @@ function freshState(){
     airwayEttSize:'',airwayEttDepth:'',airwayCuff:'',airwayDifficulty:'',airwayCircuit:'',airwayVentMode:'',airwayVt:'',airwayPip:'',airwayPeep:'',airwayVentRr:'',
     recHR:'',recRR:'',recMAP:'',recSpO2:'',recTemp:'',recExtubation:'',recOxygen:'',recMentation:'',recPain:'',recNaReason:'',recScoreAirway:'',recScoreOxygen:'',recScoreTemp:'',recScoreMentation:'',recScoreComfort:'',recScoreNote:'',
     caseStartedAt:null,caseIdentitySnapshot:null,casePhase:'setup',recoveryStartedAt:null,recoveryCompletedAt:null,recoveryCompletionOverride:null,emergencyReturnActive:false,
-    surgeryEndedAt:null,extubatedAt:null,lastSavedAt:null,caseLocked:false,lockedAt:null,protocolSnapshot:null,caseDrugPlan:[],caseDrugPlanInitialized:false,caseDrugPlanReviewedAt:null,caseDrugPlanReviewedBy:'',orLastTransition:null,
+    surgeryEndedAt:null,extubatedAt:null,lastSavedAt:null,caseLocked:false,lockedAt:null,protocolSnapshot:null,caseDrugPlan:[],caseDrugPlanInitialized:false,caseDrugPlanReviewedAt:null,caseDrugPlanReviewedBy:'',preOrReadinessOverride:null,orLastTransition:null,
     auditTrail:[],amendments:[],finalSignoff:{anesthetist:null,surgeon:null},finalChecksum:null,checksumAlgorithm:null,checksumCreatedAt:null,
     voidedAt:null,voidedBy:'',voidReason:''
   };
@@ -3863,8 +3932,6 @@ $('clearRecordsBtn').addEventListener('click',()=>{if(!confirm('ล้าง Ane
 $('startCaseBtn').addEventListener('click',()=>{
   if(state.timer.running)return;
   if(!validateCaseReadyToStart())return;
-  const preopTotal=$$('.preop-check').length,preopDone=$$('.preop-check').filter(x=>x.checked).length,preopNA=$$('.preop-item.na').length,preopReviewed=preopDone+preopNA;
-  if(preopReviewed<preopTotal && !confirm(`Pre-op checklist ยังไม่ครบ (${preopDone}/${preopTotal}) — ต้องการเริ่มเคสต่อหรือไม่?`))return;
   const firstStart=(state.timer.elapsedMs||0)===0 && !state.caseStartedAt;
   state.timer.running=true;
   state.timer.startedEpoch=Date.now();

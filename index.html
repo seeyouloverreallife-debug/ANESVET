@@ -7,12 +7,12 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="description" content="ANESVET V15.6.0 — Drug Administration & Recovery Transition Release">
+  <meta name="description" content="ANESVET V15.7.0 — Pre-OR Readiness & Workflow Guard Release">
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" href="./icon-192.png">
   <link rel="apple-touch-icon" href="./icon-192.png">
-  <link rel="stylesheet" href="./style.css?v=15.6.0">
-  <title>ANESVET V15.6.0</title>
+  <link rel="stylesheet" href="./style.css?v=15.7.0">
+  <title>ANESVET V15.7.0</title>
 </head>
 <body>
 <header class="topbar">
@@ -20,7 +20,7 @@
     <img class="brand-logo" src="./icon-192.png" alt="ANESVET logo">
     <div>
       <div class="eyebrow">GENOVI PET CARE • DIGITAL ANESTHESIA RECORD</div>
-      <h1>ANESVET <span>V15.6.0</span></h1>
+      <h1>ANESVET <span>V15.7.0</span></h1>
     </div>
   </div>
   <div class="top-actions">
@@ -115,6 +115,24 @@
     <button data-more-tab="cases">Cases</button>
     <button data-more-tab="settings">Settings</button><details class="advanced-menu"><summary>Advanced</summary><button data-more-tab="dashboard">Legacy Monitoring</button></details>
   </div>
+
+  <dialog id="preOrReadinessDialog" class="readiness-dialog" aria-labelledby="preOrReadinessTitle">
+    <div class="readiness-sheet">
+      <div class="readiness-head"><div><div class="eyebrow">PRE-OR READINESS GATE</div><h2 id="preOrReadinessTitle">Complete required items before OR LIVE</h2></div><button id="preOrReadinessCloseBtn" class="btn" type="button">✕</button></div>
+      <div id="preOrReadinessStatus" class="readiness-status warn">NOT READY</div>
+      <div class="readiness-columns">
+        <section><h3>Required before OR</h3><ul id="preOrRequiredList" class="readiness-list"></ul></section>
+        <section><h3>Recommended / review</h3><ul id="preOrRecommendedList" class="readiness-list"></ul></section>
+      </div>
+      <div id="preOrOverrideBox" class="readiness-override" hidden>
+        <b>Emergency / clinical override</b><small>ใช้เมื่อจำเป็นต้องดำเนินการก่อนรายการที่เหลือครบ • บันทึก audit trail</small>
+        <label>Reason <textarea id="preOrOverrideReason" rows="2" placeholder="Why must the case proceed now?"></textarea></label>
+        <label>Responsible clinician <input id="preOrOverrideBy" type="text" placeholder="Name"></label>
+        <button id="preOrOverrideBtn" class="btn danger-outline" type="button">Document override → OR LIVE</button>
+      </div>
+      <div class="readiness-actions"><button id="preOrReadinessCancelBtn" class="btn" type="button">Cancel</button><button id="preOrGoFixBtn" class="btn primary" type="button">Review missing items</button></div>
+    </div>
+  </dialog>
 
   <section id="patient" class="tabpage active">
     <section class="patient-hero">
@@ -393,6 +411,7 @@
     </section>
 
     <section class="or-sticky-mini" id="orStickyMini">
+      <button id="orLeaveFocusBtn" class="btn or-leave-focus" type="button">← CASE</button>
       <div class="or-sticky-patient"><span>PATIENT</span><b id="orStickyPatient">—</b></div>
       <div><span>STATUS</span><b id="orStickyPhase">SETUP</b></div>
       <div><span>CASE TIME</span><b id="orStickyClock">00:00:00</b></div>
@@ -1036,7 +1055,7 @@
         <div id="preopWarning" class="info-line">Checklist ยังไม่ครบ</div>
         <div class="preop-next-actions">
           <button id="goDrugCalculatorBtn" class="btn primary">ไป Drug Calculator →</button>
-          <button id="goOrLiveFromPreopBtn" class="btn">ข้ามไปช่วงวางยา / OR LIVE</button>
+          <button id="goOrLiveFromPreopBtn" class="btn">ตรวจความพร้อม → OR LIVE</button>
         </div>
       </div>
     </section>
@@ -1655,7 +1674,7 @@
     </section>
   <section class="drug-next-step">
       <div><b>พร้อมเข้าสู่ช่วงวางยาแล้วหรือยัง?</b><span>ตรวจยาที่เตรียมไว้และ concentration อีกครั้งก่อนเริ่ม anesthesia</span></div>
-      <button id="goOrLiveFromDrugBtn" class="btn primary xl">ไปช่วงวางยา / OR LIVE →</button>
+      <button id="goOrLiveFromDrugBtn" class="btn primary xl">ตรวจความพร้อม → OR LIVE</button>
     </section>
   </section>
 
@@ -1748,6 +1767,7 @@
     <section class="recovery-command">
       <div><div class="eyebrow dark">RECOVERY MODE</div><h2>Post-anesthetic recovery</h2><p>ติดตาม airway, oxygenation, temperature, comfort และ mentation จน recovery complete</p></div>
       <div class="recovery-command-actions">
+        <button id="recoveryLeaveFocusBtn" class="btn" type="button">← Case summary</button>
         <span id="recoveryPhaseBadge" class="status-pill warn">NOT STARTED</span>
         <strong id="recoveryElapsed">00:00:00</strong>
         <button id="beginRecoveryBtn" class="btn primary">Begin recovery</button>
@@ -2408,7 +2428,7 @@
 </dialog>
 
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
-<script src="./clinical-workflow.js?v=15.6.0"></script>
-<script src="./app.js?v=15.6.0"></script>
+<script src="./clinical-workflow.js?v=15.7.0"></script>
+<script src="./app.js?v=15.7.0"></script>
 </body>
 </html>

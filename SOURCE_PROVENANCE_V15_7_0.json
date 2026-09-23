@@ -1,0 +1,39 @@
+{
+  "release": "ANESVET V15.7.0",
+  "base": "ANESVET V15.6.0",
+  "source": "user-provided V15.6.0 package",
+  "files": {
+    "app.js": {
+      "sha256": "579B2CF3DB4164E10AA9F4C900789DD13CA844C5A56663C89592FB6B2893CC7E",
+      "bytes": 451383
+    },
+    "index.html": {
+      "sha256": "AB05B09118FB052A0471CCF1831FF5184F219BEF22E037CBAD93F284B329A5BC",
+      "bytes": 162367
+    },
+    "style.css": {
+      "sha256": "A6CFD2145BE54F0189DF779F4352A14D278175DB266465B8EAB0C86FCF0B6DAF",
+      "bytes": 132417
+    },
+    "clinical-workflow.js": {
+      "sha256": "6AC11B5973D23FD50EEE3CD53D8DE10A0506FC158B326D004691072C2AE04656",
+      "bytes": 5605
+    },
+    "service-worker.js": {
+      "sha256": "98384D1854C8150F5EE3406A71D8BDD5C5A72C0F60E4276E2D342E98787CB1D4",
+      "bytes": 881
+    },
+    "manifest.webmanifest": {
+      "sha256": "564E81CB96771CE6C414AD2A00E5B123F1CA925F7918CECD803FF21DE904BD04",
+      "bytes": 722
+    },
+    "package.json": {
+      "sha256": "F4B4FAFB1C27BE90FD6BC55E97077EF895F97585A102B5EE3574B5543CA39D89",
+      "bytes": 1348
+    },
+    "package-lock.json": {
+      "sha256": "013F558E3B3C1E9FD458CD3C3950B6F4293BB86C17A25C70739CBE5F3D818E48",
+      "bytes": 20824
+    }
+  }
+}

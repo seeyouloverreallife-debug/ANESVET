@@ -1,3 +1,22 @@
+# ANESVET V15.7.0 — Pre-OR Readiness & Workflow Guard Release
+
+รุ่นนี้ต่อจาก V15.6.0 โดยเพิ่ม **Pre-OR Readiness Gate** เพื่อไม่ให้เปิด OR LIVE/Recovery ก่อนถึงจุดที่เหมาะสมของ workflow พร้อม documented clinical override สำหรับกรณีจำเป็น และเพิ่มทางออกจาก OR/Recovery focus ที่เห็นชัดบนมือถือ/iPad
+
+ดูรายละเอียดที่ `RELEASE_NOTES_V15_7_0.md`
+
+## V15.7.0 — Pre-OR Readiness & Workflow Guard
+
+- OR LIVE ถูก gate ก่อน Start Case จน Patient/Case Setup, current BW, procedure, ASA, physical exam, risk review และ pre-op checklist พร้อม
+- Hard blockers (patient/species/BW/unsaved setup) ข้ามไม่ได้
+- Clinical readiness ที่ยังขาดสามารถ override ได้เฉพาะเมื่อบันทึก reason + responsible clinician + audit trail
+- Case Drug Plan / Anesthetist / Surgeon แสดงเป็น recommended warnings ไม่ล็อก emergency workflow
+- Recovery tab เปิดได้เฉพาะเมื่อ workflow เข้าสู่ Recovery จริง
+- เพิ่ม `← CASE` ใน OR LIVE และ `← Case summary` ใน Recovery เพื่อออกจาก focus mode ง่ายขึ้น
+- ปุ่มจาก Pre-check/Drug Calculator เปลี่ยนเป็น `ตรวจความพร้อม → OR LIVE`
+- ไม่เปลี่ยน dose, alert threshold, ASA/BOAS logic, medication calculations หรือ storage schema
+
+---
+
 # ANESVET V15.6.0 — Drug Administration & Recovery Transition Release
 
 รุ่นนี้ต่อจาก V15.5.0 โดยแก้ feedback จากการลองใช้จริงบนมือถือ/iPad: medication workspace ไม่เด้งกลับ OR LIVE หลังบันทึกยาแต่ละตัว, เพิ่ม batch สำหรับ planned induction medications, route/concentration กรอกได้ง่ายขึ้นและ manual medication ไม่ถูกล็อกเพราะไม่มีสูตรคำนวณ, แก้ Full Screen → Recovery transition และย้าย feedback `✓ SAVED` ให้อยู่เหนือ OR controls
