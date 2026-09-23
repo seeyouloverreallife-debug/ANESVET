@@ -1,7 +1,7 @@
-ANESVET V15.7.0
+ANESVET V15.8.0
 Static syntax: PASS
 Static regression/compatibility: PASS
-V15.7 Pre-OR readiness/navigation guard contracts: PASS
+V15.8 OR Workspace customization contracts: PASS
 Clinical helpers: PASS (73 assertions)
 Workflow model scenarios: PASS (4 scenarios)
 DOM/browser automation: NOT CLAIMED — jsdom/fake-indexeddb/Playwright unavailable in runtime; DOM-dependent suite stops at MODULE_NOT_FOUND: jsdom

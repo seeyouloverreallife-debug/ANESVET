@@ -7,12 +7,12 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="description" content="ANESVET V15.7.0 — Pre-OR Readiness & Workflow Guard Release">
+  <meta name="description" content="ANESVET V15.8.0 — OR Workspace Customization Release">
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" href="./icon-192.png">
   <link rel="apple-touch-icon" href="./icon-192.png">
-  <link rel="stylesheet" href="./style.css?v=15.7.0">
-  <title>ANESVET V15.7.0</title>
+  <link rel="stylesheet" href="./style.css?v=15.8.0">
+  <title>ANESVET V15.8.0</title>
 </head>
 <body>
 <header class="topbar">
@@ -20,7 +20,7 @@
     <img class="brand-logo" src="./icon-192.png" alt="ANESVET logo">
     <div>
       <div class="eyebrow">GENOVI PET CARE • DIGITAL ANESTHESIA RECORD</div>
-      <h1>ANESVET <span>V15.7.0</span></h1>
+      <h1>ANESVET <span>V15.8.0</span></h1>
     </div>
   </div>
   <div class="top-actions">
@@ -700,7 +700,7 @@
     </section>
 
     <section class="or-lower-grid">
-      <section class="panel"><div class="section-heading"><div><h2>Mini trends</h2><p>6 records ล่าสุด</p></div><button id="orOpenTrendsBtn" class="btn">Open full trends</button></div>
+      <section id="orMiniTrendsPanel" class="panel"><div class="section-heading"><div><h2>Mini trends</h2><p>6 records ล่าสุด</p></div><button id="orOpenTrendsBtn" class="btn">Open full trends</button></div>
         <div class="or-mini-trends">
           <div class="or-spark-card"><span>MAP</span><div id="orSparkMap" class="or-sparkline"></div></div>
           <div class="or-spark-card"><span>SpO₂</span><div id="orSparkSpo2" class="or-sparkline"></div></div>
@@ -708,7 +708,7 @@
           <div class="or-spark-card"><span>Temp</span><div id="orSparkTemp" class="or-sparkline"></div></div>
         </div>
       </section>
-      <section class="panel"><div class="section-heading"><div><h2>Recent records / events</h2><p>ข้อมูลล่าสุดในเคส</p></div><button id="orOpenTimelineBtn" class="btn">Timeline</button></div><div id="orRecentActivity" class="or-recent-list empty-state compact">ยังไม่มีข้อมูล</div></section>
+      <section id="orRecentActivityPanel" class="panel"><div class="section-heading"><div><h2>Recent records / events</h2><p>ข้อมูลล่าสุดในเคส</p></div><button id="orOpenTimelineBtn" class="btn">Timeline</button></div><div id="orRecentActivity" class="or-recent-list empty-state compact">ยังไม่มีข้อมูล</div></section>
     </section>
 
     <button id="orUndoStepBtn" class="or-undo-step" type="button" hidden>↶ Undo last step</button>
@@ -732,8 +732,10 @@
           <button id="orMobileTrendsBtn" class="or-more-action" type="button"><span>↗</span><b>Trends</b><small>monitor trends</small></button>
           <button id="orMobileTimelineBtn" class="or-more-action" type="button"><span>≡</span><b>Timeline</b><small>records & events</small></button>
         </div>
+        <div id="orMoreProfileNote" class="or-more-profile-note">Minimal menu • contextual actions only</div>
         <button id="orMobileUndoBtn" class="btn or-more-undo-btn" type="button" hidden>↶ Undo last workflow step</button>
         <button id="orMobileCaseSummaryBtn" class="btn or-more-case-btn" type="button">← Case summary / leave OR focus</button>
+        <button id="orMoreSettingsBtn" class="btn or-more-settings-btn" type="button">⚙ Customize OR menu</button>
       </div>
     </dialog>
 
@@ -2171,7 +2173,7 @@
   </section>
 
   <section id="settings" class="tabpage"><section class="panel"><div class="section-heading"><h2>Configurable Alert Protocol</h2><button id="editHospitalAlertBtn" class="btn primary">Edit hospital alerts</button></div><pre id="hospitalAlertSummary"></pre><details><summary>Hospital alert history</summary><div id="hospitalAlertHistory"></div></details><p>Default thresholds match V14.6.4. Hospital edits apply to new cases; case overrides require an actor and reason.</p></section><section class="panel"><div class="section-heading"><div><h2>Hospital settings</h2><p>ปรับ default ของโรงพยาบาลโดยไม่ต้องแก้ code</p></div><button id="saveSettingsBtn" class="btn primary">Save settings</button></div><div class="settings-grid">
-<label>Default record interval<select id="settingInterval"><option value="5">5 min</option><option value="10">10 min</option></select></label>
+<label>Default OR vitals interval<select id="settingInterval"><option value="3">3 min</option><option value="5">5 min</option><option value="10">10 min</option><option value="15">15 min</option></select></label>
 <label>Temperature unit<select id="settingTemperatureUnit"><option value="C">°C (recommended for Thailand)</option><option value="F">°F</option></select></label>
 <label class="settings-toggle"><span>Show SAP / DAP helper fields</span><input id="settingShowSapDap" type="checkbox" checked></label>
 <label class="settings-toggle"><span>Critical popup (configured alert thresholds)</span><input id="settingCriticalPopup" type="checkbox" checked></label>
@@ -2182,6 +2184,35 @@
 <label>Meloxicam concentration (mg/mL)<input id="settingMetacamConc" type="number" min="0.01" step="0.1" value="5"></label>
 <label>Atropine concentration (mg/mL)<input id="settingAtropineConc" type="number" min="0.01" step="0.1" value="0.6"></label>
 </div><div class="settings-note">บันทึกแล้วจะใช้กับ Drug Calculator, temperature display, alert behavior และหน้าจอ monitoring • Temperature ถูกเก็บภายในเป็น °F canonical เพื่อรักษาความต่อเนื่องและ checksum ของ record รุ่นก่อน</div></section>
+
+<section class="panel or-workspace-settings-panel">
+  <div class="section-heading">
+    <div><h2>OR / Mobile Workflow</h2><p>ปรับความเรียบง่ายของหน้าจอที่ใช้บนมือถือและ iPad โดยไม่เปลี่ยน clinical safety guards</p></div>
+    <span class="status-pill neutral">Touch-first</span>
+  </div>
+  <div class="settings-grid">
+    <label>OR MORE menu
+      <select id="settingOrMoreProfile">
+        <option value="minimal">Minimal — เฉพาะ action ที่เกี่ยวกับ phase</option>
+        <option value="standard">Standard — เพิ่ม Trends / Timeline</option>
+        <option value="full">Full — แสดงเครื่องมือทั้งหมด</option>
+      </select>
+    </label>
+    <label>Quick medication buttons
+      <select id="settingQuickMedCount"><option value="2">2 buttons</option><option value="4">4 buttons</option><option value="6">6 buttons</option></select>
+    </label>
+    <label>Default Recovery vitals interval
+      <select id="settingRecoveryInterval"><option value="3">3 min</option><option value="5">5 min</option><option value="10">10 min</option><option value="15">15 min</option></select>
+    </label>
+    <label>Default report
+      <select id="settingDefaultReport"><option value="summary">1-page Summary PDF</option><option value="full">Full PDF Report</option></select>
+    </label>
+    <label class="settings-toggle"><span>Auto OR Focus on phone / iPad</span><input id="settingOrFocusMode" type="checkbox" checked></label>
+    <label class="settings-toggle"><span>Show Mini trends in OR LIVE</span><input id="settingShowMiniTrends" type="checkbox" checked></label>
+    <label class="settings-toggle"><span>Show Recent activity in OR LIVE</span><input id="settingShowRecentActivity" type="checkbox" checked></label>
+  </div>
+  <div class="settings-note">Minimal เป็นค่าเริ่มต้น: Induction เน้น Medications / Airway / Event, Intraoperative เน้น Medications / Fluid / Event, Emergence เน้น Airway / Medications / Event • Confirm phase change, Undo guard, readiness gate และ audit trail ไม่สามารถปิดจาก Settings ได้</div>
+</section>
 
 <section class="panel built-in-protocol-panel">
   <div class="section-heading">
@@ -2428,7 +2459,7 @@
 </dialog>
 
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
-<script src="./clinical-workflow.js?v=15.7.0"></script>
-<script src="./app.js?v=15.7.0"></script>
+<script src="./clinical-workflow.js?v=15.8.0"></script>
+<script src="./app.js?v=15.8.0"></script>
 </body>
 </html>

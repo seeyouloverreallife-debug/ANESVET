@@ -1,0 +1,290 @@
+--- ../anesvet_v156_final/app.js	2026-09-23 07:11:13.000000000 +0000
++++ app.js	2026-09-23 08:01:16.665542465 +0000
+@@ -20,7 +20,7 @@
+ const SESSION_HEARTBEAT_MS=5000;
+ const DB_NAME='ANESVET_DB';
+ const DB_VERSION=2;
+-const APP_VERSION='15.7.0';
++const APP_VERSION='15.8.0';
+ const AUTOSAVE_DELAY_MS=450;
+ const ACTIVE_CHECKPOINT_MS=15000;
+ const SAFETY_CHECKPOINT_KEY='anesvet_v15_active_safety_checkpoint';
+@@ -1716,7 +1716,7 @@
+   const total=immediateWithAdvice.length+trends.length;$('orAlertCount').textContent=`${total} ALERT${total===1?'':'S'}`;$('orAlertCount').className=`status-pill ${immediateWithAdvice.some(a=>a.level==='danger')||trends.some(a=>a.level==='danger')?'danger':total?'warn':'good'}`;
+   const group=(title,kind,arr)=>arr.length?`<div class="or-alert-group ${kind}"><div class="or-alert-group-title">${title}</div>${arr.map(a=>`<div class="or-alert-item ${a.level}"><b>${escapeHtml(a.title)}</b><span>${escapeHtml(a.text)}</span>${a.advice?`<small class="alert-advice">Suggested first checks: ${escapeHtml(a.advice)}</small>`:''}</div>`).join('')}</div>`:'';
+   $('orAlertList').innerHTML=total?group('Immediate','immediate',immediateWithAdvice)+group('Trend','trend',trends):'<div class="empty-state compact">No active alerts</div>';
+-  renderOrFluidPanel();renderOrMiniTrends();renderOrRecent();renderOrTimerState();renderSaveState();renderRecoveryState();renderComplications();renderAlertProtocolStatus();renderActiveProblems();renderAirwayPanel();renderOrPrimaryFlow();renderOrMobileDock();
++  renderOrFluidPanel();renderOrMiniTrends();renderOrRecent();renderOrTimerState();renderSaveState();renderRecoveryState();renderComplications();renderAlertProtocolStatus();renderActiveProblems();renderAirwayPanel();renderOrPrimaryFlow();renderOrMobileDock();renderOrWorkspacePreferences();
+ }
+ function renderOrMobileDock(){
+   const dock=$('orMobileDock'),next=$('orMobileNextBtn'),record=$('orMobileRecordBtn'),primary=$('orPrimaryActionBtn'),label=$('orMobileNextLabel'),icon=$('orMobileNextIcon');
+@@ -1738,8 +1738,30 @@
+ }
+ function startCaseFromOr(){if(!clinicalWriteAllowed())return false;if(state.timer.running)return true;if(!validateCaseReadyToStart())return false;if(!state.caseStartedAt&&!confirmCaseDrugPlanBeforeStart())return false;const firstStart=(state.timer.elapsedMs||0)===0&&!state.caseStartedAt;state.timer.running=true;state.timer.startedEpoch=Date.now();if(firstStart){state.caseStartedAt=state.timer.startedEpoch;state.casePhase='induction';state.caseIdentitySnapshot={patientMasterId:state.patientMasterId||$('patientMasterId')?.value||'',patientName:$('patientName')?.value.trim()||state.patientName||'',hospitalId:$('hospitalId')?.value.trim()||state.hospitalId||'',visitId:$('visitId')?.value.trim()||state.visitId||'',species:$('species')?.value||state.species||'',microchip:$('microchip')?.value.trim()||state.microchip||'',weight:Number($('weight')?.value||state.weight)||null,capturedAt:state.timer.startedEpoch};captureProtocolSnapshot();addAudit('CASE_STARTED',`Anesthesia case timer started • patient ${state.caseIdentitySnapshot.patientName||'Unnamed'} • BW ${state.caseIdentitySnapshot.weight??'—'} kg`);}startTimerLoop();renderTimerState();renderOrTimerState();renderCasePhase();save();if(autoWakeEnabled())requestScreenWakeLock(true);if(firstStart)addEvent({category:'Case',name:'Case started',note:'Anesthesia case timer started'});toast(firstStart?'Case timer started':'Case timer resumed');return true}
+ $('orStartBtn')?.addEventListener('click',startCaseFromOr);$('orPauseBtn')?.addEventListener('click',()=>{pauseTimer();renderOrLive()});$('orRecordNowBtn')?.addEventListener('click',()=>{if(!state.timer.running&&(state.timer.elapsedMs||0)===0){if(!startCaseFromOr())return}addRecord('');renderOrLive()});$('openOrLiveBtn')?.addEventListener('click',()=>setTab('orlive'));$('orOpenDrugBtn')?.addEventListener('click',openOrQuickDrug);$('orOpenTrendsBtn')?.addEventListener('click',()=>setTab('trends'));$('orOpenTimelineBtn')?.addEventListener('click',()=>setTab('timeline'));
++function renderOrWorkspacePreferences(){
++  const cfg=currentSettingsObject(),profile=['minimal','standard','full'].includes(cfg.orMoreProfile)?cfg.orMoreProfile:'minimal',phase=state.casePhase||'preop';
++  const ids={drug:'orMobileDrugBtn',fluid:'orMobileFluidBtn',event:'orMobileEventBtn',airway:'orMobileAirwayBtn',trends:'orMobileTrendsBtn',timeline:'orMobileTimelineBtn',caseSummary:'orMobileCaseSummaryBtn'};
++  const essential={
++    preop:['drug','event'],
++    induction:['drug','airway','event'],
++    intraop:['drug','fluid','event'],
++    emergence:['airway','drug','event'],
++    recovery:['event'],
++    emergency:['event','drug','airway','fluid'],
++    complete:[]
++  }[phase]||['drug','event'];
++  const visible=new Set(essential);
++  if(profile==='standard'||profile==='full'){visible.add('trends');visible.add('timeline')}
++  if(profile==='full'){Object.keys(ids).forEach(k=>visible.add(k))}
++  else visible.delete('caseSummary');
++  Object.entries(ids).forEach(([key,id])=>{const el=$(id);if(el)el.hidden=!visible.has(key)});
++  if($('orMoreTitle'))$('orMoreTitle').textContent=`More • ${phaseLabel()}`;
++  if($('orMoreProfileNote'))$('orMoreProfileNote').textContent=`${profile[0].toUpperCase()+profile.slice(1)} menu • ${essential.length} phase-relevant action${essential.length===1?'':'s'}${profile==='minimal'?'':' + view tools'}`;
++  if($('orMiniTrendsPanel'))$('orMiniTrendsPanel').hidden=cfg.showMiniTrends===false;
++  if($('orRecentActivityPanel'))$('orRecentActivityPanel').hidden=cfg.showRecentActivity===false;
++}
+ function closeOrMoreDialog(){const d=$('orMoreDialog');if(d?.open){try{d.close()}catch(e){d.removeAttribute('open')}}}
+-function openOrMoreDialog(){const d=$('orMoreDialog');if(!d)return;try{if(!d.open)d.showModal()}catch(e){d.setAttribute('open','')}}
++function openOrMoreDialog(){const d=$('orMoreDialog');if(!d)return;renderOrWorkspacePreferences();try{if(!d.open)d.showModal()}catch(e){d.setAttribute('open','')}}
+ $('orMobileNextBtn')?.addEventListener('click',()=>$('orPrimaryActionBtn')?.click());
+ $('orMobileRecordBtn')?.addEventListener('click',()=>$('orRecordNowBtn')?.click());
+ $('orVitalsFocusSaveBtn')?.addEventListener('click',()=>$('orRecordNowBtn')?.click());
+@@ -1755,7 +1777,7 @@
+ $('orMobileAirwayBtn')?.addEventListener('click',()=>{closeOrMoreDialog();openAirwayWorkflow('edit')});
+ $('orMobileTrendsBtn')?.addEventListener('click',()=>{closeOrMoreDialog();setTab('trends')});
+ $('orMobileTimelineBtn')?.addEventListener('click',()=>{closeOrMoreDialog();setTab('timeline')});
+-$('orMobileCaseSummaryBtn')?.addEventListener('click',()=>{closeOrMoreDialog();setTab('casesummary')});
++$('orMobileCaseSummaryBtn')?.addEventListener('click',()=>{closeOrMoreDialog();setTab('casesummary')});$('orMoreSettingsBtn')?.addEventListener('click',()=>{closeOrMoreDialog();setTab('settings');setTimeout(()=>document.querySelector('.or-workspace-settings-panel')?.scrollIntoView({behavior:'smooth',block:'start'}),50)});
+ $$('.or-milestone').forEach(btn=>btn.addEventListener('click',()=>{markMilestone(btn);renderOrLive()}));$$('.or-event').forEach(btn=>btn.addEventListener('click',()=>{addEvent({category:btn.dataset.cat,name:btn.dataset.label});renderOrLive()}));$$('.or-complication').forEach(btn=>btn.addEventListener('click',()=>openComplicationDialog(btn.dataset.complication||'')));
+ $('orFullscreenBtn')?.addEventListener('click',async()=>{try{if(!document.fullscreenElement){if(document.documentElement.requestFullscreen)await document.documentElement.requestFullscreen();document.body.classList.add('or-fullscreen');$('orFullscreenBtn').textContent='Exit full screen'}else{if(document.exitFullscreen)await document.exitFullscreen();document.body.classList.remove('or-fullscreen');$('orFullscreenBtn').textContent='⛶ Full screen'}}catch(e){document.body.classList.toggle('or-fullscreen')}});document.addEventListener('fullscreenchange',()=>{if(!document.fullscreenElement){document.body.classList.remove('or-fullscreen');if($('orFullscreenBtn'))$('orFullscreenBtn').textContent='⛶ Full screen'}});
+ function renderBuiltInProtocolChips(cfg=currentSettingsObject()){
+@@ -1824,7 +1846,13 @@
+ $('signAnesthetistBtn')?.addEventListener('click',()=>signFinalRole('anesthetist'));
+ $('signSurgeonBtn')?.addEventListener('click',()=>signFinalRole('surgeon'));
+ 
++function renderDefaultReportPreference(){
++  const pref=currentSettingsObject().defaultReport||'summary',summary=$('endExportSummaryPdfBtn'),full=$('endExportPdfBtn');
++  if(summary)summary.classList.toggle('primary',pref==='summary');
++  if(full)full.classList.toggle('primary',pref==='full');
++}
+ function renderEndCase(){
++  renderDefaultReportPreference();
+   if(!$('endcase'))return;
+   $('endPatient').textContent=`${$('patientName')?.value.trim()||'Unnamed'} • ${{cat:'Cat',dog:'Dog'}[$('species')?.value]||'—'} • ${$('weight')?.value||'—'} kg`;
+   $('endProcedure').textContent=$('procedure')?.value.trim()||'—';
+@@ -1922,7 +1950,7 @@
+   closeMoreMenu();closeRecoveryMoreDialog();
+   $$('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===id));
+   $$('.tabpage').forEach(p=>p.classList.toggle('active',p.id===id));
+-  document.body.classList.toggle('or-mobile-active',id==='orlive');
++  document.body.classList.toggle('or-mobile-active',id==='orlive'&&currentSettingsObject().orFocusMode!==false);
+   document.body.classList.toggle('recovery-mobile-active',id==='recovery');
+   localStorage.setItem(TAB_KEY,id);
+   if(id==='trends') renderTrends();
+@@ -2315,7 +2343,7 @@
+   syncOrFromMain();renderRecordPreview();renderOrLive();toast(`Copied last vitals • ${last.clock}`);return true;
+ }
+ function intraopFavoriteQuickDrugs(){
+-  const all=frozenQuickDrugs(),planned=all.filter(d=>d&&d.planned&&(d.phase==='emergency'||d.standby));const fav=all.filter(d=>d&&d.favorite===true&&!planned.some(p=>String(p.id)===String(d.id)));return planned.concat(fav).slice(0,4);
++  const all=frozenQuickDrugs(),planned=all.filter(d=>d&&d.planned&&(d.phase==='emergency'||d.standby));const fav=all.filter(d=>d&&d.favorite===true&&!planned.some(p=>String(p.id)===String(d.id)));const count=Math.max(2,Math.min(6,Number(currentSettingsObject().orQuickMedCount||4)));return planned.concat(fav).slice(0,count);
+ }
+ function renderOrQuickMedStrip(){
+   const box=$('orQuickMedButtons');if(!box)return;
+@@ -3812,23 +3840,26 @@
+ }));
+ 
+ 
+-function defaultSettings(){return{interval:'5',temperatureUnit:'C',diazepamConc:'5',propofolConc:'10',tramadolConc:'50',rimadylConc:'50',metacamConc:'5',atropineConc:'0.6',diazepamDose:'0.25',propofolDose:'4',tramadolDose:'4',carprofenDose:'4.4',meloxicamDose:'0.3',cefazolinDivisor:'10',conveniaDivisor:'10',adrenalineDose:'0.01',atropineBradyDose:'0.02',atropineCprDose:'0.04',protocolName:'Hospital anesthesia protocol',protocolVersion:'',protocolVerifiedAt:'',protocolLocked:false,autoWakeLock:true,showSapDap:true,criticalPopupEnabled:true}}
++function defaultSettings(){return{interval:'5',recoveryInterval:'5',temperatureUnit:'C',orMoreProfile:'minimal',orQuickMedCount:'4',orFocusMode:true,showMiniTrends:true,showRecentActivity:true,defaultReport:'summary',diazepamConc:'5',propofolConc:'10',tramadolConc:'50',rimadylConc:'50',metacamConc:'5',atropineConc:'0.6',diazepamDose:'0.25',propofolDose:'4',tramadolDose:'4',carprofenDose:'4.4',meloxicamDose:'0.3',cefazolinDivisor:'10',conveniaDivisor:'10',adrenalineDose:'0.01',atropineBradyDose:'0.02',atropineCprDose:'0.04',protocolName:'Hospital anesthesia protocol',protocolVersion:'',protocolVerifiedAt:'',protocolLocked:false,autoWakeLock:true,showSapDap:true,criticalPopupEnabled:true}}
+ function loadSettings(){
+   let s;try{s=JSON.parse(localStorage.getItem(SETTINGS_KEY)||'null')||JSON.parse(localStorage.getItem('anesvet_v14_2_settings')||'null')||JSON.parse(localStorage.getItem('anesvet_v14_1_settings')||'null')||JSON.parse(localStorage.getItem('anesvet_v14_settings')||'null')||JSON.parse(localStorage.getItem('anesvet_v13_4_settings')||'null')||JSON.parse(localStorage.getItem('anesvet_v13_3_settings')||'null')||JSON.parse(localStorage.getItem('anesvet_v13_2_settings')||'null')||JSON.parse(localStorage.getItem('anesvet_v13_1_settings')||'null')||JSON.parse(localStorage.getItem('anesvet_v13_settings')||'null')||JSON.parse(localStorage.getItem('anesvet_v12_1_settings')||'null')||JSON.parse(localStorage.getItem('anesvet_v12_settings')||'null')||JSON.parse(localStorage.getItem('anesvet_v11_settings')||'null')||JSON.parse(localStorage.getItem('anesvet_v10_settings')||'null')}catch(e){}
+   s={...defaultSettings(),...(s||{})};
+-  const map={settingInterval:'interval',settingTemperatureUnit:'temperatureUnit',settingDiazepamConc:'diazepamConc',settingPropofolConc:'propofolConc',settingTramadolConc:'tramadolConc',settingRimadylConc:'rimadylConc',settingMetacamConc:'metacamConc',settingAtropineConc:'atropineConc',settingDiazepamDose:'diazepamDose',settingPropofolDose:'propofolDose',settingTramadolDose:'tramadolDose',settingCarprofenDose:'carprofenDose',settingMeloxicamDose:'meloxicamDose',settingCefazolinDivisor:'cefazolinDivisor',settingConveniaDivisor:'conveniaDivisor',settingAdrenalineDose:'adrenalineDose',settingAtropineBradyDose:'atropineBradyDose',settingAtropineCprDose:'atropineCprDose',settingProtocolName:'protocolName',settingProtocolVersion:'protocolVersion',settingProtocolVerifiedAt:'protocolVerifiedAt'};
++  const map={settingInterval:'interval',settingRecoveryInterval:'recoveryInterval',settingOrMoreProfile:'orMoreProfile',settingQuickMedCount:'orQuickMedCount',settingDefaultReport:'defaultReport',settingTemperatureUnit:'temperatureUnit',settingDiazepamConc:'diazepamConc',settingPropofolConc:'propofolConc',settingTramadolConc:'tramadolConc',settingRimadylConc:'rimadylConc',settingMetacamConc:'metacamConc',settingAtropineConc:'atropineConc',settingDiazepamDose:'diazepamDose',settingPropofolDose:'propofolDose',settingTramadolDose:'tramadolDose',settingCarprofenDose:'carprofenDose',settingMeloxicamDose:'meloxicamDose',settingCefazolinDivisor:'cefazolinDivisor',settingConveniaDivisor:'conveniaDivisor',settingAdrenalineDose:'adrenalineDose',settingAtropineBradyDose:'atropineBradyDose',settingAtropineCprDose:'atropineCprDose',settingProtocolName:'protocolName',settingProtocolVersion:'protocolVersion',settingProtocolVerifiedAt:'protocolVerifiedAt'};
+   Object.entries(map).forEach(([id,key])=>{if($(id))$(id).value=s[key]??''});
+   if($('settingAutoWakeLock'))$('settingAutoWakeLock').checked=s.autoWakeLock!==false;
+   if($('settingShowSapDap'))$('settingShowSapDap').checked=s.showSapDap!==false;
+   if($('settingCriticalPopup'))$('settingCriticalPopup').checked=s.criticalPopupEnabled!==false;
++  if($('settingOrFocusMode'))$('settingOrFocusMode').checked=s.orFocusMode!==false;
++  if($('settingShowMiniTrends'))$('settingShowMiniTrends').checked=s.showMiniTrends!==false;
++  if($('settingShowRecentActivity'))$('settingShowRecentActivity').checked=s.showRecentActivity!==false;
+   setTemperatureDisplayUnit(s.temperatureUnit,{convertInputs:true,rerender:false});
+   renderSapDapVisibility();
+   renderBuiltInProtocolChips(s);
+-  renderProtocolGovernance();
++  renderProtocolGovernance();renderOrWorkspacePreferences();renderDefaultReportPreference();
+ }
+ function applyHospitalDefaultsToFreshCaseUi(){
+   const cfg=currentSettingsObject();
+-  const defaults={recordInterval:cfg.interval,recRecordInterval:cfg.interval,diazepamConc:cfg.diazepamConc,propofolConc:cfg.propofolConc,tramadolConc:cfg.tramadolConc,rimadylConc:cfg.rimadylConc,metacamConc:cfg.metacamConc,atropineConc:cfg.atropineConc};
++  const defaults={recordInterval:cfg.interval,recRecordInterval:cfg.recoveryInterval||cfg.interval,diazepamConc:cfg.diazepamConc,propofolConc:cfg.propofolConc,tramadolConc:cfg.tramadolConc,rimadylConc:cfg.rimadylConc,metacamConc:cfg.metacamConc,atropineConc:cfg.atropineConc};
+   Object.entries(defaults).forEach(([id,value])=>{
+     // Existing/current cases retain their saved case-specific value. A true fresh/reset case
+     // inherits only operational hospital defaults, not old patient/clinical data.
+@@ -3838,13 +3869,14 @@
+ $('saveSettingsBtn')?.addEventListener('click',()=>{
+   const old=currentSettingsObject(),locked=!!old.protocolLocked;
+   const newTempUnit=normalizeTempUnit($('settingTemperatureUnit')?.value||old.temperatureUnit);setTemperatureDisplayUnit(newTempUnit,{convertInputs:true,rerender:false});
+-  const s={...old,interval:$('settingInterval').value,temperatureUnit:newTempUnit,autoWakeLock:$('settingAutoWakeLock')?.checked!==false,showSapDap:$('settingShowSapDap')?.checked!==false,criticalPopupEnabled:$('settingCriticalPopup')?.checked!==false};
++  const s={...old,interval:$('settingInterval').value,recoveryInterval:$('settingRecoveryInterval')?.value||old.recoveryInterval||old.interval,orMoreProfile:$('settingOrMoreProfile')?.value||'minimal',orQuickMedCount:$('settingQuickMedCount')?.value||'4',defaultReport:$('settingDefaultReport')?.value||'summary',orFocusMode:$('settingOrFocusMode')?.checked!==false,showMiniTrends:$('settingShowMiniTrends')?.checked!==false,showRecentActivity:$('settingShowRecentActivity')?.checked!==false,temperatureUnit:newTempUnit,autoWakeLock:$('settingAutoWakeLock')?.checked!==false,showSapDap:$('settingShowSapDap')?.checked!==false,criticalPopupEnabled:$('settingCriticalPopup')?.checked!==false};
+   if(!locked){
+     Object.assign(s,{diazepamConc:$('settingDiazepamConc').value,propofolConc:$('settingPropofolConc').value,tramadolConc:$('settingTramadolConc').value,rimadylConc:$('settingRimadylConc').value,metacamConc:$('settingMetacamConc').value,atropineConc:$('settingAtropineConc').value,diazepamDose:$('settingDiazepamDose').value,propofolDose:$('settingPropofolDose').value,tramadolDose:$('settingTramadolDose').value,carprofenDose:$('settingCarprofenDose').value,meloxicamDose:$('settingMeloxicamDose').value,cefazolinDivisor:$('settingCefazolinDivisor').value,conveniaDivisor:$('settingConveniaDivisor').value,adrenalineDose:$('settingAdrenalineDose').value,atropineBradyDose:$('settingAtropineBradyDose').value,atropineCprDose:$('settingAtropineCprDose').value,protocolName:$('settingProtocolName')?.value.trim()||'Hospital anesthesia protocol',protocolVersion:$('settingProtocolVersion')?.value.trim()||'',protocolVerifiedAt:$('settingProtocolVerifiedAt')?.value||''});
+   }
+   localStorage.setItem(SETTINGS_KEY,JSON.stringify(s));
+-  if(!state.caseStartedAt){$('recordInterval').value=s.interval;$('diazepamConc').value=s.diazepamConc;$('propofolConc').value=s.propofolConc;$('tramadolConc').value=s.tramadolConc;$('rimadylConc').value=s.rimadylConc;$('metacamConc').value=s.metacamConc;$('atropineConc').value=s.atropineConc;}renderBuiltInProtocolChips(s);
+-  addProtocolAudit('HOSPITAL_SETTINGS_SAVED',`Protocol ${s.protocolVersion||'unversioned'} • temp=${s.temperatureUnit} • showSapDap=${s.showSapDap!==false} • criticalPopup=${s.criticalPopupEnabled!==false} • locked=${!!s.protocolLocked}`);renderSapDapVisibility();renderRecords();renderRecoveryRecords();renderTrends();renderProcedureTimeline();renderResponses();updateDashboard();renderOrLive();renderProtocolGovernance();toast(locked?'General settings saved • protocol remains locked':'Hospital settings saved');
++  if($('orlive')?.classList.contains('active'))document.body.classList.toggle('or-mobile-active',s.orFocusMode!==false);
++  if(!state.caseStartedAt){$('recordInterval').value=s.interval;if($('recRecordInterval'))$('recRecordInterval').value=s.recoveryInterval||s.interval;$('diazepamConc').value=s.diazepamConc;$('propofolConc').value=s.propofolConc;$('tramadolConc').value=s.tramadolConc;$('rimadylConc').value=s.rimadylConc;$('metacamConc').value=s.metacamConc;$('atropineConc').value=s.atropineConc;}renderBuiltInProtocolChips(s);
++  addProtocolAudit('HOSPITAL_SETTINGS_SAVED',`Protocol ${s.protocolVersion||'unversioned'} • temp=${s.temperatureUnit} • showSapDap=${s.showSapDap!==false} • criticalPopup=${s.criticalPopupEnabled!==false} • locked=${!!s.protocolLocked}`);renderSapDapVisibility();renderRecords();renderRecoveryRecords();renderTrends();renderProcedureTimeline();renderResponses();updateDashboard();renderOrLive();renderProtocolGovernance();renderDefaultReportPreference();toast(locked?'General settings saved • protocol remains locked':'Hospital settings saved');
+ });
+ function isProtocolLocked(){return !!currentSettingsObject().protocolLocked}
+ function renderProtocolGovernance(){
+--- ../anesvet_v156_final/index.html	2026-09-23 07:10:58.000000000 +0000
++++ index.html	2026-09-23 07:59:24.929293119 +0000
+@@ -7,12 +7,12 @@
+   <meta name="apple-mobile-web-app-capable" content="yes">
+   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+   <meta name="mobile-web-app-capable" content="yes">
+-  <meta name="description" content="ANESVET V15.7.0 — Pre-OR Readiness & Workflow Guard Release">
++  <meta name="description" content="ANESVET V15.8.0 — OR Workspace Customization Release">
+   <link rel="manifest" href="./manifest.webmanifest">
+   <link rel="icon" href="./icon-192.png">
+   <link rel="apple-touch-icon" href="./icon-192.png">
+-  <link rel="stylesheet" href="./style.css?v=15.7.0">
+-  <title>ANESVET V15.7.0</title>
++  <link rel="stylesheet" href="./style.css?v=15.8.0">
++  <title>ANESVET V15.8.0</title>
+ </head>
+ <body>
+ <header class="topbar">
+@@ -20,7 +20,7 @@
+     <img class="brand-logo" src="./icon-192.png" alt="ANESVET logo">
+     <div>
+       <div class="eyebrow">GENOVI PET CARE • DIGITAL ANESTHESIA RECORD</div>
+-      <h1>ANESVET <span>V15.7.0</span></h1>
++      <h1>ANESVET <span>V15.8.0</span></h1>
+     </div>
+   </div>
+   <div class="top-actions">
+@@ -700,7 +700,7 @@
+     </section>
+ 
+     <section class="or-lower-grid">
+-      <section class="panel"><div class="section-heading"><div><h2>Mini trends</h2><p>6 records ล่าสุด</p></div><button id="orOpenTrendsBtn" class="btn">Open full trends</button></div>
++      <section id="orMiniTrendsPanel" class="panel"><div class="section-heading"><div><h2>Mini trends</h2><p>6 records ล่าสุด</p></div><button id="orOpenTrendsBtn" class="btn">Open full trends</button></div>
+         <div class="or-mini-trends">
+           <div class="or-spark-card"><span>MAP</span><div id="orSparkMap" class="or-sparkline"></div></div>
+           <div class="or-spark-card"><span>SpO₂</span><div id="orSparkSpo2" class="or-sparkline"></div></div>
+@@ -708,7 +708,7 @@
+           <div class="or-spark-card"><span>Temp</span><div id="orSparkTemp" class="or-sparkline"></div></div>
+         </div>
+       </section>
+-      <section class="panel"><div class="section-heading"><div><h2>Recent records / events</h2><p>ข้อมูลล่าสุดในเคส</p></div><button id="orOpenTimelineBtn" class="btn">Timeline</button></div><div id="orRecentActivity" class="or-recent-list empty-state compact">ยังไม่มีข้อมูล</div></section>
++      <section id="orRecentActivityPanel" class="panel"><div class="section-heading"><div><h2>Recent records / events</h2><p>ข้อมูลล่าสุดในเคส</p></div><button id="orOpenTimelineBtn" class="btn">Timeline</button></div><div id="orRecentActivity" class="or-recent-list empty-state compact">ยังไม่มีข้อมูล</div></section>
+     </section>
+ 
+     <button id="orUndoStepBtn" class="or-undo-step" type="button" hidden>↶ Undo last step</button>
+@@ -732,8 +732,10 @@
+           <button id="orMobileTrendsBtn" class="or-more-action" type="button"><span>↗</span><b>Trends</b><small>monitor trends</small></button>
+           <button id="orMobileTimelineBtn" class="or-more-action" type="button"><span>≡</span><b>Timeline</b><small>records & events</small></button>
+         </div>
++        <div id="orMoreProfileNote" class="or-more-profile-note">Minimal menu • contextual actions only</div>
+         <button id="orMobileUndoBtn" class="btn or-more-undo-btn" type="button" hidden>↶ Undo last workflow step</button>
+         <button id="orMobileCaseSummaryBtn" class="btn or-more-case-btn" type="button">← Case summary / leave OR focus</button>
++        <button id="orMoreSettingsBtn" class="btn or-more-settings-btn" type="button">⚙ Customize OR menu</button>
+       </div>
+     </dialog>
+ 
+@@ -2171,7 +2173,7 @@
+   </section>
+ 
+   <section id="settings" class="tabpage"><section class="panel"><div class="section-heading"><h2>Configurable Alert Protocol</h2><button id="editHospitalAlertBtn" class="btn primary">Edit hospital alerts</button></div><pre id="hospitalAlertSummary"></pre><details><summary>Hospital alert history</summary><div id="hospitalAlertHistory"></div></details><p>Default thresholds match V14.6.4. Hospital edits apply to new cases; case overrides require an actor and reason.</p></section><section class="panel"><div class="section-heading"><div><h2>Hospital settings</h2><p>ปรับ default ของโรงพยาบาลโดยไม่ต้องแก้ code</p></div><button id="saveSettingsBtn" class="btn primary">Save settings</button></div><div class="settings-grid">
+-<label>Default record interval<select id="settingInterval"><option value="5">5 min</option><option value="10">10 min</option></select></label>
++<label>Default OR vitals interval<select id="settingInterval"><option value="3">3 min</option><option value="5">5 min</option><option value="10">10 min</option><option value="15">15 min</option></select></label>
+ <label>Temperature unit<select id="settingTemperatureUnit"><option value="C">°C (recommended for Thailand)</option><option value="F">°F</option></select></label>
+ <label class="settings-toggle"><span>Show SAP / DAP helper fields</span><input id="settingShowSapDap" type="checkbox" checked></label>
+ <label class="settings-toggle"><span>Critical popup (configured alert thresholds)</span><input id="settingCriticalPopup" type="checkbox" checked></label>
+@@ -2183,6 +2185,35 @@
+ <label>Atropine concentration (mg/mL)<input id="settingAtropineConc" type="number" min="0.01" step="0.1" value="0.6"></label>
+ </div><div class="settings-note">บันทึกแล้วจะใช้กับ Drug Calculator, temperature display, alert behavior และหน้าจอ monitoring • Temperature ถูกเก็บภายในเป็น °F canonical เพื่อรักษาความต่อเนื่องและ checksum ของ record รุ่นก่อน</div></section>
+ 
++<section class="panel or-workspace-settings-panel">
++  <div class="section-heading">
++    <div><h2>OR / Mobile Workflow</h2><p>ปรับความเรียบง่ายของหน้าจอที่ใช้บนมือถือและ iPad โดยไม่เปลี่ยน clinical safety guards</p></div>
++    <span class="status-pill neutral">Touch-first</span>
++  </div>
++  <div class="settings-grid">
++    <label>OR MORE menu
++      <select id="settingOrMoreProfile">
++        <option value="minimal">Minimal — เฉพาะ action ที่เกี่ยวกับ phase</option>
++        <option value="standard">Standard — เพิ่ม Trends / Timeline</option>
++        <option value="full">Full — แสดงเครื่องมือทั้งหมด</option>
++      </select>
++    </label>
++    <label>Quick medication buttons
++      <select id="settingQuickMedCount"><option value="2">2 buttons</option><option value="4">4 buttons</option><option value="6">6 buttons</option></select>
++    </label>
++    <label>Default Recovery vitals interval
++      <select id="settingRecoveryInterval"><option value="3">3 min</option><option value="5">5 min</option><option value="10">10 min</option><option value="15">15 min</option></select>
++    </label>
++    <label>Default report
++      <select id="settingDefaultReport"><option value="summary">1-page Summary PDF</option><option value="full">Full PDF Report</option></select>
++    </label>
++    <label class="settings-toggle"><span>Auto OR Focus on phone / iPad</span><input id="settingOrFocusMode" type="checkbox" checked></label>
++    <label class="settings-toggle"><span>Show Mini trends in OR LIVE</span><input id="settingShowMiniTrends" type="checkbox" checked></label>
++    <label class="settings-toggle"><span>Show Recent activity in OR LIVE</span><input id="settingShowRecentActivity" type="checkbox" checked></label>
++  </div>
++  <div class="settings-note">Minimal เป็นค่าเริ่มต้น: Induction เน้น Medications / Airway / Event, Intraoperative เน้น Medications / Fluid / Event, Emergence เน้น Airway / Medications / Event • Confirm phase change, Undo guard, readiness gate และ audit trail ไม่สามารถปิดจาก Settings ได้</div>
++</section>
++
+ <section class="panel built-in-protocol-panel">
+   <div class="section-heading">
+     <div>
+@@ -2428,7 +2459,7 @@
+ </dialog>
+ 
+ <div id="toast" class="toast" role="status" aria-live="polite"></div>
+-<script src="./clinical-workflow.js?v=15.7.0"></script>
+-<script src="./app.js?v=15.7.0"></script>
++<script src="./clinical-workflow.js?v=15.8.0"></script>
++<script src="./app.js?v=15.8.0"></script>
+ </body>
+ </html>
+--- ../anesvet_v156_final/style.css	2026-09-23 07:09:25.000000000 +0000
++++ style.css	2026-09-23 07:59:26.139535110 +0000
+@@ -1004,3 +1004,11 @@
+ .readiness-override{margin-top:14px;border:1px solid #e6b9ae;background:#fff7f4;border-radius:16px;padding:14px;display:grid;gap:10px}.readiness-override small{color:#6c4a43}.readiness-override label{display:grid;gap:5px;font-weight:700}.readiness-override textarea,.readiness-override input{width:100%;box-sizing:border-box}
+ .readiness-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:16px}.or-leave-focus{min-width:72px;white-space:nowrap}
+ @media (max-width:720px){.readiness-sheet{padding:16px;border-radius:18px}.readiness-columns{grid-template-columns:1fr}.readiness-actions{position:sticky;bottom:-16px;background:#fff;padding:12px 0 0}.readiness-actions .btn{min-height:48px}.or-sticky-mini .or-leave-focus{order:-2;min-width:64px;padding-inline:10px}}
++
++
++/* V15.8.0 — OR Workspace Customization */
++.or-more-profile-note{margin-top:10px;padding:8px 10px;border-radius:10px;background:#edf6f8;color:#55727b;font-size:.72rem;font-weight:850;text-align:center}
++.or-more-settings-btn{width:100%;margin-top:8px;min-height:42px;border-style:dashed;color:#496b75;background:#fbfdfe}
++.or-workspace-settings-panel{border-color:#b8d7e4}.or-workspace-settings-panel .settings-grid{align-items:stretch}
++.or-workspace-settings-panel label{min-width:0}
++@media(max-width:780px){.or-more-profile-note{font-size:.67rem}.or-more-settings-btn{min-height:46px}}
+--- ../anesvet_v156_final/service-worker.js	2026-09-23 07:10:58.000000000 +0000
++++ service-worker.js	2026-09-23 08:00:23.132367370 +0000
+@@ -1,5 +1,5 @@
+-const CACHE='anesvet-v15-7-0-readiness-guard';
+-const ASSETS=['./','./index.html','./style.css?v=15.7.0','./clinical-workflow.js?v=15.7.0','./app.js?v=15.7.0','./manifest.webmanifest','./icon-192.png','./icon-512.png','./icon-maskable-512.png'];
++const CACHE='anesvet-v15-8-0-or-workspace';
++const ASSETS=['./','./index.html','./style.css?v=15.8.0','./clinical-workflow.js?v=15.8.0','./app.js?v=15.8.0','./manifest.webmanifest','./icon-192.png','./icon-512.png','./icon-maskable-512.png'];
+ self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)))});
+ self.addEventListener('message',e=>{if(e.data?.type==='SKIP_WAITING')self.skipWaiting()});
+ self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))));self.clients.claim()});
+--- ../anesvet_v156_final/manifest.webmanifest	2026-09-23 07:08:25.000000000 +0000
++++ manifest.webmanifest	2026-09-23 07:59:26.750734390 +0000
+@@ -1,8 +1,8 @@
+ {
+-  "name": "ANESVET V15.7.0 — Pre-OR Readiness & Workflow Guard Release",
++  "name": "ANESVET V15.8.0 — OR Workspace Customization Release",
+   "short_name": "ANESVET",
+   "description": "Touch-first local-first anesthesia workflow optimized for mobile phones and iPad in the operating room",
+-  "start_url": "./?v=15.7.0",
++  "start_url": "./?v=15.8.0",
+   "scope": "./",
+   "display": "standalone",
+   "background_color": "#f3f7f8",

@@ -1,8 +1,8 @@
 {
-  "name": "ANESVET V15.7.0 — Pre-OR Readiness & Workflow Guard Release",
+  "name": "ANESVET V15.8.0 — OR Workspace Customization Release",
   "short_name": "ANESVET",
   "description": "Touch-first local-first anesthesia workflow optimized for mobile phones and iPad in the operating room",
-  "start_url": "./?v=15.7.0",
+  "start_url": "./?v=15.8.0",
   "scope": "./",
   "display": "standalone",
   "background_color": "#f3f7f8",

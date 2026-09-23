@@ -1,3 +1,22 @@
+# ANESVET V15.8.0 — OR Workspace Customization Release
+
+รุ่นนี้ต่อจาก V15.7.0 โดยลด `MORE` ใน OR LIVE ให้เป็น contextual menu ตาม phase และเพิ่ม **OR / Mobile Workflow Settings** เพื่อให้แต่ละโรงพยาบาลปรับความเรียบง่ายของมือถือ/iPad, Quick meds, interval, OR Focus และ report preference ได้เอง โดยไม่ลด safety guards เดิม
+
+ดูรายละเอียดที่ `RELEASE_NOTES_V15_8_0.md`
+
+## V15.8.0 — OR Workspace Customization
+
+- ค่าเริ่มต้น `MORE = Minimal` และแสดงเฉพาะ action ที่เกี่ยวกับ phase ปัจจุบัน
+- Induction: Medications / Airway / Event-Problem
+- Intraoperative: Medications / Fluid-Blood / Event-Problem
+- Emergence: Airway / Medications / Event-Problem
+- Standard เพิ่ม Trends/Timeline; Full แสดงชุดเดิมทั้งหมด
+- Settings เพิ่ม Quick meds 2/4/6, Recovery interval, Auto OR Focus, ซ่อน/แสดง Mini trends/Recent activity และ Default PDF
+- OR vitals interval เพิ่มตัวเลือก 3 และ 15 นาที
+- Confirm / Undo / readiness / medication safety / audit trail ยังบังคับเหมือนเดิม
+
+---
+
 # ANESVET V15.7.0 — Pre-OR Readiness & Workflow Guard Release
 
 รุ่นนี้ต่อจาก V15.6.0 โดยเพิ่ม **Pre-OR Readiness Gate** เพื่อไม่ให้เปิด OR LIVE/Recovery ก่อนถึงจุดที่เหมาะสมของ workflow พร้อม documented clinical override สำหรับกรณีจำเป็น และเพิ่มทางออกจาก OR/Recovery focus ที่เห็นชัดบนมือถือ/iPad
