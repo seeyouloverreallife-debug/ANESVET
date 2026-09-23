@@ -20,7 +20,7 @@ const SESSION_TTL_MS=30000;
 const SESSION_HEARTBEAT_MS=5000;
 const DB_NAME='ANESVET_DB';
 const DB_VERSION=2;
-const APP_VERSION='15.2.0';
+const APP_VERSION='15.4.0';
 const AUTOSAVE_DELAY_MS=450;
 const ACTIVE_CHECKPOINT_MS=15000;
 const SAFETY_CHECKPOINT_KEY='anesvet_v15_active_safety_checkpoint';
@@ -1494,7 +1494,9 @@ function renderOrUndoControls(){
   const tx=state.orLastTransition,available=orUndoAvailable(),label=tx?.label||'last workflow step',quick=available&&Date.now()<=Number(tx.quickUntil||0);
   const quickBtn=$('orUndoStepBtn');if(quickBtn){quickBtn.hidden=!quick;quickBtn.textContent=`↶ Undo • ${label}`;}
   const moreBtn=$('orMobileUndoBtn');if(moreBtn){moreBtn.hidden=!available;moreBtn.textContent=`↶ Undo last step • ${label}`;}
-  const recoveryBtn=$('recoveryUndoStepBtn');if(recoveryBtn){const recoveryRelated=available&&['extubation','recovery'].includes(tx?.action);recoveryBtn.hidden=!recoveryRelated;recoveryBtn.textContent=`↶ Undo • ${label}`;}
+  const recoveryRelated=available&&['extubation','recovery'].includes(tx?.action),recoveryBtn=$('recoveryUndoStepBtn'),recoveryMoreBtn=$('recoveryMoreUndoBtn');
+  if(recoveryBtn){recoveryBtn.hidden=!recoveryRelated;recoveryBtn.textContent=`↶ Undo • ${label}`;}
+  if(recoveryMoreBtn){recoveryMoreBtn.hidden=!recoveryRelated;recoveryMoreBtn.textContent=`↶ Undo • ${label}`;}
 }
 function hasPostTransitionClinicalData(tx){
   const t=Number(tx?.epoch||0);if(!t)return false;
@@ -1603,6 +1605,7 @@ function renderOrLive(){
   $('orPhaseBadge').className=`status-pill phase ${phaseClass()}`;
   $('orlive').classList.toggle('recovery-mode',state.casePhase==='recovery');
   $('orlive').classList.toggle('emergency-return-mode',state.casePhase==='emergency');
+  $('orlive').classList.toggle('intraop-mode',state.casePhase==='intraop');
   renderWorkflowContext();
   const overall=$('globalStatus').textContent;$('orGlobalStatus').textContent=overall;$('orGlobalStatus').className=overall==='INTERVENE'?'or-status-danger':overall==='REASSESS'?'or-status-warn':overall==='NO DATA'?'or-status-neutral':'or-status-good';
   const latest=latestRecord();$('orLastRecord').textContent=latest?`${latest.clock} • ${formatShortElapsed(latest.elapsedMs)}`:'—';
@@ -1623,6 +1626,15 @@ function renderOrLive(){
     }else{$('orNextDue').textContent='Starts with case';$('orNextDueClock').textContent='—';$('orRecordNowBtn').classList.remove('due');$('orRecordNowBtn').textContent='＋ RECORD FIRST SET'}
   }
   if($('orStickyDue')){$('orStickyDue').textContent=$('orNextDue')?.textContent||'—';$('orStickyDue').classList.toggle('due',$('orRecordNowBtn')?.classList.contains('due'))}
+  const vitalsFocus=$('orVitalsFocus'),intraop=state.casePhase==='intraop';
+  if(vitalsFocus)vitalsFocus.hidden=!intraop;
+  if(intraop){
+    if($('orVitalsFocusDue')){$('orVitalsFocusDue').textContent=$('orNextDue')?.textContent||'—';$('orVitalsFocusDue').classList.toggle('due',$('orRecordNowBtn')?.classList.contains('due'));}
+    if($('orVitalsFocusLast'))$('orVitalsFocusLast').textContent=latest?`${latest.clock} • ${vitalRecordSummary(latest)}`:'No saved vitals yet';
+    if($('orCopyLastVitalsBtn'))$('orCopyLastVitalsBtn').disabled=!latest;
+    if($('orVitalsFocusSaveBtn')){$('orVitalsFocusSaveBtn').classList.toggle('due',$('orRecordNowBtn')?.classList.contains('due'));$('orVitalsFocusSaveBtn').textContent=$('orRecordNowBtn')?.classList.contains('due')?'🔴 SAVE VITALS • DUE':'＋ SAVE VITALS';}
+    renderOrQuickMedStrip();
+  }
   const hints={hr:orStatusText(st.hr,species==='cat'?'100–180 screening':'60–150 screening','Reassess HR','Critical HR alert'),rr:orStatusText(st.rr,species==='cat'?'10–28 screening':'8–20 screening','Reassess RR','Critical RR / apnea risk'),map:orStatusText(st.map,'MAP acceptable','MAP 60–69','MAP <60'),spo2:orStatusText(st.spo2,'≥95%','SpO₂ <95%','SpO₂ <90%'),etco2:orStatusText(st.etco2,'40–55','Outside usual range','Critical ETCO₂ range'),temp:orStatusText(st.temp,'Temp acceptable','Warming indicated',`<${tempTextF(98)}`)};
   for(const key of WF.metrics)hints[key]=alertThresholdHint(key,st[key]);
   const cap={hr:'Hr',rr:'Rr',map:'Map',spo2:'Spo2',etco2:'Etco2',temp:'Temp'};
@@ -1665,6 +1677,10 @@ function closeOrMoreDialog(){const d=$('orMoreDialog');if(d?.open){try{d.close()
 function openOrMoreDialog(){const d=$('orMoreDialog');if(!d)return;try{if(!d.open)d.showModal()}catch(e){d.setAttribute('open','')}}
 $('orMobileNextBtn')?.addEventListener('click',()=>$('orPrimaryActionBtn')?.click());
 $('orMobileRecordBtn')?.addEventListener('click',()=>$('orRecordNowBtn')?.click());
+$('orVitalsFocusSaveBtn')?.addEventListener('click',()=>$('orRecordNowBtn')?.click());
+$('orCopyLastVitalsBtn')?.addEventListener('click',copyLastVitalsToCurrent);
+$('orQuickMedAllBtn')?.addEventListener('click',()=>openOrQuickDrug());
+$('orQuickMedButtons')?.addEventListener('click',e=>{const b=e.target.closest('[data-or-quick-med]');if(!b)return;openOrQuickDrug({drugId:b.dataset.orQuickMed})});
 $('orMobileMoreBtn')?.addEventListener('click',openOrMoreDialog);
 $('orMoreCloseBtn')?.addEventListener('click',closeOrMoreDialog);
 $('orMoreDialog')?.addEventListener('click',e=>{if(e.target===$('orMoreDialog'))closeOrMoreDialog()});
@@ -1826,10 +1842,11 @@ function setTab(id,opts={}){
     toast('Recovery active — OR LIVE ถูกล็อก หากฉุกเฉินให้กด Emergency return to OR LIVE');
     renderWorkflowLocks();scrollAppTop();return;
   }
-  closeMoreMenu();
+  closeMoreMenu();closeRecoveryMoreDialog();
   $$('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===id));
   $$('.tabpage').forEach(p=>p.classList.toggle('active',p.id===id));
   document.body.classList.toggle('or-mobile-active',id==='orlive');
+  document.body.classList.toggle('recovery-mobile-active',id==='recovery');
   localStorage.setItem(TAB_KEY,id);
   if(id==='trends') renderTrends();
   if(id==='cases'){renderArchives();renderBackupHealth();}
@@ -2194,6 +2211,28 @@ function applyCorrection(recordId=null){
 }
 $('applyCorrectionBtn')?.addEventListener('click',()=>applyCorrection());
 function latestRecord(){return state.records?.length?state.records[state.records.length-1]:null}
+function vitalRecordSummary(r){
+  if(!r)return '—';
+  const bits=[`HR ${r.hr??'—'}`,`RR ${r.rr??'—'}`,`MAP ${r.map??'—'}`,`SpO₂ ${r.spo2??'—'}%`,`ETCO₂ ${r.etco2??'—'}`,`Temp ${r.temp==null?'—':tempTextF(r.temp)}`];
+  if(r.vaporizer!==null&&r.vaporizer!==''&&r.vaporizer!==undefined)bits.push(`Vaporizer ${r.vaporizer}%`);
+  return bits.join(' • ');
+}
+function copyLastVitalsToCurrent(){
+  const last=latestRecord();if(!last){toast('ยังไม่มี vital record ก่อนหน้าให้ Copy');return false}
+  const values={hr:last.hr,rr:last.rr,sap:last.sap,map:last.map,dap:last.dap,spo2:last.spo2,etco2:last.etco2,vaporizer:last.vaporizer,o2flow:last.o2flow,fluidRateInput:last.fluidRate,depth:last.depth,ventilation:last.ventilation};
+  for(const [id,val] of Object.entries(values)){const el=$(id);if(!el||val===null||val===undefined)continue;el.value=val;el.dispatchEvent(new Event(el.tagName==='SELECT'?'change':'input',{bubbles:true}))}
+  if(last.temp!==null&&last.temp!==undefined&&$('temp')){$('temp').value=tempStoredFToDisplay(last.temp);$('temp').dispatchEvent(new Event('input',{bubbles:true}))}
+  syncOrFromMain();renderRecordPreview();renderOrLive();toast(`Copied last vitals • ${last.clock}`);return true;
+}
+function intraopFavoriteQuickDrugs(){
+  const all=frozenQuickDrugs();
+  return all.filter(d=>d&&d.favorite===true).slice(0,4);
+}
+function renderOrQuickMedStrip(){
+  const box=$('orQuickMedButtons');if(!box)return;
+  const favs=intraopFavoriteQuickDrugs();
+  box.innerHTML=favs.length?favs.map(d=>`<button type="button" class="or-quick-med-btn" data-or-quick-med="${escapeHtml(String(d.id||''))}">${escapeHtml(d.name||'Medication')}</button>`).join(''):'<small>ตั้ง Favorite drugs ใน Hospital Drug Library เพื่อแสดงตรงนี้</small>';
+}
 function updateDue(){
   const last=latestRecord(),interval=Number($('recordInterval').value||5)*60000,banner=$('dueBanner');
   if(!last){
@@ -2241,7 +2280,7 @@ $$('.milestone-btn').forEach(btn=>btn.addEventListener('click',()=>markMilestone
 function renderProcedureTimeline(){
   const items=[
     ...(state.events||[]).map(e=>({elapsedMs:e.elapsedMs,clock:e.clock,cat:e.category,text:`${e.name}${e.dose?' • '+e.dose:''}${e.route?' • '+e.route:''}${e.note?' • '+e.note:''}`})),
-    ...(state.records||[]).filter(r=>r.note).map(r=>({elapsedMs:r.elapsedMs,clock:r.clock,cat:'Record',text:r.note,isRecord:true})),
+    ...(state.records||[]).map(r=>({elapsedMs:r.elapsedMs,clock:r.clock,cat:'Vitals',text:`${vitalRecordSummary(r)}${r.note?' • '+r.note:''}`,isRecord:true})),
     ...(state.corrections||[]).map(c=>({elapsedMs:c.recordElapsedMs||0,clock:c.clock,cat:'Correction',text:`${c.field.toUpperCase()} ${c.field==='temp'?tempTextF(c.oldValue):c.oldValue} → ${c.field==='temp'?tempTextF(c.newValue):c.newValue}${c.reason?' • '+c.reason:''}`})),
     ...(state.alertEpisodes||[]).flatMap(a=>[{elapsedMs:a.elapsedMs||0,clock:a.clock,cat:'Alert',text:`${a.label||a.key} started • ${a.trigger||''}${a.acknowledgedAt?' • acknowledged '+formatClock(a.acknowledgedAt):''}`},...(a.resolvedAt?[{elapsedMs:a.resolvedElapsedMs||a.elapsedMs||0,clock:a.resolvedClock||formatClock(a.resolvedAt),cat:'Alert resolved',text:`${a.label||a.key} resolved • duration ${formatShortElapsed(a.resolvedAt-a.startedAt)}`}]:[])]),
     ...(state.alertEpisodes||[]).flatMap(a=>(a.interventions||[]).map(i=>({elapsedMs:i.elapsedMs,clock:i.clock,cat:'Alert intervention',text:`${a.label||a.key} • ${i.note} • ${i.actor||''}`}))),
@@ -2787,19 +2826,63 @@ $('emergencyReturnOrBtn')?.addEventListener('click',emergencyReturnToOr);
 function recoveryAnyNA(){return $$('.recovery-check-na-btn').some(x=>x.classList.contains('active'))||$$('.recovery-observation-na-btn').some(x=>x.classList.contains('active'))}
 function recoveryObservationNA(key){const btn=document.querySelector(`.recovery-observation-na-btn[data-key="${key}"]`);return btn?btn.classList.contains('active'):!!state.recoveryObservationNA?.[key]}
 function recoveryNAReasonValid(){return !recoveryAnyNA()||!!$('recNaReason')?.value.trim()}
-function renderRecovery(){
-  const all=$$('.recovery-check'),done=all.filter(x=>x.checked).length,na=$$('.recovery-check-na-btn').filter(x=>x.classList.contains('active')).length,reviewed=done+na,el=$('recoveryStatus');
-  el.textContent=`Checklist ${reviewed}/${all.length}${na?` • N/A ${na}`:''}`;
-  el.className=`recovery-status ${reviewed===all.length&&recoveryNAReasonValid()?'good':'warn'}`;
-  const rr=Number($('recRR')?.value||0),spo=Number($('recSpO2')?.value||0),tempF=tempInputStoredF('recTemp');
-  const ment=$('recMentation')?.value||'',ext=$('recExtubation')?.value.trim()||'';
+function recoveryReadinessSnapshot(){
+  const all=$$('.recovery-check'),done=all.filter(x=>x.checked).length,na=$$('.recovery-check-na-btn').filter(x=>x.classList.contains('active')).length,reviewed=done+na;
+  const rr=Number($('recRR')?.value||0),spo=Number($('recSpO2')?.value||0),tempF=tempInputStoredF('recTemp'),ment=$('recMentation')?.value||'',ext=$('recExtubation')?.value.trim()||'';
   const spoOk=spo>0||recoveryObservationNA('spo2'),tempOk=(tempF!==null&&tempF>0)||recoveryObservationNA('temp'),extOk=!!ext||recoveryObservationNA('extubation');
-  const ready=reviewed===all.length && rr>0 && spoOk && tempOk && !!ment && extOk && recoveryNAReasonValid() && (state.recoveryRecords||[]).length>0 && !state.emergencyReturnActive;
-  if($('recoveryReadiness')){
-    $('recoveryReadiness').textContent=ready?'READY FOR RECOVERY COMPLETE':'COMPLETE OBSERVATIONS / CHECKLIST';
-    $('recoveryReadiness').className=`recovery-readiness ${ready?'good':'warn'}`;
+  const records=(state.recoveryRecords||[]).length,scores=(state.recoveryScores||[]).length,naReasonOk=recoveryNAReasonValid();
+  const missing=[];
+  if(reviewed!==all.length)missing.push(`checklist ${reviewed}/${all.length}`);
+  if(!records)missing.push('vitals');
+  if(!scores)missing.push('score');
+  if(!(rr>0))missing.push('RR');
+  if(!spoOk)missing.push('SpO₂');
+  if(!tempOk)missing.push('Temp');
+  if(!ment)missing.push('mentation');
+  if(!extOk)missing.push('extubation');
+  if(!naReasonOk)missing.push('N/A reason');
+  const ready=reviewed===all.length&&records>0&&scores>0&&rr>0&&spoOk&&tempOk&&!!ment&&extOk&&naReasonOk&&!state.emergencyReturnActive;
+  return {all,done,na,reviewed,rr,spo,tempF,ment,ext,spoOk,tempOk,extOk,records,scores,naReasonOk,missing,ready};
+}
+function renderRecoveryFocus(snapshot=recoveryReadinessSnapshot()){
+  const latest=(state.recoveryRecords||[]).at(-1),name=$('patientName')?.value.trim()||state.patientName||'Unnamed patient',weight=Number($('weight')?.value||state.weight)||null;
+  if($('recoveryFocusPatient'))$('recoveryFocusPatient').textContent=`${name} • ${weight??'—'} kg • ${state.emergencyReturnActive?'EMERGENCY RETURN':'active recovery'}`;
+  if($('recoveryFocusElapsed'))$('recoveryFocusElapsed').textContent=formatElapsed(recoveryElapsed());
+  const dueText=$('recoveryDueBadge')?.textContent||'—',dueDanger=$('recoveryDueBadge')?.classList.contains('danger')||/DUE/.test(dueText)&&!/NEXT/.test(dueText);
+  for(const id of ['recoveryFocusDue','recoveryMobileDue']){const el=$(id);if(el){el.textContent=dueText;el.classList.toggle('due',dueDanger)}}
+  const latestBox=$('recoveryFocusLatest');
+  if(latestBox){
+    const temp=latest?.na?.temp?'N/A':(latest?.temp==null?'—':`${tempStoredFToDisplay(latest.temp)}°${tempSymbol().replace('°','')}`),spo=latest?.na?.spo2?'N/A':(latest?.spo2??'—');
+    const vals=[['HR',latest?.hr??'—'],['RR',latest?.rr??'—'],['SpO₂',spo==='—'?'—':`${spo}%`],['TEMP',temp],['MENTATION',latest?.mentation||'—']];
+    latestBox.innerHTML=vals.map(([k,v])=>`<div><span>${escapeHtml(k)}</span><b>${escapeHtml(String(v))}</b></div>`).join('');
   }
-  renderRecoveryState();renderRecoveryScores();renderRecoveryHandoff();renderActiveProblems();renderOrUndoControls();
+  if($('recoveryFocusLatestTime'))$('recoveryFocusLatestTime').textContent=latest?`Latest ${latest.clock} • recovery ${formatShortElapsed(latest.recoveryElapsedMs)}`:'No recovery record yet';
+  if($('recoveryCopyLastBtn'))$('recoveryCopyLastBtn').disabled=!latest;
+  if($('recoveryFocusReadiness'))$('recoveryFocusReadiness').textContent=snapshot.ready?'READY FOR RECOVERY COMPLETE':`NEEDS REVIEW • ${snapshot.missing.slice(0,4).join(' • ')||'clinical reassessment'}`;
+  const complete=$('recoveryFocusCompleteBtn');if(complete){complete.dataset.ready=snapshot.ready?'1':'0';complete.classList.toggle('ready',snapshot.ready);complete.textContent=snapshot.ready?'✓ COMPLETE RECOVERY':'Review readiness';}
+  for(const id of ['recoveryFocusRecordBtn','recoveryMobileRecordBtn']){const b=$(id);if(b){b.classList.toggle('due',dueDanger);if(id==='recoveryFocusRecordBtn')b.textContent=dueDanger?'🔴 RECORD RECOVERY VITALS • DUE':'＋ RECORD RECOVERY VITALS';}}
+}
+function copyLastRecoveryVitalsToCurrent(){
+  const r=(state.recoveryRecords||[]).at(-1);if(!r){toast('ยังไม่มี Recovery record ก่อนหน้าให้คัดลอก');return false}
+  const set=(id,v)=>{const el=$(id);if(el&&v!==null&&v!==undefined&&v!=='')el.value=v};
+  set('recHR',r.hr);set('recRR',r.rr);set('recMAP',r.map);
+  const setObs=(key,id,v)=>{const btn=document.querySelector(`.recovery-observation-na-btn[data-key="${key}"]`),input=$(id);if(v!==null&&v!==undefined&&v!==''){btn?.classList.remove('active');if(input){input.disabled=false;input.value=v}}else if(input&&!btn?.classList.contains('active'))input.value=''};
+  setObs('spo2','recSpO2',r.na?.spo2?null:r.spo2);setObs('temp','recTemp',r.na?.temp?null:(r.temp==null?null:tempStoredFToDisplay(r.temp)));
+  if($('recOxygen'))$('recOxygen').value=r.oxygen||'';if($('recMentation'))$('recMentation').value=r.mentation||'';if($('recPain'))$('recPain').value='';
+  save();renderRecovery();toast('Copied last Recovery vitals • review changes before Record');return true;
+}
+function scrollRecoveryPanel(id){const el=$(id);if(!el)return;requestAnimationFrame(()=>el.scrollIntoView({behavior:'smooth',block:'start'}));}
+function closeRecoveryMoreDialog(){const d=$('recoveryMoreDialog');if(d?.open){try{d.close()}catch(e){d.removeAttribute('open')}}}
+function openRecoveryMoreDialog(){const d=$('recoveryMoreDialog');if(!d)return;try{if(!d.open)d.showModal()}catch(e){d.setAttribute('open','')}}
+function renderRecovery(){
+  const snapshot=recoveryReadinessSnapshot(),el=$('recoveryStatus');
+  el.textContent=`Checklist ${snapshot.reviewed}/${snapshot.all.length}${snapshot.na?` • N/A ${snapshot.na}`:''} • Records ${snapshot.records} • Scores ${snapshot.scores}`;
+  el.className=`recovery-status ${snapshot.ready?'good':'warn'}`;
+  if($('recoveryReadiness')){
+    $('recoveryReadiness').textContent=snapshot.ready?'READY FOR RECOVERY COMPLETE':'COMPLETE OBSERVATIONS / CHECKLIST / SCORE';
+    $('recoveryReadiness').className=`recovery-readiness ${snapshot.ready?'good':'warn'}`;
+  }
+  renderRecoveryState();renderRecoveryScores();renderRecoveryHandoff();renderActiveProblems();renderOrUndoControls();renderRecoveryFocus(snapshot);
 }
 $$('.recovery-check').forEach((el,i)=>el.addEventListener('change',()=>{if(el.checked){const b=$$('.recovery-check-na-btn')[i];b?.classList.remove('active');el.disabled=false}renderRecovery();save()}));
 $$('.recovery-check-na-btn').forEach((btn,i)=>btn.addEventListener('click',()=>{const active=!btn.classList.contains('active');btn.classList.toggle('active',active);const cb=$$('.recovery-check')[i];if(cb){cb.disabled=active;if(active)cb.checked=false}renderRecovery();save()}));
@@ -2869,9 +2952,25 @@ function updateRecoveryDue(){
   }
 }
 $('recordRecoveryVitalsBtn')?.addEventListener('click',addRecoveryRecord);
+$('recoveryFocusRecordBtn')?.addEventListener('click',()=>$('recordRecoveryVitalsBtn')?.click());
+$('recoveryMobileRecordBtn')?.addEventListener('click',()=>$('recordRecoveryVitalsBtn')?.click());
+$('recoveryCopyLastBtn')?.addEventListener('click',copyLastRecoveryVitalsToCurrent);
+$('recoveryFocusMedicationBtn')?.addEventListener('click',()=>$('recoveryMedicationBtn')?.click());
+$('recoveryMobileMedicationBtn')?.addEventListener('click',()=>$('recoveryMedicationBtn')?.click());
+$('recoveryFocusCompleteBtn')?.addEventListener('click',()=>{const r=recoveryReadinessSnapshot();if(r.ready){completeRecovery();return}if(r.reviewed<r.all.length)scrollRecoveryPanel('recoveryChecklistPanel');else if(!r.records||!(r.rr>0)||!r.spoOk||!r.tempOk||!r.ment||!r.extOk)scrollRecoveryPanel('recoveryObservationPanel');else if(!r.scores)scrollRecoveryPanel('recoveryScorePanel');else scrollRecoveryPanel('recoveryChecklistPanel')});
+$('recoveryMobileMoreBtn')?.addEventListener('click',openRecoveryMoreDialog);
+$('recoveryMoreCloseBtn')?.addEventListener('click',closeRecoveryMoreDialog);
+$('recoveryMoreDialog')?.addEventListener('click',e=>{if(e.target===$('recoveryMoreDialog'))closeRecoveryMoreDialog()});
+[['recoveryMoreChecklistBtn','recoveryChecklistPanel'],['recoveryMoreScoreBtn','recoveryScorePanel'],['recoveryMoreProblemsBtn','recoveryProblemsPanel'],['recoveryMoreHandoffBtn','recoveryHandoffPanel']].forEach(([b,id])=>$(b)?.addEventListener('click',()=>{closeRecoveryMoreDialog();scrollRecoveryPanel(id)}));
+$('recoveryMoreEventBtn')?.addEventListener('click',()=>{closeRecoveryMoreDialog();setTab('events')});
+$('recoveryMoreCompleteBtn')?.addEventListener('click',()=>{closeRecoveryMoreDialog();completeRecovery()});
+$('recoveryMoreEmergencyBtn')?.addEventListener('click',()=>{closeRecoveryMoreDialog();emergencyReturnToOr()});
+$('recoveryMoreUndoBtn')?.addEventListener('click',()=>{closeRecoveryMoreDialog();$('recoveryUndoStepBtn')?.click()});
+$('recoveryMoreCaseSummaryBtn')?.addEventListener('click',()=>{closeRecoveryMoreDialog();setTab('casesummary')});
 
 function recoveryElapsed(){return state.recoveryStartedAt?Math.max(0,(state.recoveryCompletedAt||Date.now())-state.recoveryStartedAt):0}
 function renderRecoveryState(){
+  document.body.classList.toggle('recovery-session-active',state.casePhase==='recovery'&&!state.recoveryCompletedAt&&!state.emergencyReturnActive);
   if($('recoveryPhaseBadge')){
     if(state.recoveryCompletedAt){$('recoveryPhaseBadge').className='status-pill good';$('recoveryPhaseBadge').textContent='COMPLETE'}
     else if(state.casePhase==='recovery'){$('recoveryPhaseBadge').className='status-pill warn';$('recoveryPhaseBadge').textContent='RECOVERY ACTIVE'}
@@ -2881,7 +2980,7 @@ function renderRecoveryState(){
   if($('beginRecoveryBtn'))$('beginRecoveryBtn').disabled=state.casePhase==='recovery'||!!state.recoveryCompletedAt;
   if($('completeRecoveryBtn'))$('completeRecoveryBtn').disabled=state.casePhase!=='recovery'||!!state.recoveryCompletedAt;
   if($('orBeginRecoveryBtn'))$('orBeginRecoveryBtn').textContent=state.emergencyReturnActive?'→ Return to Recovery':state.casePhase==='recovery'?'Recovery active':'→ Recovery';
-  renderWorkflowLocks();updateRecoveryDue();
+  renderWorkflowLocks();updateRecoveryDue();renderRecoveryFocus(recoveryReadinessSnapshot());
 }
 function beginRecovery({skipConfirm=false}={}){
   if(!clinicalWriteAllowed()||!state.caseStartedAt){toast('Start a case before Recovery');return false}
@@ -2897,10 +2996,8 @@ function beginRecovery({skipConfirm=false}={}){
 function completeRecovery(){
   if(state.casePhase!=='recovery'||state.emergencyReturnActive)return;
   if(recoveryAnyNA()&&!recoveryNAReasonValid()){toast('กรุณาระบุ N/A reason ก่อน mark Recovery complete');$('recNaReason')?.focus();return}
-  const checks=$$('.recovery-check'),done=checks.filter(x=>x.checked).length,na=$$('.recovery-check-na-btn').filter(x=>x.classList.contains('active')).length,reviewed=done+na,rc=(state.recoveryRecords||[]).length;
-  const rr=Number($('recRR')?.value||0),spo=Number($('recSpO2')?.value||0),temp=tempInputStoredF('recTemp'),ment=$('recMentation')?.value||'',ext=$('recExtubation')?.value.trim()||'';
-  const scoreCount=(state.recoveryScores||[]).length;
-  const fullyReady=reviewed===checks.length && rc>0 && scoreCount>0 && rr>0 && (spo>0||recoveryObservationNA('spo2')) && ((temp!==null&&temp>0)||recoveryObservationNA('temp')) && !!ment && (!!ext||recoveryObservationNA('extubation')) && recoveryNAReasonValid();
+  const readiness=recoveryReadinessSnapshot(),checks=readiness.all,reviewed=readiness.reviewed,rc=readiness.records,scoreCount=readiness.scores;
+  const fullyReady=readiness.ready;
   let completionOverride=null;
   if(!fullyReady){
     const reason=prompt(`Recovery readiness ยังไม่ครบ
@@ -3863,10 +3960,10 @@ function renderOrQuickDrugBatchStatus(){
   box.innerHTML=`<b>Induction ${escapeHtml(time)} • ลงย้อนหลังได้หลายยา</b>${meds.length?`บันทึกแล้ว: ${meds.map(d=>`${escapeHtml(d.drug)} ${escapeHtml(fmtDose(d.actual))} ${escapeHtml(d.unit||'mL')}`).join(' • ')}`:'ยังไม่ได้บันทึกปริมาณยา'}<br><small>เลือกยา → Save medication → เลือกยาตัวถัดไป • กด Done เมื่อทบทวนยา induction ครบ</small>`;
 }
 function openOrQuickDrug(options={}){
-  const phase=typeof options==='object'&&options?options.phase||'':'',purpose=typeof options==='object'&&options?options.purpose||'':'',allowRecovery=!!(typeof options==='object'&&options?.allowRecovery);
+  const phase=typeof options==='object'&&options?options.phase||'':'',purpose=typeof options==='object'&&options?options.purpose||'':'',allowRecovery=!!(typeof options==='object'&&options?.allowRecovery),requestedDrugId=typeof options==='object'&&options?String(options.drugId||''):'';
   if(!clinicalWriteAllowed()||!requireCurrentWeight('using medication record'))return;if(purpose==='recovery'&&state.casePhase!=='recovery'){toast('Begin Recovery ก่อนบันทึก Recovery medication');return}if(orLiveLockedByRecovery()&&!allowRecovery){toast('ใช้ปุ่ม Medication ในหน้า Recovery สำหรับยาที่ให้หลัง Extubation');return}if(!state.caseStartedAt||!state.protocolSnapshot){toast('Start Case to freeze the protocol before using medication record');return}
   orQuickContext={phase,purpose,allowRecovery};const all=frozenQuickDrugs();orQuickOptions=phase?all.filter(d=>d.phase===phase):all;if(!orQuickOptions.length)orQuickOptions=all;
-  let preferred=purpose==='induction'?nextInductionQuickDrugIndex(orQuickOptions):preferredQuickDrugIndex(orQuickOptions,phase),sel=$('orQuickDrugSelect');
+  let preferred=requestedDrugId?orQuickOptions.findIndex(d=>String(d.id||'')===requestedDrugId):(purpose==='induction'?nextInductionQuickDrugIndex(orQuickOptions):preferredQuickDrugIndex(orQuickOptions,phase)),sel=$('orQuickDrugSelect');
   sel.innerHTML='<option value="">— Select drug —</option>'+orQuickOptions.map((d,i)=>`<option value="${i}">${escapeHtml(d.name)}</option>`).join('');sel.value=preferred>=0?String(preferred):'';
   $('orQuickDrugTitle').textContent=purpose==='induction'?'Induction medications':purpose==='recovery'?'Recovery medication':'Medication';$('orQuickDrugBy').value=$('anesthetist')?.value.trim()||'';$('orQuickDrugNote').value='';
   if($('orQuickInductionSkipBtn'))$('orQuickInductionSkipBtn').hidden=purpose!=='induction';if($('orQuickDrugDoneBtn'))$('orQuickDrugDoneBtn').hidden=purpose!=='induction';renderOrQuickDrugBatchStatus();renderOrQuickDrug();$('orQuickDrugDialog').showModal();

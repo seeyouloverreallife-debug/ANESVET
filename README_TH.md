@@ -1,8 +1,18 @@
-# ANESVET V15.2.0 — OR LIVE Safety & Vitals Release
+# ANESVET V15.4.0 — Recovery UX Release
 
-รุ่นนี้ต่อจาก V15.1.0 ตาม feedback การใช้งานจริงบนมือถือ/iPad: เพิ่ม **confirmation ก่อนเปลี่ยน phase**, **Undo last workflow step** สำหรับกรณีกดผิด และปรับช่วง **INTRAOPERATIVE ให้ RECORD VITALS เป็นปุ่มหลักที่ใหญ่ที่สุด** ขณะที่ปุ่มเดิน phase ถูกลด visual weight เพื่อป้องกัน accidental progression โดยคง clinical/safety logic เดิม
 
-ดูรายละเอียดที่ `RELEASE_NOTES_V15_2_0.md`
+รุ่นนี้ต่อจาก V15.3.0 โดยปรับ **Recovery ให้เป็น touch-first phase สำหรับมือถือ/iPad**: มี Recovery quick workspace, COPY LAST, RECORD VITALS เป็น action หลัก, fixed mobile dock และ readiness glance ที่สอดคล้องกับ completion guard จริง โดยไม่เปลี่ยน dose/threshold/ASA/BOAS logic เดิม
+
+ดูรายละเอียดที่ `RELEASE_NOTES_V15_4_0.md`
+
+## V15.4.0 — Recovery UX Release
+
+- Recovery quick workspace แสดง latest HR/RR/SpO₂/Temp/Mentation + due timer
+- COPY LAST เติมข้อมูลรอบก่อนเพื่อแก้เฉพาะค่าที่เปลี่ยน แต่ไม่ auto-save record
+- Mobile/iPad dock: **RECORD VITALS / MEDS / MORE**
+- จัดลำดับ Recovery บนมือถือเป็น Observations → Records → Score → Handoff → Problems
+- Readiness UI กับ completion guard ใช้ requirement เดียวกัน รวม saved Recovery score อย่างน้อย 1 ครั้ง
+- More sheet รวม checklist, score, problems, handoff, event/intervention, complete, undo และ emergency OR return
 
 ## V15.1.0 — OR LIVE Navigation & Focus Release
 
@@ -162,3 +172,10 @@ V14.7.1 เคยมี supplemental Chromium smoke test; สำหรับ V14
 `npm run test:browser` เป็น acceptance gate ที่ต้องรันบนเครื่องที่อนุญาต HTTP origin/native storage ของ Chromium เพื่อยืนยัน desktop/mobile, hospital/case alerts, actual drug, handoff/reload, Emergency return, Legacy route, offline cache และ PWA behavior ก่อนใช้งานจริง
 
 รายละเอียด architecture: `ARCHITECTURE_V14_7.md` • V14.7 change record: `RELEASE_NOTES_V14_7.md` • V14.7.1 UX changes: `RELEASE_NOTES_V14_7_1.md` • V14.7.2 changes: `RELEASE_NOTES_V14_7_2.md`
+## V15.3.0 — Intraoperative Vitals & Timeline
+
+ช่วง `INTRAOPERATIVE` ใช้ Vitals-first cockpit เป็นจุดทำงานหลัก: `COPY LAST` เติมค่าจาก record ล่าสุดเพื่อแก้เฉพาะสิ่งที่เปลี่ยน และ `SAVE VITALS` ใช้ record safety path เดิมทั้งหมด ส่วน Procedure Timeline แสดง vital records ทุกชุดร่วมกับ milestones, drugs, alerts/interventions และ recovery ตามเวลาเดียวกัน
+
+Quick meds จะแสดงเฉพาะรายการ Favorite จาก Hospital Drug Library และการแตะจะเปิด medication dialog พร้อมเลือกยาให้เท่านั้น ไม่ได้บันทึก actual administration อัตโนมัติ
+
+ดูรายละเอียดที่ `RELEASE_NOTES_V15_3_0.md`

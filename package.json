@@ -1,14 +1,14 @@
 {
-  "name": "anesvet-v15-2-0",
-  "version": "15.2.0",
+  "name": "anesvet-v15-4-0",
+  "version": "15.4.0",
   "private": true,
-  "description": "ANESVET V15.2.0 OR LIVE confirmation, undo, and intraoperative vitals-priority release; runtime requires no build",
+  "description": "ANESVET V15.4.0 recovery-first cockpit, repeat-vitals acceleration, readiness guidance, and mobile/iPad Recovery focus release; runtime requires no build",
   "engines": {
     "node": ">=22"
   },
   "scripts": {
     "test:syntax": "node tests/syntax.mjs",
-    "test:regression": "node tests/regression.mjs && node tests/ux_v1472_static.mjs && node tests/ux_v148_static.mjs && node tests/risk_flags_v1482.mjs && node tests/mobile_or_v149.mjs && node tests/hospital_pilot_v150.mjs && node tests/or_navigation_v151.mjs && node tests/or_safety_v152.mjs",
+    "test:regression": "node tests/regression.mjs && node tests/ux_v1472_static.mjs && node tests/ux_v148_static.mjs && node tests/risk_flags_v1482.mjs && node tests/mobile_or_v149.mjs && node tests/hospital_pilot_v150.mjs && node tests/or_navigation_v151.mjs && node tests/or_safety_v152.mjs && node tests/intraop_vitals_v153.mjs && node tests/recovery_ux_v154.mjs",
     "test:workflow": "node tests/workflow_scenarios.mjs && node tests/clinical_workflow.mjs && node tests/dom_workflow.mjs && node tests/adaptive_workflow_v148.mjs && node tests/compatibility.mjs && node tests/governance.mjs && node tests/final_lock.mjs",
     "test": "npm run test:syntax && npm run test:regression && npm run test:workflow",
     "test:browser": "node tests/e2e_browser.mjs"

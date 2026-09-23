@@ -1,0 +1,186 @@
+--- anesvet_v152_base_full/anesvet_v152/index.html	2026-09-23 03:40:24.000000000 +0000
++++ anesvet_v153/anesvet_v153/index.html	2026-09-23 04:52:23.726369075 +0000
+@@ -7,12 +7,12 @@
+   <meta name="apple-mobile-web-app-capable" content="yes">
+   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+   <meta name="mobile-web-app-capable" content="yes">
+-  <meta name="description" content="ANESVET V15.2.0 — OR LIVE Safety & Vitals Release">
++  <meta name="description" content="ANESVET V15.3.0 — Intraoperative Vitals & Timeline Release">
+   <link rel="manifest" href="./manifest.webmanifest">
+   <link rel="icon" href="./icon-192.png">
+   <link rel="apple-touch-icon" href="./icon-192.png">
+-  <link rel="stylesheet" href="./style.css?v=15.2.0">
+-  <title>ANESVET V15.2.0</title>
++  <link rel="stylesheet" href="./style.css?v=15.3.0">
++  <title>ANESVET V15.3.0</title>
+ </head>
+ <body>
+ <header class="topbar">
+@@ -20,7 +20,7 @@
+     <img class="brand-logo" src="./icon-192.png" alt="ANESVET logo">
+     <div>
+       <div class="eyebrow">GENOVI PET CARE • DIGITAL ANESTHESIA RECORD</div>
+-      <h1>ANESVET <span>V15.2.0</span></h1>
++      <h1>ANESVET <span>V15.3.0</span></h1>
+     </div>
+   </div>
+   <div class="top-actions">
+@@ -401,6 +401,29 @@
+       <button id="orStickyRecordBtn" class="btn primary">＋ RECORD NOW</button>
+     </section>
+ 
++    <section id="orVitalsFocus" class="or-vitals-focus" hidden aria-label="Intraoperative vitals workspace">
++      <div class="or-vitals-focus-head">
++        <div>
++          <div class="or-vitals-focus-kicker">INTRAOPERATIVE • VITALS FIRST</div>
++          <h2>Record vital signs</h2>
++          <p>ค่าบนการ์ดด้านล่างคือชุดที่จะบันทึก • ใช้ Copy last แล้วแก้เฉพาะค่าที่เปลี่ยนได้</p>
++        </div>
++        <div class="or-vitals-focus-timing">
++          <div><span>NEXT DUE</span><b id="orVitalsFocusDue">—</b></div>
++          <div><span>LAST SAVED</span><b id="orVitalsFocusLast">—</b></div>
++        </div>
++      </div>
++      <div class="or-vitals-focus-actions">
++        <button id="orCopyLastVitalsBtn" class="btn or-copy-last" type="button">↻ COPY LAST</button>
++        <button id="orVitalsFocusSaveBtn" class="or-vitals-save" type="button">＋ SAVE VITALS</button>
++      </div>
++      <div class="or-quick-med-strip">
++        <span>QUICK MEDS</span>
++        <div id="orQuickMedButtons" class="or-quick-med-buttons"><small>No favorite drugs configured</small></div>
++        <button id="orQuickMedAllBtn" class="btn" type="button">All medications</button>
++      </div>
++    </section>
++
+     <section class="or-primary-flow" aria-label="Current anesthesia workflow action">
+       <div class="or-primary-copy">
+         <div class="or-primary-kicker"><span>NEXT CLINICAL STEP</span><span id="orPrimaryStepCounter" class="or-primary-step-counter">STEP 1 OF 5</span></div>
+@@ -2289,7 +2312,7 @@
+ </dialog>
+ 
+ <div id="toast" class="toast" role="status" aria-live="polite"></div>
+-<script src="./clinical-workflow.js?v=15.2.0"></script>
+-<script src="./app.js?v=15.2.0"></script>
++<script src="./clinical-workflow.js?v=15.3.0"></script>
++<script src="./app.js?v=15.3.0"></script>
+ </body>
+ </html>
+--- anesvet_v152_base_full/anesvet_v152/app.js	2026-09-23 03:39:40.000000000 +0000
++++ anesvet_v153/anesvet_v153/app.js	2026-09-23 04:51:30.645156782 +0000
+@@ -20,7 +20,7 @@
+ const SESSION_HEARTBEAT_MS=5000;
+ const DB_NAME='ANESVET_DB';
+ const DB_VERSION=2;
+-const APP_VERSION='15.2.0';
++const APP_VERSION='15.3.0';
+ const AUTOSAVE_DELAY_MS=450;
+ const ACTIVE_CHECKPOINT_MS=15000;
+ const SAFETY_CHECKPOINT_KEY='anesvet_v15_active_safety_checkpoint';
+@@ -1603,6 +1603,7 @@
+   $('orPhaseBadge').className=`status-pill phase ${phaseClass()}`;
+   $('orlive').classList.toggle('recovery-mode',state.casePhase==='recovery');
+   $('orlive').classList.toggle('emergency-return-mode',state.casePhase==='emergency');
++  $('orlive').classList.toggle('intraop-mode',state.casePhase==='intraop');
+   renderWorkflowContext();
+   const overall=$('globalStatus').textContent;$('orGlobalStatus').textContent=overall;$('orGlobalStatus').className=overall==='INTERVENE'?'or-status-danger':overall==='REASSESS'?'or-status-warn':overall==='NO DATA'?'or-status-neutral':'or-status-good';
+   const latest=latestRecord();$('orLastRecord').textContent=latest?`${latest.clock} • ${formatShortElapsed(latest.elapsedMs)}`:'—';
+@@ -1623,6 +1624,15 @@
+     }else{$('orNextDue').textContent='Starts with case';$('orNextDueClock').textContent='—';$('orRecordNowBtn').classList.remove('due');$('orRecordNowBtn').textContent='＋ RECORD FIRST SET'}
+   }
+   if($('orStickyDue')){$('orStickyDue').textContent=$('orNextDue')?.textContent||'—';$('orStickyDue').classList.toggle('due',$('orRecordNowBtn')?.classList.contains('due'))}
++  const vitalsFocus=$('orVitalsFocus'),intraop=state.casePhase==='intraop';
++  if(vitalsFocus)vitalsFocus.hidden=!intraop;
++  if(intraop){
++    if($('orVitalsFocusDue')){$('orVitalsFocusDue').textContent=$('orNextDue')?.textContent||'—';$('orVitalsFocusDue').classList.toggle('due',$('orRecordNowBtn')?.classList.contains('due'));}
++    if($('orVitalsFocusLast'))$('orVitalsFocusLast').textContent=latest?`${latest.clock} • ${vitalRecordSummary(latest)}`:'No saved vitals yet';
++    if($('orCopyLastVitalsBtn'))$('orCopyLastVitalsBtn').disabled=!latest;
++    if($('orVitalsFocusSaveBtn')){$('orVitalsFocusSaveBtn').classList.toggle('due',$('orRecordNowBtn')?.classList.contains('due'));$('orVitalsFocusSaveBtn').textContent=$('orRecordNowBtn')?.classList.contains('due')?'🔴 SAVE VITALS • DUE':'＋ SAVE VITALS';}
++    renderOrQuickMedStrip();
++  }
+   const hints={hr:orStatusText(st.hr,species==='cat'?'100–180 screening':'60–150 screening','Reassess HR','Critical HR alert'),rr:orStatusText(st.rr,species==='cat'?'10–28 screening':'8–20 screening','Reassess RR','Critical RR / apnea risk'),map:orStatusText(st.map,'MAP acceptable','MAP 60–69','MAP <60'),spo2:orStatusText(st.spo2,'≥95%','SpO₂ <95%','SpO₂ <90%'),etco2:orStatusText(st.etco2,'40–55','Outside usual range','Critical ETCO₂ range'),temp:orStatusText(st.temp,'Temp acceptable','Warming indicated',`<${tempTextF(98)}`)};
+   for(const key of WF.metrics)hints[key]=alertThresholdHint(key,st[key]);
+   const cap={hr:'Hr',rr:'Rr',map:'Map',spo2:'Spo2',etco2:'Etco2',temp:'Temp'};
+@@ -1665,6 +1675,10 @@
+ function openOrMoreDialog(){const d=$('orMoreDialog');if(!d)return;try{if(!d.open)d.showModal()}catch(e){d.setAttribute('open','')}}
+ $('orMobileNextBtn')?.addEventListener('click',()=>$('orPrimaryActionBtn')?.click());
+ $('orMobileRecordBtn')?.addEventListener('click',()=>$('orRecordNowBtn')?.click());
++$('orVitalsFocusSaveBtn')?.addEventListener('click',()=>$('orRecordNowBtn')?.click());
++$('orCopyLastVitalsBtn')?.addEventListener('click',copyLastVitalsToCurrent);
++$('orQuickMedAllBtn')?.addEventListener('click',()=>openOrQuickDrug());
++$('orQuickMedButtons')?.addEventListener('click',e=>{const b=e.target.closest('[data-or-quick-med]');if(!b)return;openOrQuickDrug({drugId:b.dataset.orQuickMed})});
+ $('orMobileMoreBtn')?.addEventListener('click',openOrMoreDialog);
+ $('orMoreCloseBtn')?.addEventListener('click',closeOrMoreDialog);
+ $('orMoreDialog')?.addEventListener('click',e=>{if(e.target===$('orMoreDialog'))closeOrMoreDialog()});
+@@ -2194,6 +2208,28 @@
+ }
+ $('applyCorrectionBtn')?.addEventListener('click',()=>applyCorrection());
+ function latestRecord(){return state.records?.length?state.records[state.records.length-1]:null}
++function vitalRecordSummary(r){
++  if(!r)return '—';
++  const bits=[`HR ${r.hr??'—'}`,`RR ${r.rr??'—'}`,`MAP ${r.map??'—'}`,`SpO₂ ${r.spo2??'—'}%`,`ETCO₂ ${r.etco2??'—'}`,`Temp ${r.temp==null?'—':tempTextF(r.temp)}`];
++  if(r.vaporizer!==null&&r.vaporizer!==''&&r.vaporizer!==undefined)bits.push(`Vaporizer ${r.vaporizer}%`);
++  return bits.join(' • ');
++}
++function copyLastVitalsToCurrent(){
++  const last=latestRecord();if(!last){toast('ยังไม่มี vital record ก่อนหน้าให้ Copy');return false}
++  const values={hr:last.hr,rr:last.rr,sap:last.sap,map:last.map,dap:last.dap,spo2:last.spo2,etco2:last.etco2,vaporizer:last.vaporizer,o2flow:last.o2flow,fluidRateInput:last.fluidRate,depth:last.depth,ventilation:last.ventilation};
++  for(const [id,val] of Object.entries(values)){const el=$(id);if(!el||val===null||val===undefined)continue;el.value=val;el.dispatchEvent(new Event(el.tagName==='SELECT'?'change':'input',{bubbles:true}))}
++  if(last.temp!==null&&last.temp!==undefined&&$('temp')){$('temp').value=tempStoredFToDisplay(last.temp);$('temp').dispatchEvent(new Event('input',{bubbles:true}))}
++  syncOrFromMain();renderRecordPreview();renderOrLive();toast(`Copied last vitals • ${last.clock}`);return true;
++}
++function intraopFavoriteQuickDrugs(){
++  const all=frozenQuickDrugs();
++  return all.filter(d=>d&&d.favorite===true).slice(0,4);
++}
++function renderOrQuickMedStrip(){
++  const box=$('orQuickMedButtons');if(!box)return;
++  const favs=intraopFavoriteQuickDrugs();
++  box.innerHTML=favs.length?favs.map(d=>`<button type="button" class="or-quick-med-btn" data-or-quick-med="${escapeHtml(String(d.id||''))}">${escapeHtml(d.name||'Medication')}</button>`).join(''):'<small>ตั้ง Favorite drugs ใน Hospital Drug Library เพื่อแสดงตรงนี้</small>';
++}
+ function updateDue(){
+   const last=latestRecord(),interval=Number($('recordInterval').value||5)*60000,banner=$('dueBanner');
+   if(!last){
+@@ -2241,7 +2277,7 @@
+ function renderProcedureTimeline(){
+   const items=[
+     ...(state.events||[]).map(e=>({elapsedMs:e.elapsedMs,clock:e.clock,cat:e.category,text:`${e.name}${e.dose?' • '+e.dose:''}${e.route?' • '+e.route:''}${e.note?' • '+e.note:''}`})),
+-    ...(state.records||[]).filter(r=>r.note).map(r=>({elapsedMs:r.elapsedMs,clock:r.clock,cat:'Record',text:r.note,isRecord:true})),
++    ...(state.records||[]).map(r=>({elapsedMs:r.elapsedMs,clock:r.clock,cat:'Vitals',text:`${vitalRecordSummary(r)}${r.note?' • '+r.note:''}`,isRecord:true})),
+     ...(state.corrections||[]).map(c=>({elapsedMs:c.recordElapsedMs||0,clock:c.clock,cat:'Correction',text:`${c.field.toUpperCase()} ${c.field==='temp'?tempTextF(c.oldValue):c.oldValue} → ${c.field==='temp'?tempTextF(c.newValue):c.newValue}${c.reason?' • '+c.reason:''}`})),
+     ...(state.alertEpisodes||[]).flatMap(a=>[{elapsedMs:a.elapsedMs||0,clock:a.clock,cat:'Alert',text:`${a.label||a.key} started • ${a.trigger||''}${a.acknowledgedAt?' • acknowledged '+formatClock(a.acknowledgedAt):''}`},...(a.resolvedAt?[{elapsedMs:a.resolvedElapsedMs||a.elapsedMs||0,clock:a.resolvedClock||formatClock(a.resolvedAt),cat:'Alert resolved',text:`${a.label||a.key} resolved • duration ${formatShortElapsed(a.resolvedAt-a.startedAt)}`}]:[])]),
+     ...(state.alertEpisodes||[]).flatMap(a=>(a.interventions||[]).map(i=>({elapsedMs:i.elapsedMs,clock:i.clock,cat:'Alert intervention',text:`${a.label||a.key} • ${i.note} • ${i.actor||''}`}))),
+@@ -3863,10 +3899,10 @@
+   box.innerHTML=`<b>Induction ${escapeHtml(time)} • ลงย้อนหลังได้หลายยา</b>${meds.length?`บันทึกแล้ว: ${meds.map(d=>`${escapeHtml(d.drug)} ${escapeHtml(fmtDose(d.actual))} ${escapeHtml(d.unit||'mL')}`).join(' • ')}`:'ยังไม่ได้บันทึกปริมาณยา'}<br><small>เลือกยา → Save medication → เลือกยาตัวถัดไป • กด Done เมื่อทบทวนยา induction ครบ</small>`;
+ }
+ function openOrQuickDrug(options={}){
+-  const phase=typeof options==='object'&&options?options.phase||'':'',purpose=typeof options==='object'&&options?options.purpose||'':'',allowRecovery=!!(typeof options==='object'&&options?.allowRecovery);
++  const phase=typeof options==='object'&&options?options.phase||'':'',purpose=typeof options==='object'&&options?options.purpose||'':'',allowRecovery=!!(typeof options==='object'&&options?.allowRecovery),requestedDrugId=typeof options==='object'&&options?String(options.drugId||''):'';
+   if(!clinicalWriteAllowed()||!requireCurrentWeight('using medication record'))return;if(purpose==='recovery'&&state.casePhase!=='recovery'){toast('Begin Recovery ก่อนบันทึก Recovery medication');return}if(orLiveLockedByRecovery()&&!allowRecovery){toast('ใช้ปุ่ม Medication ในหน้า Recovery สำหรับยาที่ให้หลัง Extubation');return}if(!state.caseStartedAt||!state.protocolSnapshot){toast('Start Case to freeze the protocol before using medication record');return}
+   orQuickContext={phase,purpose,allowRecovery};const all=frozenQuickDrugs();orQuickOptions=phase?all.filter(d=>d.phase===phase):all;if(!orQuickOptions.length)orQuickOptions=all;
+-  let preferred=purpose==='induction'?nextInductionQuickDrugIndex(orQuickOptions):preferredQuickDrugIndex(orQuickOptions,phase),sel=$('orQuickDrugSelect');
++  let preferred=requestedDrugId?orQuickOptions.findIndex(d=>String(d.id||'')===requestedDrugId):(purpose==='induction'?nextInductionQuickDrugIndex(orQuickOptions):preferredQuickDrugIndex(orQuickOptions,phase)),sel=$('orQuickDrugSelect');
+   sel.innerHTML='<option value="">— Select drug —</option>'+orQuickOptions.map((d,i)=>`<option value="${i}">${escapeHtml(d.name)}</option>`).join('');sel.value=preferred>=0?String(preferred):'';
+   $('orQuickDrugTitle').textContent=purpose==='induction'?'Induction medications':purpose==='recovery'?'Recovery medication':'Medication';$('orQuickDrugBy').value=$('anesthetist')?.value.trim()||'';$('orQuickDrugNote').value='';
+   if($('orQuickInductionSkipBtn'))$('orQuickInductionSkipBtn').hidden=purpose!=='induction';if($('orQuickDrugDoneBtn'))$('orQuickDrugDoneBtn').hidden=purpose!=='induction';renderOrQuickDrugBatchStatus();renderOrQuickDrug();$('orQuickDrugDialog').showModal();
+--- anesvet_v152_base_full/anesvet_v152/style.css	2026-09-23 03:32:11.000000000 +0000
++++ anesvet_v153/anesvet_v153/style.css	2026-09-23 04:51:52.265190253 +0000
+@@ -918,3 +918,19 @@
+ @media(max-width:390px){
+   .or-mobile-dock.intraop{grid-template-columns:minmax(0,1.7fr) 86px 64px}.or-mobile-dock.intraop #orMobileRecordBtn>b{font-size:.7rem}.or-mobile-dock.intraop #orMobileNextBtn .or-mobile-next-copy b{font-size:.61rem}
+ }
++
++/* V15.3.0 — Intraoperative vitals-first cockpit */
++.or-vitals-focus{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(280px,.65fr);gap:14px;align-items:stretch;margin:0 0 10px;padding:14px;border:1px solid #9ec6d0;border-radius:18px;background:linear-gradient(135deg,#f6fcfd,#edf7f9);box-shadow:0 10px 28px rgba(9,54,68,.09)}
++.or-vitals-focus[hidden]{display:none!important}.or-vitals-focus-head{display:flex;justify-content:space-between;gap:18px;align-items:flex-start}.or-vitals-focus-kicker{font-size:.68rem;font-weight:950;letter-spacing:.09em;color:#0d5265}.or-vitals-focus h2{margin:3px 0 2px;font-size:1.35rem}.or-vitals-focus p{margin:0;color:var(--muted);font-size:.8rem;max-width:620px}.or-vitals-focus-timing{display:grid;grid-template-columns:1fr 1fr;gap:8px;min-width:310px}.or-vitals-focus-timing>div{background:#fff;border:1px solid #c8dce1;border-radius:12px;padding:9px 10px}.or-vitals-focus-timing span{display:block;font-size:.62rem;font-weight:900;letter-spacing:.05em;color:var(--muted)}.or-vitals-focus-timing b{display:block;margin-top:3px;font-size:.82rem;line-height:1.3}.or-vitals-focus-timing b.due{color:var(--danger)}
++.or-vitals-focus-actions{display:grid;grid-template-columns:minmax(110px,.7fr) minmax(180px,1.3fr);gap:8px;align-items:stretch}.or-vitals-focus-actions .btn,.or-vitals-save{min-height:62px;border-radius:13px;font-weight:950}.or-vitals-save{border:0;background:#0d5265;color:#fff;font-size:1.02rem;letter-spacing:.02em;cursor:pointer;box-shadow:0 7px 18px rgba(13,82,101,.18)}.or-vitals-save.due{background:#a12620;box-shadow:0 0 0 4px rgba(161,38,32,.11),0 7px 18px rgba(99,24,20,.18)}.or-copy-last:disabled{opacity:.48}
++.or-quick-med-strip{grid-column:1/-1;display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:8px;padding-top:10px;border-top:1px solid #c6dde2}.or-quick-med-strip>span{font-size:.66rem;font-weight:950;letter-spacing:.06em;color:#466c77}.or-quick-med-buttons{display:flex;gap:6px;overflow:auto;padding:1px 0}.or-quick-med-buttons small{color:var(--muted)}.or-quick-med-btn{flex:0 0 auto;min-height:38px;border:1px solid #a7cbd4;border-radius:10px;background:#fff;color:#174b59;padding:7px 11px;font:inherit;font-size:.78rem;font-weight:900;cursor:pointer}.or-quick-med-btn:active{transform:translateY(1px)}
++.or-live-page.intraop-mode .or-primary-flow{background:#fbfcfd;border-color:#d4e0e3;box-shadow:none}.or-live-page.intraop-mode .or-primary-action{background:#fff;color:#174b59;border:1px solid #b9d0d6;box-shadow:none}.or-live-page.intraop-mode .or-primary-kicker>span:first-child{color:#6d848b}.or-live-page.intraop-mode .or-vital-grid{margin-top:2px}
++.procedure-item.record .pcat{color:#0d5265;font-weight:950}.procedure-item.record{background:#fbfeff}
++
++@media(max-width:900px){
++  .or-vitals-focus{grid-template-columns:1fr;padding:11px;gap:10px;border-radius:15px}
++  .or-vitals-focus-head{display:grid;gap:9px}.or-vitals-focus-timing{min-width:0;grid-template-columns:1fr 1fr}.or-vitals-focus-actions{grid-template-columns:1fr 1.5fr}.or-quick-med-strip{grid-template-columns:1fr auto}.or-quick-med-strip>span{grid-column:1/-1}.or-quick-med-buttons{min-width:0}
++}
++@media(max-width:560px){
++  .or-vitals-focus{margin-left:-2px;margin-right:-2px;padding:9px}.or-vitals-focus h2{font-size:1.16rem}.or-vitals-focus p{font-size:.74rem}.or-vitals-focus-timing{gap:5px}.or-vitals-focus-timing>div{padding:7px 8px}.or-vitals-focus-timing b{font-size:.75rem}.or-vitals-focus-actions{grid-template-columns:98px 1fr}.or-vitals-focus-actions .btn,.or-vitals-save{min-height:56px;font-size:.78rem}.or-vitals-save{font-size:.9rem}.or-quick-med-strip{gap:6px}.or-quick-med-strip>.btn{min-height:40px;padding:6px 9px;font-size:.72rem}.or-quick-med-btn{min-height:38px;padding:6px 9px;font-size:.72rem}
++}

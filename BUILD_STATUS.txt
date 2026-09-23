@@ -1,41 +1,33 @@
-ANESVET V15.2.0 — OR LIVE Safety & Vitals Release
+ANESVET V15.4.0 — Recovery UX Release
 Build date: 2026-09-23
-Baseline: ANESVET V15.1.0 OR LIVE Navigation & Focus Release
+Baseline: ANESVET V15.3.0 Intraoperative Vitals & Timeline Release
 
 IMPLEMENTED
-- Explicit confirmation sheet before phase/timestamp-changing OR workflow steps
-- Confirmed workflow transitions retain an auditable reversible snapshot
-- Quick Undo pill for 90 seconds; Undo remains available for up to 5 minutes or until another workflow transition
-- Undo also exposed in MORE and on Recovery after Extubation/Recovery transitions
-- Undo preserves audit history and blocks unsafe rollback after post-transition clinical data in critical cases
-- Intraoperative dock is VITALS-first: RECORD VITALS largest, NEXT STEP secondary, MORE tertiary
-- Vitals due state receives stronger visual emphasis
-- OR LIVE Start Case now freezes patient identity/BW snapshot consistently with V15.0 safety model
+- Recovery quick workspace with latest observations, elapsed time, due timer, and readiness glance
+- COPY LAST recovery observations without automatic record creation
+- Large guarded RECORD RECOVERY VITALS action
+- Mobile/iPad Recovery dock: RECORD VITALS / MEDS / MORE
+- Recovery More sheet for checklist, score, problems, handoff, events, completion, Undo, and emergency OR return
+- Mobile Recovery information hierarchy prioritizes observations and repeat records
+- Readiness display aligned with Recovery completion requirements, including saved score
 
 UNCHANGED CLINICAL / SAFETY LOGIC
 - Drug doses / concentrations
 - Alert thresholds
 - Fluid references
-- Recovery score algorithm
 - ASA / BOAS logic
+- Recovery score algorithm
 - Verified safety checkpoint
 - stale medication-calculation safety stop
-- Recovery override + Final Lock gate
+- workflow confirmation + audited Undo
+- Recovery completion override + Final Lock gate
 - LocalStorage keys / IndexedDB schema
 
 VALIDATION
 PASS: syntax + JSON
-PASS: source regression / storage contracts
-PASS: V14.7.2 UX compatibility static contracts
-PASS: V14.8 adaptive workflow static contracts
-PASS: V14.8.2 anesthetic risk flag contracts
-PASS: V14.9 mobile/iPad compatibility contracts
-PASS: V15.0 Hospital Pilot safety contracts
-PASS: V15.1 OR LIVE navigation contracts
-PASS: V15.2 OR confirmation / undo / vitals-priority contracts
-PASS: production clinical helper tests (73 assertions)
-PASS: workflow model scenarios (4 scenarios)
-NOT CLAIMED: jsdom/fake-indexeddb DOM integration + Playwright E2E (runtime dependencies unavailable)
-DIRECT CHROMIUM SMOKE: attempted; process did not complete within runtime limit, so browser pass is not claimed
-
-Pilot recommendation: have a new user operate V15.2 on a real phone/iPad without instruction. Verify that accidental phase progression is prevented, Undo is discoverable, and RECORD VITALS becomes the obvious repeated action during intraoperative monitoring.
+PASS: regression / storage contracts
+PASS: V14.7.2 through V15.3 compatibility contracts
+PASS: V15.4 Recovery UX / mobile focus contracts
+PASS: clinical helper suite — 73 assertions
+PASS: workflow model scenarios — 4 scenarios
+NOT CLAIMED: DOM/browser automation (jsdom/fake-indexeddb/Playwright unavailable; Chromium smoke timed out)

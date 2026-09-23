@@ -7,12 +7,12 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="description" content="ANESVET V15.2.0 — OR LIVE Safety & Vitals Release">
+  <meta name="description" content="ANESVET V15.4.0 — Recovery UX Release">
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" href="./icon-192.png">
   <link rel="apple-touch-icon" href="./icon-192.png">
-  <link rel="stylesheet" href="./style.css?v=15.2.0">
-  <title>ANESVET V15.2.0</title>
+  <link rel="stylesheet" href="./style.css?v=15.4.0">
+  <title>ANESVET V15.4.0</title>
 </head>
 <body>
 <header class="topbar">
@@ -20,7 +20,7 @@
     <img class="brand-logo" src="./icon-192.png" alt="ANESVET logo">
     <div>
       <div class="eyebrow">GENOVI PET CARE • DIGITAL ANESTHESIA RECORD</div>
-      <h1>ANESVET <span>V15.2.0</span></h1>
+      <h1>ANESVET <span>V15.4.0</span></h1>
     </div>
   </div>
   <div class="top-actions">
@@ -399,6 +399,29 @@
       <div class="or-sticky-due"><span>NEXT VITALS</span><b id="orStickyDue">Not started</b></div>
       <button id="orStickyDrugBtn" class="btn or-sticky-med" type="button" hidden>💉 MEDS</button>
       <button id="orStickyRecordBtn" class="btn primary">＋ RECORD NOW</button>
+    </section>
+
+    <section id="orVitalsFocus" class="or-vitals-focus" hidden aria-label="Intraoperative vitals workspace">
+      <div class="or-vitals-focus-head">
+        <div>
+          <div class="or-vitals-focus-kicker">INTRAOPERATIVE • VITALS FIRST</div>
+          <h2>Record vital signs</h2>
+          <p>ค่าบนการ์ดด้านล่างคือชุดที่จะบันทึก • ใช้ Copy last แล้วแก้เฉพาะค่าที่เปลี่ยนได้</p>
+        </div>
+        <div class="or-vitals-focus-timing">
+          <div><span>NEXT DUE</span><b id="orVitalsFocusDue">—</b></div>
+          <div><span>LAST SAVED</span><b id="orVitalsFocusLast">—</b></div>
+        </div>
+      </div>
+      <div class="or-vitals-focus-actions">
+        <button id="orCopyLastVitalsBtn" class="btn or-copy-last" type="button">↻ COPY LAST</button>
+        <button id="orVitalsFocusSaveBtn" class="or-vitals-save" type="button">＋ SAVE VITALS</button>
+      </div>
+      <div class="or-quick-med-strip">
+        <span>QUICK MEDS</span>
+        <div id="orQuickMedButtons" class="or-quick-med-buttons"><small>No favorite drugs configured</small></div>
+        <button id="orQuickMedAllBtn" class="btn" type="button">All medications</button>
+      </div>
     </section>
 
     <section class="or-primary-flow" aria-label="Current anesthesia workflow action">
@@ -1709,10 +1732,36 @@
         <button id="emergencyReturnOrBtn" class="btn recovery-emergency-btn">⚠ Emergency return to OR LIVE</button>
       </div>
     </section>
-    <section class="panel handoff-panel"><div class="section-heading"><div><h2>Recovery Handoff</h2><p>เฉพาะข้อมูลที่ต้องเห็นทันทีตอนรับช่วงต่อ</p></div><span id="recoveryHandoffProblemBadge" class="status-pill good">0 OPEN</span></div><div id="recoveryHandoffSummary" class="handoff-summary-grid"></div><details class="handoff-full-details"><summary>ดูรายละเอียด Handoff ทั้งหมด</summary><pre id="recoveryHandoffText"></pre></details><details><summary>Snapshots at transfer</summary><div id="recoveryHandoffHistory"></div></details></section>
-    <section class="panel"><h2>Unresolved alerts / problems</h2><div id="recoveryProblemPanel"></div></section>
+
+    <section id="recoveryFocus" class="recovery-focus" aria-label="Recovery quick workspace">
+      <div class="recovery-focus-main">
+        <div class="recovery-focus-head">
+          <div><div class="recovery-focus-kicker">RECOVERY • QUICK WORKSPACE</div><h2>Record → reassess → handoff</h2><p id="recoveryFocusPatient">—</p></div>
+          <div class="recovery-focus-timing">
+            <div><span>RECOVERY</span><b id="recoveryFocusElapsed">00:00:00</b></div>
+            <div><span>NEXT VITALS</span><b id="recoveryFocusDue">FIRST RECORD DUE</b></div>
+          </div>
+        </div>
+        <div id="recoveryFocusLatest" class="recovery-focus-latest">
+          <div><span>HR</span><b>—</b></div><div><span>RR</span><b>—</b></div><div><span>SpO₂</span><b>—</b></div><div><span>TEMP</span><b>—</b></div><div><span>MENTATION</span><b>—</b></div>
+        </div>
+      </div>
+      <div class="recovery-focus-actions">
+        <button id="recoveryCopyLastBtn" class="btn recovery-copy-last" type="button">↺ COPY LAST</button>
+        <button id="recoveryFocusRecordBtn" class="recovery-focus-record" type="button">＋ RECORD RECOVERY VITALS</button>
+        <button id="recoveryFocusMedicationBtn" class="btn" type="button">💉 MEDS</button>
+        <button id="recoveryFocusCompleteBtn" class="btn recovery-focus-complete" type="button">Review readiness</button>
+      </div>
+      <div class="recovery-focus-readiness">
+        <span id="recoveryFocusReadiness">Complete observations / checklist</span>
+        <small id="recoveryFocusLatestTime">No recovery record yet</small>
+      </div>
+    </section>
+
+    <section id="recoveryHandoffPanel" class="panel handoff-panel"><div class="section-heading"><div><h2>Recovery Handoff</h2><p>เฉพาะข้อมูลที่ต้องเห็นทันทีตอนรับช่วงต่อ</p></div><span id="recoveryHandoffProblemBadge" class="status-pill good">0 OPEN</span></div><div id="recoveryHandoffSummary" class="handoff-summary-grid"></div><details class="handoff-full-details"><summary>ดูรายละเอียด Handoff ทั้งหมด</summary><pre id="recoveryHandoffText"></pre></details><details><summary>Snapshots at transfer</summary><div id="recoveryHandoffHistory"></div></details></section>
+    <section id="recoveryProblemsPanel" class="panel"><h2>Unresolved alerts / problems</h2><div id="recoveryProblemPanel"></div></section>
     <div class="dashboard-grid">
-      <section class="panel">
+      <section id="recoveryObservationPanel" class="panel">
         <h2>Recovery observations</h2>
         <div class="form-grid three">
           <label>HR (bpm)
@@ -1757,7 +1806,7 @@
         </div>
       </section>
 
-      <section class="panel">
+      <section id="recoveryChecklistPanel" class="panel">
         <h2>Recovery checklist</h2>
         <div class="recovery-check-item"><label class="switchline"><input class="recovery-check" type="checkbox" data-index="0"> Airway patent / breathing adequate</label><button type="button" class="recovery-check-na-btn" data-index="0">N/A</button></div>
         <div class="recovery-check-item"><label class="switchline"><input class="recovery-check" type="checkbox" data-index="1"> SpO₂ acceptable</label><button type="button" class="recovery-check-na-btn" data-index="1">N/A</button></div>
@@ -1770,7 +1819,7 @@
       </section>
     </div>
 
-    <section class="panel recovery-score-panel">
+    <section id="recoveryScorePanel" class="panel recovery-score-panel">
       <div class="section-heading">
         <div><h2>Recovery Readiness Score</h2><p>Internal documentation aid 0–2 per domain; ไม่ใช่ validated discharge score และไม่แทน clinical judgment</p></div>
         <button id="saveRecoveryScoreBtn" class="btn primary" type="button">Save score</button>
@@ -1787,7 +1836,7 @@
       <div id="recoveryScoreHistory" class="recovery-score-history empty-state">ยังไม่มี Recovery score</div>
     </section>
 
-    <section class="panel recovery-record-panel">
+    <section id="recoveryRecordPanel" class="panel recovery-record-panel">
       <div class="section-heading">
         <div>
           <h2>Recovery vital-sign records</h2>
@@ -1811,6 +1860,29 @@
       </div>
       <div class="settings-note">ใช้ค่าปัจจุบันจาก Recovery observations ด้านบน แล้วบันทึก snapshot เมื่อกด Record recovery vitals • ถ้าค่า SpO₂/Temp ใช้ไม่ได้จริง ให้ mark N/A พร้อมเหตุผล แทนการใส่ค่าเดา</div>
     </section>
+
+    <nav id="recoveryMobileDock" class="recovery-mobile-dock" aria-label="Recovery primary actions">
+      <button id="recoveryMobileRecordBtn" class="recovery-mobile-dock-btn primary" type="button"><span>＋</span><b>RECORD VITALS</b><small id="recoveryMobileDue">DUE</small></button>
+      <button id="recoveryMobileMedicationBtn" class="recovery-mobile-dock-btn" type="button"><span>💉</span><b>MEDS</b></button>
+      <button id="recoveryMobileMoreBtn" class="recovery-mobile-dock-btn" type="button"><span>•••</span><b>MORE</b></button>
+    </nav>
+
+    <dialog id="recoveryMoreDialog" class="or-more-dialog recovery-more-dialog" aria-labelledby="recoveryMoreTitle">
+      <div class="or-more-sheet">
+        <div class="or-more-head"><div><small>RECOVERY</small><h2 id="recoveryMoreTitle">More actions</h2></div><button id="recoveryMoreCloseBtn" class="btn" type="button">✕</button></div>
+        <div class="or-more-grid">
+          <button id="recoveryMoreChecklistBtn" class="or-more-action" type="button"><span>✓</span><b>Checklist</b><small>airway / O₂ / temp / comfort</small></button>
+          <button id="recoveryMoreScoreBtn" class="or-more-action" type="button"><span>◎</span><b>Readiness score</b><small>structured reassessment</small></button>
+          <button id="recoveryMoreProblemsBtn" class="or-more-action" type="button"><span>⚠</span><b>Problems</b><small>alerts / complications</small></button>
+          <button id="recoveryMoreHandoffBtn" class="or-more-action" type="button"><span>⇄</span><b>Handoff</b><small>transfer summary</small></button>
+          <button id="recoveryMoreEventBtn" class="or-more-action" type="button"><span>⚑</span><b>Event / intervention</b><small>open documentation</small></button>
+          <button id="recoveryMoreCompleteBtn" class="or-more-action recovery-complete-action" type="button"><span>✓</span><b>Complete recovery</b><small>final readiness / override</small></button>
+        </div>
+        <button id="recoveryMoreUndoBtn" class="btn or-more-undo-btn" type="button" hidden>↶ Undo last workflow step</button>
+        <button id="recoveryMoreEmergencyBtn" class="btn recovery-emergency-btn" type="button">⚠ Emergency return to OR LIVE</button>
+        <button id="recoveryMoreCaseSummaryBtn" class="btn or-more-case-btn" type="button">← Case summary / leave Recovery focus</button>
+      </div>
+    </dialog>
   </section>
 
   <section id="cases" class="tabpage">
@@ -2289,7 +2361,7 @@
 </dialog>
 
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
-<script src="./clinical-workflow.js?v=15.2.0"></script>
-<script src="./app.js?v=15.2.0"></script>
+<script src="./clinical-workflow.js?v=15.4.0"></script>
+<script src="./app.js?v=15.4.0"></script>
 </body>
 </html>

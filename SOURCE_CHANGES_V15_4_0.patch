@@ -1,0 +1,811 @@
+diff -ruN '--exclude=node_modules' '--exclude=SOURCE_CHANGES_V15_4_0.patch' anesvet_v153_base/anesvet_v153/BUILD_STATUS.txt anesvet_v154/anesvet_v153/BUILD_STATUS.txt
+--- anesvet_v153_base/anesvet_v153/BUILD_STATUS.txt	2026-09-23 04:53:50.000000000 +0000
++++ anesvet_v154/anesvet_v153/BUILD_STATUS.txt	2026-09-23 05:05:09.763174627 +0000
+@@ -1,42 +1,33 @@
+-ANESVET V15.3.0 — Intraoperative Vitals & Timeline Release
++ANESVET V15.4.0 — Recovery UX Release
+ Build date: 2026-09-23
+-Baseline: ANESVET V15.2.0 OR LIVE Safety & Vitals Release
++Baseline: ANESVET V15.3.0 Intraoperative Vitals & Timeline Release
+ 
+ IMPLEMENTED
+-- Dedicated intraoperative Vitals-first cockpit above workflow progression controls
+-- Large SAVE VITALS action with live due status and last-saved summary
+-- COPY LAST fills current monitoring fields from the latest anesthesia record without saving automatically
+-- Existing plausibility/alert/record safety path is reused for final SAVE VITALS
+-- Procedure Timeline now includes every anesthesia vital record, not only records with notes
+-- Favorite Hospital Drug Library items can appear as up to 4 Quick meds in the intraoperative cockpit
+-- Quick med tap only preselects the drug in the existing guarded medication dialog; no automatic administration record
+-- Surgery-end workflow remains available but receives lower visual weight during intraoperative monitoring
++- Recovery quick workspace with latest observations, elapsed time, due timer, and readiness glance
++- COPY LAST recovery observations without automatic record creation
++- Large guarded RECORD RECOVERY VITALS action
++- Mobile/iPad Recovery dock: RECORD VITALS / MEDS / MORE
++- Recovery More sheet for checklist, score, problems, handoff, events, completion, Undo, and emergency OR return
++- Mobile Recovery information hierarchy prioritizes observations and repeat records
++- Readiness display aligned with Recovery completion requirements, including saved score
+ 
+ UNCHANGED CLINICAL / SAFETY LOGIC
+ - Drug doses / concentrations
+ - Alert thresholds
+ - Fluid references
+-- Recovery score algorithm
+ - ASA / BOAS logic
+-- Record interval defaults
++- Recovery score algorithm
+ - Verified safety checkpoint
+ - stale medication-calculation safety stop
+ - workflow confirmation + audited Undo
+-- Recovery override + Final Lock gate
++- Recovery completion override + Final Lock gate
+ - LocalStorage keys / IndexedDB schema
+ 
+ VALIDATION
+ PASS: syntax + JSON
+-PASS: source regression / storage contracts
+-PASS: V14.7.2 UX compatibility static contracts
+-PASS: V14.8 adaptive workflow static contracts
+-PASS: V14.8.2 anesthetic risk flag contracts
+-PASS: V14.9 mobile/iPad compatibility contracts
+-PASS: V15.0 Hospital Pilot safety contracts
+-PASS: V15.1 OR LIVE navigation contracts
+-PASS: V15.2 OR confirmation / undo / vitals-priority contracts
+-PASS: V15.3 intraoperative vitals-first / unified timeline contracts
+-PASS: production clinical helper tests (73 assertions)
+-PASS: workflow model scenarios (4 scenarios)
+-NOT CLAIMED: jsdom/fake-indexeddb DOM integration + Playwright E2E (runtime dependencies unavailable)
+-OFFLINE DEPENDENCY RESTORE: attempted; npm cache did not contain all required packages
++PASS: regression / storage contracts
++PASS: V14.7.2 through V15.3 compatibility contracts
++PASS: V15.4 Recovery UX / mobile focus contracts
++PASS: clinical helper suite — 73 assertions
++PASS: workflow model scenarios — 4 scenarios
++NOT CLAIMED: DOM/browser automation (jsdom/fake-indexeddb/Playwright unavailable; Chromium smoke timed out)
+diff -ruN '--exclude=node_modules' '--exclude=SOURCE_CHANGES_V15_4_0.patch' anesvet_v153_base/anesvet_v153/README_TH.md anesvet_v154/anesvet_v153/README_TH.md
+--- anesvet_v153_base/anesvet_v153/README_TH.md	2026-09-23 04:53:50.000000000 +0000
++++ anesvet_v154/anesvet_v153/README_TH.md	2026-09-23 05:05:09.629877954 +0000
+@@ -1,8 +1,18 @@
+-# ANESVET V15.3.0 — Intraoperative Vitals & Timeline Release
++# ANESVET V15.4.0 — Recovery UX Release
+ 
+-รุ่นนี้ต่อจาก V15.1.0 ตาม feedback การใช้งานจริงบนมือถือ/iPad: เพิ่ม **confirmation ก่อนเปลี่ยน phase**, **Undo last workflow step** สำหรับกรณีกดผิด และปรับช่วง **INTRAOPERATIVE ให้ RECORD VITALS เป็นปุ่มหลักที่ใหญ่ที่สุด** ขณะที่ปุ่มเดิน phase ถูกลด visual weight เพื่อป้องกัน accidental progression โดยคง clinical/safety logic เดิม
+ 
+-ดูรายละเอียดที่ `RELEASE_NOTES_V15_3_0.md`
++รุ่นนี้ต่อจาก V15.3.0 โดยปรับ **Recovery ให้เป็น touch-first phase สำหรับมือถือ/iPad**: มี Recovery quick workspace, COPY LAST, RECORD VITALS เป็น action หลัก, fixed mobile dock และ readiness glance ที่สอดคล้องกับ completion guard จริง โดยไม่เปลี่ยน dose/threshold/ASA/BOAS logic เดิม
++
++ดูรายละเอียดที่ `RELEASE_NOTES_V15_4_0.md`
++
++## V15.4.0 — Recovery UX Release
++
++- Recovery quick workspace แสดง latest HR/RR/SpO₂/Temp/Mentation + due timer
++- COPY LAST เติมข้อมูลรอบก่อนเพื่อแก้เฉพาะค่าที่เปลี่ยน แต่ไม่ auto-save record
++- Mobile/iPad dock: **RECORD VITALS / MEDS / MORE**
++- จัดลำดับ Recovery บนมือถือเป็น Observations → Records → Score → Handoff → Problems
++- Readiness UI กับ completion guard ใช้ requirement เดียวกัน รวม saved Recovery score อย่างน้อย 1 ครั้ง
++- More sheet รวม checklist, score, problems, handoff, event/intervention, complete, undo และ emergency OR return
+ 
+ ## V15.1.0 — OR LIVE Navigation & Focus Release
+ 
+diff -ruN '--exclude=node_modules' '--exclude=SOURCE_CHANGES_V15_4_0.patch' anesvet_v153_base/anesvet_v153/RELEASE_NOTES_V15_4_0.md anesvet_v154/anesvet_v153/RELEASE_NOTES_V15_4_0.md
+--- anesvet_v153_base/anesvet_v153/RELEASE_NOTES_V15_4_0.md	1970-01-01 00:00:00.000000000 +0000
++++ anesvet_v154/anesvet_v153/RELEASE_NOTES_V15_4_0.md	2026-09-23 05:05:08.965370204 +0000
+@@ -0,0 +1,41 @@
++# ANESVET V15.4.0 — Recovery UX Release
++
++Build date: 2026-09-23
++Baseline: ANESVET V15.3.0 — Intraoperative Vitals & Timeline Release
++
++## Goal
++Make post-anesthetic Recovery usable on phones and iPad with the same interaction hierarchy as OR LIVE: the repeated task (recording recovery observations) is primary, while checklist, score, handoff, problems, completion, and emergency return remain accessible without competing for attention.
++
++## Added / changed
++- Added a **Recovery quick workspace** showing patient, recovery elapsed time, next-vitals due state, latest HR/RR/SpO₂/temperature/mentation, and readiness status.
++- Added **COPY LAST** for recovery observations. It prefills the latest objective observations for review/editing but **does not create a new clinical record automatically**.
++- Added a large **RECORD RECOVERY VITALS** action that reuses the existing guarded recovery-record path, including plausibility checks, alert synchronization, N/A rules, audit, and timeline updates.
++- Added a mobile/iPad **Recovery dock**: `RECORD VITALS / MEDS / MORE`.
++- Recovery `MORE` provides Checklist, Readiness score, Problems, Handoff, Event/Intervention, Complete Recovery, audited Undo, Emergency return to OR LIVE, and leave-focus navigation.
++- On mobile/iPad, Recovery content is re-prioritized to: **Observations → Recovery records → Readiness score → Handoff → Problems**.
++- Recovery readiness display now uses the same completion requirements as the completion guard, including at least **one saved Recovery Readiness Score**, preventing a misleading “ready” state before the score requirement is met.
++- Mobile/iPad Recovery receives a dedicated focus layout and safe-area bottom spacing.
++
++## Safety behavior preserved
++- COPY LAST is a prefill helper only; the clinician must press Record.
++- Medication shortcuts reuse the existing guarded Recovery medication workflow; no automatic administration is created.
++- Recovery completion still supports documented override with required reason + responsible clinician when readiness is incomplete.
++- Emergency return to OR LIVE and workflow Undo remain audited.
++- No changes to drug dose defaults, concentrations, alert thresholds, ASA logic, BOAS logic, fluid references, or storage schema.
++
++## Validation
++PASS: syntax + JSON
++PASS: source regression / storage contracts
++PASS: V14.7.2 UX compatibility
++PASS: V14.8 adaptive workflow contracts
++PASS: V14.8.2 risk flags contracts
++PASS: V14.9 mobile/iPad compatibility contracts
++PASS: V15.0 Hospital Pilot safety contracts
++PASS: V15.1 OR navigation contracts
++PASS: V15.2 confirmation / Undo / vitals-priority contracts
++PASS: V15.3 intraoperative vitals-first / timeline contracts
++PASS: V15.4 Recovery UX / mobile focus contracts
++PASS: clinical helper suite — 73 assertions
++PASS: workflow model scenarios — 4 scenarios
++
++Browser/DOM automation is **not claimed as passed** in this runtime because `jsdom/fake-indexeddb/Playwright` are not installed. Direct Chromium smoke execution also did not complete within the runtime timeout.
+diff -ruN '--exclude=node_modules' '--exclude=SOURCE_CHANGES_V15_4_0.patch' anesvet_v153_base/anesvet_v153/SHA256SUMS.txt anesvet_v154/anesvet_v153/SHA256SUMS.txt
+--- anesvet_v153_base/anesvet_v153/SHA256SUMS.txt	2026-09-23 04:54:42.000000000 +0000
++++ anesvet_v154/anesvet_v153/SHA256SUMS.txt	2026-09-23 05:05:36.143891918 +0000
+@@ -1,70 +1,8 @@
+-5ef30b37469270be8a0e48045567c8aa80437326ed044d6898fdcbba7d80f0cb  ./ARCHITECTURE_V14_7.md
+-e86aa4a001316859335728f3d3d470cb7ef59beba50df0643832187cc2d517e2  ./BUILD_STATUS.txt
+-611467cdbe90ebfa8b3925bc2b16a8c8148dc82792ef397ee874341631280f02  ./README_TH.md
+-1f23b84b1584ac2a5033dec1a7b342fb4495251825a3264837be75bc0b1b808e  ./RELEASE_NOTES_V14_7.md
+-e9e001496a2a2f5100fe987dc98eb9f74b57e3d02b958b8b76b45376e9562619  ./RELEASE_NOTES_V14_7_1.md
+-2a339ca4f7708d136c132f84126e43faaebbb159ef7b2d12e3224251795a68e6  ./RELEASE_NOTES_V14_7_2.md
+-839d17a8f9a4b78467b8ec065da6218ae340a6c055e6bf081ebfb7aefe214ebf  ./RELEASE_NOTES_V14_8_0.md
+-22198b4c9a040f3629dcd60b19ec6d7bcd8f24eecf7c637d6d3c37d55d4c0dc7  ./RELEASE_NOTES_V14_8_1.md
+-f994af47142f58dbe619d678fa1f7c04cdc68e5706e52dff6d230c4f2dc400f6  ./RELEASE_NOTES_V14_8_2.md
+-6c3323845dc35c8f1c66b9e4de66b5159709623172cf7c0722dde7bdfd771a4e  ./RELEASE_NOTES_V14_9_0.md
+-5100461528898ec50ce9335fbb1bd8ff3e9409842dc6d5efbf0ae2827f307c78  ./RELEASE_NOTES_V15_0_0.md
+-fe374d5440ffc352df3384b8bcb7618509c9c6c0f08fa753859a542d9d7dd24a  ./RELEASE_NOTES_V15_1_0.md
+-85b09a360095c8122cd647fce02ef0d82fd0dfdf96dc2bdc8e3bd304823681f0  ./RELEASE_NOTES_V15_2_0.md
+-bad2bb9003c7017fc67e675405132425400100644d1a51f21764065ac6ea7776  ./RELEASE_NOTES_V15_3_0.md
+-049c6821002916c493759d192700577672814c918a01264fced2bc4758160726  ./SOURCE_CHANGES.patch
+-4d6df624f16e40a934a2d9868928077f325b370de2b423aa41c6b6ec5f0e8ccd  ./SOURCE_CHANGES_V14_7_1.patch
+-422ce99ac9dda80615c6b86069ae831fdb13a0a4fe6defada447abd765e5ee66  ./SOURCE_CHANGES_V14_7_2.patch
+-cc37cefe2476d6de0bd25f51b3f9344d194e18af2f2344f195981d6b4a17b1c8  ./SOURCE_CHANGES_V14_8_0.patch
+-c36fa00f0d69d5d12ce268e317c36d90e61230df8fc638fcf5df6a82510875c4  ./SOURCE_CHANGES_V14_8_1.patch
+-55f0a8c2aeb5811d4d8a9e587788e4c9f59f880f9bb9a31a192be4de915b7248  ./SOURCE_CHANGES_V14_8_2.patch
+-ed794edb10c251e432c129d88cc49f4d836dbb2a68c17c9cd51ef3d52515d91a  ./SOURCE_CHANGES_V14_9_0.patch
+-8ed4febaecd840affd8781cccc15030deaf3e9826ee0516b9b5363a275aa3272  ./SOURCE_CHANGES_V15_0_0.patch
+-c263eb45ec6f0b0390b9f8a9c635f1021d4db25575a5cfa95936e485572a0400  ./SOURCE_CHANGES_V15_1_0.patch
+-7494111877427d1ba5d47f689b2b916de558a0ec86f8fde3fb46e9b5bf2cb08d  ./SOURCE_CHANGES_V15_2_0.patch
+-6f7321bf8f43403fecdb29d73838d14ce04e26984c75319e76fad479cd89a4de  ./SOURCE_CHANGES_V15_3_0.patch
+-8dfb6466ba0ef33176c11861eb520e0a6355cb87bcd863c838c30eae6f80e060  ./SOURCE_PROVENANCE.json
+-d710da133b04be2516d4d3cd149fd256a28e3955b1b639d3486570c7f7de55a6  ./SOURCE_PROVENANCE_V14_7_1.json
+-46633c444e5a4f6ab492b459285cf27bd9ed7c72163e8c699f8eeb28736849d9  ./SOURCE_PROVENANCE_V14_7_2.json
+-db28c92d9d74d7d19db72ed7b1ffef7498fe564b02a18f9cc7e6b4d2b63bb451  ./SOURCE_PROVENANCE_V14_8_0.json
+-169e33f7f0234995493a5d2c5f9ea8dcc334d1995dd4dfb5a5b8454967ae3d8c  ./SOURCE_PROVENANCE_V14_8_1.json
+-5a42b379579f75d91bf82d88964acbab74b90abca28515245a7223633499ff06  ./SOURCE_PROVENANCE_V14_8_2.json
+-66cc13932880efe64115c0a8982a468c9c3de7dc67d775fd0a305072d6f04312  ./SOURCE_PROVENANCE_V14_9_0.json
+-4e203d8c0fe6a18376327a0a209bd4014f9b135d075728e7cee48b84c8772aa6  ./SOURCE_PROVENANCE_V15_0_0.json
+-f4a6090ec620168e0d349688d43250ab98f4713d8f2781e405be9c060308ad5d  ./SOURCE_PROVENANCE_V15_1_0.json
+-7b9d174248db7150494b1f5d96a600a5fd701d9c5dbb8012cf87d860ec4df24c  ./SOURCE_PROVENANCE_V15_2_0.json
+-8bde5c3d28d47c3259bd2f76f0b53b11a3de0b533cee9a562203934cdc9b117f  ./SOURCE_PROVENANCE_V15_3_0.json
+-4c1622e2ccabd5cf48bc9ab99d09d1a8a23edf587527ec8d2a2dcd1392ec5c45  ./app.js
+-6ac11b5973d23fd50eee3cd53d8de10a0506fc158b326d004691072c2ae04656  ./clinical-workflow.js
+-f65b90ac4c309c7c7a50076e736205906e582976560a2cedb97d633c9a9c59a0  ./icon-192.png
+-cd44ea51009a31097f59d0b6976cbc437802aa757a8f5f172b7cea944be6a919  ./icon-512.png
+-cd44ea51009a31097f59d0b6976cbc437802aa757a8f5f172b7cea944be6a919  ./icon-maskable-512.png
+-65fe17826830bfca46809f713888592a1360534bf0fda2781945eaedaaf16cb0  ./index.html
+-4c760d6b7a83445de42f5f760da910c4e05d636e4d81bf4fee6918db422703d9  ./manifest.webmanifest
+-f13803d94a39ab1ea2bbaa12d664d3fd959a80e6ea651d93861d553ee0ee5065  ./package-lock.json
+-7b76e1361cc092e532462ce11ea890f092ccd08826a69917d51b94e7ff2940ff  ./package.json
+-da5ceec54789be386c4f68fccd149bc14d81f8bb74e8640b66c40c8e9fe20086  ./service-worker.js
+-70216014282289974e052d5a89061cfe9aa7ab35f9ea2ab1274b6130d25289a6  ./style.css
+-ec1115f8b6a207d2d19b353df11b3d0c58c0c1af1784b348f5fa089a19d766ed  ./tests/BROWSER_E2E_STATUS.txt
+-3d9f2489a868c05294953acd9261be4b9728b11ae51d6e607f474390fe5e5315  ./tests/SUPPORTED_TEST_RUN.txt
+-93e34f39d81c85617b958aecaa4a41e6704b2446c0c77c0b3bc4bab32fec1373  ./tests/TEST_RESULTS.txt
+-404a9d47bd2d91375890c17cfc281fcb5a2f24ab0d4adf986e46029ba51ca215  ./tests/adaptive_workflow_v148.mjs
+-b434a12b0bfac45cb870cf56dc059cbf5cc9faacf80ddcfa11d9de16e93ea60a  ./tests/clinical_workflow.mjs
+-a46d63fbb39df836ce164a0f5795b1b51d571a0e92f4c965c58d3ad800cceb18  ./tests/compatibility.mjs
+-abe2a37c8d13176e8c8375ae61cbd9a454d3119c2cc22fbc13987934fcb130cd  ./tests/dom_harness.mjs
+-6736635c38baa46ceb22679b17bae5a19009b5d092419e0176143d819c64778d  ./tests/dom_workflow.mjs
+-50434186020ede2248f90495a53438903be8732711449a4ef375d8d18297fb22  ./tests/e2e_browser.mjs
+-ec4518cd0c1539846de738cd1d70d1006087a5da4c4c9ce5a594c260c487c10d  ./tests/final_lock.mjs
+-9b2e42c35a2116b4138a14a190e3004f57552e46d4899a4245fc396aea6123c6  ./tests/governance.mjs
+-65b1d43298ab053221a639da24c53ae664dbac14200e6d825479360348c54ca4  ./tests/hospital_pilot_v150.mjs
+-3f218d980809bef07010bea0f5e4514d51c560b812bc79cc0dc4737f7db7497b  ./tests/intraop_vitals_v153.mjs
+-bdda3af1c8ffd143b0fcb28d4c4127514096b71993a2a73ba627463f7707e0b0  ./tests/mobile_or_v149.mjs
+-dbb8d5692d32c5111733a057899658efeab6282d774fedc5379323ae03793c4a  ./tests/or_navigation_v151.mjs
+-eaa615318fbfe295ee727b86abc5c8e8fe310606403d264360dcd90728b8197a  ./tests/or_safety_v152.mjs
+-777e1f8792c3bdca592f09969355fefdf65405d8d8f1a9a28d9b5b474a13f942  ./tests/pdf_stress_fixture.html
+-496df4d2c911069c499aadffd61b30cc77409c8a8f6e02ab59fe1a28f2b3f21d  ./tests/regression.mjs
+-32234652b99a6625a7ba1c2724c209454f3f486d5fe33ae720f8cd5573c6cebe  ./tests/risk_flags_v1482.mjs
+-760685678cf7582171cd6ce685646f96dd2dce32c0006e70a453d7882ea35787  ./tests/syntax.mjs
+-f4c0e4fa57e692cac25da0975640db242528fa0641a68185e7df627d4d914c37  ./tests/ux_v1472_static.mjs
+-dba6a96d3dcd1333a9145c6a6714a98866522e33b6a0720c4e5a7ef108d9b584  ./tests/ux_v148_static.mjs
+-22b42ae83c9435c634a71c6659f60267f129843c065ab1d22a18a3f6241268b5  ./tests/workflow_scenarios.mjs
++67cb57e3433c352bd0857d426ddddac7697d20d6b05fda65b0957e1fd3ab3c9b  app.js
++cdde167eb11f7aa940867a22ece05999eb298f69e2890f2aa22e4d4b8bbf2ffc  index.html
++4f02dd6ab986b77243f9d62354885e1df6d2814c2d7096addf5595389546b551  style.css
++6ac11b5973d23fd50eee3cd53d8de10a0506fc158b326d004691072c2ae04656  clinical-workflow.js
++b20d0fa8914525460fdc1bf295d43138b8a7bdaea138e7f370196be9daeccc73  manifest.webmanifest
++2f0658d5c322f7f85b6e8f949f6d04358a65040f79b24368ec93df71e4a21139  service-worker.js
++6318b97073a97490632c14df59b1025e2a52671fa6c3a6db0afcd790c4957959  package.json
++6ff641e28cc7cc7418ab9afda8dfc86400cf8daa7a72e16f7c34003e6837a354  package-lock.json
+diff -ruN '--exclude=node_modules' '--exclude=SOURCE_CHANGES_V15_4_0.patch' anesvet_v153_base/anesvet_v153/SOURCE_PROVENANCE_V15_4_0.json anesvet_v154/anesvet_v153/SOURCE_PROVENANCE_V15_4_0.json
+--- anesvet_v153_base/anesvet_v153/SOURCE_PROVENANCE_V15_4_0.json	1970-01-01 00:00:00.000000000 +0000
++++ anesvet_v154/anesvet_v153/SOURCE_PROVENANCE_V15_4_0.json	2026-09-23 05:05:36.143695702 +0000
+@@ -0,0 +1,9 @@
++{
++  "release": "ANESVET V15.4.0",
++  "release_date": "2026-09-23",
++  "baseline_artifact": "ANESVET_V15_3_0_Intraoperative_Vitals_Timeline.zip",
++  "change_scope": "recovery-first cockpit, repeat-vitals acceleration, readiness alignment, and mobile/iPad Recovery focus",
++  "clinical_defaults_changed": false,
++  "storage_schema_changed": false,
++  "baseline_sha256": "2f657bfb387582fc6f2244057086ccdd81023ede336e2c37ed3fb0da3aea03d2"
++}
+diff -ruN '--exclude=node_modules' '--exclude=SOURCE_CHANGES_V15_4_0.patch' anesvet_v153_base/anesvet_v153/app.js anesvet_v154/anesvet_v153/app.js
+--- anesvet_v153_base/anesvet_v153/app.js	2026-09-23 04:51:30.000000000 +0000
++++ anesvet_v154/anesvet_v153/app.js	2026-09-23 05:02:50.892323945 +0000
+@@ -20,7 +20,7 @@
+ const SESSION_HEARTBEAT_MS=5000;
+ const DB_NAME='ANESVET_DB';
+ const DB_VERSION=2;
+-const APP_VERSION='15.3.0';
++const APP_VERSION='15.4.0';
+ const AUTOSAVE_DELAY_MS=450;
+ const ACTIVE_CHECKPOINT_MS=15000;
+ const SAFETY_CHECKPOINT_KEY='anesvet_v15_active_safety_checkpoint';
+@@ -1494,7 +1494,9 @@
+   const tx=state.orLastTransition,available=orUndoAvailable(),label=tx?.label||'last workflow step',quick=available&&Date.now()<=Number(tx.quickUntil||0);
+   const quickBtn=$('orUndoStepBtn');if(quickBtn){quickBtn.hidden=!quick;quickBtn.textContent=`↶ Undo • ${label}`;}
+   const moreBtn=$('orMobileUndoBtn');if(moreBtn){moreBtn.hidden=!available;moreBtn.textContent=`↶ Undo last step • ${label}`;}
+-  const recoveryBtn=$('recoveryUndoStepBtn');if(recoveryBtn){const recoveryRelated=available&&['extubation','recovery'].includes(tx?.action);recoveryBtn.hidden=!recoveryRelated;recoveryBtn.textContent=`↶ Undo • ${label}`;}
++  const recoveryRelated=available&&['extubation','recovery'].includes(tx?.action),recoveryBtn=$('recoveryUndoStepBtn'),recoveryMoreBtn=$('recoveryMoreUndoBtn');
++  if(recoveryBtn){recoveryBtn.hidden=!recoveryRelated;recoveryBtn.textContent=`↶ Undo • ${label}`;}
++  if(recoveryMoreBtn){recoveryMoreBtn.hidden=!recoveryRelated;recoveryMoreBtn.textContent=`↶ Undo • ${label}`;}
+ }
+ function hasPostTransitionClinicalData(tx){
+   const t=Number(tx?.epoch||0);if(!t)return false;
+@@ -1840,10 +1842,11 @@
+     toast('Recovery active — OR LIVE ถูกล็อก หากฉุกเฉินให้กด Emergency return to OR LIVE');
+     renderWorkflowLocks();scrollAppTop();return;
+   }
+-  closeMoreMenu();
++  closeMoreMenu();closeRecoveryMoreDialog();
+   $$('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===id));
+   $$('.tabpage').forEach(p=>p.classList.toggle('active',p.id===id));
+   document.body.classList.toggle('or-mobile-active',id==='orlive');
++  document.body.classList.toggle('recovery-mobile-active',id==='recovery');
+   localStorage.setItem(TAB_KEY,id);
+   if(id==='trends') renderTrends();
+   if(id==='cases'){renderArchives();renderBackupHealth();}
+@@ -2823,19 +2826,63 @@
+ function recoveryAnyNA(){return $$('.recovery-check-na-btn').some(x=>x.classList.contains('active'))||$$('.recovery-observation-na-btn').some(x=>x.classList.contains('active'))}
+ function recoveryObservationNA(key){const btn=document.querySelector(`.recovery-observation-na-btn[data-key="${key}"]`);return btn?btn.classList.contains('active'):!!state.recoveryObservationNA?.[key]}
+ function recoveryNAReasonValid(){return !recoveryAnyNA()||!!$('recNaReason')?.value.trim()}
+-function renderRecovery(){
+-  const all=$$('.recovery-check'),done=all.filter(x=>x.checked).length,na=$$('.recovery-check-na-btn').filter(x=>x.classList.contains('active')).length,reviewed=done+na,el=$('recoveryStatus');
+-  el.textContent=`Checklist ${reviewed}/${all.length}${na?` • N/A ${na}`:''}`;
+-  el.className=`recovery-status ${reviewed===all.length&&recoveryNAReasonValid()?'good':'warn'}`;
+-  const rr=Number($('recRR')?.value||0),spo=Number($('recSpO2')?.value||0),tempF=tempInputStoredF('recTemp');
+-  const ment=$('recMentation')?.value||'',ext=$('recExtubation')?.value.trim()||'';
++function recoveryReadinessSnapshot(){
++  const all=$$('.recovery-check'),done=all.filter(x=>x.checked).length,na=$$('.recovery-check-na-btn').filter(x=>x.classList.contains('active')).length,reviewed=done+na;
++  const rr=Number($('recRR')?.value||0),spo=Number($('recSpO2')?.value||0),tempF=tempInputStoredF('recTemp'),ment=$('recMentation')?.value||'',ext=$('recExtubation')?.value.trim()||'';
+   const spoOk=spo>0||recoveryObservationNA('spo2'),tempOk=(tempF!==null&&tempF>0)||recoveryObservationNA('temp'),extOk=!!ext||recoveryObservationNA('extubation');
+-  const ready=reviewed===all.length && rr>0 && spoOk && tempOk && !!ment && extOk && recoveryNAReasonValid() && (state.recoveryRecords||[]).length>0 && !state.emergencyReturnActive;
++  const records=(state.recoveryRecords||[]).length,scores=(state.recoveryScores||[]).length,naReasonOk=recoveryNAReasonValid();
++  const missing=[];
++  if(reviewed!==all.length)missing.push(`checklist ${reviewed}/${all.length}`);
++  if(!records)missing.push('vitals');
++  if(!scores)missing.push('score');
++  if(!(rr>0))missing.push('RR');
++  if(!spoOk)missing.push('SpO₂');
++  if(!tempOk)missing.push('Temp');
++  if(!ment)missing.push('mentation');
++  if(!extOk)missing.push('extubation');
++  if(!naReasonOk)missing.push('N/A reason');
++  const ready=reviewed===all.length&&records>0&&scores>0&&rr>0&&spoOk&&tempOk&&!!ment&&extOk&&naReasonOk&&!state.emergencyReturnActive;
++  return {all,done,na,reviewed,rr,spo,tempF,ment,ext,spoOk,tempOk,extOk,records,scores,naReasonOk,missing,ready};
++}
++function renderRecoveryFocus(snapshot=recoveryReadinessSnapshot()){
++  const latest=(state.recoveryRecords||[]).at(-1),name=$('patientName')?.value.trim()||state.patientName||'Unnamed patient',weight=Number($('weight')?.value||state.weight)||null;
++  if($('recoveryFocusPatient'))$('recoveryFocusPatient').textContent=`${name} • ${weight??'—'} kg • ${state.emergencyReturnActive?'EMERGENCY RETURN':'active recovery'}`;
++  if($('recoveryFocusElapsed'))$('recoveryFocusElapsed').textContent=formatElapsed(recoveryElapsed());
++  const dueText=$('recoveryDueBadge')?.textContent||'—',dueDanger=$('recoveryDueBadge')?.classList.contains('danger')||/DUE/.test(dueText)&&!/NEXT/.test(dueText);
++  for(const id of ['recoveryFocusDue','recoveryMobileDue']){const el=$(id);if(el){el.textContent=dueText;el.classList.toggle('due',dueDanger)}}
++  const latestBox=$('recoveryFocusLatest');
++  if(latestBox){
++    const temp=latest?.na?.temp?'N/A':(latest?.temp==null?'—':`${tempStoredFToDisplay(latest.temp)}°${tempSymbol().replace('°','')}`),spo=latest?.na?.spo2?'N/A':(latest?.spo2??'—');
++    const vals=[['HR',latest?.hr??'—'],['RR',latest?.rr??'—'],['SpO₂',spo==='—'?'—':`${spo}%`],['TEMP',temp],['MENTATION',latest?.mentation||'—']];
++    latestBox.innerHTML=vals.map(([k,v])=>`<div><span>${escapeHtml(k)}</span><b>${escapeHtml(String(v))}</b></div>`).join('');
++  }
++  if($('recoveryFocusLatestTime'))$('recoveryFocusLatestTime').textContent=latest?`Latest ${latest.clock} • recovery ${formatShortElapsed(latest.recoveryElapsedMs)}`:'No recovery record yet';
++  if($('recoveryCopyLastBtn'))$('recoveryCopyLastBtn').disabled=!latest;
++  if($('recoveryFocusReadiness'))$('recoveryFocusReadiness').textContent=snapshot.ready?'READY FOR RECOVERY COMPLETE':`NEEDS REVIEW • ${snapshot.missing.slice(0,4).join(' • ')||'clinical reassessment'}`;
++  const complete=$('recoveryFocusCompleteBtn');if(complete){complete.dataset.ready=snapshot.ready?'1':'0';complete.classList.toggle('ready',snapshot.ready);complete.textContent=snapshot.ready?'✓ COMPLETE RECOVERY':'Review readiness';}
++  for(const id of ['recoveryFocusRecordBtn','recoveryMobileRecordBtn']){const b=$(id);if(b){b.classList.toggle('due',dueDanger);if(id==='recoveryFocusRecordBtn')b.textContent=dueDanger?'🔴 RECORD RECOVERY VITALS • DUE':'＋ RECORD RECOVERY VITALS';}}
++}
++function copyLastRecoveryVitalsToCurrent(){
++  const r=(state.recoveryRecords||[]).at(-1);if(!r){toast('ยังไม่มี Recovery record ก่อนหน้าให้คัดลอก');return false}
++  const set=(id,v)=>{const el=$(id);if(el&&v!==null&&v!==undefined&&v!=='')el.value=v};
++  set('recHR',r.hr);set('recRR',r.rr);set('recMAP',r.map);
++  const setObs=(key,id,v)=>{const btn=document.querySelector(`.recovery-observation-na-btn[data-key="${key}"]`),input=$(id);if(v!==null&&v!==undefined&&v!==''){btn?.classList.remove('active');if(input){input.disabled=false;input.value=v}}else if(input&&!btn?.classList.contains('active'))input.value=''};
++  setObs('spo2','recSpO2',r.na?.spo2?null:r.spo2);setObs('temp','recTemp',r.na?.temp?null:(r.temp==null?null:tempStoredFToDisplay(r.temp)));
++  if($('recOxygen'))$('recOxygen').value=r.oxygen||'';if($('recMentation'))$('recMentation').value=r.mentation||'';if($('recPain'))$('recPain').value='';
++  save();renderRecovery();toast('Copied last Recovery vitals • review changes before Record');return true;
++}
++function scrollRecoveryPanel(id){const el=$(id);if(!el)return;requestAnimationFrame(()=>el.scrollIntoView({behavior:'smooth',block:'start'}));}
++function closeRecoveryMoreDialog(){const d=$('recoveryMoreDialog');if(d?.open){try{d.close()}catch(e){d.removeAttribute('open')}}}
++function openRecoveryMoreDialog(){const d=$('recoveryMoreDialog');if(!d)return;try{if(!d.open)d.showModal()}catch(e){d.setAttribute('open','')}}
++function renderRecovery(){
++  const snapshot=recoveryReadinessSnapshot(),el=$('recoveryStatus');
++  el.textContent=`Checklist ${snapshot.reviewed}/${snapshot.all.length}${snapshot.na?` • N/A ${snapshot.na}`:''} • Records ${snapshot.records} • Scores ${snapshot.scores}`;
++  el.className=`recovery-status ${snapshot.ready?'good':'warn'}`;
+   if($('recoveryReadiness')){
+-    $('recoveryReadiness').textContent=ready?'READY FOR RECOVERY COMPLETE':'COMPLETE OBSERVATIONS / CHECKLIST';
+-    $('recoveryReadiness').className=`recovery-readiness ${ready?'good':'warn'}`;
++    $('recoveryReadiness').textContent=snapshot.ready?'READY FOR RECOVERY COMPLETE':'COMPLETE OBSERVATIONS / CHECKLIST / SCORE';
++    $('recoveryReadiness').className=`recovery-readiness ${snapshot.ready?'good':'warn'}`;
+   }
+-  renderRecoveryState();renderRecoveryScores();renderRecoveryHandoff();renderActiveProblems();renderOrUndoControls();
++  renderRecoveryState();renderRecoveryScores();renderRecoveryHandoff();renderActiveProblems();renderOrUndoControls();renderRecoveryFocus(snapshot);
+ }
+ $$('.recovery-check').forEach((el,i)=>el.addEventListener('change',()=>{if(el.checked){const b=$$('.recovery-check-na-btn')[i];b?.classList.remove('active');el.disabled=false}renderRecovery();save()}));
+ $$('.recovery-check-na-btn').forEach((btn,i)=>btn.addEventListener('click',()=>{const active=!btn.classList.contains('active');btn.classList.toggle('active',active);const cb=$$('.recovery-check')[i];if(cb){cb.disabled=active;if(active)cb.checked=false}renderRecovery();save()}));
+@@ -2905,9 +2952,25 @@
+   }
+ }
+ $('recordRecoveryVitalsBtn')?.addEventListener('click',addRecoveryRecord);
++$('recoveryFocusRecordBtn')?.addEventListener('click',()=>$('recordRecoveryVitalsBtn')?.click());
++$('recoveryMobileRecordBtn')?.addEventListener('click',()=>$('recordRecoveryVitalsBtn')?.click());
++$('recoveryCopyLastBtn')?.addEventListener('click',copyLastRecoveryVitalsToCurrent);
++$('recoveryFocusMedicationBtn')?.addEventListener('click',()=>$('recoveryMedicationBtn')?.click());
++$('recoveryMobileMedicationBtn')?.addEventListener('click',()=>$('recoveryMedicationBtn')?.click());
++$('recoveryFocusCompleteBtn')?.addEventListener('click',()=>{const r=recoveryReadinessSnapshot();if(r.ready){completeRecovery();return}if(r.reviewed<r.all.length)scrollRecoveryPanel('recoveryChecklistPanel');else if(!r.records||!(r.rr>0)||!r.spoOk||!r.tempOk||!r.ment||!r.extOk)scrollRecoveryPanel('recoveryObservationPanel');else if(!r.scores)scrollRecoveryPanel('recoveryScorePanel');else scrollRecoveryPanel('recoveryChecklistPanel')});
++$('recoveryMobileMoreBtn')?.addEventListener('click',openRecoveryMoreDialog);
++$('recoveryMoreCloseBtn')?.addEventListener('click',closeRecoveryMoreDialog);
++$('recoveryMoreDialog')?.addEventListener('click',e=>{if(e.target===$('recoveryMoreDialog'))closeRecoveryMoreDialog()});
++[['recoveryMoreChecklistBtn','recoveryChecklistPanel'],['recoveryMoreScoreBtn','recoveryScorePanel'],['recoveryMoreProblemsBtn','recoveryProblemsPanel'],['recoveryMoreHandoffBtn','recoveryHandoffPanel']].forEach(([b,id])=>$(b)?.addEventListener('click',()=>{closeRecoveryMoreDialog();scrollRecoveryPanel(id)}));
++$('recoveryMoreEventBtn')?.addEventListener('click',()=>{closeRecoveryMoreDialog();setTab('events')});
++$('recoveryMoreCompleteBtn')?.addEventListener('click',()=>{closeRecoveryMoreDialog();completeRecovery()});
++$('recoveryMoreEmergencyBtn')?.addEventListener('click',()=>{closeRecoveryMoreDialog();emergencyReturnToOr()});
++$('recoveryMoreUndoBtn')?.addEventListener('click',()=>{closeRecoveryMoreDialog();$('recoveryUndoStepBtn')?.click()});
++$('recoveryMoreCaseSummaryBtn')?.addEventListener('click',()=>{closeRecoveryMoreDialog();setTab('casesummary')});
+ 
+ function recoveryElapsed(){return state.recoveryStartedAt?Math.max(0,(state.recoveryCompletedAt||Date.now())-state.recoveryStartedAt):0}
+ function renderRecoveryState(){
++  document.body.classList.toggle('recovery-session-active',state.casePhase==='recovery'&&!state.recoveryCompletedAt&&!state.emergencyReturnActive);
+   if($('recoveryPhaseBadge')){
+     if(state.recoveryCompletedAt){$('recoveryPhaseBadge').className='status-pill good';$('recoveryPhaseBadge').textContent='COMPLETE'}
+     else if(state.casePhase==='recovery'){$('recoveryPhaseBadge').className='status-pill warn';$('recoveryPhaseBadge').textContent='RECOVERY ACTIVE'}
+@@ -2917,7 +2980,7 @@
+   if($('beginRecoveryBtn'))$('beginRecoveryBtn').disabled=state.casePhase==='recovery'||!!state.recoveryCompletedAt;
+   if($('completeRecoveryBtn'))$('completeRecoveryBtn').disabled=state.casePhase!=='recovery'||!!state.recoveryCompletedAt;
+   if($('orBeginRecoveryBtn'))$('orBeginRecoveryBtn').textContent=state.emergencyReturnActive?'→ Return to Recovery':state.casePhase==='recovery'?'Recovery active':'→ Recovery';
+-  renderWorkflowLocks();updateRecoveryDue();
++  renderWorkflowLocks();updateRecoveryDue();renderRecoveryFocus(recoveryReadinessSnapshot());
+ }
+ function beginRecovery({skipConfirm=false}={}){
+   if(!clinicalWriteAllowed()||!state.caseStartedAt){toast('Start a case before Recovery');return false}
+@@ -2933,10 +2996,8 @@
+ function completeRecovery(){
+   if(state.casePhase!=='recovery'||state.emergencyReturnActive)return;
+   if(recoveryAnyNA()&&!recoveryNAReasonValid()){toast('กรุณาระบุ N/A reason ก่อน mark Recovery complete');$('recNaReason')?.focus();return}
+-  const checks=$$('.recovery-check'),done=checks.filter(x=>x.checked).length,na=$$('.recovery-check-na-btn').filter(x=>x.classList.contains('active')).length,reviewed=done+na,rc=(state.recoveryRecords||[]).length;
+-  const rr=Number($('recRR')?.value||0),spo=Number($('recSpO2')?.value||0),temp=tempInputStoredF('recTemp'),ment=$('recMentation')?.value||'',ext=$('recExtubation')?.value.trim()||'';
+-  const scoreCount=(state.recoveryScores||[]).length;
+-  const fullyReady=reviewed===checks.length && rc>0 && scoreCount>0 && rr>0 && (spo>0||recoveryObservationNA('spo2')) && ((temp!==null&&temp>0)||recoveryObservationNA('temp')) && !!ment && (!!ext||recoveryObservationNA('extubation')) && recoveryNAReasonValid();
++  const readiness=recoveryReadinessSnapshot(),checks=readiness.all,reviewed=readiness.reviewed,rc=readiness.records,scoreCount=readiness.scores;
++  const fullyReady=readiness.ready;
+   let completionOverride=null;
+   if(!fullyReady){
+     const reason=prompt(`Recovery readiness ยังไม่ครบ
+diff -ruN '--exclude=node_modules' '--exclude=SOURCE_CHANGES_V15_4_0.patch' anesvet_v153_base/anesvet_v153/index.html anesvet_v154/anesvet_v153/index.html
+--- anesvet_v153_base/anesvet_v153/index.html	2026-09-23 04:52:23.000000000 +0000
++++ anesvet_v154/anesvet_v153/index.html	2026-09-23 05:02:50.889075992 +0000
+@@ -7,12 +7,12 @@
+   <meta name="apple-mobile-web-app-capable" content="yes">
+   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+   <meta name="mobile-web-app-capable" content="yes">
+-  <meta name="description" content="ANESVET V15.3.0 — Intraoperative Vitals & Timeline Release">
++  <meta name="description" content="ANESVET V15.4.0 — Recovery UX Release">
+   <link rel="manifest" href="./manifest.webmanifest">
+   <link rel="icon" href="./icon-192.png">
+   <link rel="apple-touch-icon" href="./icon-192.png">
+-  <link rel="stylesheet" href="./style.css?v=15.3.0">
+-  <title>ANESVET V15.3.0</title>
++  <link rel="stylesheet" href="./style.css?v=15.4.0">
++  <title>ANESVET V15.4.0</title>
+ </head>
+ <body>
+ <header class="topbar">
+@@ -20,7 +20,7 @@
+     <img class="brand-logo" src="./icon-192.png" alt="ANESVET logo">
+     <div>
+       <div class="eyebrow">GENOVI PET CARE • DIGITAL ANESTHESIA RECORD</div>
+-      <h1>ANESVET <span>V15.3.0</span></h1>
++      <h1>ANESVET <span>V15.4.0</span></h1>
+     </div>
+   </div>
+   <div class="top-actions">
+@@ -1732,10 +1732,36 @@
+         <button id="emergencyReturnOrBtn" class="btn recovery-emergency-btn">⚠ Emergency return to OR LIVE</button>
+       </div>
+     </section>
+-    <section class="panel handoff-panel"><div class="section-heading"><div><h2>Recovery Handoff</h2><p>เฉพาะข้อมูลที่ต้องเห็นทันทีตอนรับช่วงต่อ</p></div><span id="recoveryHandoffProblemBadge" class="status-pill good">0 OPEN</span></div><div id="recoveryHandoffSummary" class="handoff-summary-grid"></div><details class="handoff-full-details"><summary>ดูรายละเอียด Handoff ทั้งหมด</summary><pre id="recoveryHandoffText"></pre></details><details><summary>Snapshots at transfer</summary><div id="recoveryHandoffHistory"></div></details></section>
+-    <section class="panel"><h2>Unresolved alerts / problems</h2><div id="recoveryProblemPanel"></div></section>
++
++    <section id="recoveryFocus" class="recovery-focus" aria-label="Recovery quick workspace">
++      <div class="recovery-focus-main">
++        <div class="recovery-focus-head">
++          <div><div class="recovery-focus-kicker">RECOVERY • QUICK WORKSPACE</div><h2>Record → reassess → handoff</h2><p id="recoveryFocusPatient">—</p></div>
++          <div class="recovery-focus-timing">
++            <div><span>RECOVERY</span><b id="recoveryFocusElapsed">00:00:00</b></div>
++            <div><span>NEXT VITALS</span><b id="recoveryFocusDue">FIRST RECORD DUE</b></div>
++          </div>
++        </div>
++        <div id="recoveryFocusLatest" class="recovery-focus-latest">
++          <div><span>HR</span><b>—</b></div><div><span>RR</span><b>—</b></div><div><span>SpO₂</span><b>—</b></div><div><span>TEMP</span><b>—</b></div><div><span>MENTATION</span><b>—</b></div>
++        </div>
++      </div>
++      <div class="recovery-focus-actions">
++        <button id="recoveryCopyLastBtn" class="btn recovery-copy-last" type="button">↺ COPY LAST</button>
++        <button id="recoveryFocusRecordBtn" class="recovery-focus-record" type="button">＋ RECORD RECOVERY VITALS</button>
++        <button id="recoveryFocusMedicationBtn" class="btn" type="button">💉 MEDS</button>
++        <button id="recoveryFocusCompleteBtn" class="btn recovery-focus-complete" type="button">Review readiness</button>
++      </div>
++      <div class="recovery-focus-readiness">
++        <span id="recoveryFocusReadiness">Complete observations / checklist</span>
++        <small id="recoveryFocusLatestTime">No recovery record yet</small>
++      </div>
++    </section>
++
++    <section id="recoveryHandoffPanel" class="panel handoff-panel"><div class="section-heading"><div><h2>Recovery Handoff</h2><p>เฉพาะข้อมูลที่ต้องเห็นทันทีตอนรับช่วงต่อ</p></div><span id="recoveryHandoffProblemBadge" class="status-pill good">0 OPEN</span></div><div id="recoveryHandoffSummary" class="handoff-summary-grid"></div><details class="handoff-full-details"><summary>ดูรายละเอียด Handoff ทั้งหมด</summary><pre id="recoveryHandoffText"></pre></details><details><summary>Snapshots at transfer</summary><div id="recoveryHandoffHistory"></div></details></section>
++    <section id="recoveryProblemsPanel" class="panel"><h2>Unresolved alerts / problems</h2><div id="recoveryProblemPanel"></div></section>
+     <div class="dashboard-grid">
+-      <section class="panel">
++      <section id="recoveryObservationPanel" class="panel">
+         <h2>Recovery observations</h2>
+         <div class="form-grid three">
+           <label>HR (bpm)
+@@ -1780,7 +1806,7 @@
+         </div>
+       </section>
+ 
+-      <section class="panel">
++      <section id="recoveryChecklistPanel" class="panel">
+         <h2>Recovery checklist</h2>
+         <div class="recovery-check-item"><label class="switchline"><input class="recovery-check" type="checkbox" data-index="0"> Airway patent / breathing adequate</label><button type="button" class="recovery-check-na-btn" data-index="0">N/A</button></div>
+         <div class="recovery-check-item"><label class="switchline"><input class="recovery-check" type="checkbox" data-index="1"> SpO₂ acceptable</label><button type="button" class="recovery-check-na-btn" data-index="1">N/A</button></div>
+@@ -1793,7 +1819,7 @@
+       </section>
+     </div>
+ 
+-    <section class="panel recovery-score-panel">
++    <section id="recoveryScorePanel" class="panel recovery-score-panel">
+       <div class="section-heading">
+         <div><h2>Recovery Readiness Score</h2><p>Internal documentation aid 0–2 per domain; ไม่ใช่ validated discharge score และไม่แทน clinical judgment</p></div>
+         <button id="saveRecoveryScoreBtn" class="btn primary" type="button">Save score</button>
+@@ -1810,7 +1836,7 @@
+       <div id="recoveryScoreHistory" class="recovery-score-history empty-state">ยังไม่มี Recovery score</div>
+     </section>
+ 
+-    <section class="panel recovery-record-panel">
++    <section id="recoveryRecordPanel" class="panel recovery-record-panel">
+       <div class="section-heading">
+         <div>
+           <h2>Recovery vital-sign records</h2>
+@@ -1834,6 +1860,29 @@
+       </div>
+       <div class="settings-note">ใช้ค่าปัจจุบันจาก Recovery observations ด้านบน แล้วบันทึก snapshot เมื่อกด Record recovery vitals • ถ้าค่า SpO₂/Temp ใช้ไม่ได้จริง ให้ mark N/A พร้อมเหตุผล แทนการใส่ค่าเดา</div>
+     </section>
++
++    <nav id="recoveryMobileDock" class="recovery-mobile-dock" aria-label="Recovery primary actions">
++      <button id="recoveryMobileRecordBtn" class="recovery-mobile-dock-btn primary" type="button"><span>＋</span><b>RECORD VITALS</b><small id="recoveryMobileDue">DUE</small></button>
++      <button id="recoveryMobileMedicationBtn" class="recovery-mobile-dock-btn" type="button"><span>💉</span><b>MEDS</b></button>
++      <button id="recoveryMobileMoreBtn" class="recovery-mobile-dock-btn" type="button"><span>•••</span><b>MORE</b></button>
++    </nav>
++
++    <dialog id="recoveryMoreDialog" class="or-more-dialog recovery-more-dialog" aria-labelledby="recoveryMoreTitle">
++      <div class="or-more-sheet">
++        <div class="or-more-head"><div><small>RECOVERY</small><h2 id="recoveryMoreTitle">More actions</h2></div><button id="recoveryMoreCloseBtn" class="btn" type="button">✕</button></div>
++        <div class="or-more-grid">
++          <button id="recoveryMoreChecklistBtn" class="or-more-action" type="button"><span>✓</span><b>Checklist</b><small>airway / O₂ / temp / comfort</small></button>
++          <button id="recoveryMoreScoreBtn" class="or-more-action" type="button"><span>◎</span><b>Readiness score</b><small>structured reassessment</small></button>
++          <button id="recoveryMoreProblemsBtn" class="or-more-action" type="button"><span>⚠</span><b>Problems</b><small>alerts / complications</small></button>
++          <button id="recoveryMoreHandoffBtn" class="or-more-action" type="button"><span>⇄</span><b>Handoff</b><small>transfer summary</small></button>
++          <button id="recoveryMoreEventBtn" class="or-more-action" type="button"><span>⚑</span><b>Event / intervention</b><small>open documentation</small></button>
++          <button id="recoveryMoreCompleteBtn" class="or-more-action recovery-complete-action" type="button"><span>✓</span><b>Complete recovery</b><small>final readiness / override</small></button>
++        </div>
++        <button id="recoveryMoreUndoBtn" class="btn or-more-undo-btn" type="button" hidden>↶ Undo last workflow step</button>
++        <button id="recoveryMoreEmergencyBtn" class="btn recovery-emergency-btn" type="button">⚠ Emergency return to OR LIVE</button>
++        <button id="recoveryMoreCaseSummaryBtn" class="btn or-more-case-btn" type="button">← Case summary / leave Recovery focus</button>
++      </div>
++    </dialog>
+   </section>
+ 
+   <section id="cases" class="tabpage">
+@@ -2312,7 +2361,7 @@
+ </dialog>
+ 
+ <div id="toast" class="toast" role="status" aria-live="polite"></div>
+-<script src="./clinical-workflow.js?v=15.3.0"></script>
+-<script src="./app.js?v=15.3.0"></script>
++<script src="./clinical-workflow.js?v=15.4.0"></script>
++<script src="./app.js?v=15.4.0"></script>
+ </body>
+ </html>
+diff -ruN '--exclude=node_modules' '--exclude=SOURCE_CHANGES_V15_4_0.patch' anesvet_v153_base/anesvet_v153/manifest.webmanifest anesvet_v154/anesvet_v153/manifest.webmanifest
+--- anesvet_v153_base/anesvet_v153/manifest.webmanifest	2026-09-23 04:52:23.000000000 +0000
++++ anesvet_v154/anesvet_v153/manifest.webmanifest	2026-09-23 05:02:50.892706091 +0000
+@@ -1,8 +1,8 @@
+ {
+-  "name": "ANESVET V15.3.0 — Intraoperative Vitals & Timeline Release",
++  "name": "ANESVET V15.4.0 — Recovery UX Release",
+   "short_name": "ANESVET",
+   "description": "Touch-first local-first anesthesia workflow optimized for mobile phones and iPad in the operating room",
+-  "start_url": "./?v=15.3.0",
++  "start_url": "./?v=15.4.0",
+   "scope": "./",
+   "display": "standalone",
+   "background_color": "#f3f7f8",
+diff -ruN '--exclude=node_modules' '--exclude=SOURCE_CHANGES_V15_4_0.patch' anesvet_v153_base/anesvet_v153/package-lock.json anesvet_v154/anesvet_v153/package-lock.json
+--- anesvet_v153_base/anesvet_v153/package-lock.json	2026-09-23 04:52:23.000000000 +0000
++++ anesvet_v154/anesvet_v153/package-lock.json	2026-09-23 05:03:14.313458923 +0000
+@@ -1,12 +1,12 @@
+ {
+-  "name": "anesvet-v15-3-0",
+-  "version": "15.3.0",
++  "name": "anesvet-v15-4-0",
++  "version": "15.4.0",
+   "lockfileVersion": 3,
+   "requires": true,
+   "packages": {
+     "": {
+-      "name": "anesvet-v15-3-0",
+-      "version": "15.3.0",
++      "name": "anesvet-v15-4-0",
++      "version": "15.4.0",
+       "devDependencies": {
+         "fake-indexeddb": "6.2.5",
+         "jsdom": "30.1.0",
+diff -ruN '--exclude=node_modules' '--exclude=SOURCE_CHANGES_V15_4_0.patch' anesvet_v153_base/anesvet_v153/package.json anesvet_v154/anesvet_v153/package.json
+--- anesvet_v153_base/anesvet_v153/package.json	2026-09-23 04:52:23.000000000 +0000
++++ anesvet_v154/anesvet_v153/package.json	2026-09-23 05:03:14.312955882 +0000
+@@ -1,14 +1,14 @@
+ {
+-  "name": "anesvet-v15-3-0",
+-  "version": "15.3.0",
++  "name": "anesvet-v15-4-0",
++  "version": "15.4.0",
+   "private": true,
+-  "description": "ANESVET V15.3.0 intraoperative vitals-first cockpit, unified timeline, and quick medication access release; runtime requires no build",
++  "description": "ANESVET V15.4.0 recovery-first cockpit, repeat-vitals acceleration, readiness guidance, and mobile/iPad Recovery focus release; runtime requires no build",
+   "engines": {
+     "node": ">=22"
+   },
+   "scripts": {
+     "test:syntax": "node tests/syntax.mjs",
+-    "test:regression": "node tests/regression.mjs && node tests/ux_v1472_static.mjs && node tests/ux_v148_static.mjs && node tests/risk_flags_v1482.mjs && node tests/mobile_or_v149.mjs && node tests/hospital_pilot_v150.mjs && node tests/or_navigation_v151.mjs && node tests/or_safety_v152.mjs && node tests/intraop_vitals_v153.mjs",
++    "test:regression": "node tests/regression.mjs && node tests/ux_v1472_static.mjs && node tests/ux_v148_static.mjs && node tests/risk_flags_v1482.mjs && node tests/mobile_or_v149.mjs && node tests/hospital_pilot_v150.mjs && node tests/or_navigation_v151.mjs && node tests/or_safety_v152.mjs && node tests/intraop_vitals_v153.mjs && node tests/recovery_ux_v154.mjs",
+     "test:workflow": "node tests/workflow_scenarios.mjs && node tests/clinical_workflow.mjs && node tests/dom_workflow.mjs && node tests/adaptive_workflow_v148.mjs && node tests/compatibility.mjs && node tests/governance.mjs && node tests/final_lock.mjs",
+     "test": "npm run test:syntax && npm run test:regression && npm run test:workflow",
+     "test:browser": "node tests/e2e_browser.mjs"
+diff -ruN '--exclude=node_modules' '--exclude=SOURCE_CHANGES_V15_4_0.patch' anesvet_v153_base/anesvet_v153/service-worker.js anesvet_v154/anesvet_v153/service-worker.js
+--- anesvet_v153_base/anesvet_v153/service-worker.js	2026-09-23 04:52:23.000000000 +0000
++++ anesvet_v154/anesvet_v153/service-worker.js	2026-09-23 05:02:50.892996056 +0000
+@@ -1,5 +1,5 @@
+-const CACHE='anesvet-v15-3-0-intraop-vitals-timeline';
+-const ASSETS=['./','./index.html','./style.css?v=15.3.0','./clinical-workflow.js?v=15.3.0','./app.js?v=15.3.0','./manifest.webmanifest','./icon-192.png','./icon-512.png','./icon-maskable-512.png'];
++const CACHE='anesvet-v15-4-0-recovery-ux';
++const ASSETS=['./','./index.html','./style.css?v=15.4.0','./clinical-workflow.js?v=15.4.0','./app.js?v=15.4.0','./manifest.webmanifest','./icon-192.png','./icon-512.png','./icon-maskable-512.png'];
+ self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)))});
+ self.addEventListener('message',e=>{if(e.data?.type==='SKIP_WAITING')self.skipWaiting()});
+ self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))));self.clients.claim()});
+diff -ruN '--exclude=node_modules' '--exclude=SOURCE_CHANGES_V15_4_0.patch' anesvet_v153_base/anesvet_v153/style.css anesvet_v154/anesvet_v153/style.css
+--- anesvet_v153_base/anesvet_v153/style.css	2026-09-23 04:51:52.000000000 +0000
++++ anesvet_v154/anesvet_v153/style.css	2026-09-23 05:01:21.254774320 +0000
+@@ -934,3 +934,36 @@
+ @media(max-width:560px){
+   .or-vitals-focus{margin-left:-2px;margin-right:-2px;padding:9px}.or-vitals-focus h2{font-size:1.16rem}.or-vitals-focus p{font-size:.74rem}.or-vitals-focus-timing{gap:5px}.or-vitals-focus-timing>div{padding:7px 8px}.or-vitals-focus-timing b{font-size:.75rem}.or-vitals-focus-actions{grid-template-columns:98px 1fr}.or-vitals-focus-actions .btn,.or-vitals-save{min-height:56px;font-size:.78rem}.or-vitals-save{font-size:.9rem}.or-quick-med-strip{gap:6px}.or-quick-med-strip>.btn{min-height:40px;padding:6px 9px;font-size:.72rem}.or-quick-med-btn{min-height:38px;padding:6px 9px;font-size:.72rem}
+ }
++
++/* V15.4.0 — Recovery-first cockpit, quick repeat recording, and mobile Recovery focus */
++.recovery-focus{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(300px,.65fr);gap:12px;margin:0 0 10px;padding:14px;border:1px solid #a9cbd3;border-radius:18px;background:linear-gradient(135deg,#f8fcfd,#eef7f9);box-shadow:0 9px 26px rgba(9,54,68,.08)}
++.recovery-focus-main{min-width:0}.recovery-focus-head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start}.recovery-focus-kicker{font-size:.67rem;font-weight:950;letter-spacing:.09em;color:#0d5265}.recovery-focus h2{margin:3px 0 2px;font-size:1.28rem}.recovery-focus p{margin:0;color:var(--muted);font-size:.8rem}.recovery-focus-timing{display:grid;grid-template-columns:1fr 1fr;gap:7px;min-width:270px}.recovery-focus-timing>div{padding:8px 9px;border:1px solid #cbdde1;border-radius:11px;background:#fff}.recovery-focus-timing span{display:block;font-size:.6rem;font-weight:950;letter-spacing:.06em;color:#72868d}.recovery-focus-timing b{display:block;margin-top:3px;font-size:.8rem}.recovery-focus-timing b.due{color:#a12620}
++.recovery-focus-latest{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:7px;margin-top:11px}.recovery-focus-latest>div{min-width:0;padding:9px;border:1px solid #d2e1e4;border-radius:11px;background:#fff}.recovery-focus-latest span{display:block;font-size:.59rem;font-weight:950;letter-spacing:.05em;color:#70848b}.recovery-focus-latest b{display:block;margin-top:3px;font-size:.93rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#173f4b}
++.recovery-focus-actions{display:grid;grid-template-columns:1fr 1.45fr;gap:7px;align-content:start}.recovery-focus-actions .btn,.recovery-focus-record{min-height:55px;border-radius:12px;font-weight:950}.recovery-focus-record{grid-column:1/-1;border:0;background:#0d5265;color:#fff;font:inherit;font-size:.92rem;font-weight:950;cursor:pointer;box-shadow:0 7px 18px rgba(13,82,101,.18)}.recovery-focus-record.due{background:#a12620;box-shadow:0 0 0 4px rgba(161,38,32,.11),0 7px 18px rgba(99,24,20,.16)}.recovery-copy-last:disabled{opacity:.48}.recovery-focus-complete.ready{background:#e7f6eb;border-color:#90c69d;color:#185d2b}
++.recovery-focus-readiness{grid-column:1/-1;display:flex;justify-content:space-between;gap:10px;align-items:center;padding-top:9px;border-top:1px solid #c9dde2}.recovery-focus-readiness span{font-size:.72rem;font-weight:950;color:#315864}.recovery-focus-readiness small{color:var(--muted);text-align:right}
++.recovery-mobile-dock{display:none}.recovery-mobile-dock-btn small{font-size:.53rem;font-weight:850;opacity:.8}.recovery-mobile-dock-btn.due{background:#a12620!important;color:#fff!important;border-color:#a12620!important;box-shadow:0 0 0 3px rgba(161,38,32,.12)}.recovery-more-dialog .recovery-complete-action{border-color:#a9d4b2;background:#f5fcf6}.recovery-more-dialog .recovery-emergency-btn{width:100%;min-height:48px;margin-top:9px}
++
++@media(max-width:900px){
++  .recovery-focus{grid-template-columns:1fr;padding:11px;border-radius:15px}.recovery-focus-head{display:grid;gap:9px}.recovery-focus-timing{min-width:0}.recovery-focus-actions{grid-template-columns:1fr 1.4fr}.recovery-focus-readiness{align-items:flex-start;flex-direction:column}.recovery-focus-readiness small{text-align:left}
++}
++
++@media(max-width:1180px), (pointer:coarse) and (max-width:1400px){
++  body.recovery-mobile-active{padding-bottom:calc(92px + env(safe-area-inset-bottom))}
++  body.recovery-mobile-active .workflow-tabs,body.recovery-mobile-active .case-strip,body.recovery-mobile-active #patientRiskBanner{display:none}
++  body.recovery-mobile-active .topbar{min-height:42px;padding:7px 10px;padding-top:calc(7px + env(safe-area-inset-top));justify-content:flex-end}
++  body.recovery-mobile-active .topbar .brand{display:none}body.recovery-mobile-active .topbar .top-actions{width:100%;justify-content:flex-end}
++  body.recovery-mobile-active .topbar #timerStateBadge,body.recovery-mobile-active .topbar #caseClock,body.recovery-mobile-active .topbar #alertFeedbackBtn,body.recovery-mobile-active .topbar #installBtn{display:none!important}
++  body.recovery-mobile-active main{padding-top:6px}
++  body.recovery-mobile-active.recovery-session-active .recovery-command{display:none}
++  body.recovery-mobile-active #recovery.active{display:flex;flex-direction:column}
++  body.recovery-mobile-active #recoveryFocus{order:1}body.recovery-mobile-active #recovery>.dashboard-grid{order:2}body.recovery-mobile-active #recoveryRecordPanel{order:3}body.recovery-mobile-active #recoveryScorePanel{order:4}body.recovery-mobile-active #recoveryHandoffPanel{order:5}body.recovery-mobile-active #recoveryProblemsPanel{order:6}
++  body.recovery-mobile-active #recovery>.recovery-command{order:0}
++  .recovery-mobile-dock{position:fixed;display:grid;grid-template-columns:minmax(0,2.15fr) minmax(82px,.85fr) minmax(82px,.8fr);left:50%;transform:translateX(-50%);width:min(720px,calc(100vw - 16px));bottom:max(8px,env(safe-area-inset-bottom));z-index:85;padding:7px;gap:6px;background:rgba(248,253,254,.98);border:1px solid #b9d4db;border-radius:16px;box-shadow:0 10px 34px rgba(9,54,68,.20);backdrop-filter:blur(10px)}
++  .recovery-mobile-dock-btn{min-width:0;min-height:64px;border:1px solid #c5d7dc;border-radius:12px;background:#fff;color:#174b59;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:6px 8px;font:inherit;font-weight:950}.recovery-mobile-dock-btn>span{font-size:1.08rem}.recovery-mobile-dock-btn>b{font-size:.68rem;white-space:normal;text-align:center}.recovery-mobile-dock-btn.primary{background:#0d5265;color:#fff;border-color:#0d5265}
++  #recovery:not(.active) .recovery-mobile-dock{display:none}
++  .recovery-focus-actions #recoveryFocusRecordBtn,.recovery-focus-actions #recoveryFocusMedicationBtn{display:none}
++}
++
++@media(max-width:560px){
++  .recovery-focus{margin-left:-2px;margin-right:-2px;padding:9px}.recovery-focus h2{font-size:1.12rem}.recovery-focus p{font-size:.73rem}.recovery-focus-timing{gap:5px}.recovery-focus-timing>div{padding:7px}.recovery-focus-timing b{font-size:.72rem}.recovery-focus-latest{grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}.recovery-focus-latest>div{padding:7px}.recovery-focus-latest b{font-size:.83rem}.recovery-focus-actions{grid-template-columns:1fr 1fr}.recovery-focus-actions .btn{min-height:48px;font-size:.74rem}.recovery-mobile-dock{width:calc(100vw - 10px);bottom:max(5px,env(safe-area-inset-bottom));padding:5px;gap:5px;border-radius:14px;grid-template-columns:minmax(0,2fr) 76px 72px}.recovery-mobile-dock-btn{min-height:59px;padding:5px}.recovery-mobile-dock-btn>b{font-size:.6rem}
++}
+diff -ruN '--exclude=node_modules' '--exclude=SOURCE_CHANGES_V15_4_0.patch' anesvet_v153_base/anesvet_v153/tests/BROWSER_E2E_STATUS.txt anesvet_v154/anesvet_v153/tests/BROWSER_E2E_STATUS.txt
+--- anesvet_v153_base/anesvet_v153/tests/BROWSER_E2E_STATUS.txt	2026-09-23 04:54:21.000000000 +0000
++++ anesvet_v154/anesvet_v153/tests/BROWSER_E2E_STATUS.txt	2026-09-23 05:05:09.768190655 +0000
+@@ -1,9 +1,7 @@
+-ANESVET V15.3.0 — browser/DOM E2E status
++ANESVET V15.4.0 — browser/DOM E2E status
++2026-09-23
+ 
+-NOT CLAIMED in this runtime.
+-
+-Reason:
+-- jsdom/fake-indexeddb/Playwright dependencies are unavailable.
+-- An offline dependency restore was attempted but npm cache was incomplete.
+-
+-Static regression and model/helper tests passed; real-device mobile/iPad pilot remains recommended for the Vitals-first interaction changes.
++STATUS: NOT CLAIMED / BLOCKED BY RUNTIME
++- jsdom / fake-indexeddb / Playwright dependencies are unavailable in this runtime.
++- A direct headless Chromium smoke attempt did not complete within the execution timeout.
++- Static, regression, clinical-helper and workflow-model tests passed as documented in TEST_RESULTS.txt.
+diff -ruN '--exclude=node_modules' '--exclude=SOURCE_CHANGES_V15_4_0.patch' anesvet_v153_base/anesvet_v153/tests/SUPPORTED_TEST_RUN.txt anesvet_v154/anesvet_v153/tests/SUPPORTED_TEST_RUN.txt
+--- anesvet_v153_base/anesvet_v153/tests/SUPPORTED_TEST_RUN.txt	2026-09-23 04:54:21.000000000 +0000
++++ anesvet_v154/anesvet_v153/tests/SUPPORTED_TEST_RUN.txt	2026-09-23 05:05:09.767320906 +0000
+@@ -1,16 +1,9 @@
+-ANESVET V15.3.0 — supported tests executed in this runtime
++ANESVET V15.4.0 — supported tests executed in this runtime
++2026-09-23
+ 
+-PASS: syntax + JSON
+-PASS: regression / storage contracts
+-PASS: V14.7.2 UX contracts
+-PASS: V14.8 adaptive workflow static contracts
+-PASS: V14.8.2 risk flags
+-PASS: V14.9 mobile/iPad contracts
+-PASS: V15.0 Hospital Pilot safety contracts
+-PASS: V15.1 OR navigation contracts
+-PASS: V15.2 phase-confirmation / undo / vitals-priority contracts
+-PASS: V15.3 vitals-first / unified timeline contracts
+-PASS: clinical-workflow helpers (73 assertions)
+-PASS: workflow model scenarios (4 scenarios)
++PASS: npm run test:syntax
++PASS: npm run test:regression
++PASS: workflow_scenarios.mjs — 4 scenarios
++PASS: clinical_workflow.mjs — 73 assertions
+ 
+-DOM/browser suites excluded because jsdom/fake-indexeddb/Playwright are not available in the current runtime.
++DOM-dependent workflow tests were not executed because jsdom/fake-indexeddb are unavailable in this runtime.
+diff -ruN '--exclude=node_modules' '--exclude=SOURCE_CHANGES_V15_4_0.patch' anesvet_v153_base/anesvet_v153/tests/TEST_RESULTS.txt anesvet_v154/anesvet_v153/tests/TEST_RESULTS.txt
+--- anesvet_v153_base/anesvet_v153/tests/TEST_RESULTS.txt	2026-09-23 04:54:21.000000000 +0000
++++ anesvet_v154/anesvet_v153/tests/TEST_RESULTS.txt	2026-09-23 05:05:09.765489660 +0000
+@@ -1,23 +1,21 @@
+-ANESVET V15.3.0 — validation summary
+-Date: 2026-09-23
++ANESVET V15.4.0 — validation summary
++2026-09-23
+ 
+ PASS
+-- JavaScript syntax + JSON
+-- source regression / storage contracts
++- Syntax + JSON
++- Source regression / storage contracts
+ - V14.7.2 UX compatibility
+-- V14.8 adaptive workflow static contracts
+-- V14.8.2 Risk Flags contracts
+-- V14.9 mobile/iPad reliability compatibility
+-- V15.0 Hospital Pilot safety contracts
+-- V15.1 OR LIVE navigation contracts
+-- V15.2 confirmation / Undo / vitals-priority contracts
+-- V15.3 intraoperative vitals-first / unified timeline contracts
+-- production clinical helper tests: 73 assertions
+-- workflow model scenarios: 4 scenarios
++- V14.8 adaptive workflow
++- V14.8.2 risk flags
++- V14.9 mobile/iPad OR compatibility
++- V15.0 Hospital Pilot safety
++- V15.1 OR navigation
++- V15.2 workflow confirmation / Undo / vitals priority
++- V15.3 intraoperative vitals-first / unified timeline
++- V15.4 Recovery UX / mobile focus
++- Clinical helpers: 73 assertions
++- Workflow model: 4 scenarios
+ 
+ NOT CLAIMED
+-- jsdom / fake-indexeddb DOM integration: required package unavailable in runtime
+-- Playwright browser E2E: dependencies unavailable
+-
+-Dependency note
+-- npm ci --offline was attempted, but the npm cache did not contain all required packages.
++- DOM / browser E2E: runtime does not contain jsdom, fake-indexeddb, or Playwright.
++- Direct Chromium smoke attempt timed out in this container runtime.
+diff -ruN '--exclude=node_modules' '--exclude=SOURCE_CHANGES_V15_4_0.patch' anesvet_v153_base/anesvet_v153/tests/hospital_pilot_v150.mjs anesvet_v154/anesvet_v153/tests/hospital_pilot_v150.mjs
+--- anesvet_v153_base/anesvet_v153/tests/hospital_pilot_v150.mjs	2026-09-23 04:52:24.000000000 +0000
++++ anesvet_v154/anesvet_v153/tests/hospital_pilot_v150.mjs	2026-09-23 05:02:50.894379447 +0000
+@@ -7,9 +7,9 @@
+ const sw=fs.readFileSync(path.join(root,'service-worker.js'),'utf8');
+ const manifest=JSON.parse(fs.readFileSync(path.join(root,'manifest.webmanifest'),'utf8'));
+ const must=(c,m)=>assert.ok(c,m);
+-must(app.includes("const APP_VERSION='15.3.0'"),'APP_VERSION must be V15.3.0');
+-must(manifest.name.includes('V15.3.0')&&manifest.start_url.includes('15.3.0'),'manifest must identify V15.3.0');
+-must(sw.includes('anesvet-v15-3-0'),'service-worker cache must identify current V15.3.0 release');
++must(app.includes("const APP_VERSION='15.4.0'"),'APP_VERSION must be V15.4.0');
++must(manifest.name.includes('V15.4.0')&&manifest.start_url.includes('15.4.0'),'manifest must identify V15.4.0');
++must(sw.includes('anesvet-v15-4-0'),'service-worker cache must identify current V15.4.0 release');
+ // Verified active-case safety checkpoint
+ must(app.includes("SAFETY_CHECKPOINT_FORMAT='ANESVET_ACTIVE_SAFETY_CHECKPOINT_V1'"),'safety checkpoint format missing');
+ must(app.includes('function writeSafetyCheckpoint')&&app.includes('Safety checkpoint verification failed'),'checkpoint read-after-write verification missing');
+@@ -28,4 +28,4 @@
+ must(app.includes('const ready=!!state.recoveryCompletedAt&&signoffReady'),'End Case readiness must include recovery completion');
+ must(app.includes('caseIdentitySnapshot')&&app.includes('function caseIdentityChanges'),'case-start patient identity/BW snapshot guard missing');
+ must(app.includes("CASE_IDENTITY_BW_CORRECTED")&&app.includes('Reason for correction (required)'),'active-case identity/BW correction must require audit reason');
+-console.log('ANESVET V15.3.0 Hospital Pilot safety contracts: PASS');
++console.log('ANESVET V15.4.0 Hospital Pilot safety contracts: PASS');
+diff -ruN '--exclude=node_modules' '--exclude=SOURCE_CHANGES_V15_4_0.patch' anesvet_v153_base/anesvet_v153/tests/mobile_or_v149.mjs anesvet_v154/anesvet_v153/tests/mobile_or_v149.mjs
+--- anesvet_v153_base/anesvet_v153/tests/mobile_or_v149.mjs	2026-09-23 04:52:24.000000000 +0000
++++ anesvet_v154/anesvet_v153/tests/mobile_or_v149.mjs	2026-09-23 05:02:50.894431851 +0000
+@@ -22,5 +22,5 @@
+ must(app.includes("window.addEventListener('online',renderConnectivityState)")&&app.includes("window.addEventListener('offline',renderConnectivityState)"),'offline/local-first status missing');
+ must(app.includes("requestScreenWakeLock(true)")&&app.includes('autoWakeEnabled()'),'OR wake-lock behavior missing');
+ must(app.includes("$('orMobileRecordBtn')?.addEventListener")&&app.includes("$('orMobileDrugBtn')?.addEventListener"),'mobile dock actions not bound');
+-must(manifest.start_url.includes('15.3.0'),'manifest release version mismatch');
+-console.log('ANESVET V14.9 mobile/iPad OR reliability compatibility contracts on V15.3.0: PASS');
++must(manifest.start_url.includes('15.4.0'),'manifest release version mismatch');
++console.log('ANESVET V14.9 mobile/iPad OR reliability compatibility contracts on V15.4.0: PASS');
+diff -ruN '--exclude=node_modules' '--exclude=SOURCE_CHANGES_V15_4_0.patch' anesvet_v153_base/anesvet_v153/tests/recovery_ux_v154.mjs anesvet_v154/anesvet_v153/tests/recovery_ux_v154.mjs
+--- anesvet_v153_base/anesvet_v153/tests/recovery_ux_v154.mjs	1970-01-01 00:00:00.000000000 +0000
++++ anesvet_v154/anesvet_v153/tests/recovery_ux_v154.mjs	2026-09-23 05:02:51.013758829 +0000
+@@ -0,0 +1,19 @@
++import fs from 'node:fs';
++const html=fs.readFileSync(new URL('../index.html',import.meta.url),'utf8');
++const app=fs.readFileSync(new URL('../app.js',import.meta.url),'utf8');
++const css=fs.readFileSync(new URL('../style.css',import.meta.url),'utf8');
++const must=(ok,msg)=>{if(!ok)throw new Error(msg)};
++for(const id of ['recoveryFocus','recoveryFocusDue','recoveryFocusLatest','recoveryCopyLastBtn','recoveryFocusRecordBtn','recoveryFocusCompleteBtn','recoveryMobileDock','recoveryMobileRecordBtn','recoveryMobileMedicationBtn','recoveryMobileMoreBtn','recoveryMoreDialog','recoveryChecklistPanel','recoveryScorePanel','recoveryHandoffPanel','recoveryProblemsPanel'])must(html.includes(`id="${id}"`),`missing ${id}`);
++must(app.includes('function recoveryReadinessSnapshot()'),'recovery readiness snapshot helper missing');
++must(app.includes('scores>0'),'readiness must include at least one saved Recovery score');
++must(app.includes('function copyLastRecoveryVitalsToCurrent()'),'Copy Last recovery helper missing');
++must(app.includes("$('recoveryFocusRecordBtn')?.addEventListener('click',()=>$('recordRecoveryVitalsBtn')?.click())"),'Recovery focus record must reuse guarded record path');
++must(app.includes("$('recoveryMobileRecordBtn')?.addEventListener('click',()=>$('recordRecoveryVitalsBtn')?.click())"),'Mobile Recovery record must reuse guarded record path');
++must(app.includes("$('recoveryFocusMedicationBtn')?.addEventListener('click',()=>$('recoveryMedicationBtn')?.click())"),'Recovery quick meds must reuse guarded medication path');
++must(app.includes("document.body.classList.toggle('recovery-mobile-active',id==='recovery')"),'Recovery mobile focus class missing');
++must(app.includes("document.body.classList.toggle('recovery-session-active'"),'active Recovery focus state missing');
++must(css.includes('.recovery-focus'),'Recovery cockpit styling missing');
++must(css.includes('.recovery-mobile-dock'),'Recovery mobile dock styling missing');
++must(css.includes('body.recovery-mobile-active #recovery>.dashboard-grid{order:2}'),'mobile Recovery should prioritize observations before lower-priority panels');
++must(css.includes('.recovery-focus-record.due'),'Recovery due-state primary action styling missing');
++console.log('ANESVET V15.4.0 Recovery UX / mobile focus contracts: PASS');
+diff -ruN '--exclude=node_modules' '--exclude=SOURCE_CHANGES_V15_4_0.patch' anesvet_v153_base/anesvet_v153/tests/regression.mjs anesvet_v154/anesvet_v153/tests/regression.mjs
+--- anesvet_v153_base/anesvet_v153/tests/regression.mjs	2026-09-23 04:52:24.000000000 +0000
++++ anesvet_v154/anesvet_v153/tests/regression.mjs	2026-09-23 05:03:14.312700571 +0000
+@@ -13,8 +13,8 @@
+ const must=(cond,msg)=>assert.ok(cond,msg);
+ 
+ // Core version / structure
+-must(manifest.name.includes('V15.3.0'),'manifest should be V15.3.0');
+-must(sw.includes('v15-3-0'),'service worker cache should identify V15.3.0');
++must(manifest.name.includes('V15.4.0'),'manifest should be V15.4.0');
++must(sw.includes('v15-4-0'),'service worker cache should identify V15.4.0');
+ must(count(app,/function\s+phaseLabel\s*\(/g)===1,'phaseLabel must be declared once');
+ const fnNames=[...app.matchAll(/\bfunction\s+([A-Za-z_$][\w$]*)\s*\(/g)].map(m=>m[1]);
+ const dupFns=[...new Set(fnNames.filter((n,i)=>fnNames.indexOf(n)!==i))];
+@@ -103,7 +103,7 @@
+ must(html.includes('ไม่ใช่ validated discharge score'),'internal recovery score must not be presented as validated');
+ must(app.includes('function currentRecoveryScore')&&app.includes('function saveRecoveryScore'),'recovery scoring logic missing');
+ must(app.includes("addAudit('RECOVERY_SCORE_ADDED'"),'recovery score audit missing');
+-must(app.includes('scoreCount>0'),'at least one recovery readiness score must be required for recovery completion');
++must(app.includes('scores>0')&&app.includes('recoveryReadinessSnapshot'),'at least one recovery readiness score must be required for recovery completion');
+ 
+ // Dose / age / fluid regression anchors
+ must(app.includes("d.mode==='mgkg'")&&app.includes('const total=weight*dose'),'mg/kg dose calculation path missing');
+@@ -152,12 +152,12 @@
+ must(html.includes('id="updateBanner"')&&app.includes('Finish / archive current case before updating'),'safe PWA update UI missing');
+ must(app.includes('caseLowestMap')&&app.includes('caseLowestSpo2')&&app.includes('Emergency return to OR recorded'),'previous anesthesia warning expansion missing');
+ 
+-console.log(`ANESVET V15.3.0 regression checks: PASS (${ids.length} unique HTML ids, ${fnNames.length} unique named functions)`);
++console.log(`ANESVET V15.4.0 regression checks: PASS (${ids.length} unique HTML ids, ${fnNames.length} unique named functions)`);
+ 
+ // V14.8.1 compatibility and integration contracts.
+ for(const key of ['anesvet_v14_3_current','anesvet_v14_3_settings','anesvet_v14_3_archive','anesvet_v14_3_protocol_audit'])must(app.includes(key),'original key retained: '+key);
+ must(html.indexOf('clinical-workflow.js')<html.indexOf('app.js'),'helper loads before application');
+-must(sw.includes('clinical-workflow.js?v=15.3.0'),'offline cache includes helper');
++must(sw.includes('clinical-workflow.js?v=15.4.0'),'offline cache includes helper');
+ must(count(app,/\$\('orStickyRecordBtn'\)\?\.addEventListener/g)===1,'sticky record listener must bind once');
+ for(const id of ['alertProtocolDialog','orQuickDrugDialog','orProblemPanel','recoveryProblemPanel','recoveryHandoffText','reportRecoveryHandoff'])must(ids.includes(id),'new UI '+id);
+ for(const file of [...sw.matchAll(/'\.\/([^']+)'/g)].map(x=>x[1].split('?')[0]))must(fs.existsSync(path.join(root,file)),'cache asset exists: '+file);

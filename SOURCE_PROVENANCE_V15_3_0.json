@@ -1,0 +1,9 @@
+{
+  "release": "ANESVET V15.3.0",
+  "release_date": "2026-09-23",
+  "baseline_artifact": "ANESVET_V15_2_0_OR_LIVE_Safety_Vitals.zip",
+  "change_scope": "intraoperative vitals-first cockpit, Copy Last entry acceleration, unified vital/event timeline, and favorite-medication quick access",
+  "clinical_defaults_changed": false,
+  "storage_schema_changed": false,
+  "baseline_sha256": "234ddc332467a7072e2e4e04b220a594b4075770b3915001a080f2cf9ab87270"
+}
