@@ -1,22 +1,24 @@
-ANESVET V15.0.0 — Hospital Pilot Release
-Build date: 2026-09-22
-Baseline: ANESVET V14.9.0 Mobile/iPad OR Reliability
+ANESVET V15.1.0 — OR LIVE Navigation & Focus Release
+Build date: 2026-09-23
+Baseline: ANESVET V15.0.0 Hospital Pilot Release
 
 IMPLEMENTED
-- Verified active-case safety checkpoint separate from primary current-state save
-- Safety checkpoint read-after-write verification
-- Startup recovery from unreadable/older current save when checkpoint is newer and valid
-- Visible recovered-case banner + audit trail event
-- Safety checkpoint cleared on Reset / sealed final save / final archive
-- Active-case patient identity/current-BW snapshot captured at case start
-- Post-start identity/BW changes require reason + actor and create audit trail
-- Medication calculation context bound to caseId + current BW + frozen protocol timestamp/version
-- Safety stop if patient/BW/protocol context changes before medication confirmation
-- Rapid double-tap guard for structured medication confirmation
-- Recovery incomplete-readiness completion now requires reason + actor override
-- Final Lock requires formal Recovery completion
+- OR LIVE primary navigation reduced to NEXT STEP / VITALS / MORE on phone and iPad/touch tablet
+- NEXT STEP is visually dominant and uses phase-specific action labels
+- Dynamic labels: Start induction, Intubate/Airway, Start surgery, C-section neonate milestones, End surgery, Extubate→Recovery, Recovery, End Case
+- Step counter added to primary workflow card
+- Medications / Fluid / Event / Airway / Trends / Timeline moved behind MORE bottom sheet
+- OR Focus mode hides competing global workflow tabs/case strip during active OR LIVE on touch devices
+- Focus mode retains an explicit exit path via MORE → Case Summary
+- Large iPad landscape support extended using coarse-pointer media query up to 1400 CSS px
+- Routine/Custom duplicate context panels hidden in touch OR focus; special Critical/C-section context remains available
 
-UNCHANGED CLINICAL DEFAULTS
+UNCHANGED CLINICAL / SAFETY LOGIC
+- V15.0 verified safety checkpoint and recovery path
+- active-case identity/BW correction audit
+- stale medication-calculation safety stop
+- medication rapid double-tap guard
+- Recovery override + Final Lock gate
 - Drug doses / concentrations
 - Alert thresholds
 - Fluid references
@@ -31,9 +33,11 @@ PASS: V14.7.2 UX compatibility static contracts
 PASS: V14.8 adaptive workflow static contracts
 PASS: V14.8.2 anesthetic risk flag contracts
 PASS: V14.9 mobile/iPad compatibility contracts
-PASS: V15.0 hospital-pilot safety contracts
+PASS: V15.0 Hospital Pilot safety contracts
+PASS: V15.1 OR LIVE navigation contracts
 PASS: production clinical helper tests (73 assertions)
 PASS: workflow model scenarios (4 scenarios)
-NOT CLAIMED: jsdom/browser-dependent DOM integration + Playwright E2E (dependencies unavailable in runtime)
+NOT CLAIMED: jsdom/fake-indexeddb DOM integration + Playwright E2E (runtime dependencies unavailable)
+DIRECT CHROMIUM SMOKE: attempted; process did not complete within runtime limit, so browser pass is not claimed
 
-Hospital pilot recommendation: use alongside the existing anesthesia record/backup process until real-device acceptance and multiple real cases confirm no data-loss, wrong-patient, wrong-weight, medication-calculation or workflow-blocking defects.
+Pilot recommendation: keep the existing anesthesia record/backup process and validate V15.1 specifically with new users on real phones/iPads. The acceptance target is that a user can identify the current phase and next clinical step without instruction.

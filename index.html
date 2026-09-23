@@ -7,12 +7,12 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="description" content="ANESVET V15.0.0 — Hospital Pilot Release">
+  <meta name="description" content="ANESVET V15.1.0 — Hospital Pilot Release">
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" href="./icon-192.png">
   <link rel="apple-touch-icon" href="./icon-192.png">
-  <link rel="stylesheet" href="./style.css?v=15.0.0">
-  <title>ANESVET V15.0.0</title>
+  <link rel="stylesheet" href="./style.css?v=15.1.0">
+  <title>ANESVET V15.1.0</title>
 </head>
 <body>
 <header class="topbar">
@@ -20,7 +20,7 @@
     <img class="brand-logo" src="./icon-192.png" alt="ANESVET logo">
     <div>
       <div class="eyebrow">GENOVI PET CARE • DIGITAL ANESTHESIA RECORD</div>
-      <h1>ANESVET <span>V15.0.0</span></h1>
+      <h1>ANESVET <span>V15.1.0</span></h1>
     </div>
   </div>
   <div class="top-actions">
@@ -403,7 +403,7 @@
 
     <section class="or-primary-flow" aria-label="Current anesthesia workflow action">
       <div class="or-primary-copy">
-        <span>NEXT CLINICAL STEP</span>
+        <div class="or-primary-kicker"><span>NEXT CLINICAL STEP</span><span id="orPrimaryStepCounter" class="or-primary-step-counter">STEP 1 OF 5</span></div>
         <b id="orPrimaryActionTitle">Start induction</b>
         <small id="orPrimaryActionHelp">กดครั้งเดียวเพื่อ timestamp Induction + เริ่มจับเวลา — ปริมาณยาค่อยลงย้อนหลังได้หลัง airway stable</small>
       </div>
@@ -668,13 +668,29 @@
       <section class="panel"><div class="section-heading"><div><h2>Recent records / events</h2><p>ข้อมูลล่าสุดในเคส</p></div><button id="orOpenTimelineBtn" class="btn">Timeline</button></div><div id="orRecentActivity" class="or-recent-list empty-state compact">ยังไม่มีข้อมูล</div></section>
     </section>
 
-    <nav id="orMobileDock" class="or-mobile-dock" aria-label="OR LIVE quick actions">
-      <button id="orMobileNextBtn" class="or-mobile-dock-btn primary" type="button"><span>▶</span><b>NEXT</b></button>
-      <button id="orMobileRecordBtn" class="or-mobile-dock-btn" type="button"><span>＋</span><b>RECORD</b></button>
-      <button id="orMobileDrugBtn" class="or-mobile-dock-btn" type="button"><span>💉</span><b>MEDS</b></button>
-      <button id="orMobileFluidBtn" class="or-mobile-dock-btn" type="button"><span>💧</span><b>FLUID</b></button>
-      <button id="orMobileEventBtn" class="or-mobile-dock-btn" type="button"><span>⚑</span><b>EVENT</b></button>
+    <nav id="orMobileDock" class="or-mobile-dock" aria-label="OR LIVE primary actions">
+      <button id="orMobileNextBtn" class="or-mobile-dock-btn primary or-mobile-next" type="button">
+        <span id="orMobileNextIcon" class="or-mobile-next-icon">▶</span>
+        <span class="or-mobile-next-copy"><small>NEXT STEP</small><b id="orMobileNextLabel">START INDUCTION</b></span>
+      </button>
+      <button id="orMobileRecordBtn" class="or-mobile-dock-btn" type="button"><span>＋</span><b>VITALS</b></button>
+      <button id="orMobileMoreBtn" class="or-mobile-dock-btn" type="button"><span>•••</span><b>MORE</b></button>
     </nav>
+
+    <dialog id="orMoreDialog" class="or-more-dialog" aria-labelledby="orMoreTitle">
+      <div class="or-more-sheet">
+        <div class="or-more-head"><div><small>OR LIVE</small><h2 id="orMoreTitle">More actions</h2></div><button id="orMoreCloseBtn" class="btn" type="button">✕</button></div>
+        <div class="or-more-grid">
+          <button id="orMobileDrugBtn" class="or-more-action" type="button"><span>💉</span><b>Medications</b><small>ยา induction / intra-op</small></button>
+          <button id="orMobileFluidBtn" class="or-more-action" type="button"><span>💧</span><b>Fluid / Blood</b><small>rate, bolus, loss, urine</small></button>
+          <button id="orMobileEventBtn" class="or-more-action" type="button"><span>⚑</span><b>Event / Problem</b><small>complication / intervention</small></button>
+          <button id="orMobileAirwayBtn" class="or-more-action" type="button"><span>🫁</span><b>Airway</b><small>ETT / ventilation</small></button>
+          <button id="orMobileTrendsBtn" class="or-more-action" type="button"><span>↗</span><b>Trends</b><small>monitor trends</small></button>
+          <button id="orMobileTimelineBtn" class="or-more-action" type="button"><span>≡</span><b>Timeline</b><small>records & events</small></button>
+        </div>
+        <button id="orMobileCaseSummaryBtn" class="btn or-more-case-btn" type="button">← Case summary / leave OR focus</button>
+      </div>
+    </dialog>
   </section>
 
 
@@ -2256,7 +2272,7 @@
 </dialog>
 
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
-<script src="./clinical-workflow.js?v=15.0.0"></script>
-<script src="./app.js?v=15.0.0"></script>
+<script src="./clinical-workflow.js?v=15.1.0"></script>
+<script src="./app.js?v=15.1.0"></script>
 </body>
 </html>

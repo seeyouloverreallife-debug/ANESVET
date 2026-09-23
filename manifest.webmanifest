@@ -1,8 +1,8 @@
 {
-  "name": "ANESVET V15.0.0 — Hospital Pilot Release",
+  "name": "ANESVET V15.1.0 — OR LIVE Navigation Release",
   "short_name": "ANESVET",
   "description": "Touch-first local-first anesthesia workflow optimized for mobile phones and iPad in the operating room",
-  "start_url": "./?v=15.0.0",
+  "start_url": "./?v=15.1.0",
   "scope": "./",
   "display": "standalone",
   "background_color": "#f3f7f8",

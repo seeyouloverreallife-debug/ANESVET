@@ -20,7 +20,7 @@ const SESSION_TTL_MS=30000;
 const SESSION_HEARTBEAT_MS=5000;
 const DB_NAME='ANESVET_DB';
 const DB_VERSION=2;
-const APP_VERSION='15.0.0';
+const APP_VERSION='15.1.0';
 const AUTOSAVE_DELAY_MS=450;
 const ACTIVE_CHECKPOINT_MS=15000;
 const SAFETY_CHECKPOINT_KEY='anesvet_v15_active_safety_checkpoint';
@@ -1425,8 +1425,10 @@ function openAirwayWorkflow(context='edit'){
   setTimeout(()=>$('airwayEttSize')?.focus(),180);
 }
 function renderOrPrimaryFlow(){
-  const title=$('orPrimaryActionTitle'),help=$('orPrimaryActionHelp'),primary=$('orPrimaryActionBtn'),secondary=$('orSecondaryPhaseBtn'),drug=$('orPrimaryDrugBtn'),stickyDrug=$('orStickyDrugBtn');if(!title||!help||!primary)return;
+  const title=$('orPrimaryActionTitle'),help=$('orPrimaryActionHelp'),primary=$('orPrimaryActionBtn'),secondary=$('orSecondaryPhaseBtn'),drug=$('orPrimaryDrugBtn'),stickyDrug=$('orStickyDrugBtn'),stepCounter=$('orPrimaryStepCounter');if(!title||!help||!primary)return;
   const phase=state.caseLocked?'locked':(state.casePhase||'setup'),started=!!state.caseStartedAt,pendingInduction=started&&!inductionMedicationComplete(),profile=activeWorkflowProfile();
+  const stepMeta={setup:'STEP 1 OF 5 • SETUP',induction:'STEP 2 OF 5 • INDUCTION',intraop:'STEP 3 OF 5 • SURGERY',emergence:'STEP 4 OF 5 • EMERGENCE',emergency:'URGENT • OR RETURN',recovery:'STEP 5 OF 5 • RECOVERY',complete:'WORKFLOW COMPLETE',locked:'FINAL RECORD'};
+  if(stepCounter)stepCounter.textContent=stepMeta[phase]||'CURRENT STEP';
   primary.disabled=false;primary.hidden=false;secondary.hidden=true;secondary.textContent='';drug.hidden=true;if(stickyDrug){stickyDrug.hidden=!started||['recovery','complete','locked'].includes(phase);stickyDrug.classList.toggle('pending',pendingInduction);stickyDrug.textContent=pendingInduction?'💉 MEDS • induction pending':'💉 MEDS';}
   let t='Current step',h='',label='',action='';
   if(phase==='setup'){t='Start induction';h='กดครั้งเดียวเพื่อ timestamp Induction + เริ่มจับเวลา • ปริมาณยาค่อยลงย้อนหลังได้หลัง airway stable';label='▶ Start induction';action='start-induction';}
@@ -1560,20 +1562,38 @@ function renderOrLive(){
   renderOrFluidPanel();renderOrMiniTrends();renderOrRecent();renderOrTimerState();renderSaveState();renderRecoveryState();renderComplications();renderAlertProtocolStatus();renderActiveProblems();renderAirwayPanel();renderOrPrimaryFlow();renderOrMobileDock();
 }
 function renderOrMobileDock(){
-  const next=$('orMobileNextBtn'),record=$('orMobileRecordBtn');
-  if(next){next.disabled=!!$('orPrimaryActionBtn')?.disabled;next.classList.toggle('danger',state.casePhase==='emergency');}
-  if(record){const due=!!$('orRecordNowBtn')?.classList.contains('due');record.classList.toggle('due',due);record.querySelector('b').textContent=due?'RECORD DUE':'RECORD';}
+  const next=$('orMobileNextBtn'),record=$('orMobileRecordBtn'),primary=$('orPrimaryActionBtn'),label=$('orMobileNextLabel'),icon=$('orMobileNextIcon');
+  const action=primary?.dataset.action||'start-induction';
+  const actionUi={
+    'start-induction':['▶','START INDUCTION'],airway:['🫁','INTUBATE / AIRWAY'],'surgery-start':['▶','START SURGERY'],
+    'first-neonate':['👶','FIRST NEONATE'],'last-neonate':['👶','LAST NEONATE'],'surgery-end':['■','END SURGERY'],
+    extubation:['🫁','EXTUBATE → RECOVERY'],recovery:['→','BEGIN RECOVERY'],'open-recovery':['→','OPEN RECOVERY'],
+    'end-case':['✓','END CASE'],locked:['✓','LOCKED']
+  };
+  const ui=actionUi[action]||['▶','CONTINUE'];
+  if(next){next.disabled=!!primary?.disabled;next.classList.toggle('danger',state.casePhase==='emergency');next.setAttribute('aria-label',`Next clinical step: ${ui[1]}`);}
+  if(icon)icon.textContent=ui[0];if(label)label.textContent=ui[1];
+  if(record){const due=!!$('orRecordNowBtn')?.classList.contains('due');record.classList.toggle('due',due);const b=record.querySelector('b');if(b)b.textContent=due?'VITALS DUE':'VITALS';}
 }
 function openOrDetailsAndScroll(selector){
   const el=document.querySelector(selector);if(!el)return;el.open=true;requestAnimationFrame(()=>el.scrollIntoView({behavior:'smooth',block:'center'}));
 }
 function startCaseFromOr(){if(!clinicalWriteAllowed())return false;if(state.timer.running)return true;if(!validateCaseReadyToStart())return false;const preopTotal=$$('.preop-check').length,preopDone=$$('.preop-check').filter(x=>x.checked).length,preopNA=$$('.preop-item.na').length,preopReviewed=preopDone+preopNA;if(preopReviewed<preopTotal&&!confirm(`Pre-op checklist ยัง review ไม่ครบ (${preopReviewed}/${preopTotal}) — ต้องการเริ่มเคสต่อหรือไม่?`))return false;const firstStart=(state.timer.elapsedMs||0)===0&&!state.caseStartedAt;state.timer.running=true;state.timer.startedEpoch=Date.now();if(firstStart){state.caseStartedAt=state.timer.startedEpoch;state.casePhase='induction';captureProtocolSnapshot();addAudit('CASE_STARTED','Anesthesia case timer started');}startTimerLoop();renderTimerState();renderOrTimerState();renderCasePhase();save();if(autoWakeEnabled())requestScreenWakeLock(true);if(firstStart)addEvent({category:'Case',name:'Case started',note:'Anesthesia case timer started'});toast(firstStart?'Case timer started':'Case timer resumed');return true}
 $('orStartBtn')?.addEventListener('click',startCaseFromOr);$('orPauseBtn')?.addEventListener('click',()=>{pauseTimer();renderOrLive()});$('orRecordNowBtn')?.addEventListener('click',()=>{if(!state.timer.running&&(state.timer.elapsedMs||0)===0){if(!startCaseFromOr())return}addRecord('');renderOrLive()});$('openOrLiveBtn')?.addEventListener('click',()=>setTab('orlive'));$('orOpenDrugBtn')?.addEventListener('click',openOrQuickDrug);$('orOpenTrendsBtn')?.addEventListener('click',()=>setTab('trends'));$('orOpenTimelineBtn')?.addEventListener('click',()=>setTab('timeline'));
+function closeOrMoreDialog(){const d=$('orMoreDialog');if(d?.open){try{d.close()}catch(e){d.removeAttribute('open')}}}
+function openOrMoreDialog(){const d=$('orMoreDialog');if(!d)return;try{if(!d.open)d.showModal()}catch(e){d.setAttribute('open','')}}
 $('orMobileNextBtn')?.addEventListener('click',()=>$('orPrimaryActionBtn')?.click());
 $('orMobileRecordBtn')?.addEventListener('click',()=>$('orRecordNowBtn')?.click());
-$('orMobileDrugBtn')?.addEventListener('click',()=>openOrQuickDrug());
-$('orMobileFluidBtn')?.addEventListener('click',()=>openOrDetailsAndScroll('#orFluidPanelDetails'));
-$('orMobileEventBtn')?.addEventListener('click',()=>openOrDetailsAndScroll('.or-event-problem-menu'));
+$('orMobileMoreBtn')?.addEventListener('click',openOrMoreDialog);
+$('orMoreCloseBtn')?.addEventListener('click',closeOrMoreDialog);
+$('orMoreDialog')?.addEventListener('click',e=>{if(e.target===$('orMoreDialog'))closeOrMoreDialog()});
+$('orMobileDrugBtn')?.addEventListener('click',()=>{closeOrMoreDialog();openOrQuickDrug()});
+$('orMobileFluidBtn')?.addEventListener('click',()=>{closeOrMoreDialog();openOrDetailsAndScroll('#orFluidPanelDetails')});
+$('orMobileEventBtn')?.addEventListener('click',()=>{closeOrMoreDialog();openOrDetailsAndScroll('.or-event-problem-menu')});
+$('orMobileAirwayBtn')?.addEventListener('click',()=>{closeOrMoreDialog();openAirwayWorkflow('edit')});
+$('orMobileTrendsBtn')?.addEventListener('click',()=>{closeOrMoreDialog();setTab('trends')});
+$('orMobileTimelineBtn')?.addEventListener('click',()=>{closeOrMoreDialog();setTab('timeline')});
+$('orMobileCaseSummaryBtn')?.addEventListener('click',()=>{closeOrMoreDialog();setTab('casesummary')});
 $$('.or-milestone').forEach(btn=>btn.addEventListener('click',()=>{markMilestone(btn);renderOrLive()}));$$('.or-event').forEach(btn=>btn.addEventListener('click',()=>{addEvent({category:btn.dataset.cat,name:btn.dataset.label});renderOrLive()}));$$('.or-complication').forEach(btn=>btn.addEventListener('click',()=>openComplicationDialog(btn.dataset.complication||'')));
 $('orFullscreenBtn')?.addEventListener('click',async()=>{try{if(!document.fullscreenElement){if(document.documentElement.requestFullscreen)await document.documentElement.requestFullscreen();document.body.classList.add('or-fullscreen');$('orFullscreenBtn').textContent='Exit full screen'}else{if(document.exitFullscreen)await document.exitFullscreen();document.body.classList.remove('or-fullscreen');$('orFullscreenBtn').textContent='⛶ Full screen'}}catch(e){document.body.classList.toggle('or-fullscreen')}});document.addEventListener('fullscreenchange',()=>{if(!document.fullscreenElement){document.body.classList.remove('or-fullscreen');if($('orFullscreenBtn'))$('orFullscreenBtn').textContent='⛶ Full screen'}});
 function renderBuiltInProtocolChips(cfg=currentSettingsObject()){
@@ -3628,7 +3648,7 @@ $('updateNowBtn')?.addEventListener('click',()=>{const reg=pendingServiceWorkerR
 $('updateLaterBtn')?.addEventListener('click',()=>{if($('updateBanner'))$('updateBanner').hidden=true});
 window.addEventListener('load',setupServiceWorkerUpdates);
 
-// V15.0.0 hospital pilot safety hardening on top of V14.9.0 mobile/iPad OR reliability.
+// V15.1.0 hospital pilot safety hardening on top of V14.9.0 mobile/iPad OR reliability.
 const WF=globalThis.AnesvetWorkflow;
 const ALERT_KEYS={map:'hypotension',spo2:'hypoxemia',etco2:'ventilation',temp:'hypothermia'};
 let alertProtocolEditScope='hospital',pendingProblem=null,orQuickOptions=[],orQuickBasis=null,orQuickContext=null;

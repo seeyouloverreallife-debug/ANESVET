@@ -1,0 +1,9 @@
+{
+  "release": "ANESVET V15.1.0",
+  "release_date": "2026-09-23",
+  "baseline_artifact": "ANESVET_V15_0_0_Hospital_Pilot.zip",
+  "baseline_sha256": "1c83bc6c9c76aa9281cd5ca6ecf10f94dcf1564b6675bd2af193da26e3b769b8",
+  "change_scope": "OR LIVE navigation simplification and touch focus mode",
+  "clinical_defaults_changed": false,
+  "storage_schema_changed": false
+}

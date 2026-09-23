@@ -835,3 +835,53 @@ button,.btn,.tab,.or-primary-action,.or-record-button,.or-action-link,.or-compli
 .safety-recovery-banner{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:11px 16px;background:#163f4b;color:#fff;border-top:1px solid rgba(255,255,255,.15)}
 .safety-recovery-banner[hidden]{display:none}.safety-recovery-banner b,.safety-recovery-banner span{display:block}.safety-recovery-banner span{font-size:.82rem;opacity:.9;margin-top:2px}
 @media(max-width:700px){.safety-recovery-banner{align-items:stretch;flex-direction:column}.safety-recovery-banner .btn{width:100%}}
+
+/* V15.1.0 — OR LIVE Navigation Simplification */
+.or-primary-kicker{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.or-primary-kicker>span:first-child{font-size:.68rem;font-weight:900;letter-spacing:.06em;color:#4b6973}
+.or-primary-step-counter{display:inline-flex;align-items:center;min-height:24px;padding:3px 8px;border-radius:999px;background:#dff1f4;color:#0d5265;font-size:.66rem;font-weight:950;white-space:nowrap}
+
+.or-more-dialog{border:0;padding:0;background:transparent;width:min(100%,760px);max-width:none;margin:auto auto 0;overflow:visible}
+.or-more-dialog::backdrop{background:rgba(7,31,39,.48);backdrop-filter:blur(2px)}
+.or-more-sheet{background:#f8fbfc;border:1px solid #c7d9de;border-radius:20px 20px 0 0;padding:14px 14px calc(14px + env(safe-area-inset-bottom));box-shadow:0 -18px 46px rgba(9,54,68,.24)}
+.or-more-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}.or-more-head small{display:block;font-size:.66rem;font-weight:900;letter-spacing:.08em;color:#64808a}.or-more-head h2{margin:2px 0 0;font-size:1.2rem}
+.or-more-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.or-more-action{min-height:78px;border:1px solid #c8d9de;border-radius:14px;background:#fff;color:#173f4b;text-align:left;padding:10px 11px;display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto auto;column-gap:9px;align-items:center;font:inherit}
+.or-more-action>span{grid-row:1/3;font-size:1.35rem}.or-more-action>b{font-size:.9rem}.or-more-action>small{font-size:.69rem;color:#6a7e85;line-height:1.25}
+.or-more-case-btn{width:100%;margin-top:10px;min-height:48px}
+
+@media(max-width:1180px), (pointer:coarse) and (max-width:1400px){
+  body.or-mobile-active{padding-bottom:calc(92px + env(safe-area-inset-bottom))}
+  body.or-mobile-active .workflow-tabs,body.or-mobile-active .case-strip,body.or-mobile-active #patientRiskBanner{display:none}
+  body.or-mobile-active .topbar{min-height:42px;padding:7px 10px;padding-top:calc(7px + env(safe-area-inset-top));justify-content:flex-end}
+  body.or-mobile-active .topbar .brand{display:none}
+  body.or-mobile-active .topbar .top-actions{width:100%;justify-content:flex-end}
+  body.or-mobile-active .topbar #timerStateBadge,body.or-mobile-active .topbar #caseClock,body.or-mobile-active .topbar #alertFeedbackBtn,body.or-mobile-active .topbar #installBtn{display:none!important}
+  body.or-mobile-active main{padding-top:6px}
+  .or-live-page .or-primary-buttons{display:none}
+  .or-live-page .or-context-panel.routine,.or-live-page .or-context-panel.custom{display:none}
+  .or-primary-flow{border-width:2px;border-color:#5fa9b9;box-shadow:0 8px 20px rgba(13,82,101,.10)}
+  .or-primary-copy>b{font-size:1.08rem}
+  .or-mobile-dock{position:fixed;display:grid;grid-template-columns:minmax(0,2.15fr) minmax(82px,.9fr) minmax(82px,.9fr);left:50%;right:auto;transform:translateX(-50%);width:min(720px,calc(100vw - 16px));bottom:max(8px,env(safe-area-inset-bottom));z-index:85;padding:7px;gap:6px;background:rgba(248,253,254,.98);border:1px solid #b9d4db;border-radius:16px;box-shadow:0 10px 34px rgba(9,54,68,.20);backdrop-filter:blur(10px)}
+  .or-mobile-dock-btn{min-width:0;min-height:62px;border:1px solid #c5d7dc;border-radius:12px;background:#fff;color:#174b59;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:6px 8px;font:inherit;font-weight:900}
+  .or-mobile-dock-btn>span:not(.or-mobile-next-copy){font-size:1.05rem;line-height:1}.or-mobile-dock-btn>b{font-size:.66rem;letter-spacing:.02em;white-space:nowrap}
+  .or-mobile-dock-btn.primary{background:#0d5265;color:#fff;border-color:#0d5265}.or-mobile-dock-btn.due{background:#fff0ef;color:#a12620;border-color:#dfaaa6}.or-mobile-dock-btn:disabled{opacity:.45}
+  .or-mobile-next{display:grid;grid-template-columns:auto minmax(0,1fr);text-align:left;justify-content:stretch;column-gap:9px;padding:7px 12px}
+  .or-mobile-next-icon{font-size:1.2rem!important}.or-mobile-next-copy{display:flex;min-width:0;flex-direction:column;align-items:flex-start;line-height:1.05}.or-mobile-next-copy small{font-size:.56rem;opacity:.76;font-weight:900;letter-spacing:.08em}.or-mobile-next-copy b{margin-top:4px;font-size:.76rem;white-space:normal;overflow-wrap:anywhere}
+  .or-live-page:not(.active) .or-mobile-dock{display:none}
+}
+
+@media(max-width:780px){
+  body.or-mobile-active{padding-bottom:calc(88px + env(safe-area-inset-bottom))}
+  .or-command-bar{padding:10px 11px}.or-command-bar .or-team-line{display:none}.or-command-bar .or-procedure-line{font-size:.78rem}
+  .or-primary-flow{margin:6px 0 8px;padding:11px 12px}.or-primary-kicker{align-items:flex-start}.or-primary-step-counter{font-size:.58rem;padding:3px 6px}.or-primary-copy>small{font-size:.75rem;line-height:1.35}
+  .or-phase-details{margin-top:6px!important}.or-phase-details .or-phase-expand{font-size:.68rem}
+  .or-mobile-dock{width:calc(100vw - 10px);bottom:max(5px,env(safe-area-inset-bottom));padding:5px;gap:5px;border-radius:14px;grid-template-columns:minmax(0,2fr) 76px 76px}
+  .or-mobile-dock-btn{min-height:58px;border-radius:10px;padding:5px 6px}.or-mobile-dock-btn>b{font-size:.6rem}.or-mobile-next{padding:6px 9px}.or-mobile-next-copy b{font-size:.69rem}.or-mobile-next-copy small{font-size:.52rem}
+  .or-more-dialog{width:100%;margin:auto 0 0}.or-more-sheet{border-radius:18px 18px 0 0;padding:12px 12px calc(12px + env(safe-area-inset-bottom))}.or-more-grid{gap:7px}.or-more-action{min-height:72px;padding:9px}.or-more-action>b{font-size:.84rem}.or-more-action>small{font-size:.65rem}
+}
+
+@media(max-width:390px){
+  .or-mobile-dock{grid-template-columns:minmax(0,1.8fr) 68px 68px}.or-mobile-next-copy b{font-size:.64rem}.or-mobile-dock-btn>b{font-size:.56rem}
+  .or-more-grid{grid-template-columns:1fr 1fr}
+}

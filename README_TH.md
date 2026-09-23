@@ -1,4 +1,10 @@
-# ANESVET V15.0.0 — Hospital Pilot Release
+# ANESVET V15.1.0 — OR LIVE Navigation & Focus Release
+
+รุ่นนี้ต่อจาก V15.0.0 โดยแก้ pain point จากการลองใช้ OR LIVE บนมือถือ/iPad: ลด action หลักจาก 5 ปุ่มเหลือ **NEXT STEP / VITALS / MORE**, ทำ NEXT ให้แสดงชื่อ action จริงตาม phase, เพิ่ม step counter และ OR Focus mode เพื่อให้ผู้ใช้รู้ทันทีว่าต้องกดอะไรเพื่อเดินเคสต่อ โดยคง Hospital Pilot safety logic เดิมทั้งหมด
+
+ดูรายละเอียดที่ `RELEASE_NOTES_V15_1_0.md`
+
+## V15.0.0 — Hospital Pilot Release
 
 รุ่นนี้ต่อจาก V14.9.0 และเน้น **clinical pilot safety / data integrity** ก่อนใช้กับเคสจริงแบบมีระบบเดิมเป็น backup: verified active-case checkpoint, active-case identity/BW correction audit, stale medication-calculation guard, double-tap protection และ documented recovery override ก่อน Final Lock
 

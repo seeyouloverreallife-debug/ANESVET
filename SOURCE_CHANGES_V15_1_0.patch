@@ -1,0 +1,318 @@
+--- base_v150/anesvet_v150/index.html	2026-09-22 16:16:33.000000000 +0000
++++ anesvet_v151_work/index.html	2026-09-23 02:58:25.761436548 +0000
+@@ -7,12 +7,12 @@
+   <meta name="apple-mobile-web-app-capable" content="yes">
+   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+   <meta name="mobile-web-app-capable" content="yes">
+-  <meta name="description" content="ANESVET V15.0.0 — Hospital Pilot Release">
++  <meta name="description" content="ANESVET V15.1.0 — Hospital Pilot Release">
+   <link rel="manifest" href="./manifest.webmanifest">
+   <link rel="icon" href="./icon-192.png">
+   <link rel="apple-touch-icon" href="./icon-192.png">
+-  <link rel="stylesheet" href="./style.css?v=15.0.0">
+-  <title>ANESVET V15.0.0</title>
++  <link rel="stylesheet" href="./style.css?v=15.1.0">
++  <title>ANESVET V15.1.0</title>
+ </head>
+ <body>
+ <header class="topbar">
+@@ -20,7 +20,7 @@
+     <img class="brand-logo" src="./icon-192.png" alt="ANESVET logo">
+     <div>
+       <div class="eyebrow">GENOVI PET CARE • DIGITAL ANESTHESIA RECORD</div>
+-      <h1>ANESVET <span>V15.0.0</span></h1>
++      <h1>ANESVET <span>V15.1.0</span></h1>
+     </div>
+   </div>
+   <div class="top-actions">
+@@ -403,7 +403,7 @@
+ 
+     <section class="or-primary-flow" aria-label="Current anesthesia workflow action">
+       <div class="or-primary-copy">
+-        <span>NEXT CLINICAL STEP</span>
++        <div class="or-primary-kicker"><span>NEXT CLINICAL STEP</span><span id="orPrimaryStepCounter" class="or-primary-step-counter">STEP 1 OF 5</span></div>
+         <b id="orPrimaryActionTitle">Start induction</b>
+         <small id="orPrimaryActionHelp">กดครั้งเดียวเพื่อ timestamp Induction + เริ่มจับเวลา — ปริมาณยาค่อยลงย้อนหลังได้หลัง airway stable</small>
+       </div>
+@@ -668,13 +668,29 @@
+       <section class="panel"><div class="section-heading"><div><h2>Recent records / events</h2><p>ข้อมูลล่าสุดในเคส</p></div><button id="orOpenTimelineBtn" class="btn">Timeline</button></div><div id="orRecentActivity" class="or-recent-list empty-state compact">ยังไม่มีข้อมูล</div></section>
+     </section>
+ 
+-    <nav id="orMobileDock" class="or-mobile-dock" aria-label="OR LIVE quick actions">
+-      <button id="orMobileNextBtn" class="or-mobile-dock-btn primary" type="button"><span>▶</span><b>NEXT</b></button>
+-      <button id="orMobileRecordBtn" class="or-mobile-dock-btn" type="button"><span>＋</span><b>RECORD</b></button>
+-      <button id="orMobileDrugBtn" class="or-mobile-dock-btn" type="button"><span>💉</span><b>MEDS</b></button>
+-      <button id="orMobileFluidBtn" class="or-mobile-dock-btn" type="button"><span>💧</span><b>FLUID</b></button>
+-      <button id="orMobileEventBtn" class="or-mobile-dock-btn" type="button"><span>⚑</span><b>EVENT</b></button>
++    <nav id="orMobileDock" class="or-mobile-dock" aria-label="OR LIVE primary actions">
++      <button id="orMobileNextBtn" class="or-mobile-dock-btn primary or-mobile-next" type="button">
++        <span id="orMobileNextIcon" class="or-mobile-next-icon">▶</span>
++        <span class="or-mobile-next-copy"><small>NEXT STEP</small><b id="orMobileNextLabel">START INDUCTION</b></span>
++      </button>
++      <button id="orMobileRecordBtn" class="or-mobile-dock-btn" type="button"><span>＋</span><b>VITALS</b></button>
++      <button id="orMobileMoreBtn" class="or-mobile-dock-btn" type="button"><span>•••</span><b>MORE</b></button>
+     </nav>
++
++    <dialog id="orMoreDialog" class="or-more-dialog" aria-labelledby="orMoreTitle">
++      <div class="or-more-sheet">
++        <div class="or-more-head"><div><small>OR LIVE</small><h2 id="orMoreTitle">More actions</h2></div><button id="orMoreCloseBtn" class="btn" type="button">✕</button></div>
++        <div class="or-more-grid">
++          <button id="orMobileDrugBtn" class="or-more-action" type="button"><span>💉</span><b>Medications</b><small>ยา induction / intra-op</small></button>
++          <button id="orMobileFluidBtn" class="or-more-action" type="button"><span>💧</span><b>Fluid / Blood</b><small>rate, bolus, loss, urine</small></button>
++          <button id="orMobileEventBtn" class="or-more-action" type="button"><span>⚑</span><b>Event / Problem</b><small>complication / intervention</small></button>
++          <button id="orMobileAirwayBtn" class="or-more-action" type="button"><span>🫁</span><b>Airway</b><small>ETT / ventilation</small></button>
++          <button id="orMobileTrendsBtn" class="or-more-action" type="button"><span>↗</span><b>Trends</b><small>monitor trends</small></button>
++          <button id="orMobileTimelineBtn" class="or-more-action" type="button"><span>≡</span><b>Timeline</b><small>records & events</small></button>
++        </div>
++        <button id="orMobileCaseSummaryBtn" class="btn or-more-case-btn" type="button">← Case summary / leave OR focus</button>
++      </div>
++    </dialog>
+   </section>
+ 
+ 
+@@ -2256,7 +2272,7 @@
+ </dialog>
+ 
+ <div id="toast" class="toast" role="status" aria-live="polite"></div>
+-<script src="./clinical-workflow.js?v=15.0.0"></script>
+-<script src="./app.js?v=15.0.0"></script>
++<script src="./clinical-workflow.js?v=15.1.0"></script>
++<script src="./app.js?v=15.1.0"></script>
+ </body>
+ </html>
+--- base_v150/anesvet_v150/app.js	2026-09-22 16:20:01.000000000 +0000
++++ anesvet_v151_work/app.js	2026-09-23 02:58:25.764696281 +0000
+@@ -20,7 +20,7 @@
+ const SESSION_HEARTBEAT_MS=5000;
+ const DB_NAME='ANESVET_DB';
+ const DB_VERSION=2;
+-const APP_VERSION='15.0.0';
++const APP_VERSION='15.1.0';
+ const AUTOSAVE_DELAY_MS=450;
+ const ACTIVE_CHECKPOINT_MS=15000;
+ const SAFETY_CHECKPOINT_KEY='anesvet_v15_active_safety_checkpoint';
+@@ -1425,8 +1425,10 @@
+   setTimeout(()=>$('airwayEttSize')?.focus(),180);
+ }
+ function renderOrPrimaryFlow(){
+-  const title=$('orPrimaryActionTitle'),help=$('orPrimaryActionHelp'),primary=$('orPrimaryActionBtn'),secondary=$('orSecondaryPhaseBtn'),drug=$('orPrimaryDrugBtn'),stickyDrug=$('orStickyDrugBtn');if(!title||!help||!primary)return;
++  const title=$('orPrimaryActionTitle'),help=$('orPrimaryActionHelp'),primary=$('orPrimaryActionBtn'),secondary=$('orSecondaryPhaseBtn'),drug=$('orPrimaryDrugBtn'),stickyDrug=$('orStickyDrugBtn'),stepCounter=$('orPrimaryStepCounter');if(!title||!help||!primary)return;
+   const phase=state.caseLocked?'locked':(state.casePhase||'setup'),started=!!state.caseStartedAt,pendingInduction=started&&!inductionMedicationComplete(),profile=activeWorkflowProfile();
++  const stepMeta={setup:'STEP 1 OF 5 • SETUP',induction:'STEP 2 OF 5 • INDUCTION',intraop:'STEP 3 OF 5 • SURGERY',emergence:'STEP 4 OF 5 • EMERGENCE',emergency:'URGENT • OR RETURN',recovery:'STEP 5 OF 5 • RECOVERY',complete:'WORKFLOW COMPLETE',locked:'FINAL RECORD'};
++  if(stepCounter)stepCounter.textContent=stepMeta[phase]||'CURRENT STEP';
+   primary.disabled=false;primary.hidden=false;secondary.hidden=true;secondary.textContent='';drug.hidden=true;if(stickyDrug){stickyDrug.hidden=!started||['recovery','complete','locked'].includes(phase);stickyDrug.classList.toggle('pending',pendingInduction);stickyDrug.textContent=pendingInduction?'💉 MEDS • induction pending':'💉 MEDS';}
+   let t='Current step',h='',label='',action='';
+   if(phase==='setup'){t='Start induction';h='กดครั้งเดียวเพื่อ timestamp Induction + เริ่มจับเวลา • ปริมาณยาค่อยลงย้อนหลังได้หลัง airway stable';label='▶ Start induction';action='start-induction';}
+@@ -1560,20 +1562,38 @@
+   renderOrFluidPanel();renderOrMiniTrends();renderOrRecent();renderOrTimerState();renderSaveState();renderRecoveryState();renderComplications();renderAlertProtocolStatus();renderActiveProblems();renderAirwayPanel();renderOrPrimaryFlow();renderOrMobileDock();
+ }
+ function renderOrMobileDock(){
+-  const next=$('orMobileNextBtn'),record=$('orMobileRecordBtn');
+-  if(next){next.disabled=!!$('orPrimaryActionBtn')?.disabled;next.classList.toggle('danger',state.casePhase==='emergency');}
+-  if(record){const due=!!$('orRecordNowBtn')?.classList.contains('due');record.classList.toggle('due',due);record.querySelector('b').textContent=due?'RECORD DUE':'RECORD';}
++  const next=$('orMobileNextBtn'),record=$('orMobileRecordBtn'),primary=$('orPrimaryActionBtn'),label=$('orMobileNextLabel'),icon=$('orMobileNextIcon');
++  const action=primary?.dataset.action||'start-induction';
++  const actionUi={
++    'start-induction':['▶','START INDUCTION'],airway:['🫁','INTUBATE / AIRWAY'],'surgery-start':['▶','START SURGERY'],
++    'first-neonate':['👶','FIRST NEONATE'],'last-neonate':['👶','LAST NEONATE'],'surgery-end':['■','END SURGERY'],
++    extubation:['🫁','EXTUBATE → RECOVERY'],recovery:['→','BEGIN RECOVERY'],'open-recovery':['→','OPEN RECOVERY'],
++    'end-case':['✓','END CASE'],locked:['✓','LOCKED']
++  };
++  const ui=actionUi[action]||['▶','CONTINUE'];
++  if(next){next.disabled=!!primary?.disabled;next.classList.toggle('danger',state.casePhase==='emergency');next.setAttribute('aria-label',`Next clinical step: ${ui[1]}`);}
++  if(icon)icon.textContent=ui[0];if(label)label.textContent=ui[1];
++  if(record){const due=!!$('orRecordNowBtn')?.classList.contains('due');record.classList.toggle('due',due);const b=record.querySelector('b');if(b)b.textContent=due?'VITALS DUE':'VITALS';}
+ }
+ function openOrDetailsAndScroll(selector){
+   const el=document.querySelector(selector);if(!el)return;el.open=true;requestAnimationFrame(()=>el.scrollIntoView({behavior:'smooth',block:'center'}));
+ }
+ function startCaseFromOr(){if(!clinicalWriteAllowed())return false;if(state.timer.running)return true;if(!validateCaseReadyToStart())return false;const preopTotal=$$('.preop-check').length,preopDone=$$('.preop-check').filter(x=>x.checked).length,preopNA=$$('.preop-item.na').length,preopReviewed=preopDone+preopNA;if(preopReviewed<preopTotal&&!confirm(`Pre-op checklist ยัง review ไม่ครบ (${preopReviewed}/${preopTotal}) — ต้องการเริ่มเคสต่อหรือไม่?`))return false;const firstStart=(state.timer.elapsedMs||0)===0&&!state.caseStartedAt;state.timer.running=true;state.timer.startedEpoch=Date.now();if(firstStart){state.caseStartedAt=state.timer.startedEpoch;state.casePhase='induction';captureProtocolSnapshot();addAudit('CASE_STARTED','Anesthesia case timer started');}startTimerLoop();renderTimerState();renderOrTimerState();renderCasePhase();save();if(autoWakeEnabled())requestScreenWakeLock(true);if(firstStart)addEvent({category:'Case',name:'Case started',note:'Anesthesia case timer started'});toast(firstStart?'Case timer started':'Case timer resumed');return true}
+ $('orStartBtn')?.addEventListener('click',startCaseFromOr);$('orPauseBtn')?.addEventListener('click',()=>{pauseTimer();renderOrLive()});$('orRecordNowBtn')?.addEventListener('click',()=>{if(!state.timer.running&&(state.timer.elapsedMs||0)===0){if(!startCaseFromOr())return}addRecord('');renderOrLive()});$('openOrLiveBtn')?.addEventListener('click',()=>setTab('orlive'));$('orOpenDrugBtn')?.addEventListener('click',openOrQuickDrug);$('orOpenTrendsBtn')?.addEventListener('click',()=>setTab('trends'));$('orOpenTimelineBtn')?.addEventListener('click',()=>setTab('timeline'));
++function closeOrMoreDialog(){const d=$('orMoreDialog');if(d?.open){try{d.close()}catch(e){d.removeAttribute('open')}}}
++function openOrMoreDialog(){const d=$('orMoreDialog');if(!d)return;try{if(!d.open)d.showModal()}catch(e){d.setAttribute('open','')}}
+ $('orMobileNextBtn')?.addEventListener('click',()=>$('orPrimaryActionBtn')?.click());
+ $('orMobileRecordBtn')?.addEventListener('click',()=>$('orRecordNowBtn')?.click());
+-$('orMobileDrugBtn')?.addEventListener('click',()=>openOrQuickDrug());
+-$('orMobileFluidBtn')?.addEventListener('click',()=>openOrDetailsAndScroll('#orFluidPanelDetails'));
+-$('orMobileEventBtn')?.addEventListener('click',()=>openOrDetailsAndScroll('.or-event-problem-menu'));
++$('orMobileMoreBtn')?.addEventListener('click',openOrMoreDialog);
++$('orMoreCloseBtn')?.addEventListener('click',closeOrMoreDialog);
++$('orMoreDialog')?.addEventListener('click',e=>{if(e.target===$('orMoreDialog'))closeOrMoreDialog()});
++$('orMobileDrugBtn')?.addEventListener('click',()=>{closeOrMoreDialog();openOrQuickDrug()});
++$('orMobileFluidBtn')?.addEventListener('click',()=>{closeOrMoreDialog();openOrDetailsAndScroll('#orFluidPanelDetails')});
++$('orMobileEventBtn')?.addEventListener('click',()=>{closeOrMoreDialog();openOrDetailsAndScroll('.or-event-problem-menu')});
++$('orMobileAirwayBtn')?.addEventListener('click',()=>{closeOrMoreDialog();openAirwayWorkflow('edit')});
++$('orMobileTrendsBtn')?.addEventListener('click',()=>{closeOrMoreDialog();setTab('trends')});
++$('orMobileTimelineBtn')?.addEventListener('click',()=>{closeOrMoreDialog();setTab('timeline')});
++$('orMobileCaseSummaryBtn')?.addEventListener('click',()=>{closeOrMoreDialog();setTab('casesummary')});
+ $$('.or-milestone').forEach(btn=>btn.addEventListener('click',()=>{markMilestone(btn);renderOrLive()}));$$('.or-event').forEach(btn=>btn.addEventListener('click',()=>{addEvent({category:btn.dataset.cat,name:btn.dataset.label});renderOrLive()}));$$('.or-complication').forEach(btn=>btn.addEventListener('click',()=>openComplicationDialog(btn.dataset.complication||'')));
+ $('orFullscreenBtn')?.addEventListener('click',async()=>{try{if(!document.fullscreenElement){if(document.documentElement.requestFullscreen)await document.documentElement.requestFullscreen();document.body.classList.add('or-fullscreen');$('orFullscreenBtn').textContent='Exit full screen'}else{if(document.exitFullscreen)await document.exitFullscreen();document.body.classList.remove('or-fullscreen');$('orFullscreenBtn').textContent='⛶ Full screen'}}catch(e){document.body.classList.toggle('or-fullscreen')}});document.addEventListener('fullscreenchange',()=>{if(!document.fullscreenElement){document.body.classList.remove('or-fullscreen');if($('orFullscreenBtn'))$('orFullscreenBtn').textContent='⛶ Full screen'}});
+ function renderBuiltInProtocolChips(cfg=currentSettingsObject()){
+@@ -3628,7 +3648,7 @@
+ $('updateLaterBtn')?.addEventListener('click',()=>{if($('updateBanner'))$('updateBanner').hidden=true});
+ window.addEventListener('load',setupServiceWorkerUpdates);
+ 
+-// V15.0.0 hospital pilot safety hardening on top of V14.9.0 mobile/iPad OR reliability.
++// V15.1.0 hospital pilot safety hardening on top of V14.9.0 mobile/iPad OR reliability.
+ const WF=globalThis.AnesvetWorkflow;
+ const ALERT_KEYS={map:'hypotension',spo2:'hypoxemia',etco2:'ventilation',temp:'hypothermia'};
+ let alertProtocolEditScope='hospital',pendingProblem=null,orQuickOptions=[],orQuickBasis=null,orQuickContext=null;
+--- base_v150/anesvet_v150/style.css	2026-09-22 16:16:21.000000000 +0000
++++ anesvet_v151_work/style.css	2026-09-23 02:59:22.074514831 +0000
+@@ -835,3 +835,53 @@
+ .safety-recovery-banner{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:11px 16px;background:#163f4b;color:#fff;border-top:1px solid rgba(255,255,255,.15)}
+ .safety-recovery-banner[hidden]{display:none}.safety-recovery-banner b,.safety-recovery-banner span{display:block}.safety-recovery-banner span{font-size:.82rem;opacity:.9;margin-top:2px}
+ @media(max-width:700px){.safety-recovery-banner{align-items:stretch;flex-direction:column}.safety-recovery-banner .btn{width:100%}}
++
++/* V15.1.0 — OR LIVE Navigation Simplification */
++.or-primary-kicker{display:flex;align-items:center;justify-content:space-between;gap:10px}
++.or-primary-kicker>span:first-child{font-size:.68rem;font-weight:900;letter-spacing:.06em;color:#4b6973}
++.or-primary-step-counter{display:inline-flex;align-items:center;min-height:24px;padding:3px 8px;border-radius:999px;background:#dff1f4;color:#0d5265;font-size:.66rem;font-weight:950;white-space:nowrap}
++
++.or-more-dialog{border:0;padding:0;background:transparent;width:min(100%,760px);max-width:none;margin:auto auto 0;overflow:visible}
++.or-more-dialog::backdrop{background:rgba(7,31,39,.48);backdrop-filter:blur(2px)}
++.or-more-sheet{background:#f8fbfc;border:1px solid #c7d9de;border-radius:20px 20px 0 0;padding:14px 14px calc(14px + env(safe-area-inset-bottom));box-shadow:0 -18px 46px rgba(9,54,68,.24)}
++.or-more-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}.or-more-head small{display:block;font-size:.66rem;font-weight:900;letter-spacing:.08em;color:#64808a}.or-more-head h2{margin:2px 0 0;font-size:1.2rem}
++.or-more-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
++.or-more-action{min-height:78px;border:1px solid #c8d9de;border-radius:14px;background:#fff;color:#173f4b;text-align:left;padding:10px 11px;display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto auto;column-gap:9px;align-items:center;font:inherit}
++.or-more-action>span{grid-row:1/3;font-size:1.35rem}.or-more-action>b{font-size:.9rem}.or-more-action>small{font-size:.69rem;color:#6a7e85;line-height:1.25}
++.or-more-case-btn{width:100%;margin-top:10px;min-height:48px}
++
++@media(max-width:1180px), (pointer:coarse) and (max-width:1400px){
++  body.or-mobile-active{padding-bottom:calc(92px + env(safe-area-inset-bottom))}
++  body.or-mobile-active .workflow-tabs,body.or-mobile-active .case-strip,body.or-mobile-active #patientRiskBanner{display:none}
++  body.or-mobile-active .topbar{min-height:42px;padding:7px 10px;padding-top:calc(7px + env(safe-area-inset-top));justify-content:flex-end}
++  body.or-mobile-active .topbar .brand{display:none}
++  body.or-mobile-active .topbar .top-actions{width:100%;justify-content:flex-end}
++  body.or-mobile-active .topbar #timerStateBadge,body.or-mobile-active .topbar #caseClock,body.or-mobile-active .topbar #alertFeedbackBtn,body.or-mobile-active .topbar #installBtn{display:none!important}
++  body.or-mobile-active main{padding-top:6px}
++  .or-live-page .or-primary-buttons{display:none}
++  .or-live-page .or-context-panel.routine,.or-live-page .or-context-panel.custom{display:none}
++  .or-primary-flow{border-width:2px;border-color:#5fa9b9;box-shadow:0 8px 20px rgba(13,82,101,.10)}
++  .or-primary-copy>b{font-size:1.08rem}
++  .or-mobile-dock{position:fixed;display:grid;grid-template-columns:minmax(0,2.15fr) minmax(82px,.9fr) minmax(82px,.9fr);left:50%;right:auto;transform:translateX(-50%);width:min(720px,calc(100vw - 16px));bottom:max(8px,env(safe-area-inset-bottom));z-index:85;padding:7px;gap:6px;background:rgba(248,253,254,.98);border:1px solid #b9d4db;border-radius:16px;box-shadow:0 10px 34px rgba(9,54,68,.20);backdrop-filter:blur(10px)}
++  .or-mobile-dock-btn{min-width:0;min-height:62px;border:1px solid #c5d7dc;border-radius:12px;background:#fff;color:#174b59;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:6px 8px;font:inherit;font-weight:900}
++  .or-mobile-dock-btn>span:not(.or-mobile-next-copy){font-size:1.05rem;line-height:1}.or-mobile-dock-btn>b{font-size:.66rem;letter-spacing:.02em;white-space:nowrap}
++  .or-mobile-dock-btn.primary{background:#0d5265;color:#fff;border-color:#0d5265}.or-mobile-dock-btn.due{background:#fff0ef;color:#a12620;border-color:#dfaaa6}.or-mobile-dock-btn:disabled{opacity:.45}
++  .or-mobile-next{display:grid;grid-template-columns:auto minmax(0,1fr);text-align:left;justify-content:stretch;column-gap:9px;padding:7px 12px}
++  .or-mobile-next-icon{font-size:1.2rem!important}.or-mobile-next-copy{display:flex;min-width:0;flex-direction:column;align-items:flex-start;line-height:1.05}.or-mobile-next-copy small{font-size:.56rem;opacity:.76;font-weight:900;letter-spacing:.08em}.or-mobile-next-copy b{margin-top:4px;font-size:.76rem;white-space:normal;overflow-wrap:anywhere}
++  .or-live-page:not(.active) .or-mobile-dock{display:none}
++}
++
++@media(max-width:780px){
++  body.or-mobile-active{padding-bottom:calc(88px + env(safe-area-inset-bottom))}
++  .or-command-bar{padding:10px 11px}.or-command-bar .or-team-line{display:none}.or-command-bar .or-procedure-line{font-size:.78rem}
++  .or-primary-flow{margin:6px 0 8px;padding:11px 12px}.or-primary-kicker{align-items:flex-start}.or-primary-step-counter{font-size:.58rem;padding:3px 6px}.or-primary-copy>small{font-size:.75rem;line-height:1.35}
++  .or-phase-details{margin-top:6px!important}.or-phase-details .or-phase-expand{font-size:.68rem}
++  .or-mobile-dock{width:calc(100vw - 10px);bottom:max(5px,env(safe-area-inset-bottom));padding:5px;gap:5px;border-radius:14px;grid-template-columns:minmax(0,2fr) 76px 76px}
++  .or-mobile-dock-btn{min-height:58px;border-radius:10px;padding:5px 6px}.or-mobile-dock-btn>b{font-size:.6rem}.or-mobile-next{padding:6px 9px}.or-mobile-next-copy b{font-size:.69rem}.or-mobile-next-copy small{font-size:.52rem}
++  .or-more-dialog{width:100%;margin:auto 0 0}.or-more-sheet{border-radius:18px 18px 0 0;padding:12px 12px calc(12px + env(safe-area-inset-bottom))}.or-more-grid{gap:7px}.or-more-action{min-height:72px;padding:9px}.or-more-action>b{font-size:.84rem}.or-more-action>small{font-size:.65rem}
++}
++
++@media(max-width:390px){
++  .or-mobile-dock{grid-template-columns:minmax(0,1.8fr) 68px 68px}.or-mobile-next-copy b{font-size:.64rem}.or-mobile-dock-btn>b{font-size:.56rem}
++  .or-more-grid{grid-template-columns:1fr 1fr}
++}
+--- base_v150/anesvet_v150/manifest.webmanifest	2026-09-22 16:16:21.000000000 +0000
++++ anesvet_v151_work/manifest.webmanifest	2026-09-23 02:58:25.765103155 +0000
+@@ -1,8 +1,8 @@
+ {
+-  "name": "ANESVET V15.0.0 — Hospital Pilot Release",
++  "name": "ANESVET V15.1.0 — OR LIVE Navigation Release",
+   "short_name": "ANESVET",
+   "description": "Touch-first local-first anesthesia workflow optimized for mobile phones and iPad in the operating room",
+-  "start_url": "./?v=15.0.0",
++  "start_url": "./?v=15.1.0",
+   "scope": "./",
+   "display": "standalone",
+   "background_color": "#f3f7f8",
+--- base_v150/anesvet_v150/service-worker.js	2026-09-22 16:16:21.000000000 +0000
++++ anesvet_v151_work/service-worker.js	2026-09-23 02:58:25.766070643 +0000
+@@ -1,5 +1,5 @@
+-const CACHE='anesvet-v15-0-0-hospital-pilot';
+-const ASSETS=['./','./index.html','./style.css?v=15.0.0','./clinical-workflow.js?v=15.0.0','./app.js?v=15.0.0','./manifest.webmanifest','./icon-192.png','./icon-512.png','./icon-maskable-512.png'];
++const CACHE='anesvet-v15-1-0-or-navigation';
++const ASSETS=['./','./index.html','./style.css?v=15.1.0','./clinical-workflow.js?v=15.1.0','./app.js?v=15.1.0','./manifest.webmanifest','./icon-192.png','./icon-512.png','./icon-maskable-512.png'];
+ self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)))});
+ self.addEventListener('message',e=>{if(e.data?.type==='SKIP_WAITING')self.skipWaiting()});
+ self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))));self.clients.claim()});
+--- base_v150/anesvet_v150/package.json	2026-09-22 16:17:41.000000000 +0000
++++ anesvet_v151_work/package.json	2026-09-23 02:58:52.528070860 +0000
+@@ -1,14 +1,14 @@
+ {
+-  "name": "anesvet-v15-0-0",
+-  "version": "15.0.0",
++  "name": "anesvet-v15-1-0",
++  "version": "15.1.0",
+   "private": true,
+-  "description": "ANESVET V15.0.0 hospital pilot safety release; runtime requires no build",
++  "description": "ANESVET V15.1.0 OR LIVE navigation simplification release; runtime requires no build",
+   "engines": {
+     "node": ">=22"
+   },
+   "scripts": {
+     "test:syntax": "node tests/syntax.mjs",
+-    "test:regression": "node tests/regression.mjs && node tests/ux_v1472_static.mjs && node tests/ux_v148_static.mjs && node tests/risk_flags_v1482.mjs && node tests/mobile_or_v149.mjs && node tests/hospital_pilot_v150.mjs",
++    "test:regression": "node tests/regression.mjs && node tests/ux_v1472_static.mjs && node tests/ux_v148_static.mjs && node tests/risk_flags_v1482.mjs && node tests/mobile_or_v149.mjs && node tests/hospital_pilot_v150.mjs && node tests/or_navigation_v151.mjs",
+     "test:workflow": "node tests/workflow_scenarios.mjs && node tests/clinical_workflow.mjs && node tests/dom_workflow.mjs && node tests/adaptive_workflow_v148.mjs && node tests/compatibility.mjs && node tests/governance.mjs && node tests/final_lock.mjs",
+     "test": "npm run test:syntax && npm run test:regression && npm run test:workflow",
+     "test:browser": "node tests/e2e_browser.mjs"
+--- base_v150/anesvet_v150/tests/regression.mjs	2026-09-22 16:19:50.000000000 +0000
++++ anesvet_v151_work/tests/regression.mjs	2026-09-23 02:58:25.765681386 +0000
+@@ -13,8 +13,8 @@
+ const must=(cond,msg)=>assert.ok(cond,msg);
+ 
+ // Core version / structure
+-must(manifest.name.includes('V15.0.0'),'manifest should be V15.0.0');
+-must(sw.includes('v15-0-0'),'service worker cache should identify V15.0.0');
++must(manifest.name.includes('V15.1.0'),'manifest should be V15.1.0');
++must(sw.includes('v15-1-0'),'service worker cache should identify V15.1.0');
+ must(count(app,/function\s+phaseLabel\s*\(/g)===1,'phaseLabel must be declared once');
+ const fnNames=[...app.matchAll(/\bfunction\s+([A-Za-z_$][\w$]*)\s*\(/g)].map(m=>m[1]);
+ const dupFns=[...new Set(fnNames.filter((n,i)=>fnNames.indexOf(n)!==i))];
+@@ -152,12 +152,12 @@
+ must(html.includes('id="updateBanner"')&&app.includes('Finish / archive current case before updating'),'safe PWA update UI missing');
+ must(app.includes('caseLowestMap')&&app.includes('caseLowestSpo2')&&app.includes('Emergency return to OR recorded'),'previous anesthesia warning expansion missing');
+ 
+-console.log(`ANESVET V15.0.0 regression checks: PASS (${ids.length} unique HTML ids, ${fnNames.length} unique named functions)`);
++console.log(`ANESVET V15.1.0 regression checks: PASS (${ids.length} unique HTML ids, ${fnNames.length} unique named functions)`);
+ 
+ // V14.8.1 compatibility and integration contracts.
+ for(const key of ['anesvet_v14_3_current','anesvet_v14_3_settings','anesvet_v14_3_archive','anesvet_v14_3_protocol_audit'])must(app.includes(key),'original key retained: '+key);
+ must(html.indexOf('clinical-workflow.js')<html.indexOf('app.js'),'helper loads before application');
+-must(sw.includes('clinical-workflow.js?v=15.0.0'),'offline cache includes helper');
++must(sw.includes('clinical-workflow.js?v=15.1.0'),'offline cache includes helper');
+ must(count(app,/\$\('orStickyRecordBtn'\)\?\.addEventListener/g)===1,'sticky record listener must bind once');
+ for(const id of ['alertProtocolDialog','orQuickDrugDialog','orProblemPanel','recoveryProblemPanel','recoveryHandoffText','reportRecoveryHandoff'])must(ids.includes(id),'new UI '+id);
+ for(const file of [...sw.matchAll(/'\.\/([^']+)'/g)].map(x=>x[1].split('?')[0]))must(fs.existsSync(path.join(root,file)),'cache asset exists: '+file);
+--- base_v150/anesvet_v150/tests/mobile_or_v149.mjs	2026-09-22 16:17:41.000000000 +0000
++++ anesvet_v151_work/tests/mobile_or_v149.mjs	2026-09-23 02:58:25.765735808 +0000
+@@ -22,5 +22,5 @@
+ must(app.includes("window.addEventListener('online',renderConnectivityState)")&&app.includes("window.addEventListener('offline',renderConnectivityState)"),'offline/local-first status missing');
+ must(app.includes("requestScreenWakeLock(true)")&&app.includes('autoWakeEnabled()'),'OR wake-lock behavior missing');
+ must(app.includes("$('orMobileRecordBtn')?.addEventListener")&&app.includes("$('orMobileDrugBtn')?.addEventListener"),'mobile dock actions not bound');
+-must(manifest.start_url.includes('15.0.0'),'manifest release version mismatch');
+-console.log('ANESVET V14.9 mobile/iPad OR reliability compatibility contracts on V15.0.0: PASS');
++must(manifest.start_url.includes('15.1.0'),'manifest release version mismatch');
++console.log('ANESVET V14.9 mobile/iPad OR reliability compatibility contracts on V15.1.0: PASS');
+--- base_v150/anesvet_v150/tests/hospital_pilot_v150.mjs	2026-09-22 16:19:40.000000000 +0000
++++ anesvet_v151_work/tests/hospital_pilot_v150.mjs	2026-09-23 02:58:51.903669836 +0000
+@@ -7,9 +7,9 @@
+ const sw=fs.readFileSync(path.join(root,'service-worker.js'),'utf8');
+ const manifest=JSON.parse(fs.readFileSync(path.join(root,'manifest.webmanifest'),'utf8'));
+ const must=(c,m)=>assert.ok(c,m);
+-must(app.includes("const APP_VERSION='15.0.0'"),'APP_VERSION must be V15.0.0');
+-must(manifest.name.includes('V15.0.0')&&manifest.start_url.includes('15.0.0'),'manifest must identify V15.0.0');
+-must(sw.includes('anesvet-v15-0-0-hospital-pilot'),'service-worker cache must identify hospital pilot release');
++must(app.includes("const APP_VERSION='15.1.0'"),'APP_VERSION must be V15.1.0');
++must(manifest.name.includes('V15.1.0')&&manifest.start_url.includes('15.1.0'),'manifest must identify V15.1.0');
++must(sw.includes('anesvet-v15-1-0'),'service-worker cache must identify current V15.1.0 release');
+ // Verified active-case safety checkpoint
+ must(app.includes("SAFETY_CHECKPOINT_FORMAT='ANESVET_ACTIVE_SAFETY_CHECKPOINT_V1'"),'safety checkpoint format missing');
+ must(app.includes('function writeSafetyCheckpoint')&&app.includes('Safety checkpoint verification failed'),'checkpoint read-after-write verification missing');
+@@ -28,4 +28,4 @@
+ must(app.includes('const ready=!!state.recoveryCompletedAt&&signoffReady'),'End Case readiness must include recovery completion');
+ must(app.includes('caseIdentitySnapshot')&&app.includes('function caseIdentityChanges'),'case-start patient identity/BW snapshot guard missing');
+ must(app.includes("CASE_IDENTITY_BW_CORRECTED")&&app.includes('Reason for correction (required)'),'active-case identity/BW correction must require audit reason');
+-console.log('ANESVET V15.0.0 Hospital Pilot safety contracts: PASS');
++console.log('ANESVET V15.1.0 Hospital Pilot safety contracts: PASS');
