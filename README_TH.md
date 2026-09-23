@@ -1,4 +1,10 @@
-# ANESVET V15.8.0 — OR Workspace Customization Release
+# ANESVET V15.9.1 — Private Pilot Feedback Endpoint
+
+รุ่นสำหรับ Hospital Pilot ที่ฝังปลายทางรับ report ของผู้พัฒนาไว้ภายในแอป ผู้ทดลองไม่ต้องตั้งค่า webhook และเมื่อ offline ระบบจะเก็บ report ใน local queue เพื่อ sync อัตโนมัติเมื่อออนไลน์
+
+ดู `RELEASE_NOTES_V15_9_1.md` สำหรับรายละเอียดรุ่นนี้
+
+## Previous V15.8 notes
 
 รุ่นนี้ต่อจาก V15.7.0 โดยลด `MORE` ใน OR LIVE ให้เป็น contextual menu ตาม phase และเพิ่ม **OR / Mobile Workflow Settings** เพื่อให้แต่ละโรงพยาบาลปรับความเรียบง่ายของมือถือ/iPad, Quick meds, interval, OR Focus และ report preference ได้เอง โดยไม่ลด safety guards เดิม
 

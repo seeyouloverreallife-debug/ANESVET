@@ -7,12 +7,12 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="description" content="ANESVET V15.8.0 — OR Workspace Customization Release">
+  <meta name="description" content="ANESVET V15.9.1 — Private Pilot Feedback Endpoint">
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" href="./icon-192.png">
   <link rel="apple-touch-icon" href="./icon-192.png">
-  <link rel="stylesheet" href="./style.css?v=15.8.0">
-  <title>ANESVET V15.8.0</title>
+  <link rel="stylesheet" href="./style.css?v=15.9.1">
+  <title>ANESVET V15.9.1</title>
 </head>
 <body>
 <header class="topbar">
@@ -20,7 +20,7 @@
     <img class="brand-logo" src="./icon-192.png" alt="ANESVET logo">
     <div>
       <div class="eyebrow">GENOVI PET CARE • DIGITAL ANESTHESIA RECORD</div>
-      <h1>ANESVET <span>V15.8.0</span></h1>
+      <h1>ANESVET <span>V15.9.1</span></h1>
     </div>
   </div>
   <div class="top-actions">
@@ -31,6 +31,7 @@
       <span id="connectivityState" class="connectivity-state local">● Local-first</span>
     </div>
     <button id="alertFeedbackBtn" class="btn light alert-feedback-btn" type="button" title="เสียงและการสั่นสำหรับ Record due">🔔 Alerts ON</button>
+    <button id="pilotFeedbackBtn" class="btn light pilot-feedback-btn" type="button" title="รายงานปัญหา / feedback สำหรับ Hospital Pilot">🐞 Report</button>
     <button id="installBtn" class="btn light" hidden>ติดตั้งแอป</button>
   </div>
 </header>
@@ -736,6 +737,7 @@
         <button id="orMobileUndoBtn" class="btn or-more-undo-btn" type="button" hidden>↶ Undo last workflow step</button>
         <button id="orMobileCaseSummaryBtn" class="btn or-more-case-btn" type="button">← Case summary / leave OR focus</button>
         <button id="orMoreSettingsBtn" class="btn or-more-settings-btn" type="button">⚙ Customize OR menu</button>
+        <button id="orMoreReportIssueBtn" class="btn pilot-report-link" type="button">🐞 Report issue / feedback</button>
       </div>
     </dialog>
 
@@ -1928,6 +1930,7 @@
         <button id="recoveryMoreUndoBtn" class="btn or-more-undo-btn" type="button" hidden>↶ Undo last workflow step</button>
         <button id="recoveryMoreEmergencyBtn" class="btn recovery-emergency-btn" type="button">⚠ Emergency return to OR LIVE</button>
         <button id="recoveryMoreCaseSummaryBtn" class="btn or-more-case-btn" type="button">← Case summary / leave Recovery focus</button>
+        <button id="recoveryMoreReportIssueBtn" class="btn pilot-report-link" type="button">🐞 Report issue / feedback</button>
       </div>
     </dialog>
   </section>
@@ -2214,6 +2217,29 @@
   <div class="settings-note">Minimal เป็นค่าเริ่มต้น: Induction เน้น Medications / Airway / Event, Intraoperative เน้น Medications / Fluid / Event, Emergence เน้น Airway / Medications / Event • Confirm phase change, Undo guard, readiness gate และ audit trail ไม่สามารถปิดจาก Settings ได้</div>
 </section>
 
+<section class="panel pilot-feedback-settings-panel">
+  <div class="section-heading">
+    <div><h2>Hospital Pilot Feedback</h2><p>ส่ง report ถึงผู้พัฒนา ANESVET โดยตรง • ถ้า offline ระบบจะเก็บในเครื่องและส่งให้อัตโนมัติเมื่อกลับมาออนไลน์</p></div>
+    <span class="status-pill neutral">Pilot</span>
+  </div>
+  <div class="settings-grid">
+    <label>Hospital / pilot site name<input id="settingPilotSiteName" type="text" placeholder="e.g. Geno V Animal Hospital"></label>
+    <label>Default reporter name<input id="settingPilotReporter" type="text" placeholder="ชื่อเล่น / initials"></label>
+    <label class="settings-toggle"><span>Include anonymized case context by default</span><input id="settingPilotIncludeContext" type="checkbox" checked></label>
+  </div>
+  <div class="pilot-feedback-status-grid">
+    <div><small>LOCAL QUEUE</small><b id="pilotFeedbackPendingCount">0 pending</b></div>
+    <div><small>SENT / SYNCED</small><b id="pilotFeedbackSentCount">0 sent</b></div>
+    <div><small>LAST SYNC</small><b id="pilotFeedbackLastSync">—</b></div>
+  </div>
+  <div class="button-row pilot-feedback-settings-actions">
+    <button id="savePilotFeedbackSettingsBtn" class="btn primary" type="button">Save feedback settings</button>
+    <button id="openPilotFeedbackBtn" class="btn" type="button">🐞 New report</button>
+    <button id="retryPilotFeedbackBtn" class="btn" type="button">↻ Retry pending</button>
+  </div>
+  <div class="settings-note">Report จะถูกส่งถึงผู้พัฒนา ANESVET โดยตรง • ANESVET จะไม่ส่งชื่อผู้ป่วย, HN, microchip หรือข้อมูลเจ้าของอัตโนมัติ • หาก offline ระบบจะเก็บ report ไว้และส่งให้อัตโนมัติเมื่อออนไลน์</div>
+</section>
+
 <section class="panel built-in-protocol-panel">
   <div class="section-heading">
     <div>
@@ -2330,6 +2356,29 @@
 </main>
 
 
+
+<dialog id="pilotFeedbackDialog" class="workflow-dialog pilot-feedback-dialog" aria-labelledby="pilotFeedbackTitle">
+  <div class="workflow-dialog-body pilot-feedback-body">
+    <div class="quick-drug-dialog-head"><div><small>ANESVET HOSPITAL PILOT</small><h2 id="pilotFeedbackTitle">Report issue / feedback</h2></div><button id="pilotFeedbackCloseBtn" class="dialog-close-x" type="button" aria-label="Close feedback">×</button></div>
+    <div class="pilot-feedback-context" id="pilotFeedbackAutoContext">App / device context will be attached automatically.</div>
+    <div class="settings-grid pilot-feedback-fields">
+      <label>Category<select id="pilotFeedbackCategory"><option value="bug">Bug / malfunction</option><option value="usability">Usability / หาไม่เจอ / กดยาก</option><option value="data_safety">Data / save / safety concern</option><option value="clinical_workflow">Clinical workflow</option><option value="medication">Medication / calculation</option><option value="report_pdf">Report / PDF</option><option value="suggestion">Suggestion</option></select></label>
+      <label>Severity<select id="pilotFeedbackSeverity"><option value="medium">Medium — ทำงานต่อได้แต่รบกวน workflow</option><option value="low">Low — cosmetic / minor</option><option value="high">High — workflow blocked / เสี่ยงบันทึกผิด</option><option value="blocker">Blocker — ใช้งานต่อไม่ได้ / data-safety critical</option></select></label>
+      <label>Reproducible?<select id="pilotFeedbackRepro"><option value="unknown">Not sure</option><option value="yes">Yes</option><option value="no">No / happened once</option></select></label>
+      <label>Reporter<input id="pilotFeedbackReporter" type="text" autocomplete="name" placeholder="ชื่อเล่น / initials"></label>
+    </div>
+    <label>Short summary *<input id="pilotFeedbackSummary" type="text" maxlength="140" placeholder="เช่น กด Recovery แล้วหน้า OR ไม่เปลี่ยน"></label>
+    <label>What happened? *<textarea id="pilotFeedbackDescription" rows="4" placeholder="กำลังทำอะไร → กดอะไร → เกิดอะไรขึ้น"></textarea></label>
+    <label>What did you expect?<textarea id="pilotFeedbackExpected" rows="2" placeholder="สิ่งที่คิดว่าควรเกิดขึ้น"></textarea></label>
+    <label class="settings-toggle pilot-context-toggle"><span>แนบ case context แบบไม่ระบุตัวตน (phase / species / ASA / record counts)</span><input id="pilotFeedbackIncludeContext" type="checkbox" checked></label>
+    <label>Screenshot (optional, ≤ 1.5 MB)<input id="pilotFeedbackScreenshot" type="file" accept="image/png,image/jpeg,image/webp"></label>
+    <div class="settings-note">ระบบไม่แนบชื่อผู้ป่วย, HN, microchip หรือข้อมูลเจ้าของอัตโนมัติ กรุณาหลีกเลี่ยงข้อมูลระบุตัวบุคคลในข้อความและ screenshot หากไม่จำเป็น</div>
+    <p id="pilotFeedbackError" class="workflow-error" role="alert"></p>
+    <div class="workflow-dialog-actions">
+      <button id="pilotFeedbackSubmitBtn" class="btn primary" type="button">Submit report</button>
+    </div>
+  </div>
+</dialog>
 
 <dialog id="alertProtocolDialog" class="workflow-dialog" aria-labelledby="alertProtocolTitle"><div class="workflow-dialog-body"><h2 id="alertProtocolTitle">Alert Protocol</h2><p id="alertProtocolContext"></p><p>Temperature thresholds use °F for exact compatibility (°C = (°F − 32) ÷ 1.8). Leave both upper fields blank to disable upper alerts. Comparisons are strictly below / above.</p><div id="alertThresholdFields"></div><label>Changed by<input id="alertProtocolActor" autocomplete="off"></label><label>Reason (required)<textarea id="alertProtocolReason"></textarea></label><p id="alertProtocolError" class="workflow-error" role="alert"></p><div class="workflow-dialog-actions"><button class="btn" data-close-dialog="alertProtocolDialog">Cancel</button><button class="btn" id="clearCaseAlertOverrideBtn">Return to frozen defaults</button><button class="btn primary" id="saveAlertProtocolBtn">Save with audit</button></div></div></dialog>
 <dialog id="problemActionDialog" class="workflow-dialog" aria-labelledby="problemActionTitle"><div class="workflow-dialog-body"><h2 id="problemActionTitle"></h2><label>Recorded by<input id="problemActionActor"></label><label>Intervention / outcome / reason<textarea id="problemActionNote"></textarea></label><p id="problemActionError" class="workflow-error" role="alert"></p><div class="workflow-dialog-actions"><button class="btn" data-close-dialog="problemActionDialog">Cancel</button><button id="saveProblemActionBtn" class="btn primary">Save action</button></div></div></dialog>
@@ -2459,7 +2508,7 @@
 </dialog>
 
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
-<script src="./clinical-workflow.js?v=15.8.0"></script>
-<script src="./app.js?v=15.8.0"></script>
+<script src="./clinical-workflow.js?v=15.9.1"></script>
+<script src="./app.js?v=15.9.1"></script>
 </body>
 </html>

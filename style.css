@@ -856,7 +856,7 @@ button,.btn,.tab,.or-primary-action,.or-record-button,.or-action-link,.or-compli
   body.or-mobile-active .topbar{min-height:42px;padding:7px 10px;padding-top:calc(7px + env(safe-area-inset-top));justify-content:flex-end}
   body.or-mobile-active .topbar .brand{display:none}
   body.or-mobile-active .topbar .top-actions{width:100%;justify-content:flex-end}
-  body.or-mobile-active .topbar #timerStateBadge,body.or-mobile-active .topbar #caseClock,body.or-mobile-active .topbar #alertFeedbackBtn,body.or-mobile-active .topbar #installBtn{display:none!important}
+  body.or-mobile-active .topbar #timerStateBadge,body.or-mobile-active .topbar #caseClock,body.or-mobile-active .topbar #alertFeedbackBtn,body.or-mobile-active .topbar #pilotFeedbackBtn,body.or-mobile-active .topbar #installBtn{display:none!important}
   body.or-mobile-active main{padding-top:6px}
   .or-live-page .or-primary-buttons{display:none}
   .or-live-page .or-context-panel.routine,.or-live-page .or-context-panel.custom{display:none}
@@ -952,7 +952,7 @@ button,.btn,.tab,.or-primary-action,.or-record-button,.or-action-link,.or-compli
   body.recovery-mobile-active .workflow-tabs,body.recovery-mobile-active .case-strip,body.recovery-mobile-active #patientRiskBanner{display:none}
   body.recovery-mobile-active .topbar{min-height:42px;padding:7px 10px;padding-top:calc(7px + env(safe-area-inset-top));justify-content:flex-end}
   body.recovery-mobile-active .topbar .brand{display:none}body.recovery-mobile-active .topbar .top-actions{width:100%;justify-content:flex-end}
-  body.recovery-mobile-active .topbar #timerStateBadge,body.recovery-mobile-active .topbar #caseClock,body.recovery-mobile-active .topbar #alertFeedbackBtn,body.recovery-mobile-active .topbar #installBtn{display:none!important}
+  body.recovery-mobile-active .topbar #timerStateBadge,body.recovery-mobile-active .topbar #caseClock,body.recovery-mobile-active .topbar #alertFeedbackBtn,body.recovery-mobile-active .topbar #pilotFeedbackBtn,body.recovery-mobile-active .topbar #installBtn{display:none!important}
   body.recovery-mobile-active main{padding-top:6px}
   body.recovery-mobile-active.recovery-session-active .recovery-command{display:none}
   body.recovery-mobile-active #recovery.active{display:flex;flex-direction:column}
@@ -1012,3 +1012,10 @@ button,.btn,.tab,.or-primary-action,.or-record-button,.or-action-link,.or-compli
 .or-workspace-settings-panel{border-color:#b8d7e4}.or-workspace-settings-panel .settings-grid{align-items:stretch}
 .or-workspace-settings-panel label{min-width:0}
 @media(max-width:780px){.or-more-profile-note{font-size:.67rem}.or-more-settings-btn{min-height:46px}}
+
+
+/* V15.9.1 — Private Pilot Feedback Endpoint */
+.pilot-feedback-btn{white-space:nowrap}.pilot-report-link{margin-top:6px;border-style:dashed!important;opacity:.86}.pilot-feedback-settings-panel{border:1px solid rgba(20,106,128,.18)}
+.settings-wide{grid-column:1/-1}.pilot-feedback-status-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:12px 0}.pilot-feedback-status-grid>div{background:#f3f8fa;border:1px solid #d6e5ea;border-radius:12px;padding:10px 12px}.pilot-feedback-status-grid small{display:block;color:#55727c;font-size:.68rem;font-weight:800;letter-spacing:.05em}.pilot-feedback-status-grid b{display:block;margin-top:3px}.pilot-feedback-settings-actions{flex-wrap:wrap}
+.pilot-feedback-dialog{z-index:2200}.pilot-feedback-body{max-width:700px}.pilot-feedback-context{padding:9px 11px;background:#eff8fa;border:1px solid #cfe6eb;border-radius:10px;color:#355c67;font-size:.84rem;margin-bottom:12px}.pilot-feedback-fields{margin-bottom:10px}.pilot-context-toggle{margin:10px 0}.pilot-feedback-dialog textarea{min-height:76px}
+@media(max-width:720px){.pilot-feedback-status-grid{grid-template-columns:1fr}.pilot-feedback-body{width:min(96vw,700px);max-height:92dvh;overflow:auto}.pilot-feedback-fields{grid-template-columns:1fr}.settings-wide{grid-column:auto}.pilot-feedback-settings-actions .btn{flex:1 1 46%}.topbar .pilot-feedback-btn{font-size:.78rem;padding:7px 9px}}

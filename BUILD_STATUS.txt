@@ -1,7 +1,6 @@
-ANESVET V15.8.0
-Static syntax: PASS
-Static regression/compatibility: PASS
-V15.8 OR Workspace customization contracts: PASS
+ANESVET V15.9.1
+Private Pilot Feedback Endpoint
+Syntax/regression: PASS
 Clinical helpers: PASS (73 assertions)
-Workflow model scenarios: PASS (4 scenarios)
-DOM/browser automation: NOT CLAIMED — jsdom/fake-indexeddb/Playwright unavailable in runtime; DOM-dependent suite stops at MODULE_NOT_FOUND: jsdom
+Workflow model: PASS (4 scenarios)
+Browser E2E remains environment-dependent / not claimed.
