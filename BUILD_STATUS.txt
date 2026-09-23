@@ -1,7 +1,7 @@
-ANESVET V15.5.0
-Static/syntax regression: PASS
-Compatibility regression: PASS
-V15.5 feature-contract test: PASS
-Clinical helper tests: PASS (73 assertions)
-Workflow model tests: PASS (4 scenarios)
-DOM/browser automation: NOT CLAIMED — jsdom/fake-indexeddb/Playwright unavailable in runtime; direct Chromium smoke attempt timed out.
+ANESVET V15.6.0
+Static syntax: PASS
+Static regression/compatibility: PASS
+V15.6 contracts: PASS
+Clinical helpers: PASS (73 assertions)
+Workflow model scenarios: PASS (4 scenarios)
+DOM/browser automation: NOT CLAIMED — jsdom/fake-indexeddb/Playwright unavailable in runtime

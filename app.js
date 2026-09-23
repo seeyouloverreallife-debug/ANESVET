@@ -20,7 +20,7 @@ const SESSION_TTL_MS=30000;
 const SESSION_HEARTBEAT_MS=5000;
 const DB_NAME='ANESVET_DB';
 const DB_VERSION=2;
-const APP_VERSION='15.5.0';
+const APP_VERSION='15.6.0';
 const AUTOSAVE_DELAY_MS=450;
 const ACTIVE_CHECKPOINT_MS=15000;
 const SAFETY_CHECKPOINT_KEY='anesvet_v15_active_safety_checkpoint';
@@ -1843,12 +1843,19 @@ function renderWorkflowLocks(){
   }
   if($('emergencyReturnOrBtn'))$('emergencyReturnOrBtn').disabled=state.casePhase!=='recovery'||!!state.recoveryCompletedAt;
 }
+function exitOrFullscreenForNavigation(id){
+  if(id==='orlive')return;
+  if(document.body.classList.contains('or-fullscreen'))document.body.classList.remove('or-fullscreen');
+  if($('orFullscreenBtn'))$('orFullscreenBtn').textContent='⛶ Full screen';
+  if(document.fullscreenElement&&document.exitFullscreen){try{const p=document.exitFullscreen();if(p?.catch)p.catch(()=>{})}catch(e){}}
+}
 function setTab(id,opts={}){
   if(!id || !document.getElementById(id)) return;
   if(id==='orlive' && orLiveLockedByRecovery() && !opts.force){
     toast('Recovery active — OR LIVE ถูกล็อก หากฉุกเฉินให้กด Emergency return to OR LIVE');
     renderWorkflowLocks();scrollAppTop();return;
   }
+  exitOrFullscreenForNavigation(id);
   closeMoreMenu();closeRecoveryMoreDialog();
   $$('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===id));
   $$('.tabpage').forEach(p=>p.classList.toggle('active',p.id===id));
@@ -3004,7 +3011,7 @@ function beginRecovery({skipConfirm=false}={}){
   seedRecoveryVitalsFromCurrent();
   state.emergencyReturnActive=false;state.casePhase='recovery';if(!state.recoveryStartedAt)state.recoveryStartedAt=Date.now();state.recoveryCompletedAt=null;renderCasePhase();
   captureRecoveryHandoff('Recovery started');
-  addEvent({category:'Recovery',name:'Recovery started',note:'Post-anesthetic recovery mode'});save();renderRecoveryState();renderOrLive();setTab('recovery',{force:true});return true;
+  addEvent({category:'Recovery',name:'Recovery started',note:'Post-anesthetic recovery mode'});save();renderRecoveryState();renderOrLive();setTab('recovery',{force:true});toast('✓ Recovery mode opened');return true;
 }
 function completeRecovery(){
   if(state.casePhase!=='recovery'||state.emergencyReturnActive)return;
@@ -4011,8 +4018,10 @@ function frozenQuickDrugs(){
   ];
   const list=defs.filter(([k])=>k!=='carprofen'||state.species==='dog').filter(([k])=>k!=='meloxicam'||state.species==='cat').map(([k,name,doseKey,route,phase,role])=>({id:doseKey,name,phase,role,mode:'mgkg',dose:snap.builtInProtocol?.[doseKey]?.value??snap.builtInProtocol?.[doseKey],conc:snap.concentrations?.[k]?.value,concUnit:snap.concentrations?.[k]?.unit||'mg/mL',route}));
   for(const [name,key,phase]of [['Cefazolin','cefazolinDivisor','pre'],['Convenia','conveniaDivisor','post']])list.push({id:key,name,phase,mode:'bwdiv',dose:snap.builtInProtocol?.[key]?.value??snap.builtInProtocol?.[key],conc:'',concUnit:'',route:'',note:'Legacy volume preset: verify the preparation / concentration before recording'});
-  const base=list.concat((snap.drugLibrary||[]).filter(d=>d.mode!=='manual').map(d=>({...d,id:'library:'+d.id})));
-  const planned=(snap.caseDrugPlan||[]).filter(d=>d&&d.mode!=='manual').map(d=>({...d,planned:true}));
+  // V15.6: manual Hospital Drug Library items and manual Case Drug Plan items remain available in OR.
+  // A missing calculation must never make an actually administered medication impossible to document.
+  const base=list.concat((snap.drugLibrary||[]).filter(d=>d.active!==false).map(d=>({...d,id:String(d.id||'').startsWith('library:')?String(d.id):'library:'+d.id})));
+  const planned=(snap.caseDrugPlan||[]).filter(Boolean).map(d=>({...d,planned:true}));
   if(!planned.length)return base;const used=new Set(planned.map(d=>String(d.id)));return planned.concat(base.filter(d=>!used.has(String(d.id))));
 }
 function preferredQuickDrugIndex(options,phase=''){
@@ -4039,46 +4048,83 @@ function renderOrQuickDrugBatchStatus(){
   const box=$('orQuickDrugBatchStatus');if(!box)return;const induction=orQuickContext?.purpose==='induction';box.hidden=!induction;if(!induction)return;
   const meds=inductionMedicationRecords(),m=procedureMilestoneEvent('Induction'),time=m?.clock||formatClock(state.caseStartedAt||Date.now());
   box.className=`quick-drug-batch-status ${meds.length?'':'warn'}`;
-  box.innerHTML=`<b>Induction ${escapeHtml(time)} • ลงย้อนหลังได้หลายยา</b>${meds.length?`บันทึกแล้ว: ${meds.map(d=>`${escapeHtml(d.drug)} ${escapeHtml(fmtDose(d.actual))} ${escapeHtml(d.unit||'mL')}`).join(' • ')}`:'ยังไม่ได้บันทึกปริมาณยา'}<br><small>เลือกยา → Save medication → เลือกยาตัวถัดไป • กด Done เมื่อทบทวนยา induction ครบ</small>`;
+  box.innerHTML=`<b>Induction ${escapeHtml(time)} • medication workspace stays open</b>${meds.length?`บันทึกแล้ว: ${meds.map(d=>`${escapeHtml(d.drug)} ${escapeHtml(fmtDose(d.actual))} ${escapeHtml(d.unit||'mL')}`).join(' • ')}`:'ยังไม่ได้บันทึกปริมาณยา'}<br><small>Save แล้วเลือกตัวถัดไปได้ทันที • หรือใช้ “Record all planned induction meds” เพื่อ review เป็นชุด</small>`;
+}
+function quickDrugConcentrationCandidates(d){
+  const out=[];const add=(v,u)=>{if(v===null||v===undefined||String(v).trim()==='')return;const label=`${String(v).trim()} ${String(u||d?.concUnit||'').trim()}`.trim();if(label&&!out.includes(label))out.push(label)};
+  add(d?.conc,d?.concUnit);
+  const target=String(d?.name||'').trim().toLowerCase();
+  for(const x of state.protocolSnapshot?.drugLibrary||[]){if(String(x?.name||'').trim().toLowerCase()===target)add(x.conc,x.concUnit)}
+  return out;
+}
+function renderQuickDrugConcentrationPresets(d){
+  const sel=$('orQuickDrugConcentrationPreset'),input=$('orQuickDrugConcentration');if(!sel||!input)return;const vals=quickDrugConcentrationCandidates(d),preferred=d?.conc?`${d.conc} ${d.concUnit||''}`.trim():'';
+  sel.innerHTML=vals.map(v=>`<option value="${escapeHtml(v)}">${escapeHtml(v)}</option>`).join('')+'<option value="manual">Manual / other concentration</option>';
+  if(preferred&&vals.includes(preferred)){sel.value=preferred;input.value=preferred}else if(vals.length){sel.value=vals[0];input.value=vals[0]}else{sel.value='manual';input.value=''}
+  input.readOnly=false;
+}
+function setQuickRoutePreset(route){const input=$('orQuickDrugRoute');if(!input)return;input.value=route||'';$$('#orQuickRoutePresets [data-route]').forEach(b=>b.classList.toggle('active',String(b.dataset.route)===String(route)))}
+function toggleInductionBatchEditor(show){
+  const batch=$('orQuickDrugBatchEditor'),single=$('orQuickDrugSingleEditor'),save=$('orQuickDrugSaveBtn');if(batch)batch.hidden=!show;if(single)single.hidden=show;if(save)save.hidden=show;if(show)renderInductionBatchEditor();
+}
+function inductionBatchItemData(){
+  const recorded=new Set(inductionMedicationRecords().map(d=>String(d.drug||'').trim().toLowerCase())),w=currentWeightReady()?currentWeightKg():null,m=procedureMilestoneEvent('Induction'),adminEpoch=m?.epoch||state.caseStartedAt||Date.now(),adminElapsedMs=m?.elapsedMs??0,adminClock=m?.clock||formatClock(adminEpoch);
+  return inductionQuickDrugIndexes(orQuickOptions).map(idx=>{const d=orQuickOptions[idx],r=calculateLibraryDrug(d,w,d.dose,d.conc),calcOk=Number.isFinite(r.ml)&&r.ml>0,done=recorded.has(String(d.name||'').trim().toLowerCase());return {idx,d,r,calcOk,done,w,adminEpoch,adminElapsedMs,adminClock}});
+}
+function renderInductionBatchEditor(){
+  const box=$('orQuickDrugBatchList');if(!box)return;const items=inductionBatchItemData();if(!items.length){box.innerHTML='<div class="empty-state compact">No planned induction medications in the frozen case plan.</div>';return}
+  box.innerHTML=items.map(x=>{const conc=x.d.conc?`${x.d.conc} ${x.d.concUnit||''}`.trim():'';return `<article class="quick-drug-batch-row ${x.done?'done':''}" data-batch-index="${x.idx}"><label class="batch-check"><input type="checkbox" data-batch-use ${x.done?'disabled':x.calcOk?'checked':''}><span>${x.done?'✓':'Use'}</span></label><div class="batch-drug"><b>${escapeHtml(x.d.name)}</b><small>${x.calcOk?`Calculated ${escapeHtml(fmtDose(x.r.ml))} mL`:'No calculated volume — manual actual allowed'}</small></div><label>Actual mL<input data-batch-actual type="number" min="0" step="any" inputmode="decimal" value="${x.done?'':x.calcOk?escapeHtml(String(Number(x.r.ml.toFixed(4)))):''}" ${x.done?'disabled':''}></label><label>Route<input data-batch-route list="quickDrugRouteList" value="${escapeHtml(x.d.route||'')}" ${x.done?'disabled':''}></label><label>Concentration<input data-batch-conc value="${escapeHtml(conc)}" placeholder="Preparation used" ${x.done?'disabled':''}></label></article>`}).join('');
+}
+function applyCalculatedToInductionBatch(){
+  const data=new Map(inductionBatchItemData().map(x=>[String(x.idx),x]));$$('#orQuickDrugBatchList .quick-drug-batch-row').forEach(row=>{const x=data.get(row.dataset.batchIndex);if(!x||x.done||!x.calcOk)return;row.querySelector('[data-batch-use]').checked=true;row.querySelector('[data-batch-actual]').value=String(Number(x.r.ml.toFixed(4)));if(!row.querySelector('[data-batch-route]').value)row.querySelector('[data-batch-route]').value=x.d.route||'';if(!row.querySelector('[data-batch-conc]').value&&x.d.conc)row.querySelector('[data-batch-conc]').value=`${x.d.conc} ${x.d.concUnit||''}`.trim()});
+}
+function saveInductionBatch(){
+  if(medicationSaveInFlight||orQuickContext?.purpose!=='induction')return;if(!clinicalWriteAllowed()||!requireCurrentWeight('recording induction medications'))return;const by=$('orQuickDrugBy')?.value.trim()||$('anesthetist')?.value.trim()||'',data=new Map(inductionBatchItemData().map(x=>[String(x.idx),x])),chosen=[];
+  if(!by){$('orQuickDrugError').textContent='ระบุผู้ให้ยา (Administered by) ก่อนบันทึกยาเป็นชุด';return}
+  for(const row of $$('#orQuickDrugBatchList .quick-drug-batch-row')){const use=row.querySelector('[data-batch-use]');if(!use||use.disabled||!use.checked)continue;const x=data.get(row.dataset.batchIndex),actual=WF.numeric(row.querySelector('[data-batch-actual]').value),route=row.querySelector('[data-batch-route]').value.trim(),concentration=row.querySelector('[data-batch-conc]').value.trim();if(!x)continue;if(!(actual>0)||!route||!concentration){$('orQuickDrugError').textContent=`กรอก Actual, Route และ Concentration ให้ครบสำหรับ ${x.d.name}`;return}chosen.push({...x,actual,route,concentration})}
+  if(!chosen.length){$('orQuickDrugError').textContent='เลือกรายการอย่างน้อย 1 ตัวก่อนบันทึก';return}
+  const summary=chosen.map(x=>`${x.d.name}: ${fmtDose(x.actual)} mL • ${x.route} • ${x.concentration}`).join('\n');if(!confirm(`Confirm planned induction administrations\n\n${summary}\n\nBy ${by}\nCalculated amounts are references; confirm actual values before proceeding.`))return;
+  medicationSaveInFlight=true;for(const x of chosen){const calculated=Number.isFinite(x.r.ml)&&x.r.ml>0?`${fmtDose(x.r.ml)} mL • BW ${x.w} kg • frozen ${state.protocolSnapshot?.version||'unversioned'}`:`No calculated reference • BW ${x.w} kg • frozen ${state.protocolSnapshot?.version||'unversioned'}`;recordDrugAdministration({drug:x.d.name,calculated,actual:x.actual,unit:'mL',route:x.route,administeredBy:by,concentration:x.concentration,note:'Batch-confirmed from frozen Case Drug Plan',source:'OR Induction Batch',calculationBasis:{caseId:state.caseId,weightKg:x.w,protocolCapturedAt:state.protocolSnapshot?.capturedAt,protocolVersion:state.protocolSnapshot?.version,drug:WF.clone(x.d),calculatedMl:Number.isFinite(x.r.ml)?x.r.ml:null,adminEpoch:x.adminEpoch,adminElapsedMs:x.adminElapsedMs,adminClock:x.adminClock},adminEpoch:x.adminEpoch,adminElapsedMs:x.adminElapsedMs,adminClock:x.adminClock,documentedAt:Date.now(),retrospective:Date.now()-x.adminEpoch>30000})}
+  medicationSaveInFlight=false;renderOrQuickDrugBatchStatus();renderInductionBatchEditor();toast(`✓ ${chosen.length} induction medication(s) saved • workspace remains open`);
 }
 function openOrQuickDrug(options={}){
   const phase=typeof options==='object'&&options?options.phase||'':'',purpose=typeof options==='object'&&options?options.purpose||'':'',allowRecovery=!!(typeof options==='object'&&options?.allowRecovery),requestedDrugId=typeof options==='object'&&options?String(options.drugId||''):'';
   if(!clinicalWriteAllowed()||!requireCurrentWeight('using medication record'))return;if(purpose==='recovery'&&state.casePhase!=='recovery'){toast('Begin Recovery ก่อนบันทึก Recovery medication');return}if(orLiveLockedByRecovery()&&!allowRecovery){toast('ใช้ปุ่ม Medication ในหน้า Recovery สำหรับยาที่ให้หลัง Extubation');return}if(!state.caseStartedAt||!state.protocolSnapshot){toast('Start Case to freeze the protocol before using medication record');return}
   orQuickContext={phase,purpose,allowRecovery};const all=frozenQuickDrugs(),plannedInduction=all.filter(d=>d.planned&&d.phase==='induction');orQuickOptions=(purpose==='induction'&&plannedInduction.length)?plannedInduction:(phase?all.filter(d=>d.phase===phase):all);if(!orQuickOptions.length)orQuickOptions=all;
   let preferred=requestedDrugId?orQuickOptions.findIndex(d=>String(d.id||'')===requestedDrugId):(purpose==='induction'?nextInductionQuickDrugIndex(orQuickOptions):preferredQuickDrugIndex(orQuickOptions,phase)),sel=$('orQuickDrugSelect');
-  sel.innerHTML='<option value="">— Select drug —</option>'+orQuickOptions.map((d,i)=>`<option value="${i}">${escapeHtml(d.name)}</option>`).join('');sel.value=preferred>=0?String(preferred):'';
-  $('orQuickDrugTitle').textContent=purpose==='induction'?'Induction — record actual administered':purpose==='recovery'?'Recovery medication':'Medication';$('orQuickDrugBy').value=$('anesthetist')?.value.trim()||'';$('orQuickDrugNote').value='';
-  const fixedInduction=purpose==='induction'&&plannedInduction.length>0;if($('orQuickDrugSelectWrap'))$('orQuickDrugSelectWrap').hidden=fixedInduction;if($('orQuickDrugPlannedName'))$('orQuickDrugPlannedName').hidden=!fixedInduction;if($('orQuickInductionSkipBtn'))$('orQuickInductionSkipBtn').hidden=purpose!=='induction';if($('orQuickDrugOtherBtn'))$('orQuickDrugOtherBtn').hidden=purpose!=='induction';if($('orQuickDrugDoneBtn'))$('orQuickDrugDoneBtn').hidden=purpose!=='induction';renderOrQuickDrugBatchStatus();renderOrQuickDrug();$('orQuickDrugDialog').showModal();
+  sel.innerHTML='<option value="">— Select drug —</option>'+orQuickOptions.map((d,i)=>`<option value="${i}">${escapeHtml(d.name)}${d.planned?' • planned':''}${d.standby?' • standby':''}</option>`).join('');sel.value=preferred>=0?String(preferred):'';
+  $('orQuickDrugTitle').textContent=purpose==='induction'?'Induction medications':purpose==='recovery'?'Recovery medications':'Medication';$('orQuickDrugBy').value=$('anesthetist')?.value.trim()||'';$('orQuickDrugNote').value='';
+  const fixedInduction=purpose==='induction'&&plannedInduction.length>0;if($('orQuickDrugSelectWrap'))$('orQuickDrugSelectWrap').hidden=fixedInduction;if($('orQuickDrugPlannedName'))$('orQuickDrugPlannedName').hidden=!fixedInduction;if($('orQuickInductionSkipBtn'))$('orQuickInductionSkipBtn').hidden=purpose!=='induction';if($('orQuickDrugOtherBtn'))$('orQuickDrugOtherBtn').hidden=purpose!=='induction';if($('orQuickDrugDoneBtn')){$('orQuickDrugDoneBtn').hidden=false;$('orQuickDrugDoneBtn').textContent=purpose==='induction'?'Done / review complete':'Done / back'}if($('orQuickDrugBatchBtn'))$('orQuickDrugBatchBtn').hidden=!(purpose==='induction'&&plannedInduction.length>1);toggleInductionBatchEditor(false);renderOrQuickDrugBatchStatus();renderOrQuickDrug();$('orQuickDrugDialog').showModal();
 }
 function renderOrQuickDrug(){
   const idx=$('orQuickDrugSelect').value===''?-1:Number($('orQuickDrugSelect').value),d=idx>=0?orQuickOptions[idx]:null,w=currentWeightReady()?currentWeightKg():null;
   if($('orQuickDrugPlannedName'))$('orQuickDrugPlannedName').textContent=d?`${d.name}${d.standby?' • STANDBY':''}`:'';
-  if(!d){orQuickBasis=null;$('orQuickDrugBasis').textContent=`Current BW ${w??'—'} kg • Frozen protocol ${state.protocolSnapshot?.version||'unversioned'}`;$('orQuickDrugCalculation').textContent=orQuickContext?.purpose==='induction'?'เลือกยา induction จาก frozen protocol':'เลือกยาที่ต้องการบันทึก';$('orQuickDrugActual').value='';$('orQuickDrugRoute').value='';$('orQuickDrugConcentration').value='';$('orQuickDrugConcentration').readOnly=false;$('orQuickDrugError').textContent='';$('orQuickDrugSaveBtn').disabled=true;return}
+  if(!d){orQuickBasis=null;$('orQuickDrugBasis').textContent=`Current BW ${w??'—'} kg • Frozen protocol ${state.protocolSnapshot?.version||'unversioned'}`;$('orQuickDrugCalculation').textContent=orQuickContext?.purpose==='induction'?'No remaining planned induction drug selected':'เลือกยาที่ต้องการบันทึก';$('orQuickDrugActual').value='';setQuickRoutePreset('');$('orQuickDrugConcentration').value='';$('orQuickDrugConcentrationPreset').innerHTML='<option value="manual">Manual / other concentration</option>';$('orQuickDrugError').textContent='';$('orQuickDrugSaveBtn').disabled=true;if($('orQuickDrugUseCalculatedBtn'))$('orQuickDrugUseCalculatedBtn').disabled=true;return}
   const r=calculateLibraryDrug(d,w,d.dose,d.conc),valid=w!==null&&Number.isFinite(r.ml)&&r.ml>0,induction=orQuickContext?.purpose==='induction',m=induction?procedureMilestoneEvent('Induction'):null,adminEpoch=induction?(m?.epoch||state.caseStartedAt||Date.now()):Date.now(),adminElapsed=induction?(m?.elapsedMs??0):currentElapsed(),adminClock=induction?(m?.clock||formatClock(adminEpoch)):formatClock();
-  orQuickBasis={caseId:state.caseId,weightKg:w,protocolCapturedAt:state.protocolSnapshot?.capturedAt,protocolVersion:state.protocolSnapshot?.version,drug:WF.clone(d),calculatedMl:valid?r.ml:null,adminEpoch,adminElapsedMs:adminElapsed,adminClock};
+  orQuickBasis={caseId:state.caseId,weightKg:w,protocolCapturedAt:state.protocolSnapshot?.capturedAt,protocolVersion:state.protocolSnapshot?.version,drug:WF.clone(d),calculatedMl:valid?r.ml:null,calculatedTotal:r.total||'',adminEpoch,adminElapsedMs:adminElapsed,adminClock};
   $('orQuickDrugBasis').textContent=induction?`Administration time: Induction ${adminClock} • Current BW ${w??'—'} kg • Frozen ${state.protocolSnapshot?.version||'unversioned'}`:`Current BW ${w??'—'} kg • Frozen protocol ${state.protocolSnapshot?.version||'unversioned'} • ${state.protocolSnapshot?.capturedAt?new Date(state.protocolSnapshot.capturedAt).toLocaleString():'legacy snapshot'}`;
-  $('orQuickDrugCalculation').textContent=valid?`${r.total} • ${fmtDose(r.ml)} mL${d.note?' • '+d.note:''}`:'ไม่พบ dose/concentration ที่ใช้คำนวณได้ใน frozen protocol';$('orQuickDrugActual').value='';$('orQuickDrugRoute').value=d.route||'';$('orQuickDrugConcentration').value=d.conc?`${d.conc} ${d.concUnit}`:'';$('orQuickDrugConcentration').readOnly=!!d.conc;$('orQuickDrugError').textContent='';$('orQuickDrugSaveBtn').disabled=!valid;renderOrQuickDrugBatchStatus();
+  $('orQuickDrugCalculation').textContent=valid?`${r.total} • ${fmtDose(r.ml)} mL${d.note?' • '+d.note:''}`:`No calculated volume available${d.mode==='manual'?' (manual medication)':''} • enter actual mL + preparation used${d.note?' • '+d.note:''}`;$('orQuickDrugActual').value='';setQuickRoutePreset(d.route||'');renderQuickDrugConcentrationPresets(d);$('orQuickDrugError').textContent='';$('orQuickDrugSaveBtn').disabled=false;if($('orQuickDrugUseCalculatedBtn')){$('orQuickDrugUseCalculatedBtn').disabled=!valid;$('orQuickDrugUseCalculatedBtn').hidden=false}renderOrQuickDrugBatchStatus();
 }
 function finishInductionMedicationReview(noInjectable=false){
   if(!clinicalWriteAllowed()||orQuickContext?.purpose!=='induction')return;const meds=inductionMedicationRecords();if(noInjectable&&meds.length&&!confirm('มีการบันทึกยา induction แล้ว ต้องการ mark review complete ต่อหรือไม่?'))return;if(!noInjectable&&!meds.length&&!confirm('ยังไม่มีการบันทึกยา induction — ยืนยันว่า review เสร็จโดยไม่มีรายการยา?'))return;
-  state.inductionDocumentationMode='deferred-v1472';state.inductionMedicationReviewCompletedAt=Date.now();addAudit('INDUCTION_MEDICATION_REVIEW_COMPLETED',noInjectable?'No injectable induction medication documented':`${meds.length} induction medication(s) reviewed`,$('anesthetist')?.value.trim()||'');$('orQuickDrugDialog').close();orQuickBasis=null;orQuickContext=null;save();renderOrPrimaryFlow();toast(noInjectable?'Induction medication review complete • no injectable meds':'Induction medications reviewed');
+  state.inductionDocumentationMode='deferred-v1472';state.inductionMedicationReviewCompletedAt=Date.now();addAudit('INDUCTION_MEDICATION_REVIEW_COMPLETED',noInjectable?'No injectable induction medication documented':`${meds.length} induction medication(s) reviewed`,$('anesthetist')?.value.trim()||'');closeOrQuickDrugWorkspace();save();renderOrPrimaryFlow();toast(noInjectable?'Induction medication review complete • no injectable meds':'Induction medications reviewed');
 }
+function closeOrQuickDrugWorkspace(){try{$('orQuickDrugDialog')?.close()}catch(e){};orQuickBasis=null;orQuickContext=null;orQuickOptions=[];toggleInductionBatchEditor(false)}
 function recordInductionWithoutDrug(){finishInductionMedicationReview(true)}
 function saveOrQuickDrug(){
   if(medicationSaveInFlight)return;
   if(!clinicalWriteAllowed()||!requireCurrentWeight('recording medication')||!orQuickBasis)return;const allowRecovery=!!orQuickContext?.allowRecovery;if(orLiveLockedByRecovery()&&!allowRecovery){toast('OR LIVE is closed during recovery');return}const b=orQuickBasis;
   const currentBw=currentWeightKg(),currentCaptured=state.protocolSnapshot?.capturedAt,currentVersion=state.protocolSnapshot?.version;
-  if(b.caseId!==state.caseId||Math.abs(Number(b.weightKg)-Number(currentBw))>1e-9||b.protocolCapturedAt!==currentCaptured||b.protocolVersion!==currentVersion){renderOrQuickDrug();$('orQuickDrugError').textContent='SAFETY STOP: patient/BW/protocol changed — calculation refreshed. Review before saving.';return}
-  const actual=WF.numeric($('orQuickDrugActual').value),route=$('orQuickDrugRoute').value.trim(),by=$('orQuickDrugBy').value.trim(),concentration=$('orQuickDrugConcentration').value.trim(),note=$('orQuickDrugNote').value.trim();if(!(actual>0)||!route||!by||!concentration){$('orQuickDrugError').textContent='กรอก actual mL (>0), route, ผู้ให้ยา และ concentration';return}if(!Number.isFinite(b.calculatedMl)||b.calculatedMl<=0)return;
-  const induction=orQuickContext?.purpose==='induction',recovery=orQuickContext?.purpose==='recovery';if(!confirm(`Confirm actual administration\n${b.drug.name}: ${actual} mL • ${route}\n${concentration} • By ${by}${induction?`\nAdministration time linked to Induction ${b.adminClock}`:''}\nCalculated amount is a reference, not an administration record.`))return;
+  if(b.caseId!==state.caseId||Math.abs(Number(b.weightKg)-Number(currentBw))>1e-9||b.protocolCapturedAt!==currentCaptured||b.protocolVersion!==currentVersion){renderOrQuickDrug();$('orQuickDrugError').textContent='SAFETY STOP: patient/BW/protocol changed — medication basis refreshed. Review before saving.';return}
+  const actual=WF.numeric($('orQuickDrugActual').value),route=$('orQuickDrugRoute').value.trim(),by=$('orQuickDrugBy').value.trim(),concentration=$('orQuickDrugConcentration').value.trim(),note=$('orQuickDrugNote').value.trim();if(!(actual>0)||!route||!by||!concentration){$('orQuickDrugError').textContent='กรอก actual mL (>0), route, ผู้ให้ยา และ preparation/concentration';return}
+  const induction=orQuickContext?.purpose==='induction',recovery=orQuickContext?.purpose==='recovery',calcText=Number.isFinite(b.calculatedMl)&&b.calculatedMl>0?`${fmtDose(b.calculatedMl)} mL`:'no calculated reference';if(!confirm(`Confirm actual administration\n${b.drug.name}: ${actual} mL • ${route}\n${concentration} • By ${by}${induction?`\nAdministration time linked to Induction ${b.adminClock}`:''}\nReference: ${calcText}.`))return;
   medicationSaveInFlight=true;const saveBtn=$('orQuickDrugSaveBtn');if(saveBtn)saveBtn.disabled=true;
-  const entry=recordDrugAdministration({drug:b.drug.name,calculated:`${fmtDose(b.calculatedMl)} mL • BW ${b.weightKg} kg • frozen ${b.protocolVersion||'unversioned'}`,actual,unit:'mL',route,administeredBy:by,concentration,note,source:induction?'OR Induction':recovery?'Recovery Medication':'OR Quick Drug',calculationBasis:WF.clone(b),...(induction?{adminEpoch:b.adminEpoch,adminElapsedMs:b.adminElapsedMs,adminClock:b.adminClock,documentedAt:Date.now(),retrospective:Date.now()-b.adminEpoch>30000}:{})});
-  medicationSaveInFlight=false;if(saveBtn)saveBtn.disabled=false;
-  if(!entry)return;
-  if(induction){
-    const next=nextInductionQuickDrugIndex(orQuickOptions);renderOrQuickDrugBatchStatus();$('orQuickDrugSelect').value=next>=0?String(next):'';renderOrQuickDrug();toast('Induction medication saved • เพิ่มตัวถัดไปหรือกด Done');return;
-  }
-  $('orQuickDrugDialog').close();orQuickBasis=null;orQuickContext=null;renderOrPrimaryFlow();toast(recovery?'Recovery medication saved':'Medication saved • OR LIVE');
+  const calculated=Number.isFinite(b.calculatedMl)&&b.calculatedMl>0?`${fmtDose(b.calculatedMl)} mL • BW ${b.weightKg} kg • frozen ${b.protocolVersion||'unversioned'}`:`No calculated reference • BW ${b.weightKg} kg • frozen ${b.protocolVersion||'unversioned'}`;
+  const entry=recordDrugAdministration({drug:b.drug.name,calculated,actual,unit:'mL',route,administeredBy:by,concentration,note,source:induction?'OR Induction':recovery?'Recovery Medication':'OR Quick Drug',calculationBasis:WF.clone(b),...(induction?{adminEpoch:b.adminEpoch,adminElapsedMs:b.adminElapsedMs,adminClock:b.adminClock,documentedAt:Date.now(),retrospective:Date.now()-b.adminEpoch>30000}:{})});
+  medicationSaveInFlight=false;if(saveBtn)saveBtn.disabled=false;if(!entry)return;
+  if(induction){const next=nextInductionQuickDrugIndex(orQuickOptions);renderOrQuickDrugBatchStatus();$('orQuickDrugSelect').value=next>=0?String(next):'';renderOrQuickDrug();toast('✓ Induction medication saved • continue with next drug or Done');return}
+  // V15.6: keep medication workspace open so multiple administrations are continuous.
+  const context=orQuickContext;renderOrQuickDrugBatchStatus();$('orQuickDrugSelect').value='';renderOrQuickDrug();orQuickContext=context;toast(recovery?'✓ Recovery medication saved • add another or Done':'✓ Medication saved • add another or Done');
 }
 function captureRecoveryHandoff(reason){if(sessionMode!=='active'||state.caseLocked)return;save();const h=WF.buildHandoff(state);h.reason=reason;state.recoveryHandoffs??=[];state.recoveryHandoffs.push(h);addAudit('RECOVERY_HANDOFF_CREATED',`${reason} • ${h.administrations.length} administered drugs • ${h.alerts.length+h.complications.length} unresolved items`);save();renderRecoveryHandoff()}
 function handoffText(h){
@@ -4126,9 +4172,18 @@ $('clearCaseAlertOverrideBtn')?.addEventListener('click',()=>saveAlertProtocolEd
 $('saveProblemActionBtn')?.addEventListener('click',saveProblemAction);
 $('orQuickDrugSelect')?.addEventListener('change',renderOrQuickDrug);
 $('orQuickDrugSaveBtn')?.addEventListener('click',saveOrQuickDrug);
+$('orQuickDrugUseCalculatedBtn')?.addEventListener('click',()=>{if(Number.isFinite(orQuickBasis?.calculatedMl)&&orQuickBasis.calculatedMl>0)$('orQuickDrugActual').value=String(Number(orQuickBasis.calculatedMl.toFixed(4)))});
+$('orQuickDrugBatchBtn')?.addEventListener('click',()=>toggleInductionBatchEditor(true));
+$('orQuickDrugBatchCancelBtn')?.addEventListener('click',()=>toggleInductionBatchEditor(false));
+$('orQuickDrugApplyCalculatedAllBtn')?.addEventListener('click',applyCalculatedToInductionBatch);
+$('orQuickDrugBatchSaveBtn')?.addEventListener('click',saveInductionBatch);
 $('orQuickInductionSkipBtn')?.addEventListener('click',recordInductionWithoutDrug);
-$('orQuickDrugDoneBtn')?.addEventListener('click',()=>finishInductionMedicationReview(false));
-$('orQuickDrugOtherBtn')?.addEventListener('click',()=>{try{$('orQuickDrugDialog')?.close()}catch(e){};orQuickBasis=null;orQuickContext=null;openOrQuickDrug({purpose:'other'})});
+$('orQuickDrugDoneBtn')?.addEventListener('click',()=>orQuickContext?.purpose==='induction'?finishInductionMedicationReview(false):closeOrQuickDrugWorkspace());
+$('orQuickDrugCloseTop')?.addEventListener('click',closeOrQuickDrugWorkspace);
+$('orQuickDrugOtherBtn')?.addEventListener('click',()=>{closeOrQuickDrugWorkspace();openOrQuickDrug({purpose:'other'})});
+$('orQuickDrugConcentrationPreset')?.addEventListener('change',e=>{const input=$('orQuickDrugConcentration');if(!input)return;if(e.target.value==='manual'){input.value='';input.focus()}else input.value=e.target.value});
+$('orQuickDrugRoute')?.addEventListener('input',e=>setQuickRoutePreset(e.target.value));
+$$('#orQuickRoutePresets [data-route]').forEach(b=>b.addEventListener('click',()=>setQuickRoutePreset(b.dataset.route)));
 $('recoveryMedicationBtn')?.addEventListener('click',()=>openOrQuickDrug({purpose:'recovery',allowRecovery:true}));
 $$('[data-close-dialog]').forEach(b=>b.addEventListener('click',()=>$(b.dataset.closeDialog)?.close()));
 for(const id of ['orProblemPanel','recoveryProblemPanel'])$(id)?.addEventListener('click',e=>{const b=e.target.closest('[data-problem-action]');if(b)openProblemAction(b.dataset.kind,b.dataset.id,b.dataset.problemAction)});

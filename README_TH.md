@@ -1,3 +1,22 @@
+# ANESVET V15.6.0 — Drug Administration & Recovery Transition Release
+
+รุ่นนี้ต่อจาก V15.5.0 โดยแก้ feedback จากการลองใช้จริงบนมือถือ/iPad: medication workspace ไม่เด้งกลับ OR LIVE หลังบันทึกยาแต่ละตัว, เพิ่ม batch สำหรับ planned induction medications, route/concentration กรอกได้ง่ายขึ้นและ manual medication ไม่ถูกล็อกเพราะไม่มีสูตรคำนวณ, แก้ Full Screen → Recovery transition และย้าย feedback `✓ SAVED` ให้อยู่เหนือ OR controls
+
+ดูรายละเอียดที่ `RELEASE_NOTES_V15_6_0.md`
+
+## V15.6.0 — Drug Administration & Recovery Transition
+
+- Medication workspace ต่อเนื่อง: Save ยาแล้วอยู่หน้าบันทึกยาเพื่อเพิ่มตัวถัดไปได้ทันที
+- Planned induction: `Record all planned induction meds` + `Use calculated amounts` แล้ว review actual/route/concentration ก่อน confirm
+- Route quick choices: IV / IM / SC / PO / IV/IO / CRI พร้อม free text
+- Concentration preset ดึงจาก frozen protocol/library เท่าที่มี และเลือก Manual ได้
+- ยา manual หรือยาไม่มี calculation ยังบันทึก actual administration ได้หลังระบุ preparation เอง
+- Full Screen จะไม่บังคับ OR LIVE ค้างเมื่อเปลี่ยนเข้า Recovery
+- `✓ SAVED` ของ OR vitals แสดงเหนือ fixed dock ชัดเจน
+- ไม่เปลี่ยน dose defaults, alert thresholds, ASA, BOAS, fluid reference หรือ recovery readiness logic
+
+---
+
 # ANESVET V15.5.0 — Case Drug Plan & Compact Report Release
 
 รุ่นนี้ต่อจาก V15.4.0 โดยแก้ workflow ยาและ reporting จากการทดสอบใช้งานจริงบนมือถือ/iPad: Drug Calculator สร้าง **Case Drug Plan** แล้ว freeze เข้า OR LIVE, Induction ให้กรอก actual administered ตามแผนโดยไม่ต้องเลือกยาเดิมซ้ำ, เพิ่ม **1-page Summary PDF** และเพิ่ม feedback ที่เห็นชัดหลัง Save Vitals

@@ -1,0 +1,14 @@
+{
+  "base_release": "ANESVET V15.5.0",
+  "release": "ANESVET V15.6.0",
+  "scope": [
+    "continuous medication workspace",
+    "planned induction batch administration",
+    "route and concentration/preparation entry UX",
+    "manual medication documentation fallback",
+    "OR full-screen to Recovery transition fix",
+    "OR vital saved feedback visibility"
+  ],
+  "clinical_defaults_changed": false,
+  "storage_schema_changed": false
+}
