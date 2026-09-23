@@ -1,30 +1,27 @@
-ANESVET V15.1.0 — OR LIVE Navigation & Focus Release
+ANESVET V15.2.0 — OR LIVE Safety & Vitals Release
 Build date: 2026-09-23
-Baseline: ANESVET V15.0.0 Hospital Pilot Release
+Baseline: ANESVET V15.1.0 OR LIVE Navigation & Focus Release
 
 IMPLEMENTED
-- OR LIVE primary navigation reduced to NEXT STEP / VITALS / MORE on phone and iPad/touch tablet
-- NEXT STEP is visually dominant and uses phase-specific action labels
-- Dynamic labels: Start induction, Intubate/Airway, Start surgery, C-section neonate milestones, End surgery, Extubate→Recovery, Recovery, End Case
-- Step counter added to primary workflow card
-- Medications / Fluid / Event / Airway / Trends / Timeline moved behind MORE bottom sheet
-- OR Focus mode hides competing global workflow tabs/case strip during active OR LIVE on touch devices
-- Focus mode retains an explicit exit path via MORE → Case Summary
-- Large iPad landscape support extended using coarse-pointer media query up to 1400 CSS px
-- Routine/Custom duplicate context panels hidden in touch OR focus; special Critical/C-section context remains available
+- Explicit confirmation sheet before phase/timestamp-changing OR workflow steps
+- Confirmed workflow transitions retain an auditable reversible snapshot
+- Quick Undo pill for 90 seconds; Undo remains available for up to 5 minutes or until another workflow transition
+- Undo also exposed in MORE and on Recovery after Extubation/Recovery transitions
+- Undo preserves audit history and blocks unsafe rollback after post-transition clinical data in critical cases
+- Intraoperative dock is VITALS-first: RECORD VITALS largest, NEXT STEP secondary, MORE tertiary
+- Vitals due state receives stronger visual emphasis
+- OR LIVE Start Case now freezes patient identity/BW snapshot consistently with V15.0 safety model
 
 UNCHANGED CLINICAL / SAFETY LOGIC
-- V15.0 verified safety checkpoint and recovery path
-- active-case identity/BW correction audit
-- stale medication-calculation safety stop
-- medication rapid double-tap guard
-- Recovery override + Final Lock gate
 - Drug doses / concentrations
 - Alert thresholds
 - Fluid references
 - Recovery score algorithm
 - ASA / BOAS logic
-- Existing LocalStorage keys and IndexedDB schema
+- Verified safety checkpoint
+- stale medication-calculation safety stop
+- Recovery override + Final Lock gate
+- LocalStorage keys / IndexedDB schema
 
 VALIDATION
 PASS: syntax + JSON
@@ -35,9 +32,10 @@ PASS: V14.8.2 anesthetic risk flag contracts
 PASS: V14.9 mobile/iPad compatibility contracts
 PASS: V15.0 Hospital Pilot safety contracts
 PASS: V15.1 OR LIVE navigation contracts
+PASS: V15.2 OR confirmation / undo / vitals-priority contracts
 PASS: production clinical helper tests (73 assertions)
 PASS: workflow model scenarios (4 scenarios)
 NOT CLAIMED: jsdom/fake-indexeddb DOM integration + Playwright E2E (runtime dependencies unavailable)
 DIRECT CHROMIUM SMOKE: attempted; process did not complete within runtime limit, so browser pass is not claimed
 
-Pilot recommendation: keep the existing anesthesia record/backup process and validate V15.1 specifically with new users on real phones/iPads. The acceptance target is that a user can identify the current phase and next clinical step without instruction.
+Pilot recommendation: have a new user operate V15.2 on a real phone/iPad without instruction. Verify that accidental phase progression is prevented, Undo is discoverable, and RECORD VITALS becomes the obvious repeated action during intraoperative monitoring.

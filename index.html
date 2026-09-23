@@ -7,12 +7,12 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="description" content="ANESVET V15.1.0 — Hospital Pilot Release">
+  <meta name="description" content="ANESVET V15.2.0 — OR LIVE Safety & Vitals Release">
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" href="./icon-192.png">
   <link rel="apple-touch-icon" href="./icon-192.png">
-  <link rel="stylesheet" href="./style.css?v=15.1.0">
-  <title>ANESVET V15.1.0</title>
+  <link rel="stylesheet" href="./style.css?v=15.2.0">
+  <title>ANESVET V15.2.0</title>
 </head>
 <body>
 <header class="topbar">
@@ -20,7 +20,7 @@
     <img class="brand-logo" src="./icon-192.png" alt="ANESVET logo">
     <div>
       <div class="eyebrow">GENOVI PET CARE • DIGITAL ANESTHESIA RECORD</div>
-      <h1>ANESVET <span>V15.1.0</span></h1>
+      <h1>ANESVET <span>V15.2.0</span></h1>
     </div>
   </div>
   <div class="top-actions">
@@ -668,12 +668,13 @@
       <section class="panel"><div class="section-heading"><div><h2>Recent records / events</h2><p>ข้อมูลล่าสุดในเคส</p></div><button id="orOpenTimelineBtn" class="btn">Timeline</button></div><div id="orRecentActivity" class="or-recent-list empty-state compact">ยังไม่มีข้อมูล</div></section>
     </section>
 
+    <button id="orUndoStepBtn" class="or-undo-step" type="button" hidden>↶ Undo last step</button>
     <nav id="orMobileDock" class="or-mobile-dock" aria-label="OR LIVE primary actions">
       <button id="orMobileNextBtn" class="or-mobile-dock-btn primary or-mobile-next" type="button">
         <span id="orMobileNextIcon" class="or-mobile-next-icon">▶</span>
         <span class="or-mobile-next-copy"><small>NEXT STEP</small><b id="orMobileNextLabel">START INDUCTION</b></span>
       </button>
-      <button id="orMobileRecordBtn" class="or-mobile-dock-btn" type="button"><span>＋</span><b>VITALS</b></button>
+      <button id="orMobileRecordBtn" class="or-mobile-dock-btn or-mobile-vitals" type="button"><span>＋</span><b>VITALS</b></button>
       <button id="orMobileMoreBtn" class="or-mobile-dock-btn" type="button"><span>•••</span><b>MORE</b></button>
     </nav>
 
@@ -688,7 +689,22 @@
           <button id="orMobileTrendsBtn" class="or-more-action" type="button"><span>↗</span><b>Trends</b><small>monitor trends</small></button>
           <button id="orMobileTimelineBtn" class="or-more-action" type="button"><span>≡</span><b>Timeline</b><small>records & events</small></button>
         </div>
+        <button id="orMobileUndoBtn" class="btn or-more-undo-btn" type="button" hidden>↶ Undo last workflow step</button>
         <button id="orMobileCaseSummaryBtn" class="btn or-more-case-btn" type="button">← Case summary / leave OR focus</button>
+      </div>
+    </dialog>
+
+    <dialog id="orStepConfirmDialog" class="or-step-confirm-dialog" aria-labelledby="orStepConfirmTitle">
+      <div class="or-step-confirm-sheet">
+        <div class="or-step-confirm-kicker">CONFIRM WORKFLOW STEP</div>
+        <h2 id="orStepConfirmTitle">Confirm next step</h2>
+        <p id="orStepConfirmText">This will add a timestamp to the anesthesia timeline.</p>
+        <div id="orStepConfirmContext" class="or-step-confirm-context">—</div>
+        <div class="or-step-confirm-note">If this was tapped by mistake, the last workflow step can be undone from OR LIVE.</div>
+        <div class="or-step-confirm-actions">
+          <button id="orStepConfirmCancelBtn" class="btn" type="button">Cancel</button>
+          <button id="orStepConfirmGoBtn" class="btn primary" type="button">Confirm</button>
+        </div>
       </div>
     </dialog>
   </section>
@@ -1689,6 +1705,7 @@
         <button id="beginRecoveryBtn" class="btn primary">Begin recovery</button>
         <button id="recoveryMedicationBtn" class="btn" type="button">💉 Medication</button>
         <button id="completeRecoveryBtn" class="btn">Recovery complete</button>
+        <button id="recoveryUndoStepBtn" class="btn recovery-undo-btn" type="button" hidden>↶ Undo last workflow step</button>
         <button id="emergencyReturnOrBtn" class="btn recovery-emergency-btn">⚠ Emergency return to OR LIVE</button>
       </div>
     </section>
@@ -2272,7 +2289,7 @@
 </dialog>
 
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
-<script src="./clinical-workflow.js?v=15.1.0"></script>
-<script src="./app.js?v=15.1.0"></script>
+<script src="./clinical-workflow.js?v=15.2.0"></script>
+<script src="./app.js?v=15.2.0"></script>
 </body>
 </html>

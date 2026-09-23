@@ -1,0 +1,9 @@
+{
+  "release": "ANESVET V15.2.0",
+  "release_date": "2026-09-23",
+  "baseline_artifact": "ANESVET_V15_1_0_OR_LIVE_Navigation_Focus.zip",
+  "baseline_sha256": "e569accf65514c6c217aaeef883068d6d1b06acd0b8931294b3d77d1e0e064a8",
+  "change_scope": "OR LIVE phase confirmation, reversible last-step safety, and intraoperative vitals-first touch hierarchy",
+  "clinical_defaults_changed": false,
+  "storage_schema_changed": false
+}

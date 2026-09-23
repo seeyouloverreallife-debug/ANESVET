@@ -1,4 +1,10 @@
-# ANESVET V15.1.0 — OR LIVE Navigation & Focus Release
+# ANESVET V15.2.0 — OR LIVE Safety & Vitals Release
+
+รุ่นนี้ต่อจาก V15.1.0 ตาม feedback การใช้งานจริงบนมือถือ/iPad: เพิ่ม **confirmation ก่อนเปลี่ยน phase**, **Undo last workflow step** สำหรับกรณีกดผิด และปรับช่วง **INTRAOPERATIVE ให้ RECORD VITALS เป็นปุ่มหลักที่ใหญ่ที่สุด** ขณะที่ปุ่มเดิน phase ถูกลด visual weight เพื่อป้องกัน accidental progression โดยคง clinical/safety logic เดิม
+
+ดูรายละเอียดที่ `RELEASE_NOTES_V15_2_0.md`
+
+## V15.1.0 — OR LIVE Navigation & Focus Release
 
 รุ่นนี้ต่อจาก V15.0.0 โดยแก้ pain point จากการลองใช้ OR LIVE บนมือถือ/iPad: ลด action หลักจาก 5 ปุ่มเหลือ **NEXT STEP / VITALS / MORE**, ทำ NEXT ให้แสดงชื่อ action จริงตาม phase, เพิ่ม step counter และ OR Focus mode เพื่อให้ผู้ใช้รู้ทันทีว่าต้องกดอะไรเพื่อเดินเคสต่อ โดยคง Hospital Pilot safety logic เดิมทั้งหมด
 
