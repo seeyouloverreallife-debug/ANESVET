@@ -1,4 +1,4 @@
-/* ANESVET V15.12.1 — Reliability/environment helpers. Pure and non-clinical. */
+/* ANESVET V15.13.0 — Reliability/environment helpers. Pure and non-clinical. */
 (function(root){
 'use strict';
 const REQUIRED_DOM_IDS=[

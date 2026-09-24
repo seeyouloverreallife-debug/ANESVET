@@ -7,12 +7,12 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="description" content="ANESVET V15.12.1 — Clinical Safety & Reliability">
+  <meta name="description" content="ANESVET V15.13.0 — Help, Onboarding & Pilot UX">
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" href="./icon-192.png">
   <link rel="apple-touch-icon" href="./icon-192.png">
-  <link rel="stylesheet" href="./style.css?v=15.12.1">
-  <title>ANESVET V15.12.1</title>
+  <link rel="stylesheet" href="./style.css?v=15.13.0">
+  <title>ANESVET V15.13.0</title>
 </head>
 <body>
 <header class="topbar">
@@ -20,7 +20,7 @@
     <img class="brand-logo" src="./icon-192.png" alt="ANESVET logo">
     <div>
       <div class="eyebrow">GENOVI PET CARE • DIGITAL ANESTHESIA RECORD</div>
-      <h1>ANESVET <span>V15.12.1</span></h1>
+      <h1>ANESVET <span>V15.13.0</span></h1>
     </div>
   </div>
   <div class="top-actions">
@@ -109,6 +109,7 @@
   <div id="moreMenu" class="more-menu" hidden>
     <button data-more-tab="casesummary">Case Summary</button>
     <button data-more-tab="cases">Cases / Archive</button>
+    <button id="openHelpCenterBtn" class="session-safe help-menu-button" type="button">? วิธีใช้ / Help</button>
     <button data-more-tab="settings">Settings</button>
     <details class="advanced-menu"><summary>Records & advanced</summary>
       <button data-more-tab="plan">Anesthesia Plan</button>
@@ -145,6 +146,7 @@
       <div class="mobile-workflow-secondary">
         <button type="button" data-mobile-tab="casesummary">Case Summary</button>
         <button type="button" data-mobile-tab="cases">Cases / Archive</button>
+        <button id="mobileHelpCenterBtn" class="session-safe" type="button">? วิธีใช้ / Help</button>
         <button type="button" data-mobile-tab="settings">Settings</button>
       </div>
       <p class="mobile-workflow-note">OR LIVE และ Recovery ยังใช้ safety gate เดิม หากยังไม่พร้อมระบบจะแจ้งสิ่งที่ต้องทำก่อน</p>
@@ -201,7 +203,7 @@
         <h2>ข้อมูลผู้ป่วยและทีมในเคส</h2>
         <p>กรอกข้อมูลผู้ป่วย, procedure, ทีมผ่าตัด และข้อควรระวังในครั้งเดียว ข้อมูลจะใช้ต่อใน OR LIVE, Recovery และ PDF report</p>
       </div>
-      <span id="patientSaveStatus" class="status-pill warn">NOT SAVED</span>
+      <div class="page-help-actions"><button class="context-help-btn session-safe" type="button" data-help-topic="patient" aria-label="วิธีใช้ข้อมูลผู้ป่วย">?</button><span id="patientSaveStatus" class="status-pill warn">NOT SAVED</span></div>
     </section>
 
     <section class="panel patient-master-panel">
@@ -457,6 +459,7 @@
       <div class="or-timer-block">
         <span id="orCasePhaseBadge" class="status-pill phase setup">SETUP</span><span id="orTimerState" class="timer-state ready">READY</span>
         <strong id="orCaseClock" class="or-case-clock">00:00:00</strong>
+        <button class="context-help-btn session-safe" type="button" data-help-topic="orlive" aria-label="วิธีใช้ OR LIVE">?</button>
         <details class="or-tools-menu">
           <summary>⋯ Tools</summary>
           <div class="or-tools-menu-body">
@@ -794,6 +797,7 @@
         </div>
         <button id="orMobileUndoBtn" class="btn or-more-undo-btn" type="button" hidden>↶ Undo last workflow step</button>
         <button id="orMobileCaseSummaryBtn" class="btn or-more-case-btn" type="button">← Leave OR / Case summary</button>
+        <button id="orMoreHelpBtn" class="btn session-safe help-secondary-btn" type="button">? วิธีใช้ OR LIVE</button>
         <button id="orMoreReportIssueBtn" class="btn pilot-report-link" type="button">🐞 Report issue / feedback</button>
       </div>
     </dialog>
@@ -865,7 +869,7 @@
           <h2>Pre-anesthetic checklist</h2>
           <p>ทบทวนแต่ละรายการเป็น Done หรือ N/A ก่อนเริ่มเคส</p>
         </div>
-        <span id="preopProgress" class="status-pill warn">0/15 REVIEWED</span>
+        <div class="page-help-actions"><button class="context-help-btn session-safe" type="button" data-help-topic="preop" aria-label="วิธีใช้ Pre-check">?</button><span id="preopProgress" class="status-pill warn">0/15 REVIEWED</span></div>
       </div>
 
       <section class="preop-exam-panel" aria-labelledby="preopExamHeading">
@@ -1476,6 +1480,7 @@
           <p>ตรวจน้ำหนัก → ตรวจ concentration → คำนวณ → ยืนยันปริมาณยาที่ให้จริง</p>
         </div>
         <div class="button-row">
+          <button class="context-help-btn session-safe" type="button" data-help-topic="drugs" aria-label="วิธีใช้ Drug Calculator">?</button>
           <button id="toggleConcentrationBtn" class="btn">⚙ ปรับความเข้มข้นยา</button>
           <button id="openSettingsFromDrugBtn" class="btn">Settings</button>
         </div>
@@ -1828,6 +1833,7 @@
     <section class="recovery-command">
       <div><div class="eyebrow dark">RECOVERY MODE</div><h2>Post-anesthetic recovery</h2><p>ติดตาม airway, oxygenation, temperature, comfort และ mentation จน recovery complete</p></div>
       <div class="recovery-command-actions">
+        <button class="context-help-btn session-safe" type="button" data-help-topic="recovery" aria-label="วิธีใช้ Recovery">?</button>
         <button id="recoveryLeaveFocusBtn" class="btn" type="button">← Case summary</button>
         <span id="recoveryPhaseBadge" class="status-pill warn">NOT STARTED</span>
         <strong id="recoveryElapsed">00:00:00</strong>
@@ -1987,6 +1993,7 @@
         <button id="recoveryMoreUndoBtn" class="btn or-more-undo-btn" type="button" hidden>↶ Undo last workflow step</button>
         <button id="recoveryMoreEmergencyBtn" class="btn recovery-emergency-btn" type="button">⚠ Emergency return to OR LIVE</button>
         <button id="recoveryMoreCaseSummaryBtn" class="btn or-more-case-btn" type="button">← Case summary / leave Recovery focus</button>
+        <button id="recoveryMoreHelpBtn" class="btn session-safe help-secondary-btn" type="button">? วิธีใช้ Recovery</button>
         <button id="recoveryMoreReportIssueBtn" class="btn pilot-report-link" type="button">🐞 Report issue / feedback</button>
       </div>
     </dialog>
@@ -2184,7 +2191,7 @@
           <h2>End Case</h2>
           <p>ตรวจความครบถ้วนก่อนปิดเคสและบันทึกเข้า Cases</p>
         </div>
-        <span id="endCaseReadiness" class="status-pill warn">REVIEW</span>
+        <div class="page-help-actions"><button class="context-help-btn session-safe" type="button" data-help-topic="endcase" aria-label="วิธีใช้ End Case">?</button><span id="endCaseReadiness" class="status-pill warn">REVIEW</span></div>
       </div>
       <div class="end-case-summary">
         <div><span>Patient</span><b id="endPatient">—</b></div>
@@ -2426,6 +2433,90 @@
 
 
 
+<dialog id="helpCenterDialog" class="workflow-dialog help-center-dialog" aria-labelledby="helpCenterTitle">
+  <div class="workflow-dialog-body help-center-body">
+    <div class="quick-drug-dialog-head help-center-head">
+      <div><small>ANESVET HELP CENTER</small><h2 id="helpCenterTitle">วิธีใช้ ANESVET</h2><p>อ่านเฉพาะหัวข้อที่ต้องการได้ ไม่จำเป็นต้องอ่านทั้งหมดก่อนเริ่มเคส</p></div>
+      <button id="helpCenterCloseBtn" class="dialog-close-x session-safe" type="button" aria-label="Close help">×</button>
+    </div>
+    <section class="help-quickstart" aria-label="Quick start workflow">
+      <div class="help-quickstart-title"><div><b>เริ่มใช้งานใน 1 นาที</b><small>Workflow หลักของหนึ่งเคส</small></div><button id="startWalkthroughBtn" class="btn primary session-safe" type="button">▶ ดูแนะนำ 1 นาที</button></div>
+      <div class="help-flow">
+        <button type="button" class="session-safe" data-help-go="patient"><span>1</span><b>Patient</b></button>
+        <button type="button" class="session-safe" data-help-go="preop"><span>2</span><b>Pre-check</b></button>
+        <button type="button" class="session-safe" data-help-go="drugs"><span>3</span><b>Drug Plan</b></button>
+        <button type="button" class="session-safe" data-help-topic="briefing"><span>4</span><b>Briefing</b></button>
+        <button type="button" class="session-safe" data-help-go="orlive"><span>5</span><b>OR LIVE</b></button>
+        <button type="button" class="session-safe" data-help-go="recovery"><span>6</span><b>Recovery</b></button>
+      </div>
+    </section>
+
+    <div class="help-topics">
+      <details id="helpTopicPatient" data-help-section="patient">
+        <summary><span>1</span><div><b>Patient & Case Setup</b><small>เริ่มเคสให้ถูกคนและถูก procedure</small></div></summary>
+        <div class="help-topic-body"><p>ค้น Patient Master ก่อนถ้าเป็นผู้ป่วยเดิม จากนั้นตรวจชื่อ, species, breed, เพศ, อายุ, Current BW, procedure และทีมในเคสให้ครบ ข้อมูลชุดนี้จะตามไป OR LIVE, Recovery และรายงาน</p><p><b>จุดสำคัญ:</b> Current BW เป็นฐานของการคำนวณยา ถ้าเปลี่ยนน้ำหนักหลัง review Drug Plan ระบบจะให้ทบทวนแผนอีกครั้ง</p><button class="btn session-safe" type="button" data-help-go="patient">ไปหน้า Patient</button></div>
+      </details>
+
+      <details id="helpTopicPreop" data-help-section="preop">
+        <summary><span>2</span><div><b>Pre-check & Risk Review</b><small>ตรวจร่างกาย • risk flags • checklist</small></div></summary>
+        <div class="help-topic-body"><p>บันทึกผลตรวจร่างกายที่ตรวจจริง ทบทวน structured risk flags และทำ checklist เป็น Done/N/A ก่อนเข้า OR เมื่อมีความจำเป็นทางคลินิก ระบบรองรับ override พร้อม reason และ audit trail</p><p><b>อย่าข้าม risk review:</b> ข้อมูลนี้ถูกนำไปสร้าง Pre-OR Briefing และ patient-specific cautions</p><button class="btn session-safe" type="button" data-help-go="preop">ไปหน้า Pre-check</button></div>
+      </details>
+
+      <details id="helpTopicDrugs" data-help-section="drugs">
+        <summary><span>3</span><div><b>Drug Calculator & Case Drug Plan</b><small>Calculated dose ≠ Actual administered</small></div></summary>
+        <div class="help-topic-body"><p>ตรวจ concentration ของยาที่โรงพยาบาลใช้จริงก่อนคำนวณ สร้าง Case Drug Plan จาก hospital protocol/preset แล้วปรับให้เหมาะกับเคส เมื่อเริ่มเคสระบบจะ freeze plan ไว้</p><p><b>จุดสำคัญ:</b> ยาที่อยู่ในแผนยังไม่ถือว่าให้แล้ว จนกว่าจะบันทึก <em>Actual administered</em>, route และ preparation/concentration ที่ใช้จริง</p><button class="btn session-safe" type="button" data-help-go="drugs">ไปหน้า Drug Calculator</button></div>
+      </details>
+
+      <details id="helpTopicBriefing" data-help-section="briefing">
+        <summary><span>4</span><div><b>Pre-OR Anesthesia Briefing</b><small>สรุปความเสี่ยงและของที่ควรเตรียมก่อนเข้า OR</small></div></summary>
+        <div class="help-topic-body"><p>หลังข้อมูลก่อนวางยาครบ ระบบจะสรุป key risks, medication plan และค่าเตรียมเบื้องต้น เช่น ETT working range, ventilation/O₂/fluid reference ตามข้อมูลที่มี</p><p><b>ค่าบน Briefing เป็น preparation reference ไม่ใช่คำสั่งรักษา</b> ต้องยืนยันกับ anatomy, monitor, anesthetic depth, physiology และ clinical judgment จริงก่อนใช้ และค่าจาก briefing จะไม่ถูกคัดลอกเป็น actual record อัตโนมัติ</p></div>
+      </details>
+
+      <details id="helpTopicOrlive" data-help-section="orlive">
+        <summary><span>5</span><div><b>OR LIVE</b><small>Vitals-first • Next Step • MORE ตาม phase</small></div></summary>
+        <div class="help-topic-body"><p>ระหว่างวางยาให้ใช้ <b>VITALS / RECORD NOW</b> เป็นงานหลัก ใช้ <b>NEXT STEP</b> เมื่อต้องการเปลี่ยน milestone/phase และใช้ <b>MORE</b> สำหรับยา, airway, fluid/blood หรือ event/problem ตามบริบท</p><p>การเปลี่ยน phase มี confirm/undo guard และระบบจะเก็บ timeline/audit เพื่อให้แก้การกดพลาดได้โดยไม่ลบประวัติ</p><button class="btn session-safe" type="button" data-help-go="orlive">ไปหน้า OR LIVE</button></div>
+      </details>
+
+      <details id="helpTopicRecovery" data-help-section="recovery">
+        <summary><span>6</span><div><b>Recovery</b><small>Record → reassess → handoff</small></div></summary>
+        <div class="help-topic-body"><p>ติดตาม airway, oxygenation, temperature, comfort และ mentation ต่อเนื่อง ใช้ Recovery vitals, readiness score และ problem tracking จน criteria ของโรงพยาบาล/สัตวแพทย์ผู้รับผิดชอบครบ</p><p>Emergency return to OR LIVE จะบันทึก workflow transition ไว้ และ Recovery complete ต้องผ่าน readiness review หรือมี documented override</p><button class="btn session-safe" type="button" data-help-go="recovery">ไปหน้า Recovery</button></div>
+      </details>
+
+      <details id="helpTopicEndcase" data-help-section="endcase">
+        <summary><span>7</span><div><b>End Case & Final Record</b><small>ตรวจความครบถ้วนก่อน archive/lock</small></div></summary>
+        <div class="help-topic-body"><p>ทบทวน records, events, actual drug administrations, recovery และ Final Sign-off ก่อนสร้าง final record/รายงาน หลัง lock แล้วไม่ควรแก้ clinical record เดิมตรง ๆ; ใช้ amendment ตาม workflow ที่ระบบจัดไว้</p><button class="btn session-safe" type="button" data-help-go="endcase">ไปหน้า End Case</button></div>
+      </details>
+
+      <details id="helpTopicData" data-help-section="data">
+        <summary><span>💾</span><div><b>Save, Offline & Data Safety</b><small>Local-first และมี safety checkpoint</small></div></summary>
+        <div class="help-topic-body"><p>ANESVET บันทึกข้อมูลหลักในเครื่อง/browser แบบ local-first พร้อม autosave และ safety checkpoint ระหว่าง active case จึงทำงานต่อได้แม้ network ไม่เสถียร แต่ local storage ไม่ใช่ hospital server หรือ cloud backup</p><p><b>ช่วง pilot:</b> ควรเก็บ anesthesia record ตามระบบมาตรฐานของโรงพยาบาลเป็น backup และทดสอบการ reopen/refresh/offline บนอุปกรณ์ที่จะใช้จริง</p></div>
+      </details>
+
+      <details id="helpTopicSupport" data-help-section="support">
+        <summary><span>🐞</span><div><b>พบปัญหา / ติดต่อ ANESVET</b><small>Email หรือ Facebook Page</small></div></summary>
+        <div class="help-topic-body"><p>กด Report จาก Mobile Quick Bar, OR/Recovery MORE หรือปุ่มด้านล่าง ระบบจะสร้าง structured report พร้อม app/device context โดยไม่แนบชื่อผู้ป่วย, HN, microchip หรือข้อมูลเจ้าของอัตโนมัติ</p><p><b>Email:</b> anesvetth@gmail.com<br><b>Facebook:</b> Page “Anesvet”</p><button id="helpReportIssueBtn" class="btn primary session-safe" type="button">🐞 Report issue / feedback</button></div>
+      </details>
+    </div>
+
+    <section class="help-about-card">
+      <div><small>ABOUT</small><b>ANESVET V15.13.0</b><p>Veterinary anesthesia workflow, monitoring record and clinical decision-support. ไม่ใช่ continuous physiologic monitor และไม่แทน clinical judgment หรือ source monitor data.</p></div>
+      <button id="helpOpenSettingsBtn" class="btn session-safe" type="button">Settings</button>
+    </section>
+    <div class="workflow-dialog-actions help-center-actions"><button id="helpCenterCloseBottomBtn" class="btn session-safe" type="button">Close</button></div>
+  </div>
+</dialog>
+
+<dialog id="onboardingDialog" class="workflow-dialog onboarding-dialog" aria-labelledby="onboardingTitle">
+  <div class="workflow-dialog-body onboarding-body">
+    <div class="onboarding-top"><span id="onboardingStepLabel">1 / 4</span><button id="onboardingCloseBtn" class="dialog-close-x session-safe" type="button" aria-label="Close onboarding">×</button></div>
+    <div id="onboardingIcon" class="onboarding-icon">🩺</div>
+    <h2 id="onboardingTitle">เริ่มเคสจาก Patient → Pre-check</h2>
+    <p id="onboardingText">ตรวจผู้ป่วย, Current BW, procedure และทีมให้ถูกต้องก่อน แล้วบันทึก Physical exam + Risk review + Checklist</p>
+    <div id="onboardingDots" class="onboarding-dots" aria-hidden="true"></div>
+    <div class="onboarding-actions"><button id="onboardingSkipBtn" class="btn session-safe" type="button">ข้ามและไม่แสดงอีก</button><button id="onboardingBackBtn" class="btn session-safe" type="button">← ย้อนกลับ</button><button id="onboardingNextBtn" class="btn primary session-safe" type="button">ถัดไป →</button></div>
+  </div>
+</dialog>
+
 <dialog id="pilotFeedbackDialog" class="workflow-dialog pilot-feedback-dialog" aria-labelledby="pilotFeedbackTitle">
   <div class="workflow-dialog-body pilot-feedback-body">
     <div class="quick-drug-dialog-head"><div><small>ANESVET SUPPORT</small><h2 id="pilotFeedbackTitle">Report issue / feedback</h2></div><button id="pilotFeedbackCloseBtn" class="dialog-close-x" type="button" aria-label="Close feedback">×</button></div>
@@ -2581,9 +2672,10 @@
 
 <div id="feedbackDeliveryBanner" class="feedback-delivery-banner" role="status" aria-live="assertive" hidden></div>
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
-<script src="./clinical-workflow.js?v=15.12.1"></script>
-<script src="./support.js?v=15.12.1"></script>
-<script src="./reliability.js?v=15.12.1"></script>
-<script src="./app.js?v=15.12.1"></script>
+<script src="./clinical-workflow.js?v=15.13.0"></script>
+<script src="./support.js?v=15.13.0"></script>
+<script src="./reliability.js?v=15.13.0"></script>
+<script src="./app.js?v=15.13.0"></script>
+<script src="./help.js?v=15.13.0"></script>
 </body>
 </html>

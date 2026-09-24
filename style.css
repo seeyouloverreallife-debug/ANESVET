@@ -1162,3 +1162,37 @@ button,.btn,.tab,.or-primary-action,.or-record-button,.or-action-link,.or-compli
 }
 @media(max-width:430px){.mobile-quick-bar:not([hidden]){grid-template-columns:72px minmax(0,1fr) 72px;width:calc(100vw - 10px);bottom:max(5px,env(safe-area-inset-bottom));padding:4px;gap:4px;border-radius:13px}.mobile-quick-btn{min-height:48px;padding:4px 6px}.mobile-quick-btn>b{font-size:.62rem}.mobile-quick-current{padding:4px 8px}.mobile-quick-current b{font-size:.69rem}.mobile-workflow-grid button>b{font-size:.76rem}.mobile-workflow-secondary{grid-template-columns:1fr}.mobile-workflow-secondary button{min-height:40px}}
 @media(min-width:1401px) and (pointer:fine){.mobile-workflow-dialog{display:none}}
+
+/* V15.13.0 — Help Center, contextual help, and first-use onboarding */
+.page-help-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.context-help-btn{width:34px;height:34px;min-width:34px;border:1px solid #bcd1d7;border-radius:999px;background:#fff;color:#0d5265;font:inherit;font-weight:950;font-size:1rem;line-height:1;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 3px 10px rgba(13,82,101,.08)}
+.context-help-btn:hover{background:#eef7f9;border-color:#87afb9}.context-help-btn:focus-visible{outline:3px solid rgba(13,82,101,.18);outline-offset:2px}
+.or-command-bar .context-help-btn{background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.4);color:#fff;box-shadow:none}.or-command-bar .context-help-btn:hover{background:rgba(255,255,255,.23)}
+.help-menu-button{background:#f4fafb!important;border-color:#b9d3da!important;color:#0d5265!important}.help-secondary-btn{margin-top:6px}
+
+.help-center-dialog,.onboarding-dialog{z-index:130}
+.help-center-body{width:min(900px,96vw);max-height:92dvh;overflow:auto;padding:18px}
+.help-center-head{align-items:flex-start}.help-center-head p{margin:5px 0 0;color:#6a7d84;max-width:650px}
+.help-quickstart{border:1px solid #c7dce1;border-radius:15px;background:#f7fbfc;padding:13px;margin:10px 0 13px}
+.help-quickstart-title{display:flex;align-items:center;justify-content:space-between;gap:12px}.help-quickstart-title b{display:block;font-size:1rem;color:#153f4c}.help-quickstart-title small{display:block;margin-top:2px;color:#70858d}
+.help-flow{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;margin-top:11px}.help-flow button{min-width:0;border:1px solid #cedfe3;border-radius:10px;background:#fff;color:#254f5b;font:inherit;padding:8px 5px;cursor:pointer}.help-flow button span{display:flex;width:24px;height:24px;border-radius:999px;background:#e6f2f5;align-items:center;justify-content:center;margin:0 auto 5px;font-size:.72rem;font-weight:950}.help-flow button b{display:block;font-size:.7rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.help-topics{display:grid;gap:7px}.help-topics details{border:1px solid #d2e0e4;border-radius:12px;background:#fff;overflow:hidden;transition:border-color .2s,box-shadow .2s}.help-topics details[open]{border-color:#9dc1ca;box-shadow:0 5px 18px rgba(13,82,101,.07)}.help-topics details.help-topic-highlight{border-color:#3b8ca0;box-shadow:0 0 0 3px rgba(59,140,160,.12)}
+.help-topics summary{list-style:none;display:flex;align-items:center;gap:10px;padding:11px 12px;cursor:pointer}.help-topics summary::-webkit-details-marker{display:none}.help-topics summary>span{display:flex;align-items:center;justify-content:center;min-width:30px;height:30px;border-radius:9px;background:#eaf4f6;color:#0d5265;font-size:.78rem;font-weight:950}.help-topics summary b{display:block;color:#173f4a}.help-topics summary small{display:block;color:#74868c;margin-top:2px;font-size:.72rem}.help-topic-body{padding:0 13px 13px 52px;color:#3e555d;font-size:.86rem;line-height:1.55}.help-topic-body p{margin:5px 0 9px}.help-topic-body .btn{margin-top:2px}
+.help-about-card{display:flex;align-items:center;justify-content:space-between;gap:14px;border:1px solid #d5e2e5;border-radius:13px;background:#f8fbfc;padding:12px 13px;margin-top:12px}.help-about-card small{display:block;color:#7a8c92;font-size:.65rem;letter-spacing:.09em;font-weight:900}.help-about-card b{display:block;color:#0d5265;margin-top:2px}.help-about-card p{margin:4px 0 0;color:#667b82;font-size:.75rem;line-height:1.42;max-width:680px}.help-center-actions{position:sticky;bottom:-18px;background:linear-gradient(180deg,rgba(255,255,255,0),#fff 24%);padding-top:18px;padding-bottom:2px}
+
+.onboarding-body{width:min(560px,94vw);text-align:center;padding:18px 20px 20px}.onboarding-top{display:flex;align-items:center;justify-content:space-between;color:#70858d;font-size:.76rem;font-weight:900}.onboarding-icon{width:68px;height:68px;border-radius:20px;background:#edf7f9;display:flex;align-items:center;justify-content:center;font-size:2rem;margin:12px auto}.onboarding-body h2{margin:7px 0 7px;color:#143f4b;font-size:1.3rem}.onboarding-body>p{margin:0 auto;color:#60777f;line-height:1.55;max-width:470px}.onboarding-dots{display:flex;justify-content:center;gap:6px;margin:17px 0}.onboarding-dots span{width:7px;height:7px;border-radius:999px;background:#cbdadd}.onboarding-dots span.active{width:22px;background:#317f92}.onboarding-actions{display:grid;grid-template-columns:auto auto minmax(120px,1fr);gap:7px}.onboarding-actions .btn{min-height:43px}.onboarding-actions #onboardingSkipBtn{font-size:.76rem;color:#687e85}
+
+@media(max-width:720px){
+  .help-center-body{width:min(97vw,900px);max-height:94dvh;padding:13px}
+  .help-flow{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .help-quickstart-title{align-items:stretch;flex-direction:column}.help-quickstart-title .btn{width:100%}
+  .help-topic-body{padding-left:13px}.help-about-card{align-items:stretch;flex-direction:column}.help-about-card .btn{width:100%}
+  .page-help-actions{justify-content:flex-start}.patient-hero .page-help-actions{width:100%;justify-content:space-between}
+  .recovery-command-actions .context-help-btn{order:-2}
+  .mobile-workflow-secondary{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:430px){
+  .help-center-body{padding:11px}.help-flow{grid-template-columns:repeat(2,minmax(0,1fr))}.help-flow button{min-height:54px}
+  .onboarding-body{padding:15px 13px 16px}.onboarding-actions{grid-template-columns:1fr 1fr}.onboarding-actions #onboardingSkipBtn{grid-column:1/-1;grid-row:2}.onboarding-actions #onboardingBackBtn{grid-column:1}.onboarding-actions #onboardingNextBtn{grid-column:2}
+  .context-help-btn{width:32px;height:32px;min-width:32px}
+}

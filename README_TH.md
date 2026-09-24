@@ -1,20 +1,28 @@
-# ANESVET V15.12.1 — Mobile Quick Access
+# ANESVET V15.13.0 — Help, Onboarding & Pilot UX
 
-รุ่นนี้เป็น hotfix/UX refinement ต่อจาก V15.12.0 โดยแก้ปัญหาบนมือถือและ iPad ที่ workflow tabs ไม่ sticky แล้วทำให้ต้องเลื่อนกลับขึ้นด้านบนเพื่อเปลี่ยนหน้า รวมทั้งปุ่ม Report ที่ถูกซ่อนจาก header บนจอเล็ก
+V15.13 เพิ่มระบบช่วยใช้งานสำหรับช่วง Hospital Pilot โดยรักษา clinical workflow และ safety behavior จาก V15.12.1 เดิม
 
-## สิ่งที่เพิ่ม
-- Mobile Quick Bar แบบ fixed ขนาดเล็กด้านล่าง (นอก OR LIVE / Recovery)
-- ปุ่ม `☰ ขั้นตอน` เปิด bottom sheet ไปยัง Patient / Pre-check / Drug Calculator / OR LIVE / Recovery / End Case ได้ทันที
-- ปุ่มกลางแสดงหน้าปัจจุบัน และแตะเพื่อกลับด้านบนของหน้านั้น
-- ปุ่ม `🐞 Report` แสดงบนมือถือ/iPad ตลอดใน workflow ปกติ
-- ใน Quick Navigation มี Case Summary / Cases / Settings เป็น secondary shortcuts
-- OR LIVE และ Recovery ยังคงใช้ dock เฉพาะ phase และไม่แสดง Mobile Quick Bar ซ้อน
+## เริ่มใช้งาน
+1. เปิด `index.html` ผ่าน GitHub Pages / web hosting ตามเดิม
+2. ผู้ใช้ใหม่จะเห็น walkthrough สั้น 4 ขั้นตอนหนึ่งครั้ง
+3. คู่มือเปิดได้ตลอดจาก `⋯ เพิ่มเติม → ? วิธีใช้ / Help`
+4. บนมือถือ: `☰ ขั้นตอน → ? วิธีใช้ / Help`
+5. ใน OR LIVE / Recovery: เปิด `MORE → ? วิธีใช้`
 
-## Safety
-- ไม่เปลี่ยน Pre-OR readiness gate, briefing, dose calculation, medication safety, Confirm/Undo, Recovery guard หรือ Final Lock
-- การแตะ OR LIVE / Recovery จาก Quick Navigation ยังผ่าน safety gate เดิมทุกครั้ง
+## Contextual Help
+หน้าหลักมีปุ่ม `?` เล็ก ๆ กดแล้ว Help Center จะเปิดตรงหัวข้อที่สัมพันธ์กับหน้าปัจจุบัน ไม่ต้องค้นคู่มือเอง
 
-## ก่อนอัปขึ้น GitHub Pages
-อัปไฟล์ทั้งหมดแล้วเปิดครั้งแรกด้วย `?v=15.12.1` หรือ Hard Refresh หนึ่งครั้ง เพื่อให้ service worker/cache เปลี่ยนเป็นรุ่นนี้
+## Report / Support
+- Email: `anesvetth@gmail.com`
+- Facebook Page: `Anesvet`
+- Report composer จะแนบ app/device/phase context แบบไม่ระบุตัวผู้ป่วยโดยอัตโนมัติ
 
-ดู `RELEASE_NOTES_V15_12_1.md` และ `QA_V15_12_1.md` สำหรับรายละเอียด
+## Clinical safety
+ANESVET เป็น veterinary anesthesia workflow / digital record / decision-support ไม่ใช่ continuous physiologic monitor และไม่แทนการประเมินผู้ป่วย, waveform, airway, anesthetic depth, source monitor data หรือ clinical judgment
+
+Pre-OR Briefing เป็นข้อมูลช่วยเตรียมและค่าเริ่มต้นอ้างอิง ไม่ใช่คำสั่งรักษา และจะไม่ถูกคัดลอกเป็น actual clinical record โดยอัตโนมัติ
+
+## Update จาก V15.12.1
+อัปโหลดไฟล์ทั้งหมดของรุ่นนี้ แล้วเปิดครั้งแรกด้วย `?v=15.13.0` หรือ Hard Refresh หนึ่งครั้ง เพื่อให้ service worker/cache ใช้ build ใหม่
+
+ดูรายละเอียดใน `RELEASE_NOTES_V15_13_0.md` และ `QA_V15_13_0.md`
