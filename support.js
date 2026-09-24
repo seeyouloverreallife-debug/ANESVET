@@ -1,4 +1,4 @@
-/* ANESVET V15.12.0 — Support/report composer (no network backend). */
+/* ANESVET V15.12.1 — Support/report composer (no network backend). */
 (function(root){
 'use strict';
 const SUPPORT_EMAIL='anesvetth@gmail.com';

@@ -7,12 +7,12 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="description" content="ANESVET V15.12.0 — Clinical Safety & Reliability">
+  <meta name="description" content="ANESVET V15.12.1 — Clinical Safety & Reliability">
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" href="./icon-192.png">
   <link rel="apple-touch-icon" href="./icon-192.png">
-  <link rel="stylesheet" href="./style.css?v=15.12.0">
-  <title>ANESVET V15.12.0</title>
+  <link rel="stylesheet" href="./style.css?v=15.12.1">
+  <title>ANESVET V15.12.1</title>
 </head>
 <body>
 <header class="topbar">
@@ -20,7 +20,7 @@
     <img class="brand-logo" src="./icon-192.png" alt="ANESVET logo">
     <div>
       <div class="eyebrow">GENOVI PET CARE • DIGITAL ANESTHESIA RECORD</div>
-      <h1>ANESVET <span>V15.12.0</span></h1>
+      <h1>ANESVET <span>V15.12.1</span></h1>
     </div>
   </div>
   <div class="top-actions">
@@ -119,6 +119,37 @@
       <button data-more-tab="dashboard">Legacy Monitoring</button>
     </details>
   </div>
+
+  <div id="mobileQuickBar" class="mobile-quick-bar" hidden aria-label="Mobile quick navigation">
+    <button id="mobileWorkflowMenuBtn" class="mobile-quick-btn" type="button"><span>☰</span><b>ขั้นตอน</b></button>
+    <button id="mobileQuickTopBtn" class="mobile-quick-btn mobile-quick-current" type="button" title="กลับด้านบนของหน้าปัจจุบัน">
+      <small>ตอนนี้</small><b id="mobileQuickStepLabel">ประวัติผู้ป่วย</b><span>↑</span>
+    </button>
+    <button id="mobileQuickReportBtn" class="mobile-quick-btn" type="button"><span>🐞</span><b>Report</b></button>
+  </div>
+
+  <dialog id="mobileWorkflowDialog" class="mobile-workflow-dialog" aria-labelledby="mobileWorkflowTitle">
+    <div class="mobile-workflow-sheet">
+      <div class="mobile-workflow-head">
+        <div><small>QUICK NAVIGATION</small><h2 id="mobileWorkflowTitle">ไปขั้นตอนไหน?</h2></div>
+        <button id="mobileWorkflowCloseBtn" class="btn light" type="button">✕</button>
+      </div>
+      <div class="mobile-workflow-grid">
+        <button type="button" data-mobile-tab="patient"><span>1</span><b>ประวัติผู้ป่วย</b></button>
+        <button type="button" data-mobile-tab="preop"><span>2</span><b>Pre-check</b></button>
+        <button type="button" data-mobile-tab="drugs"><span>3</span><b>Drug Calculator</b></button>
+        <button type="button" data-mobile-tab="orlive"><span>4</span><b>ช่วงวางยา</b></button>
+        <button type="button" data-mobile-tab="recovery"><span>5</span><b>Recovery</b></button>
+        <button type="button" data-mobile-tab="endcase"><span>6</span><b>End Case</b></button>
+      </div>
+      <div class="mobile-workflow-secondary">
+        <button type="button" data-mobile-tab="casesummary">Case Summary</button>
+        <button type="button" data-mobile-tab="cases">Cases / Archive</button>
+        <button type="button" data-mobile-tab="settings">Settings</button>
+      </div>
+      <p class="mobile-workflow-note">OR LIVE และ Recovery ยังใช้ safety gate เดิม หากยังไม่พร้อมระบบจะแจ้งสิ่งที่ต้องทำก่อน</p>
+    </div>
+  </dialog>
 
   <dialog id="preOrReadinessDialog" class="readiness-dialog" aria-labelledby="preOrReadinessTitle">
     <div class="readiness-sheet">
@@ -2550,9 +2581,9 @@
 
 <div id="feedbackDeliveryBanner" class="feedback-delivery-banner" role="status" aria-live="assertive" hidden></div>
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
-<script src="./clinical-workflow.js?v=15.12.0"></script>
-<script src="./support.js?v=15.12.0"></script>
-<script src="./reliability.js?v=15.12.0"></script>
-<script src="./app.js?v=15.12.0"></script>
+<script src="./clinical-workflow.js?v=15.12.1"></script>
+<script src="./support.js?v=15.12.1"></script>
+<script src="./reliability.js?v=15.12.1"></script>
+<script src="./app.js?v=15.12.1"></script>
 </body>
 </html>

@@ -1,27 +1,20 @@
-# ANESVET V15.12.0 — Clinical Safety & Reliability
+# ANESVET V15.12.1 — Mobile Quick Access
 
-รุ่นนี้เป็น **hardening release** ต่อจาก V15.11.0 โดยหยุดเพิ่ม clinical feature ใหม่ชั่วคราว และเน้นให้ ANESVET พร้อมสำหรับ Hospital Pilot มากขึ้น
+รุ่นนี้เป็น hotfix/UX refinement ต่อจาก V15.12.0 โดยแก้ปัญหาบนมือถือและ iPad ที่ workflow tabs ไม่ sticky แล้วทำให้ต้องเลื่อนกลับขึ้นด้านบนเพื่อเปลี่ยนหน้า รวมทั้งปุ่ม Report ที่ถูกซ่อนจาก header บนจอเล็ก
 
-## จุดสำคัญ
-- Reliability self-check ใน Settings
-- local runtime error diagnostics
-- automated browser smoke test สำหรับ phone / iPad-size / desktop
-- golden flow test: Patient → Pre-op → Briefing → OR LIVE → Start Induction
-- แยก `support.js` และ `reliability.js` ออกจาก `app.js` แบบ conservative refactor
-- Report issue เปลี่ยนเป็น Email `anesvetth@gmail.com` หรือ Facebook Page `Anesvet`
-- ปิด active Google Apps Script/webhook feedback path
-- ไม่เปลี่ยน clinical dose / threshold / briefing reference / recovery safety logic
+## สิ่งที่เพิ่ม
+- Mobile Quick Bar แบบ fixed ขนาดเล็กด้านล่าง (นอก OR LIVE / Recovery)
+- ปุ่ม `☰ ขั้นตอน` เปิด bottom sheet ไปยัง Patient / Pre-check / Drug Calculator / OR LIVE / Recovery / End Case ได้ทันที
+- ปุ่มกลางแสดงหน้าปัจจุบัน และแตะเพื่อกลับด้านบนของหน้านั้น
+- ปุ่ม `🐞 Report` แสดงบนมือถือ/iPad ตลอดใน workflow ปกติ
+- ใน Quick Navigation มี Case Summary / Cases / Settings เป็น secondary shortcuts
+- OR LIVE และ Recovery ยังคงใช้ dock เฉพาะ phase และไม่แสดง Mobile Quick Bar ซ้อน
 
-## ก่อนแจก Pilot
-แนะนำอัปไฟล์ทั้งหมดขึ้น GitHub Pages แล้วเปิดด้วย `?v=15.12.0` หรือ Hard Refresh หนึ่งครั้ง เพื่อให้ service worker/cache เปลี่ยนเป็นรุ่นใหม่
+## Safety
+- ไม่เปลี่ยน Pre-OR readiness gate, briefing, dose calculation, medication safety, Confirm/Undo, Recovery guard หรือ Final Lock
+- การแตะ OR LIVE / Recovery จาก Quick Navigation ยังผ่าน safety gate เดิมทุกครั้ง
 
-## การ Report
-กด `🐞 Report` หรือ Report issue ใน MORE:
-1. กรอกรายละเอียด
-2. เลือก **Email report** เพื่อเปิด mail app ไปที่ `anesvetth@gmail.com`
-3. หรือเลือก **Facebook: Anesvet** ระบบจะ copy structured report ให้ก่อนเปิด Facebook search
-4. ถ้ามี screenshot ให้แนบเองใน Email/Facebook
+## ก่อนอัปขึ้น GitHub Pages
+อัปไฟล์ทั้งหมดแล้วเปิดครั้งแรกด้วย `?v=15.12.1` หรือ Hard Refresh หนึ่งครั้ง เพื่อให้ service worker/cache เปลี่ยนเป็นรุ่นนี้
 
-ANESVET จะไม่ใส่ชื่อผู้ป่วย, HN, microchip หรือข้อมูลเจ้าของลง structured report อัตโนมัติ
-
-ดูรายละเอียดที่ `RELEASE_NOTES_V15_12_0.md` และผล QA ที่ `QA_V15_12.md`
+ดู `RELEASE_NOTES_V15_12_1.md` และ `QA_V15_12_1.md` สำหรับรายละเอียด

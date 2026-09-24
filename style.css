@@ -749,7 +749,9 @@ body.hide-sap-dap .record-table td.sap-dap-helper,body.hide-sap-dap .record-tabl
 @media(max-width:920px){.preop-exam-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:520px){.preop-exam-grid{grid-template-columns:1fr}.preop-exam-grid .span2{grid-column:span 1}.preop-exam-action .btn{width:100%}}
 @media print{.report-physical-exam-grid{grid-template-columns:repeat(3,1fr)}.report-physical-exam{break-inside:avoid;page-break-inside:avoid}}
-\n\n/* V14.8.2 — structured anesthetic risk flags */
+
+
+/* V14.8.2 — structured anesthetic risk flags */
 .preop-risk-panel{margin-top:14px;border:1px solid #e6c98d;border-radius:14px;background:linear-gradient(180deg,#fffdf8,#fff9ed);padding:14px}
 .preop-risk-panel.risk-saved{border-color:#a9cfb9;background:linear-gradient(180deg,#fbfffd,#f4fbf7)}
 .risk-heading-badges{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}.risk-none-line{display:flex;align-items:flex-start;gap:10px;margin-top:10px;padding:10px 12px;border:1px solid #dcc99d;border-radius:11px;background:#fff}.risk-none-line input{width:19px;height:19px;accent-color:var(--primary2);margin-top:1px}.risk-none-line span{display:block}.risk-none-line b{display:block;font-size:.82rem}.risk-none-line small{display:block;color:var(--muted);margin-top:2px;line-height:1.35}
@@ -1141,3 +1143,22 @@ button,.btn,.tab,.or-primary-action,.or-record-button,.or-action-link,.or-compli
 .support-contact-card small{display:block;color:#55727c;font-size:.66rem;font-weight:900;letter-spacing:.06em}.support-contact-card b{display:block;margin:3px 0 4px;color:var(--primary)}.support-contact-card span{display:block;color:var(--muted);font-size:.75rem;line-height:1.35}
 .support-report-actions{display:flex;flex-wrap:wrap}.support-report-actions .btn{min-height:44px}
 @media(max-width:720px){.reliability-check-grid,.support-contact-grid{grid-template-columns:1fr}.support-report-actions{display:grid;grid-template-columns:1fr 1fr}.support-report-actions .btn.primary{grid-column:1/-1}.support-report-actions .btn{width:100%}}
+
+
+/* V15.12.1 — Mobile Quick Access: persistent compact navigation without restoring bulky sticky workflow tabs */
+.mobile-quick-bar{display:none}
+.mobile-workflow-dialog{padding:0;border:0;background:transparent;width:min(720px,calc(100vw - 16px));max-width:720px;color:#183941}
+.mobile-workflow-dialog::backdrop{background:rgba(7,34,45,.58);backdrop-filter:blur(2px)}
+.mobile-workflow-sheet{background:#fff;border:1px solid #bfd2d8;border-radius:20px;padding:14px;box-shadow:0 20px 70px rgba(3,35,47,.28)}
+.mobile-workflow-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:10px}.mobile-workflow-head small{font-size:.62rem;font-weight:950;letter-spacing:.1em;color:#71868e}.mobile-workflow-head h2{margin:2px 0 0;font-size:1.08rem}
+.mobile-workflow-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.mobile-workflow-grid button{min-height:52px;border:1px solid #c8d9de;border-radius:13px;background:#f8fbfc;color:#194b58;display:grid;grid-template-columns:30px 1fr;align-items:center;gap:7px;padding:8px 10px;text-align:left;font:inherit}.mobile-workflow-grid button>span{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:#e7f0f2;font-size:.72rem;font-weight:950}.mobile-workflow-grid button>b{font-size:.82rem}.mobile-workflow-grid button.active{background:#0d5265;color:#fff;border-color:#0d5265}.mobile-workflow-grid button.active>span{background:#fff;color:#0d5265}.mobile-workflow-grid button.locked-step{border-style:dashed}.mobile-workflow-grid button.locked-step>b::after{content:'  🔒';font-size:.68rem}
+.mobile-workflow-secondary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-top:10px;padding-top:10px;border-top:1px solid #dde7ea}.mobile-workflow-secondary button{min-height:42px;border:1px solid #d4e0e4;border-radius:11px;background:#fff;color:#3f5f68;font:inherit;font-size:.74rem;font-weight:850}.mobile-workflow-note{margin:9px 2px 0;font-size:.68rem;line-height:1.35;color:#73868d}
+@media(max-width:1180px), (pointer:coarse) and (max-width:1400px){
+  body.mobile-quick-active{padding-bottom:calc(70px + env(safe-area-inset-bottom))}
+  .mobile-quick-bar:not([hidden]){position:fixed;display:grid;grid-template-columns:82px minmax(0,1fr) 82px;left:50%;transform:translateX(-50%);bottom:max(7px,env(safe-area-inset-bottom));z-index:84;width:min(620px,calc(100vw - 14px));padding:5px;gap:5px;border:1px solid #b8d0d6;border-radius:15px;background:rgba(248,253,254,.97);box-shadow:0 10px 30px rgba(7,54,69,.18);backdrop-filter:blur(12px)}
+  .mobile-quick-btn{min-width:0;min-height:50px;border:1px solid #cbdadf;border-radius:11px;background:#fff;color:#174b59;font:inherit;font-weight:900;display:flex;align-items:center;justify-content:center;gap:5px;padding:5px 8px}.mobile-quick-btn>span{font-size:.9rem}.mobile-quick-btn>b{font-size:.68rem}.mobile-quick-current{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-rows:auto auto;text-align:left;justify-content:stretch;padding:5px 11px}.mobile-quick-current small{grid-column:1;grid-row:1;font-size:.52rem;letter-spacing:.08em;color:#70858d;font-weight:950}.mobile-quick-current b{grid-column:1;grid-row:2;font-size:.75rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.mobile-quick-current>span{grid-column:2;grid-row:1/3;align-self:center;font-size:1rem}
+  body.or-mobile-active .mobile-quick-bar,body.recovery-mobile-active .mobile-quick-bar{display:none!important}
+  .mobile-workflow-dialog{margin:auto 8px 8px auto;width:calc(100vw - 16px);max-width:720px;position:fixed;inset:auto 0 max(6px,env(safe-area-inset-bottom)) 0}.mobile-workflow-sheet{border-radius:20px;padding:13px}
+}
+@media(max-width:430px){.mobile-quick-bar:not([hidden]){grid-template-columns:72px minmax(0,1fr) 72px;width:calc(100vw - 10px);bottom:max(5px,env(safe-area-inset-bottom));padding:4px;gap:4px;border-radius:13px}.mobile-quick-btn{min-height:48px;padding:4px 6px}.mobile-quick-btn>b{font-size:.62rem}.mobile-quick-current{padding:4px 8px}.mobile-quick-current b{font-size:.69rem}.mobile-workflow-grid button>b{font-size:.76rem}.mobile-workflow-secondary{grid-template-columns:1fr}.mobile-workflow-secondary button{min-height:40px}}
+@media(min-width:1401px) and (pointer:fine){.mobile-workflow-dialog{display:none}}

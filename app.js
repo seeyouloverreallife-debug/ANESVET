@@ -20,7 +20,7 @@ const SESSION_TTL_MS=30000;
 const SESSION_HEARTBEAT_MS=5000;
 const DB_NAME='ANESVET_DB';
 const DB_VERSION=2;
-const APP_VERSION='15.12.0';
+const APP_VERSION='15.12.1';
 const AUTOSAVE_DELAY_MS=450;
 const ACTIVE_CHECKPOINT_MS=15000;
 const SAFETY_CHECKPOINT_KEY='anesvet_v15_active_safety_checkpoint';
@@ -1976,6 +1976,12 @@ $('moreMenuBtn')?.addEventListener('click',(e)=>{
   const m=$('moreMenu');if(m)m.hidden=!m.hidden;
 });
 $$('[data-more-tab]').forEach(btn=>btn.addEventListener('click',()=>{closeMoreMenu();setTab(btn.dataset.moreTab)}));
+$('mobileWorkflowMenuBtn')?.addEventListener('click',openMobileWorkflowDialog);
+$('mobileQuickTopBtn')?.addEventListener('click',()=>scrollAppTop());
+$('mobileQuickReportBtn')?.addEventListener('click',openPilotFeedbackDialog);
+$('mobileWorkflowCloseBtn')?.addEventListener('click',closeMobileWorkflowDialog);
+$('mobileWorkflowDialog')?.addEventListener('click',e=>{if(e.target===$('mobileWorkflowDialog'))closeMobileWorkflowDialog()});
+$$('[data-mobile-tab]').forEach(btn=>btn.addEventListener('click',()=>{const id=btn.dataset.mobileTab;closeMobileWorkflowDialog();setTab(id)}));
 
 function syncQuickConcentrations(){
   const pairs={quickDiazepamConc:'diazepamConc',quickPropofolConc:'propofolConc',quickTramadolConc:'tramadolConc',quickRimadylConc:'rimadylConc',quickMetacamConc:'metacamConc',quickAtropineConc:'atropineConc'};
@@ -2104,6 +2110,25 @@ function exitOrFullscreenForNavigation(id){
   if($('orFullscreenBtn'))$('orFullscreenBtn').textContent='⛶ Full screen';
   if(document.fullscreenElement&&document.exitFullscreen){try{const p=document.exitFullscreen();if(p?.catch)p.catch(()=>{})}catch(e){}}
 }
+const MOBILE_STEP_LABELS={patient:'ประวัติผู้ป่วย',preop:'Pre-check',drugs:'Drug Calculator',orlive:'ช่วงวางยา',recovery:'Recovery',endcase:'End Case',casesummary:'Case Summary',cases:'Cases / Archive',settings:'Settings',plan:'Anesthesia Plan',record:'Full Record',events:'Events & Drugs',trends:'Trends',timeline:'Timeline',dashboard:'Advanced'};
+function syncMobileWorkflowLocks(){
+  $$('[data-mobile-tab]').forEach(btn=>{
+    const id=btn.dataset.mobileTab,src=document.querySelector(`.workflow-tabs .tab[data-tab="${id}"]`);
+    btn.classList.toggle('active',document.getElementById(id)?.classList.contains('active'));
+    btn.classList.toggle('locked-step',!!src?.classList.contains('locked-step'));
+    if(src?.title)btn.title=src.title;else btn.removeAttribute('title');
+  });
+}
+function renderMobileQuickBar(id){
+  const bar=$('mobileQuickBar'),label=$('mobileQuickStepLabel');if(!bar)return;
+  const focus=['orlive','recovery'].includes(id),visible=!focus;
+  bar.hidden=!visible;document.body.classList.toggle('mobile-quick-active',visible);
+  if(label)label.textContent=MOBILE_STEP_LABELS[id]||'ANESVET';
+  syncMobileWorkflowLocks();
+}
+function openMobileWorkflowDialog(){const d=$('mobileWorkflowDialog');if(!d)return;syncMobileWorkflowLocks();try{if(typeof d.showModal==='function')d.showModal();else d.setAttribute('open','')}catch(e){d.setAttribute('open','')}}
+function closeMobileWorkflowDialog(){const d=$('mobileWorkflowDialog');if(!d)return;try{if(d.open&&typeof d.close==='function')d.close();else d.removeAttribute('open')}catch(e){d.removeAttribute('open')}}
+
 function setTab(id,opts={}){
   if(!id || !document.getElementById(id)) return;
   if(id==='orlive' && orLiveLockedByRecovery() && !opts.force){
@@ -2131,6 +2156,7 @@ function setTab(id,opts={}){
   if(id==='endcase') renderEndCase();
   if(id==='settings'){renderAlertProtocolStatus();renderDrugLibrarySettings();renderQuickPresetSettings();renderBreedAliasSettings();setTimeout(renderProtocolGovernance,0);}
   renderWorkflowLocks();
+  renderMobileQuickBar(id);
   scrollAppTop();
 }
 $$('.tab[data-tab]').forEach(b=>b.addEventListener('click',()=>setTab(b.dataset.tab)));
@@ -2152,7 +2178,7 @@ function forceActivateOrLiveUI(){
   document.body.classList.toggle('or-mobile-active',currentSettingsObject().orFocusMode!==false);
   document.body.classList.remove('recovery-mobile-active');
   try{localStorage.setItem(TAB_KEY,id)}catch(e){}
-  renderOrLive();renderAirwayPanel();renderWorkflowLocks();scrollAppTop();
+  renderOrLive();renderAirwayPanel();renderWorkflowLocks();renderMobileQuickBar('orlive');scrollAppTop();
   return page.classList.contains('active');
 }
 function openOrLiveAfterBriefingReview(){
