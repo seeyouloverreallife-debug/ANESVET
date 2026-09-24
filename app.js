@@ -20,15 +20,16 @@ const SESSION_TTL_MS=30000;
 const SESSION_HEARTBEAT_MS=5000;
 const DB_NAME='ANESVET_DB';
 const DB_VERSION=2;
-const APP_VERSION='15.11.0';
+const APP_VERSION='15.12.0';
 const AUTOSAVE_DELAY_MS=450;
 const ACTIVE_CHECKPOINT_MS=15000;
 const SAFETY_CHECKPOINT_KEY='anesvet_v15_active_safety_checkpoint';
 const SAFETY_CHECKPOINT_FORMAT='ANESVET_ACTIVE_SAFETY_CHECKPOINT_V1';
 const PILOT_FEEDBACK_KEY='anesvet_v15_pilot_feedback_queue';
 const PILOT_FEEDBACK_FORMAT='ANESVET_PILOT_FEEDBACK_V1';
-const PILOT_FEEDBACK_MAX=250;
-const INTERNAL_PILOT_FEEDBACK_ENDPOINT=atob('aHR0cHM6Ly9zY3JpcHQuZ29vZ2xlLmNvbS9tYWNyb3Mvcy9BS2Z5Y2J5RllzVEllejE4YkJzenlSS2tQSl9SRW8wbWdkdmQxd3ZWUDRsQlloLWFJc2ZJRFlGczN5WUlaaUx1NDdzaHJ3ZGxYdy9leGVj');
+const PILOT_FEEDBACK_MAX=250; // legacy queue retained for backup compatibility only
+const RUNTIME_ERROR_KEY='anesvet_v15_runtime_error_log';
+const RUNTIME_ERROR_MAX=25;
 
 const numericFields = ['weight','preopHR','preopRR','preopTemp','hr','rr','sap','map','dap','spo2','etco2','temp','vaporizer','o2flow','fluidRateInput','fluidTotal','recHR','recRR','recMAP','recSpO2','recTemp'];
 const dataFields = [
@@ -4096,85 +4097,67 @@ $('saveSettingsBtn')?.addEventListener('click',()=>{
 });
 
 function getPilotFeedbackQueue(){try{const q=JSON.parse(localStorage.getItem(PILOT_FEEDBACK_KEY)||'[]');return Array.isArray(q)?q:[]}catch(e){return[]}}
-function setPilotFeedbackQueue(q){try{localStorage.setItem(PILOT_FEEDBACK_KEY,JSON.stringify((q||[]).slice(-PILOT_FEEDBACK_MAX)));return true}catch(e){console.error(e);toast('⚠ Feedback queue save failed');return false}}
+function setPilotFeedbackQueue(q){try{localStorage.setItem(PILOT_FEEDBACK_KEY,JSON.stringify((q||[]).slice(-PILOT_FEEDBACK_MAX)));return true}catch(e){console.error(e);return false}}
 function pilotFeedbackId(){const d=new Date(),pad=n=>String(n).padStart(2,'0'),r=Math.random().toString(36).slice(2,7).toUpperCase();return `FB-${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}-${pad(d.getHours())}${pad(d.getMinutes())}-${r}`}
 function activeTabId(){return document.querySelector('.tabpage.active')?.id||localStorage.getItem(TAB_KEY)||'unknown'}
 function anonymizedCaseContext(){const elapsed=Math.round(currentElapsed()/1000);return{tab:activeTabId(),casePhase:state.casePhase||'preop',workflowProfile:state.caseWorkflowProfile||$('caseWorkflowProfile')?.value||'routine',species:state.species||$('species')?.value||'',asa:state.asa||$('asa')?.value||'',emergency:!!(state.emergency||$('emergency')?.checked),caseElapsedSec:Number.isFinite(elapsed)?elapsed:0,anesthesiaRecordCount:(state.records||[]).length,recoveryRecordCount:(state.recoveryRecords||[]).length,eventCount:(state.events||[]).length,drugAdministrationCount:(state.drugAdministrations||[]).length,complicationCount:(state.complications||[]).length,activeAlertCount:(state.alertEpisodes||[]).filter(x=>!x.resolvedAt).length}}
 function pilotDeviceContext(){let standalone=false;try{standalone=window.matchMedia?.('(display-mode: standalone)')?.matches||navigator.standalone===true}catch(e){}return{userAgent:navigator.userAgent||'',platform:navigator.userAgentData?.platform||navigator.platform||'',language:navigator.language||'',viewport:`${window.innerWidth}x${window.innerHeight}`,screen:`${screen.width}x${screen.height}`,pixelRatio:window.devicePixelRatio||1,online:navigator.onLine!==false,standalone,touchPoints:navigator.maxTouchPoints||0,timezone:Intl.DateTimeFormat().resolvedOptions().timeZone||''}}
 function pilotDiagnostics(){const cfg=currentSettingsObject();return{orMenuProfile:cfg.orMoreProfile||'minimal',orFocusMode:cfg.orFocusMode!==false,defaultReport:cfg.defaultReport||'summary',saveState:$('saveState')?.textContent||'',connectivityState:$('connectivityState')?.textContent||'',visibility:document.visibilityState||'',fullscreen:!!document.fullscreenElement}}
-function fileToFeedbackAttachment(file){return new Promise((resolve,reject)=>{if(!file){resolve(null);return}if(file.size>1.5*1024*1024){reject(new Error('Screenshot must be 1.5 MB or smaller'));return}const reader=new FileReader();reader.onerror=()=>reject(new Error('Unable to read screenshot'));reader.onload=()=>resolve({name:file.name||'screenshot',type:file.type||'application/octet-stream',size:file.size,dataUrl:String(reader.result||'')});reader.readAsDataURL(file)})}
-function renderPilotFeedbackStatus(){const q=getPilotFeedbackQueue(),pending=q.filter(x=>!['sent','submitted','local-only'].includes(x.status)).length,sent=q.filter(x=>['sent','submitted'].includes(x.status)).length,last=[...q].reverse().find(x=>x.sentAt||x.submittedAt);if($('pilotFeedbackPendingCount'))$('pilotFeedbackPendingCount').textContent=`${pending} pending`;if($('pilotFeedbackSentCount'))$('pilotFeedbackSentCount').textContent=`${sent} submitted`;const at=last?.sentAt||last?.submittedAt;if($('pilotFeedbackLastSync'))$('pilotFeedbackLastSync').textContent=at?`${formatDate(at)} ${formatClock(at)}`:'—'}
-function openPilotFeedbackDialog(){const d=$('pilotFeedbackDialog'),cfg=currentSettingsObject();if(!d)return;if($('pilotFeedbackReporter'))$('pilotFeedbackReporter').value=cfg.pilotReporter||'';if($('pilotFeedbackIncludeContext'))$('pilotFeedbackIncludeContext').checked=cfg.pilotIncludeContext!==false;if($('pilotFeedbackAutoContext'))$('pilotFeedbackAutoContext').textContent=`V${APP_VERSION} • ${activeTabId()} • ${state.casePhase||'preop'} • ${window.innerWidth}×${window.innerHeight} • ${navigator.onLine===false?'offline':'online'}`;if($('pilotFeedbackError'))$('pilotFeedbackError').textContent='';setPilotFeedbackSubmitState('', '');setPilotFeedbackBusy(false);if($('pilotFeedbackDoneBtn'))$('pilotFeedbackDoneBtn').hidden=true;try{if(!d.open)d.showModal()}catch(e){d.setAttribute('open','')}}
+function getRuntimeErrorLog(){try{const x=JSON.parse(localStorage.getItem(RUNTIME_ERROR_KEY)||'[]');return Array.isArray(x)?x:[]}catch(e){return[]}}
+function recordRuntimeError(message,source='',line=0,column=0,stack=''){try{const arr=getRuntimeErrorLog();arr.push({epoch:Date.now(),message:String(message||'Unknown error').slice(0,1000),source:String(source||'').slice(0,300),line:Number(line)||0,column:Number(column)||0,stack:String(stack||'').slice(0,2000)});localStorage.setItem(RUNTIME_ERROR_KEY,JSON.stringify(arr.slice(-RUNTIME_ERROR_MAX)))}catch(e){}}
+window.addEventListener('error',e=>recordRuntimeError(e.message,e.filename,e.lineno,e.colno,e.error?.stack||''));
+window.addEventListener('unhandledrejection',e=>recordRuntimeError(e.reason?.message||String(e.reason||'Unhandled promise rejection'),'promise',0,0,e.reason?.stack||''));
+function renderPilotFeedbackStatus(){
+  if($('pilotSupportEmailLabel'))$('pilotSupportEmailLabel').textContent=window.AnesvetSupport?.SUPPORT_EMAIL||'anesvetth@gmail.com';
+  if($('pilotSupportFacebookLabel'))$('pilotSupportFacebookLabel').textContent='Facebook Page: Anesvet';
+}
+function openPilotFeedbackDialog(){const d=$('pilotFeedbackDialog'),cfg=currentSettingsObject();if(!d)return;if($('pilotFeedbackReporter'))$('pilotFeedbackReporter').value=cfg.pilotReporter||'';if($('pilotFeedbackIncludeContext'))$('pilotFeedbackIncludeContext').checked=cfg.pilotIncludeContext!==false;if($('pilotFeedbackAutoContext'))$('pilotFeedbackAutoContext').textContent=`V${APP_VERSION} • ${activeTabId()} • ${state.casePhase||'preop'} • ${window.innerWidth}×${window.innerHeight} • ${navigator.onLine===false?'offline':'online'}`;if($('pilotFeedbackError'))$('pilotFeedbackError').textContent='';setPilotFeedbackSubmitState('', '');try{if(!d.open)d.showModal()}catch(e){d.setAttribute('open','')}}
 function setPilotFeedbackSubmitState(message='',kind=''){const el=$('pilotFeedbackSubmitState');if(!el)return;el.textContent=message||'';el.className='pilot-feedback-submit-state'+(kind?` ${kind}`:'');el.hidden=!message}
-function setPilotFeedbackBusy(busy){const btn=$('pilotFeedbackSubmitBtn');if(!btn)return;btn.disabled=!!busy;btn.textContent=busy?'Sending…':'Submit report'}
 function showFeedbackDeliveryBanner(message,kind='success'){const el=$('feedbackDeliveryBanner');if(!el){toast(message);return}el.textContent=message;el.className=`feedback-delivery-banner ${kind}`;el.hidden=false;clearTimeout(showFeedbackDeliveryBanner._t);showFeedbackDeliveryBanner._t=setTimeout(()=>{el.hidden=true},4800)}
 function closePilotFeedbackDialog(){const d=$('pilotFeedbackDialog');if(d?.open){try{d.close()}catch(e){d.removeAttribute('open')}}}
-async function makePilotFeedbackReport(localOnly=false){const summary=$('pilotFeedbackSummary')?.value.trim()||'',description=$('pilotFeedbackDescription')?.value.trim()||'';if(!summary||!description){if($('pilotFeedbackError'))$('pilotFeedbackError').textContent='กรุณากรอก Short summary และ What happened';return null}let attachment=null;try{attachment=await fileToFeedbackAttachment($('pilotFeedbackScreenshot')?.files?.[0]||null)}catch(e){if($('pilotFeedbackError'))$('pilotFeedbackError').textContent=e.message;return null}const cfg=currentSettingsObject(),include=$('pilotFeedbackIncludeContext')?.checked!==false,now=Date.now();return{format:PILOT_FEEDBACK_FORMAT,reportId:pilotFeedbackId(),appVersion:APP_VERSION,createdAt:now,createdAtIso:new Date(now).toISOString(),status:localOnly?'local-only':'pending',attempts:0,lastError:'',site:cfg.pilotSiteName||'',reporter:$('pilotFeedbackReporter')?.value.trim()||cfg.pilotReporter||'',category:$('pilotFeedbackCategory')?.value||'bug',severity:$('pilotFeedbackSeverity')?.value||'medium',reproducible:$('pilotFeedbackRepro')?.value||'unknown',summary,description,expected:$('pilotFeedbackExpected')?.value.trim()||'',caseContext:include?anonymizedCaseContext():null,device:pilotDeviceContext(),diagnostics:pilotDiagnostics(),attachment}}
-async function sendPilotFeedbackReport(report){
-  const endpoint=INTERNAL_PILOT_FEEDBACK_ENDPOINT;
-  if(!endpoint)throw new Error('Feedback service is unavailable');
-  if(navigator.onLine===false)throw new Error('Device is offline');
-  const body=JSON.stringify(report);
-  let firstError=null;
-  // Attempt a normal request first. This gives verified delivery when the browser accepts the Apps Script response.
-  try{
-    const ctl=new AbortController(),timer=setTimeout(()=>ctl.abort(),6500);
-    try{
-      const res=await fetch(endpoint,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body,signal:ctl.signal,cache:'no-store',credentials:'omit',redirect:'follow'});
-      if(!res.ok){const err=new Error(`Feedback receiver HTTP ${res.status}`);err.feedbackTerminal=true;throw err}
-      let parsed=null;try{parsed=await res.clone().json()}catch(e){}
-      if(parsed&&parsed.ok===false){const err=new Error(parsed.error||'Feedback receiver rejected report');err.feedbackTerminal=true;throw err}
-      return{ok:true,verified:true,transport:'fetch'};
-    }finally{clearTimeout(timer)}
-  }catch(e){if(e?.feedbackTerminal)throw e;firstError=e}
-  // Google Apps Script may successfully receive the POST but its redirect/response can be blocked by CORS on Safari/PWA.
-  // A no-CORS retry uses the same reportId; the receiver de-duplicates it.
-  try{
-    const ctl=new AbortController(),timer=setTimeout(()=>ctl.abort(),9000);
-    try{
-      await fetch(endpoint,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body,signal:ctl.signal,cache:'no-store',credentials:'omit',redirect:'follow'});
-      return{ok:true,verified:false,transport:'fetch-no-cors'};
-    }finally{clearTimeout(timer)}
-  }catch(e){}
-  // Last transport fallback for mobile/PWA. sendBeacon does not require reading a cross-origin response.
-  try{
-    if(navigator.sendBeacon){const ok=navigator.sendBeacon(endpoint,new Blob([body],{type:'text/plain;charset=utf-8'}));if(ok)return{ok:true,verified:false,transport:'beacon'}}
-  }catch(e){}
-  throw firstError||new Error('Unable to send feedback');
+function makeSupportReport(){
+  const summary=$('pilotFeedbackSummary')?.value.trim()||'',description=$('pilotFeedbackDescription')?.value.trim()||'';
+  if(!summary||!description){if($('pilotFeedbackError'))$('pilotFeedbackError').textContent='กรุณากรอก Short summary และ What happened';return null}
+  const cfg=currentSettingsObject(),include=$('pilotFeedbackIncludeContext')?.checked!==false,now=Date.now();
+  return{reportId:pilotFeedbackId(),appVersion:APP_VERSION,createdAt:now,createdAtIso:new Date(now).toISOString(),site:cfg.pilotSiteName||'',reporter:$('pilotFeedbackReporter')?.value.trim()||cfg.pilotReporter||'',category:$('pilotFeedbackCategory')?.value||'bug',severity:$('pilotFeedbackSeverity')?.value||'medium',reproducible:$('pilotFeedbackRepro')?.value||'unknown',summary,description,expected:$('pilotFeedbackExpected')?.value.trim()||'',caseContext:include?anonymizedCaseContext():null,device:pilotDeviceContext(),diagnostics:pilotDiagnostics(),runtimeErrors:getRuntimeErrorLog().slice(-3)}
 }
-async function queuePilotFeedback(localOnly=false){
-  if($('pilotFeedbackError'))$('pilotFeedbackError').textContent='';
-  setPilotFeedbackBusy(true);setPilotFeedbackSubmitState('Preparing report…','sending');
-  const report=await makePilotFeedbackReport(localOnly);
-  if(!report){setPilotFeedbackBusy(false);setPilotFeedbackSubmitState('Please complete the required fields above.','error');return}
-  let q=getPilotFeedbackQueue();q.push(report);
-  if(!setPilotFeedbackQueue(q)){setPilotFeedbackBusy(false);setPilotFeedbackSubmitState('Unable to save the report on this device.','error');showFeedbackDeliveryBanner('⚠ Report could not be saved','error');return}
-  renderPilotFeedbackStatus();
-  if(localOnly){setPilotFeedbackBusy(false);setPilotFeedbackSubmitState(`Saved on this device • ${report.reportId}`,'queued');showFeedbackDeliveryBanner(`Saved locally • ${report.reportId}`,'queued');if($('pilotFeedbackDoneBtn'))$('pilotFeedbackDoneBtn').hidden=false;return}
-  if(navigator.onLine===false){setPilotFeedbackBusy(false);setPilotFeedbackSubmitState(`Offline — report queued and will send automatically • ${report.reportId}`,'queued');showFeedbackDeliveryBanner(`Report queued • will send when online • ${report.reportId}`,'queued');if($('pilotFeedbackDoneBtn'))$('pilotFeedbackDoneBtn').hidden=false;return}
-  setPilotFeedbackSubmitState(`Sending ${report.reportId} to ANESVET developer…`,'sending');
-  try{
-    const delivery=await sendPilotFeedbackReport(report);
-    q=getPilotFeedbackQueue();const item=q.find(x=>x.reportId===report.reportId);
-    if(item){item.status=delivery.verified?'sent':'submitted';item.sentAt=delivery.verified?Date.now():null;item.submittedAt=Date.now();item.transport=delivery.transport;item.attempts=(item.attempts||0)+1;item.lastError='';setPilotFeedbackQueue(q)}
-    const text=delivery.verified?`✓ Report received • ${report.reportId}`:`✓ Report submitted to developer • ${report.reportId}`;
-    setPilotFeedbackSubmitState(text,'success');showFeedbackDeliveryBanner(text,'success');resetPilotFeedbackForm();
-  }catch(e){
-    q=getPilotFeedbackQueue();const item=q.find(x=>x.reportId===report.reportId);
-    if(item){item.status='pending';item.attempts=(item.attempts||0)+1;item.lastError=e?.message||String(e);setPilotFeedbackQueue(q)}
-    const reason=e?.message?String(e.message):'delivery not confirmed';
-    const text=`Report queued • ${reason} • ${report.reportId}`;
-    setPilotFeedbackSubmitState(text,'queued');showFeedbackDeliveryBanner(text,'queued');
-  }
-  renderPilotFeedbackStatus();setPilotFeedbackBusy(false);if($('pilotFeedbackDoneBtn'))$('pilotFeedbackDoneBtn').hidden=false;
+async function copyTextCompat(text){try{if(navigator.clipboard?.writeText){await navigator.clipboard.writeText(text);return true}}catch(e){}try{const ta=document.createElement('textarea');ta.value=text;ta.setAttribute('readonly','');ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();const ok=document.execCommand('copy');ta.remove();return ok}catch(e){return false}}
+function rememberSupportReporter(){const old=currentSettingsObject(),s={...old,pilotSiteName:$('settingPilotSiteName')?.value.trim()||old.pilotSiteName||'',pilotReporter:$('pilotFeedbackReporter')?.value.trim()||old.pilotReporter||'',pilotIncludeContext:$('pilotFeedbackIncludeContext')?.checked!==false};delete s.pilotFeedbackEndpoint;try{localStorage.setItem(SETTINGS_KEY,JSON.stringify(s))}catch(e){}}
+function openSupportEmail(){
+  if($('pilotFeedbackError'))$('pilotFeedbackError').textContent='';const report=makeSupportReport();if(!report)return;
+  if(!window.AnesvetSupport){setPilotFeedbackSubmitState('Support composer unavailable — reload the app.','error');return}
+  rememberSupportReporter();const body=window.AnesvetSupport.buildReportText(report);copyTextCompat(body).catch(()=>{});
+  setPilotFeedbackSubmitState(`Opening email to ${window.AnesvetSupport.SUPPORT_EMAIL} • ${report.reportId}`,'success');
+  showFeedbackDeliveryBanner(`Email report prepared • ${report.reportId}`,'success');
+  window.location.href=window.AnesvetSupport.emailUrl(report);
 }
-function resetPilotFeedbackForm(){for(const id of ['pilotFeedbackSummary','pilotFeedbackDescription','pilotFeedbackExpected'])if($(id))$(id).value='';if($('pilotFeedbackScreenshot'))$('pilotFeedbackScreenshot').value='';if($('pilotFeedbackCategory'))$('pilotFeedbackCategory').value='bug';if($('pilotFeedbackSeverity'))$('pilotFeedbackSeverity').value='medium';if($('pilotFeedbackRepro'))$('pilotFeedbackRepro').value='unknown'}
-async function retryPendingPilotFeedback({silent=false}={}){const endpoint=INTERNAL_PILOT_FEEDBACK_ENDPOINT;if(!endpoint||navigator.onLine===false){if(!silent)showFeedbackDeliveryBanner(endpoint?'Offline — reports remain queued':'Feedback service unavailable','queued');renderPilotFeedbackStatus();return}let q=getPilotFeedbackQueue(),changed=false,sent=0;for(const item of q.filter(x=>x.status==='pending'||x.status==='failed').slice(0,10)){try{const delivery=await sendPilotFeedbackReport(item);item.status=delivery.verified?'sent':'submitted';item.sentAt=delivery.verified?Date.now():null;item.submittedAt=Date.now();item.transport=delivery.transport;item.attempts=(item.attempts||0)+1;item.lastError='';sent++;changed=true}catch(e){item.status='failed';item.attempts=(item.attempts||0)+1;item.lastError=e?.message||String(e);changed=true}}if(changed)setPilotFeedbackQueue(q);renderPilotFeedbackStatus();if(!silent)showFeedbackDeliveryBanner(sent?`✓ Submitted ${sent} queued report${sent===1?'':'s'}`:'No report submitted • queued items kept safely',sent?'success':'queued')}
-function csvCell(v){const s=typeof v==='string'?v:JSON.stringify(v??'');return `"${String(s).replace(/"/g,'""')}"`}
-function exportPilotFeedback(format='csv'){const q=getPilotFeedbackQueue();if(!q.length){toast('No pilot feedback to export');return}let blob,name;if(format==='json'){blob=new Blob([JSON.stringify({format:'ANESVET_PILOT_FEEDBACK_EXPORT_V1',exportedAt:Date.now(),reports:q},null,2)],{type:'application/json'});name=`ANESVET_Pilot_Feedback_${formatDate(Date.now())}.json`}else{const cols=['reportId','createdAtIso','status','site','reporter','category','severity','reproducible','summary','description','expected','appVersion','caseContext','device','diagnostics','lastError'];const rows=[cols.join(','),...q.map(r=>cols.map(k=>csvCell(k==='createdAtIso'?(r.createdAtIso||new Date(r.createdAt).toISOString()):r[k])).join(','))];blob=new Blob(['\ufeff'+rows.join('\n')],{type:'text/csv;charset=utf-8'});name=`ANESVET_Pilot_Feedback_${formatDate(Date.now())}.csv`}const url=URL.createObjectURL(blob),link=document.createElement('a');link.href=url;link.download=name;document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1000)}
-$('pilotFeedbackBtn')?.addEventListener('click',openPilotFeedbackDialog);$('openPilotFeedbackBtn')?.addEventListener('click',openPilotFeedbackDialog);$('orMoreReportIssueBtn')?.addEventListener('click',()=>{closeOrMoreDialog();openPilotFeedbackDialog()});$('recoveryMoreReportIssueBtn')?.addEventListener('click',()=>{closeRecoveryMoreDialog();openPilotFeedbackDialog()});$('pilotFeedbackCloseBtn')?.addEventListener('click',closePilotFeedbackDialog);$('pilotFeedbackDoneBtn')?.addEventListener('click',()=>{closePilotFeedbackDialog();setPilotFeedbackSubmitState('','');if($('pilotFeedbackDoneBtn'))$('pilotFeedbackDoneBtn').hidden=true});$('pilotFeedbackDialog')?.addEventListener('click',e=>{if(e.target===$('pilotFeedbackDialog'))closePilotFeedbackDialog()});$('pilotFeedbackSubmitBtn')?.addEventListener('click',()=>queuePilotFeedback(false));$('pilotFeedbackLocalOnlyBtn')?.addEventListener('click',()=>queuePilotFeedback(true));$('retryPilotFeedbackBtn')?.addEventListener('click',()=>retryPendingPilotFeedback());$('exportPilotFeedbackCsvBtn')?.addEventListener('click',()=>exportPilotFeedback('csv'));$('exportPilotFeedbackJsonBtn')?.addEventListener('click',()=>exportPilotFeedback('json'));
-$('savePilotFeedbackSettingsBtn')?.addEventListener('click',()=>{const old=currentSettingsObject(),s={...old,pilotSiteName:$('settingPilotSiteName')?.value.trim()||'',pilotReporter:$('settingPilotReporter')?.value.trim()||'',pilotIncludeContext:$('settingPilotIncludeContext')?.checked!==false};delete s.pilotFeedbackEndpoint;localStorage.setItem(SETTINGS_KEY,JSON.stringify(s));renderPilotFeedbackStatus();toast('Pilot feedback settings saved');retryPendingPilotFeedback({silent:true})});
-window.addEventListener('online',()=>retryPendingPilotFeedback({silent:true}));setTimeout(()=>{renderPilotFeedbackStatus();if(navigator.onLine!==false)retryPendingPilotFeedback({silent:true})},1800);
+async function copySupportReport(){if($('pilotFeedbackError'))$('pilotFeedbackError').textContent='';const report=makeSupportReport();if(!report)return;if(!window.AnesvetSupport){setPilotFeedbackSubmitState('Support composer unavailable — reload the app.','error');return}const ok=await copyTextCompat(window.AnesvetSupport.buildReportText(report));setPilotFeedbackSubmitState(ok?`✓ Report text copied • ${report.reportId}`:`Unable to copy automatically • ${report.reportId}`,ok?'success':'error');if(ok)showFeedbackDeliveryBanner('✓ Report text copied','success')}
+function openSupportFacebook(){
+  if($('pilotFeedbackError'))$('pilotFeedbackError').textContent='';const report=makeSupportReport();if(!report)return;if(!window.AnesvetSupport){setPilotFeedbackSubmitState('Support composer unavailable — reload the app.','error');return}
+  rememberSupportReporter();const text=window.AnesvetSupport.buildReportText(report);copyTextCompat(text).then(ok=>{setPilotFeedbackSubmitState(ok?'Report text copied — paste it in a message to Facebook Page “Anesvet”.':'Facebook opened — copy the report text manually if needed.','success')});
+  const url=window.AnesvetSupport.FACEBOOK_SEARCH;const w=window.open(url,'_blank','noopener');if(!w)window.location.href=url;
+}
+function resetPilotFeedbackForm(){for(const id of ['pilotFeedbackSummary','pilotFeedbackDescription','pilotFeedbackExpected'])if($(id))$(id).value='';if($('pilotFeedbackCategory'))$('pilotFeedbackCategory').value='bug';if($('pilotFeedbackSeverity'))$('pilotFeedbackSeverity').value='medium';if($('pilotFeedbackRepro'))$('pilotFeedbackRepro').value='unknown'}
+function runReliabilitySelfCheck({announce=false}={}){
+  const R=window.AnesvetReliability,checks=[];
+  if(R){checks.push(R.checkDom(document),R.checkLocalStorage(localStorage),R.checkIndexedDb(window.indexedDB),R.checkServiceWorker(navigator),R.checkWorkflow(WF))}
+  else checks.push({ok:false,label:'Reliability module',detail:'reliability.js not loaded'});
+  try{JSON.stringify(state);checks.push({ok:true,label:'Current case serialization',detail:'Current clinical state serializes successfully'})}catch(e){checks.push({ok:false,label:'Current case serialization',detail:e.message||String(e)})}
+  try{preOrBriefingSignature();checks.push({ok:true,label:'Pre-OR briefing engine',detail:'Briefing signature generated without JavaScript error'})}catch(e){checks.push({ok:false,label:'Pre-OR briefing engine',detail:e.message||String(e)})}
+  try{const d=dogNormalAnatomyEtt(10),c=catNormalAnatomyEtt(4);checks.push({ok:d.min===7&&d.max===8&&c.min===4&&c.max===4.5,label:'ETT preparation references',detail:`10 kg dog ${d.range} • 4 kg cat ${c.range}`})}catch(e){checks.push({ok:false,label:'ETT preparation references',detail:e.message||String(e)})}
+  try{const a=calculateLibraryDrug({mode:'mgkg',concUnit:'mg/mL'},10,4,10),b=calculateLibraryDrug({mode:'mcgkg',concUnit:'mg/mL'},10,2,0.05);checks.push({ok:Math.abs(a.ml-4)<1e-9&&Math.abs(b.ml-0.4)<1e-9,label:'Medication calculation units',detail:`mg/kg sample ${fmtDose(a.ml)} mL • μg/kg↔mg/mL sample ${fmtDose(b.ml)} mL`})}catch(e){checks.push({ok:false,label:'Medication calculation units',detail:e.message||String(e)})}
+  const result=R?R.summarize(checks):{ok:checks.every(x=>x.ok),passed:checks.filter(x=>x.ok).length,total:checks.length,checks};result.epoch=Date.now();result.version=APP_VERSION;
+  const box=$('reliabilityCheckResults');if(box)box.innerHTML=checks.map(x=>`<div class="reliability-check ${x.ok?'pass':'fail'}"><b>${x.ok?'✓':'⚠'} ${escapeHtml(x.label)}</b><span>${escapeHtml(x.detail)}</span></div>`).join('');
+  const badge=$('reliabilityCheckBadge');if(badge){badge.textContent=result.ok?`PASS ${result.passed}/${result.total}`:`CHECK ${result.passed}/${result.total}`;badge.className=`status-pill ${result.ok?'good':'warn'}`}
+  const meta=$('reliabilityCheckMeta');if(meta)meta.textContent=`V${APP_VERSION} • ${formatDate(result.epoch)} ${formatClock(result.epoch)} • recent runtime errors ${getRuntimeErrorLog().length}`;
+  try{sessionStorage.setItem('anesvet_v15_last_self_check',JSON.stringify(result))}catch(e){}
+  if(announce)toast(result.ok?`Reliability self-check passed ${result.passed}/${result.total}`:`Reliability self-check: ${result.passed}/${result.total} passed`);
+  return result;
+}
+function exportReliabilityDiagnostics(){const r=runReliabilitySelfCheck(),payload={format:'ANESVET_DIAGNOSTICS_V1',version:APP_VERSION,exportedAt:new Date().toISOString(),selfCheck:r,device:pilotDeviceContext(),diagnostics:pilotDiagnostics(),runtimeErrors:getRuntimeErrorLog()};const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`ANESVET_Diagnostics_V${APP_VERSION}_${formatDate(Date.now())}.json`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000)}
+$('pilotFeedbackBtn')?.addEventListener('click',openPilotFeedbackDialog);$('openPilotFeedbackBtn')?.addEventListener('click',openPilotFeedbackDialog);$('orMoreReportIssueBtn')?.addEventListener('click',()=>{closeOrMoreDialog();openPilotFeedbackDialog()});$('recoveryMoreReportIssueBtn')?.addEventListener('click',()=>{closeRecoveryMoreDialog();openPilotFeedbackDialog()});$('pilotFeedbackCloseBtn')?.addEventListener('click',closePilotFeedbackDialog);$('pilotFeedbackDialog')?.addEventListener('click',e=>{if(e.target===$('pilotFeedbackDialog'))closePilotFeedbackDialog()});$('pilotFeedbackSubmitBtn')?.addEventListener('click',openSupportEmail);$('pilotFeedbackFacebookBtn')?.addEventListener('click',openSupportFacebook);$('pilotFeedbackCopyBtn')?.addEventListener('click',copySupportReport);
+$('savePilotFeedbackSettingsBtn')?.addEventListener('click',()=>{const old=currentSettingsObject(),s={...old,pilotSiteName:$('settingPilotSiteName')?.value.trim()||'',pilotReporter:$('settingPilotReporter')?.value.trim()||'',pilotIncludeContext:$('settingPilotIncludeContext')?.checked!==false};delete s.pilotFeedbackEndpoint;localStorage.setItem(SETTINGS_KEY,JSON.stringify(s));renderPilotFeedbackStatus();toast('Support/report settings saved')});
+$('runReliabilityCheckBtn')?.addEventListener('click',()=>runReliabilitySelfCheck({announce:true}));$('exportReliabilityDiagnosticsBtn')?.addEventListener('click',exportReliabilityDiagnostics);$('clearRuntimeErrorsBtn')?.addEventListener('click',()=>{try{localStorage.removeItem(RUNTIME_ERROR_KEY)}catch(e){};runReliabilitySelfCheck();toast('Local runtime error log cleared')});
 
 function isProtocolLocked(){return !!currentSettingsObject().protocolLocked}
 function renderProtocolGovernance(){
@@ -4604,5 +4587,6 @@ const initialTab=state.patientSaved?(state.casePhase==='complete'?'endcase':stat
 setTab(initialTab);
 if(sessionMode==='active')writeSessionLock();renderPatientRiskBanner();renderPreopRisk();renderSessionMode();renderAirwayPanel();renderFavoriteDrugButtons();renderQuickPresetSettings();renderQuickPresetSummary();renderOrFluidPanel();renderCaseSummary();renderCasePhase();renderOrPhaseTracker();renderRecoveryRecords();renderWorkflowLocks();renderAlertFeedbackState();renderProtocolGovernance();renderStorageStatus();renderFinalSignoff();renderBackupHealth();renderLinkedPatient();renderPatientMaster();
 updateDashboard();renderStartupRecoveryNotice();renderPreop();renderPreopExam();renderRecords();renderCorrections();renderEvents();renderComplications();renderDrugAdministrationAudit();renderTrends();renderProcedureTimeline();renderRecovery();renderRecoveryState();renderRecoveryScores();renderArchives();updateDue();renderTimerState();updateDoseSpotlights();renderEndCase();renderOrLive();renderSaveState();
+setTimeout(()=>{try{renderPilotFeedbackStatus();runReliabilitySelfCheck()}catch(e){recordRuntimeError(e?.message||String(e),'startup-self-check',0,0,e?.stack||'')}},1200);
 if(state.timer.running && state.timer.startedEpoch && sessionMode==='active') startTimerLoop();
 })();

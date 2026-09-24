@@ -1,3 +1,3 @@
-ANESVET V15.11.0 Mobile UI Simplification
-Base: V15.10.2
-Scope: non-sticky workflow tabs, compact header, lean MORE menus
+ANESVET V15.12.0 Clinical Safety & Reliability
+Base: V15.11.0
+Scope: browser/device hardening, runtime diagnostics, clinical calculation sanity checks, direct Email/Facebook support reporting

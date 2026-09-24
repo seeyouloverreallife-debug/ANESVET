@@ -7,12 +7,12 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="description" content="ANESVET V15.11.0 — Mobile UI Simplification">
+  <meta name="description" content="ANESVET V15.12.0 — Clinical Safety & Reliability">
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" href="./icon-192.png">
   <link rel="apple-touch-icon" href="./icon-192.png">
-  <link rel="stylesheet" href="./style.css?v=15.11.0">
-  <title>ANESVET V15.11.0</title>
+  <link rel="stylesheet" href="./style.css?v=15.12.0">
+  <title>ANESVET V15.12.0</title>
 </head>
 <body>
 <header class="topbar">
@@ -20,7 +20,7 @@
     <img class="brand-logo" src="./icon-192.png" alt="ANESVET logo">
     <div>
       <div class="eyebrow">GENOVI PET CARE • DIGITAL ANESTHESIA RECORD</div>
-      <h1>ANESVET <span>V15.11.0</span></h1>
+      <h1>ANESVET <span>V15.12.0</span></h1>
     </div>
   </div>
   <div class="top-actions">
@@ -31,7 +31,7 @@
       <span id="connectivityState" class="connectivity-state local">● Local-first</span>
     </div>
     <button id="alertFeedbackBtn" class="btn light alert-feedback-btn" type="button" title="เสียงและการสั่นสำหรับ Record due">🔔 Alerts ON</button>
-    <button id="pilotFeedbackBtn" class="btn light pilot-feedback-btn" type="button" title="รายงานปัญหา / feedback สำหรับ Hospital Pilot">🐞 Report</button>
+    <button id="pilotFeedbackBtn" class="btn light pilot-feedback-btn" type="button" title="รายงานปัญหา / ติดต่อ ANESVET support">🐞 Report</button>
     <button id="installBtn" class="btn light" hidden>ติดตั้งแอป</button>
   </div>
 </header>
@@ -2243,29 +2243,41 @@
   <div class="settings-note">Minimal เป็นค่าเริ่มต้น: Induction เน้น Medications / Airway / Event, Intraoperative เน้น Medications / Fluid / Event, Emergence เน้น Airway / Medications / Event • Confirm phase change, Undo guard, readiness gate และ audit trail ไม่สามารถปิดจาก Settings ได้</div>
 </section>
 
+<section class="panel reliability-panel">
+  <div class="section-heading">
+    <div><h2>Clinical Safety & Reliability</h2><p>ตรวจความพร้อมของ storage, workflow helpers, Pre-OR briefing และ calculation sanity checks บนอุปกรณ์นี้</p></div>
+    <span id="reliabilityCheckBadge" class="status-pill neutral">NOT RUN</span>
+  </div>
+  <div class="button-row">
+    <button id="runReliabilityCheckBtn" class="btn primary" type="button">Run self-check</button>
+    <button id="exportReliabilityDiagnosticsBtn" class="btn" type="button">Export diagnostics</button>
+    <button id="clearRuntimeErrorsBtn" class="btn" type="button">Clear local error log</button>
+  </div>
+  <div id="reliabilityCheckResults" class="reliability-check-grid"></div>
+  <div id="reliabilityCheckMeta" class="settings-note">Self-check has not run yet.</div>
+  <div class="settings-note">Self-check เป็น technical safety check ไม่ได้แทน clinical verification • Browser/device pilot testing ยังต้องทำบน iPhone/iPad/Android จริง</div>
+</section>
+
 <section class="panel pilot-feedback-settings-panel">
   <div class="section-heading">
-    <div><h2>Hospital Pilot Feedback</h2><p>ส่ง report ถึงผู้พัฒนา ANESVET โดยตรง • ถ้า offline ระบบจะเก็บในเครื่องและส่งให้อัตโนมัติเมื่อกลับมาออนไลน์</p></div>
-    <span class="status-pill neutral">Pilot</span>
+    <div><h2>Support / Report</h2><p>ส่งปัญหาให้ทีม ANESVET ผ่าน Email หรือ Facebook โดยไม่ใช้ Google Apps Script / webhook แล้ว</p></div>
+    <span class="status-pill neutral">Support</span>
+  </div>
+  <div class="support-contact-grid">
+    <div class="support-contact-card"><small>EMAIL</small><b id="pilotSupportEmailLabel">anesvetth@gmail.com</b><span>แนะนำสำหรับ bug / data-safety เพราะมีรายละเอียด structured report</span></div>
+    <div class="support-contact-card"><small>FACEBOOK</small><b id="pilotSupportFacebookLabel">Facebook Page: Anesvet</b><span>เหมาะกับคำถาม/feedback สั้น ๆ หรือแนบภาพผ่าน Messenger</span></div>
   </div>
   <div class="settings-grid">
     <label>Hospital / pilot site name<input id="settingPilotSiteName" type="text" placeholder="e.g. Geno V Animal Hospital"></label>
     <label>Default reporter name<input id="settingPilotReporter" type="text" placeholder="ชื่อเล่น / initials"></label>
     <label class="settings-toggle"><span>Include anonymized case context by default</span><input id="settingPilotIncludeContext" type="checkbox" checked></label>
   </div>
-  <div class="pilot-feedback-status-grid">
-    <div><small>LOCAL QUEUE</small><b id="pilotFeedbackPendingCount">0 pending</b></div>
-    <div><small>SENT / SYNCED</small><b id="pilotFeedbackSentCount">0 sent</b></div>
-    <div><small>LAST SYNC</small><b id="pilotFeedbackLastSync">—</b></div>
-  </div>
   <div class="button-row pilot-feedback-settings-actions">
-    <button id="savePilotFeedbackSettingsBtn" class="btn primary" type="button">Save feedback settings</button>
+    <button id="savePilotFeedbackSettingsBtn" class="btn primary" type="button">Save support settings</button>
     <button id="openPilotFeedbackBtn" class="btn" type="button">🐞 New report</button>
-    <button id="retryPilotFeedbackBtn" class="btn" type="button">↻ Retry pending</button>
   </div>
-  <div class="settings-note">Report จะถูกส่งถึงผู้พัฒนา ANESVET โดยตรง • ANESVET จะไม่ส่งชื่อผู้ป่วย, HN, microchip หรือข้อมูลเจ้าของอัตโนมัติ • หาก offline ระบบจะเก็บ report ไว้และส่งให้อัตโนมัติเมื่อออนไลน์</div>
+  <div class="settings-note">ANESVET จะไม่แนบชื่อผู้ป่วย, HN, microchip หรือข้อมูลเจ้าของอัตโนมัติ • Email report จะเปิด mail app ของเครื่องและเตรียมข้อความให้ จากนั้นผู้ใช้เป็นผู้กดส่งเอง</div>
 </section>
-
 <section class="panel built-in-protocol-panel">
   <div class="section-heading">
     <div>
@@ -2385,7 +2397,7 @@
 
 <dialog id="pilotFeedbackDialog" class="workflow-dialog pilot-feedback-dialog" aria-labelledby="pilotFeedbackTitle">
   <div class="workflow-dialog-body pilot-feedback-body">
-    <div class="quick-drug-dialog-head"><div><small>ANESVET HOSPITAL PILOT</small><h2 id="pilotFeedbackTitle">Report issue / feedback</h2></div><button id="pilotFeedbackCloseBtn" class="dialog-close-x" type="button" aria-label="Close feedback">×</button></div>
+    <div class="quick-drug-dialog-head"><div><small>ANESVET SUPPORT</small><h2 id="pilotFeedbackTitle">Report issue / feedback</h2></div><button id="pilotFeedbackCloseBtn" class="dialog-close-x" type="button" aria-label="Close feedback">×</button></div>
     <div class="pilot-feedback-context" id="pilotFeedbackAutoContext">App / device context will be attached automatically.</div>
     <div class="settings-grid pilot-feedback-fields">
       <label>Category<select id="pilotFeedbackCategory"><option value="bug">Bug / malfunction</option><option value="usability">Usability / หาไม่เจอ / กดยาก</option><option value="data_safety">Data / save / safety concern</option><option value="clinical_workflow">Clinical workflow</option><option value="medication">Medication / calculation</option><option value="report_pdf">Report / PDF</option><option value="suggestion">Suggestion</option></select></label>
@@ -2397,17 +2409,18 @@
     <label>What happened? *<textarea id="pilotFeedbackDescription" rows="4" placeholder="กำลังทำอะไร → กดอะไร → เกิดอะไรขึ้น"></textarea></label>
     <label>What did you expect?<textarea id="pilotFeedbackExpected" rows="2" placeholder="สิ่งที่คิดว่าควรเกิดขึ้น"></textarea></label>
     <label class="settings-toggle pilot-context-toggle"><span>แนบ case context แบบไม่ระบุตัวตน (phase / species / ASA / record counts)</span><input id="pilotFeedbackIncludeContext" type="checkbox" checked></label>
-    <label>Screenshot (optional, ≤ 1.5 MB)<input id="pilotFeedbackScreenshot" type="file" accept="image/png,image/jpeg,image/webp"></label>
-    <div class="settings-note">ระบบไม่แนบชื่อผู้ป่วย, HN, microchip หรือข้อมูลเจ้าของอัตโนมัติ กรุณาหลีกเลี่ยงข้อมูลระบุตัวบุคคลในข้อความและ screenshot หากไม่จำเป็น</div>
+    <div class="settings-note">Email จะเปิด mail app พร้อม structured report ไปที่ <b>anesvetth@gmail.com</b> • หากต้องการแนบ screenshot ให้แนบใน Email/Facebook หลังเปิดแอป • Facebook จะ copy ข้อความ report ให้ก่อนเปิดหน้า Anesvet</div>
+    <div class="settings-note">ระบบไม่แนบชื่อผู้ป่วย, HN, microchip หรือข้อมูลเจ้าของอัตโนมัติ กรุณาหลีกเลี่ยงข้อมูลระบุตัวบุคคลในข้อความและภาพหากไม่จำเป็น</div>
     <p id="pilotFeedbackError" class="workflow-error" role="alert"></p>
     <div id="pilotFeedbackSubmitState" class="pilot-feedback-submit-state" role="status" aria-live="polite" hidden></div>
-    <div class="workflow-dialog-actions">
-      <button id="pilotFeedbackSubmitBtn" class="btn primary" type="button">Submit report</button>
-      <button id="pilotFeedbackDoneBtn" class="btn" type="button" hidden>Done</button>
+    <div class="workflow-dialog-actions support-report-actions">
+      <button id="pilotFeedbackSubmitBtn" class="btn primary" type="button">✉ Email report</button>
+      <button id="pilotFeedbackFacebookBtn" class="btn" type="button">Facebook: Anesvet</button>
+      <button id="pilotFeedbackCopyBtn" class="btn" type="button">Copy report text</button>
+      <button class="btn" type="button" data-close-dialog="pilotFeedbackDialog">Close</button>
     </div>
   </div>
 </dialog>
-
 <dialog id="alertProtocolDialog" class="workflow-dialog" aria-labelledby="alertProtocolTitle"><div class="workflow-dialog-body"><h2 id="alertProtocolTitle">Alert Protocol</h2><p id="alertProtocolContext"></p><p>Temperature thresholds use °F for exact compatibility (°C = (°F − 32) ÷ 1.8). Leave both upper fields blank to disable upper alerts. Comparisons are strictly below / above.</p><div id="alertThresholdFields"></div><label>Changed by<input id="alertProtocolActor" autocomplete="off"></label><label>Reason (required)<textarea id="alertProtocolReason"></textarea></label><p id="alertProtocolError" class="workflow-error" role="alert"></p><div class="workflow-dialog-actions"><button class="btn" data-close-dialog="alertProtocolDialog">Cancel</button><button class="btn" id="clearCaseAlertOverrideBtn">Return to frozen defaults</button><button class="btn primary" id="saveAlertProtocolBtn">Save with audit</button></div></div></dialog>
 <dialog id="problemActionDialog" class="workflow-dialog" aria-labelledby="problemActionTitle"><div class="workflow-dialog-body"><h2 id="problemActionTitle"></h2><label>Recorded by<input id="problemActionActor"></label><label>Intervention / outcome / reason<textarea id="problemActionNote"></textarea></label><p id="problemActionError" class="workflow-error" role="alert"></p><div class="workflow-dialog-actions"><button class="btn" data-close-dialog="problemActionDialog">Cancel</button><button id="saveProblemActionBtn" class="btn primary">Save action</button></div></div></dialog>
 <dialog id="orQuickDrugDialog" class="workflow-dialog quick-drug-dialog" aria-labelledby="orQuickDrugTitle"><div class="workflow-dialog-body quick-drug-dialog-body"><div class="quick-drug-dialog-head"><div><small>MEDICATION WORKSPACE</small><h2 id="orQuickDrugTitle">Medication</h2></div><button id="orQuickDrugCloseTop" class="dialog-close-x" type="button" aria-label="Close medication workspace">×</button></div><p id="orQuickDrugBasis"></p><div id="orQuickDrugBatchStatus" class="quick-drug-batch-status" hidden></div><div id="orQuickDrugBatchEditor" class="quick-drug-batch-editor" hidden><div class="quick-drug-batch-head"><div><b>Planned induction medications</b><small>ตรวจ actual / route / concentration ก่อนบันทึกทั้งหมด</small></div><button id="orQuickDrugApplyCalculatedAllBtn" class="btn" type="button">Use calculated amounts</button></div><div id="orQuickDrugBatchList" class="quick-drug-batch-list"></div><div class="quick-drug-batch-actions"><button id="orQuickDrugBatchCancelBtn" class="btn" type="button">Back to single drug</button><button id="orQuickDrugBatchSaveBtn" class="btn primary" type="button">Confirm selected administrations</button></div></div><div id="orQuickDrugSingleEditor"><label id="orQuickDrugSelectWrap">Medication<select id="orQuickDrugSelect"></select></label><div id="orQuickDrugPlannedName" class="quick-drug-planned-name" hidden></div><div class="quick-drug-calculation" id="orQuickDrugCalculation"></div><div class="quick-drug-fill-row"><button id="orQuickDrugUseCalculatedBtn" class="btn" type="button">Use calculated amount</button><button id="orQuickDrugBatchBtn" class="btn" type="button" hidden>Record all planned induction meds</button></div><p>ค่าคำนวณเป็นข้อมูลอ้างอิง • ถ้าไม่มีสูตร/ความเข้มข้นใน protocol ยังบันทึก actual ที่ใช้จริงได้ โดยต้องระบุ preparation เอง</p><div class="quick-drug-fields"><label>Actual administered (mL)<input id="orQuickDrugActual" type="number" min="0" step="any" inputmode="decimal"></label><label>Route<div class="quick-route-presets" id="orQuickRoutePresets"><button type="button" data-route="IV">IV</button><button type="button" data-route="IM">IM</button><button type="button" data-route="SC">SC</button><button type="button" data-route="PO">PO</button><button type="button" data-route="IV/IO">IV/IO</button><button type="button" data-route="CRI">CRI</button></div><input id="orQuickDrugRoute" list="quickDrugRouteList" placeholder="Route / other"><datalist id="quickDrugRouteList"><option value="IV"></option><option value="IM"></option><option value="SC"></option><option value="PO"></option><option value="IV/IO"></option><option value="CRI"></option><option value="Local"></option><option value="Epidural"></option></datalist></label><label>Administered by<input id="orQuickDrugBy"></label><label>Preparation / concentration<select id="orQuickDrugConcentrationPreset"><option value="manual">Manual / other concentration</option></select><input id="orQuickDrugConcentration" placeholder="e.g. preparation used"></label></div><label>Note<textarea id="orQuickDrugNote"></textarea></label><p class="workflow-error" id="orQuickDrugError" role="alert"></p></div><div class="workflow-dialog-actions quick-drug-sticky-actions"><button class="btn" data-close-dialog="orQuickDrugDialog">Close / back to OR</button><button id="orQuickInductionSkipBtn" class="btn" type="button" hidden>No injectable induction meds</button><button id="orQuickDrugOtherBtn" class="btn" type="button" hidden>＋ Other medication</button><button id="orQuickDrugDoneBtn" class="btn" type="button">Done</button><button id="orQuickDrugSaveBtn" class="btn primary">Save actual administered</button></div></div></dialog>
@@ -2537,7 +2550,9 @@
 
 <div id="feedbackDeliveryBanner" class="feedback-delivery-banner" role="status" aria-live="assertive" hidden></div>
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
-<script src="./clinical-workflow.js?v=15.11.0"></script>
-<script src="./app.js?v=15.11.0"></script>
+<script src="./clinical-workflow.js?v=15.12.0"></script>
+<script src="./support.js?v=15.12.0"></script>
+<script src="./reliability.js?v=15.12.0"></script>
+<script src="./app.js?v=15.12.0"></script>
 </body>
 </html>

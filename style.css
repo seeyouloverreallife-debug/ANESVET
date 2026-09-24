@@ -1129,3 +1129,15 @@ button,.btn,.tab,.or-primary-action,.or-record-button,.or-action-link,.or-compli
 .recovery-more-dialog #recoveryMoreScoreBtn,
 .recovery-more-dialog #recoveryMoreHandoffBtn{display:none!important}
 .recovery-more-dialog .or-more-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+
+/* V15.12.0 — Clinical Safety & Reliability / direct support channels */
+.reliability-panel{border:1px solid rgba(13,82,101,.18);background:linear-gradient(180deg,#fbfeff,#f5fafb)}
+.reliability-check-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:12px 0}
+.reliability-check{border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:#fff;display:flex;flex-direction:column;gap:3px}
+.reliability-check b{font-size:.82rem}.reliability-check span{font-size:.72rem;color:var(--muted);line-height:1.35}
+.reliability-check.pass{border-color:#b9dfc9;background:#f3fbf6}.reliability-check.fail{border-color:#e8c2a4;background:#fff9f2}
+.support-contact-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:10px 0 14px}
+.support-contact-card{border:1px solid #d3e3e7;background:#f7fbfc;border-radius:13px;padding:12px}
+.support-contact-card small{display:block;color:#55727c;font-size:.66rem;font-weight:900;letter-spacing:.06em}.support-contact-card b{display:block;margin:3px 0 4px;color:var(--primary)}.support-contact-card span{display:block;color:var(--muted);font-size:.75rem;line-height:1.35}
+.support-report-actions{display:flex;flex-wrap:wrap}.support-report-actions .btn{min-height:44px}
+@media(max-width:720px){.reliability-check-grid,.support-contact-grid{grid-template-columns:1fr}.support-report-actions{display:grid;grid-template-columns:1fr 1fr}.support-report-actions .btn.primary{grid-column:1/-1}.support-report-actions .btn{width:100%}}
