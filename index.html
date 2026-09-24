@@ -7,12 +7,12 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="description" content="ANESVET V15.10.0 — Pre-OR Anesthesia Briefing">
+  <meta name="description" content="ANESVET V15.10.1 — Pre-OR Anesthesia Briefing">
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" href="./icon-192.png">
   <link rel="apple-touch-icon" href="./icon-192.png">
-  <link rel="stylesheet" href="./style.css?v=15.10.0">
-  <title>ANESVET V15.10.0</title>
+  <link rel="stylesheet" href="./style.css?v=15.10.1">
+  <title>ANESVET V15.10.1</title>
 </head>
 <body>
 <header class="topbar">
@@ -20,7 +20,7 @@
     <img class="brand-logo" src="./icon-192.png" alt="ANESVET logo">
     <div>
       <div class="eyebrow">GENOVI PET CARE • DIGITAL ANESTHESIA RECORD</div>
-      <h1>ANESVET <span>V15.10.0</span></h1>
+      <h1>ANESVET <span>V15.10.1</span></h1>
     </div>
   </div>
   <div class="top-actions">
@@ -152,7 +152,7 @@
         <div id="preOrBriefSupport" class="preor-support-grid"></div>
       </section>
       <section class="preor-brief-card meds"><h3>💉 Medication plan snapshot</h3><div id="preOrBriefMeds" class="preor-brief-list"></div></section>
-      <div class="preor-brief-warning">ANESVET ไม่ได้สั่งการรักษาอัตโนมัติ และจะไม่คัดลอกค่าจาก briefing ไปเป็น actual record โดยอัตโนมัติ • ETT จากน้ำหนักเป็นเพียงการเตรียมคร่าว ๆ โดยเฉพาะ brachycephalic/BOAS และ obesity ต้องยืนยันจาก anatomy จริง</div>
+      <div class="preor-brief-warning">ANESVET ไม่ได้สั่งการรักษาอัตโนมัติ และจะไม่คัดลอกค่าจาก briefing ไปเป็น actual record โดยอัตโนมัติ • ETT estimate ใช้ species + lean BW + breed/skull-conformation เป็นข้อมูลเตรียมอุปกรณ์เท่านั้น; final size ต้องยืนยันจาก anatomy จริงและเลือกท่อที่ผ่าน arytenoid ได้ง่ายโดยไม่ทำให้เกิด trauma</div>
       <div class="preor-brief-review">
         <label>Briefing reviewed by <input id="preOrBriefingBy" type="text" placeholder="Veterinarian / anesthetist"></label>
         <div class="preor-brief-actions"><button id="preOrBriefingBackBtn" class="btn" type="button">← Review case</button><button id="preOrBriefingOpenBtn" class="btn primary" type="button">Reviewed → Open OR LIVE</button></div>
@@ -2536,7 +2536,7 @@
 
 <div id="feedbackDeliveryBanner" class="feedback-delivery-banner" role="status" aria-live="assertive" hidden></div>
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
-<script src="./clinical-workflow.js?v=15.10.0"></script>
-<script src="./app.js?v=15.10.0"></script>
+<script src="./clinical-workflow.js?v=15.10.1"></script>
+<script src="./app.js?v=15.10.1"></script>
 </body>
 </html>

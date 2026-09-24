@@ -1,9 +1,5 @@
-ANESVET V15.10.0 Pre-OR Anesthesia Briefing
-Syntax: PASS
-Manifest JSON: PASS
-Version/cache references: PASS
-Pre-OR Briefing DOM/static contracts: PASS
-Briefing review signature + audit contract: PASS
-Risk-aware preparation reference: PASS
-Pre-OR readiness / existing clinical safety paths: preserved
-Headless Chromium browser smoke test: NOT CLAIMED (runtime timeout)
+ANESVET V15.10.1 Pre-OR Briefing Hotfix
+- Pre-OR briefing → OR LIVE navigation fix
+- Revised ETT preparation estimate using species + lean BW + breed/skull-conformation guard
+- Static syntax/manifest/duplicate-ID checks passed
+- Browser-level E2E not claimed in this environment

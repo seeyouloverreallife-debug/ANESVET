@@ -20,7 +20,7 @@ const SESSION_TTL_MS=30000;
 const SESSION_HEARTBEAT_MS=5000;
 const DB_NAME='ANESVET_DB';
 const DB_VERSION=2;
-const APP_VERSION='15.10.0';
+const APP_VERSION='15.10.1';
 const AUTOSAVE_DELAY_MS=450;
 const ACTIVE_CHECKPOINT_MS=15000;
 const SAFETY_CHECKPOINT_KEY='anesvet_v15_active_safety_checkpoint';
@@ -434,20 +434,68 @@ function preOrBriefingSignature(){
 }
 function preOrBriefingReviewValid(){return !!(state.preOrBriefingReview&&state.preOrBriefingReview.signature===preOrBriefingSignature())}
 function fmt1(n){return Number.isFinite(Number(n))?Number(n).toFixed(Number(n)>=10?0:1):'—'}
+const BRACHY_DOG_BREEDS=['pug','french bulldog','english bulldog','boston terrier','shih tzu','pekingese','boxer'];
+const BRACHY_CAT_BREEDS=['persian','exotic shorthair'];
+function normalizedBreedForAirway(){return String($('breed')?.value||state.breed||'').trim().toLowerCase()}
+function brachyBreedDetected(species,breed=''){
+  const b=String(breed||'').trim().toLowerCase();if(!b)return false;
+  const list=String(species).toLowerCase()==='cat'?BRACHY_CAT_BREEDS:BRACHY_DOG_BREEDS;
+  return list.some(x=>b===x||b.includes(x));
+}
+function formatEttPrep(lo,hi){
+  const a=Math.max(2,Number(lo)),b=Math.max(a,Number(hi));
+  const f=n=>Number(n).toFixed(1);
+  return `${f(a)}–${f(b)} mm ID`;
+}
+function dogNormalAnatomyEtt(weightKg){
+  const w=Number(weightKg);
+  // Fundamental Principles of Veterinary Anesthesia Table 12.3 (lean weight; normal anatomy)
+  if(w<=1)return {range:'3.5–4.0 mm ID',min:3.5,max:4.0};
+  if(w<=2)return {range:'4.0–5.0 mm ID',min:4.0,max:5.0};
+  if(w<=3.5)return {range:'5.0–5.5 mm ID',min:5.0,max:5.5};
+  if(w<=4.5)return {range:'5.5–6.0 mm ID',min:5.5,max:6.0};
+  if(w<=6)return {range:'6.0–6.5 mm ID',min:6.0,max:6.5};
+  if(w<=8)return {range:'6.5–7.0 mm ID',min:6.5,max:7.0};
+  if(w<=10)return {range:'7.0–8.0 mm ID',min:7.0,max:8.0};
+  if(w<=12)return {range:'8.0–8.5 mm ID',min:8.0,max:8.5};
+  if(w<=14)return {range:'8.5–9.0 mm ID',min:8.5,max:9.0};
+  if(w<=16)return {range:'9.0–9.5 mm ID',min:9.0,max:9.5};
+  if(w<=20)return {range:'9.5–10.0 mm ID',min:9.5,max:10.0};
+  if(w<=25)return {range:'10.0–11.0 mm ID',min:10.0,max:11.0};
+  if(w<=30)return {range:'11.0–12.0 mm ID',min:11.0,max:12.0};
+  if(w<=35)return {range:'12.0–14.0 mm ID',min:12.0,max:14.0};
+  return {range:'14–16 mm ID',min:14.0,max:16.0};
+}
+function catNormalAnatomyEtt(weightKg){
+  const w=Number(weightKg);
+  // AAFP: most adult cats 3.5–5.0 mm ID; keep 2.0–5.5 mm available. Weight bands here are preparation estimates only.
+  if(w<=1)return {range:'2.5–3.0 mm ID',min:2.5,max:3.0};
+  if(w<=2)return {range:'3.0–3.5 mm ID',min:3.0,max:3.5};
+  if(w<=3.5)return {range:'3.5–4.0 mm ID',min:3.5,max:4.0};
+  if(w<=4.5)return {range:'4.0–4.5 mm ID',min:4.0,max:4.5};
+  if(w<=6)return {range:'4.5–5.0 mm ID',min:4.5,max:5.0};
+  return {range:'4.5–5.0 mm ID',min:4.5,max:5.0};
+}
 function roughEttReference(species,weightKg){
-  const w=Number(weightKg);if(!Number.isFinite(w)||w<=0)return {range:'—',note:'ยืนยันขนาดจาก anatomy จริง'};
-  if(String(species).toLowerCase()==='cat'){
-    if(w<=1.2)return {range:'2.5–3.0 mm ID',note:'เตรียมอย่างน้อย 1 ขนาดเล็กกว่า/ใหญ่กว่า'};
-    if(w<=2.5)return {range:'3.0–3.5 mm ID',note:'เตรียมอย่างน้อย 1 ขนาดเล็กกว่า/ใหญ่กว่า'};
-    if(w<=5)return {range:'3.5–4.5 mm ID',note:'เตรียมอย่างน้อย 1 ขนาดเล็กกว่า/ใหญ่กว่า'};
-    return {range:'4.5–5.0 mm ID',note:'เตรียมอย่างน้อย 1 ขนาดเล็กกว่า/ใหญ่กว่า'};
+  const w=Number(weightKg),sp=String(species).toLowerCase(),breed=normalizedBreedForAirway();
+  if(!Number.isFinite(w)||w<=0)return {range:'—',note:'ยืนยันขนาดจาก anatomy จริง',basis:'No valid BW'};
+  const brachyByBreed=brachyBreedDetected(sp,breed),brachyRisk=!!(state.riskBrachycephalic||state.riskBOAS||state.riskDifficultAirway||state.riskUpperAirway||brachyByBreed);
+  const base=sp==='cat'?catNormalAnatomyEtt(w):dogNormalAnatomyEtt(w);
+  let prep='';
+  if(sp==='cat'){
+    prep=brachyRisk?`${formatEttPrep(base.min-1.0,base.max+0.5)} • มี 2.0–5.5 mm พร้อม`:`${formatEttPrep(base.min-0.5,base.max+0.5)} • มี 2.0–5.5 mm พร้อม`;
+  }else{
+    prep=brachyRisk?`${formatEttPrep(base.min-1.0,base.max+0.5)} (รวม 1–2 size เล็กกว่า weight estimate)`:`${formatEttPrep(base.min-0.5,base.max+0.5)}`;
   }
-  const bands=[[1.5,'3.5–4.5'],[2.5,'4.5–5.0'],[4,'5.0–5.5'],[5,'5.5–6.0'],[7,'6.5–7.0'],[10,'7.5–8.0'],[15,'8.5–9.0'],[20,'9.5–10.0'],[25,'10.5–11.0'],[30,'11.5–12.0'],[40,'13–14'],[999,'14–16']];
-  const b=bands.find(x=>w<=x[0])||bands[bands.length-1];return {range:`${b[1]} mm ID`,note:'เตรียมอย่างน้อย 1 ขนาดเล็กกว่า/ใหญ่กว่า'};
+  const anatomyRule='เลือก final size เป็น ETT ที่ใหญ่ที่สุดซึ่งผ่าน arytenoid ได้ง่ายโดยไม่เกิด trauma';
+  if(brachyRisk){
+    return {range:`Weight estimate ${base.range}`,prepare:prep,basis:brachyByBreed?`Breed alert: ${breed}`:'Airway-risk flag',note:`brachycephalic/airway-risk: weight chart ทำนายได้ไม่แม่นพอสำหรับเลือก final size • เตรียมหลายขนาด • ${anatomyRule}`};
+  }
+  return {range:base.range,prepare:prep,basis:sp==='cat'?'AAFP adult-cat range + BW prep estimate':'Lean-BW normal-anatomy table',note:`เตรียม ${prep} • ${anatomyRule}`};
 }
 function preOrSupportReference(){
   const species=($('species')?.value||state.species||'').toLowerCase(),w=(currentWeightKg()??Number(state.weight))||0;
-  const ett=roughEttReference(species,w),airwayRisk=!!(state.riskBrachycephalic||state.riskBOAS||state.riskDifficultAirway||state.riskUpperAirway),obese=!!state.riskObesity,respRisk=!!state.riskRespiratoryDisease;
+  const ett=roughEttReference(species,w),airwayRisk=!!(state.riskBrachycephalic||state.riskBOAS||state.riskDifficultAirway||state.riskUpperAirway||brachyBreedDetected(species,normalizedBreedForAirway())),obese=!!state.riskObesity,respRisk=!!state.riskRespiratoryDisease;
   let circuit='Rebreathing (circle)',o2='';
   if(w<3){circuit='Non-rebreathing commonly preferred';o2=`~${fmt1(w*0.2)}–${fmt1(w*0.4)} L/min`;}
   else if(w<=5){circuit='NRC or pediatric rebreathing';o2=`NRC ~${fmt1(w*0.2)}–${fmt1(w*0.4)} L/min • RC ≥0.5 L/min`;}
@@ -459,7 +507,7 @@ function preOrSupportReference(){
   else fluid=fluidRisk?`Individualize • healthy baseline ${fmt1(w*5)} mL/h`:`5 mL/kg/h ≈ ${fmt1(w*5)} mL/h`;
   const bagLiters=[0.5,1,2,3,5].find(x=>x*1000>=w*10*5)||5;
   return {
-    ett:{value:ett.range,note:`${ett.note}${airwayRisk?' • airway-risk case: เตรียม smaller tube เพิ่มและอย่าฝืนใส่':''}${obese?' • obesity: ใช้ lean/ideal BW + anatomy มากกว่าน้ำหนักจริง':''}`},
+    ett:{value:ett.range,note:`${ett.note}${ett.prepare?` • Tray: ${ett.prepare}`:''}${obese?' • obesity: ใช้ lean/ideal BW + anatomy มากกว่าน้ำหนักจริง':''}`},
     circuit:{value:circuit,note:'เลือกตามอุปกรณ์จริง, resistance/dead space และผู้ป่วย'},
     oxygen:{value:o2,note:w>5?'เมื่อจำเป็นต้องเปลี่ยน depth เร็ว RC มักใช้ flow สูงชั่วคราว; ติดตาม inspired CO₂/ETCO₂':'ปรับ flow ให้ไม่มี clinically relevant rebreathing; ห้ามใช้ O₂ flush กับ NRC'},
     vt:{value:`8–10 mL/kg ≈ ${fmt1(vtLo)}–${fmt1(vtHi)} mL`,note:`ถ้าต้อง controlled ventilation • ${obese?'ควรคำนวณจาก lean/ideal BW มากกว่าน้ำหนักจริง • ':''}${respRisk?'respiratory disease: เริ่มแบบ lung-protective/conservative และปรับตาม compliance • ':''}titrate ตาม ETCO₂/chest excursion`},
@@ -488,7 +536,8 @@ function preOrRiskBriefItems(){
   if(state.preopHydration&&!['Adequate / no obvious dehydration','Not assessed'].includes(state.preopHydration))examAlerts.push(`Hydration: ${state.preopHydration}`);
   if(String(state.preopExamNotes||'').trim())examAlerts.push(`Exam note: ${String(state.preopExamNotes).trim()}`);
   if(examAlerts.length)push('🩺','Physical-exam findings to carry into OR',examAlerts.join(' • '));
-  if(state.riskBrachycephalic||state.riskBOAS||state.riskDifficultAirway||state.riskUpperAirway)push('🫁','Airway risk','เตรียม ETT หลายขนาด, laryngoscope, suction และแผน difficult-airway/re-intubation; recovery airway observation ต้องเข้มขึ้น');
+  const breedAirway=brachyBreedDetected($('species')?.value||state.species||'',normalizedBreedForAirway());
+  if(state.riskBrachycephalic||state.riskBOAS||state.riskDifficultAirway||state.riskUpperAirway||breedAirway)push('🫁','Airway risk',`${breedAirway&&!state.riskBrachycephalic?'Brachycephalic breed pattern detected from breed field • ':''}เตรียม ETT หลายขนาด, laryngoscope, suction และแผน difficult-airway/re-intubation; recovery airway observation ต้องเข้มขึ้น`);
   if(state.riskAspiration||state.riskBOASRegurg)push('⚠','Aspiration / regurgitation risk','เตรียม suction และ airway protection; ลดช่วงเวลาที่ airway ไม่ถูกป้องกันเท่าที่ทำได้');
   if(state.riskRespiratoryDisease)push('🫁','Reduced respiratory reserve','ให้ความสำคัญกับ preoxygenation, capnography, SpO₂ และ ventilatory support ที่ปรับตาม lung mechanics');
   if(state.riskCardiacDisease||state.riskArrhythmia)push('♥','Cardiovascular risk','ECG/BP trend ต้องเด่น; หลีกเลี่ยงการใช้ routine fluid/PPV แบบไม่ประเมิน preload และ hemodynamics');
@@ -519,8 +568,8 @@ function preOrPrepItems(){
   return out;
 }
 function renderPreOrBriefing(){
-  const d=$('preOrBriefingDialog');if(!d)return;const species=$('species')?.value||state.species||'—',w=(currentWeightKg()??Number(state.weight))||null,asa=$('asa')?.value||state.asa||'—',procedure=$('patientProcedure')?.value.trim()||state.patientProcedure||state.procedure||'—';
-  $('preOrBriefCase').textContent=`${$('patientName')?.value.trim()||state.patientName||'Unnamed'} • ${species} • ${w?`${w} kg`:'— kg'} • ASA ${asa} • ${procedure}`;
+  const d=$('preOrBriefingDialog');if(!d)return;const species=$('species')?.value||state.species||'—',breed=$('breed')?.value||state.breed||'',w=(currentWeightKg()??Number(state.weight))||null,asa=$('asa')?.value||state.asa||'—',procedure=$('patientProcedure')?.value.trim()||state.patientProcedure||state.procedure||'—';
+  $('preOrBriefCase').textContent=`${$('patientName')?.value.trim()||state.patientName||'Unnamed'} • ${species}${breed?` / ${breed}`:''} • ${w?`${w} kg`:'— kg'} • ASA ${asa} • ${procedure}`;
   const renderList=(id,items)=>{const el=$(id);if(el)el.innerHTML=items.map(x=>`<div class="preor-brief-item"><span>${x.icon||'•'}</span><div><b>${escapeHtml(x.title)}</b><small>${escapeHtml(x.note||'')}</small></div></div>`).join('')};
   renderList('preOrBriefRisks',preOrRiskBriefItems());renderList('preOrBriefPrep',preOrPrepItems());
   const ref=preOrSupportReference(),cells=[['Preoxygenation',ref.preoxygen],['VT if PPV',ref.vt],['PIP if PPV',ref.pip],['RR if PPV',ref.rr],['PEEP',ref.peep],['Fluid reference',ref.fluid],['O₂ / FGF',ref.oxygen],['Reservoir bag',ref.bag]];
@@ -2060,7 +2109,7 @@ function setTab(id,opts={}){
     toast('Recovery active — OR LIVE ถูกล็อก หากฉุกเฉินให้กด Emergency return to OR LIVE');
     renderWorkflowLocks();scrollAppTop();return;
   }
-  if(id==='orlive'&&!opts.force&&!requestOrLiveAccess()){renderWorkflowLocks();scrollAppTop();return;}
+  if(id==='orlive'&&!opts.force&&!requestOrLiveAccess(opts)){renderWorkflowLocks();scrollAppTop();return;}
   if(id==='recovery'&&!opts.force&&!recoveryAccessAllowed()){
     const msg=!state.caseStartedAt?'Recovery ยังไม่เปิด — เริ่มเคสและดำเนิน workflow ก่อน':'Recovery จะเปิดหลัง Extubation / Begin Recovery';
     toast(msg);renderWorkflowLocks();scrollAppTop();return;
