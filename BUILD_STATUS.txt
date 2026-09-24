@@ -1,5 +1,6 @@
-ANESVET V15.10.1 Pre-OR Briefing Hotfix
-- Pre-OR briefing → OR LIVE navigation fix
-- Revised ETT preparation estimate using species + lean BW + breed/skull-conformation guard
-- Static syntax/manifest/duplicate-ID checks passed
-- Browser-level E2E not claimed in this environment
+ANESVET V15.10.2 Briefing → OR LIVE Transition Hotfix
+- Root cause fixed: PREOP_RISK_DEFS ReferenceError -> PREOP_RISK_FLAGS
+- Dedicated guarded Briefing → OR LIVE transition with save verification and UI fallback
+- Navigation/index service-worker strategy changed to network-first
+- Syntax/manifest/duplicate-ID checks passed
+- Browser-level Chromium flow test PASSED: Patient → Pre-op → Briefing → OR LIVE; 0 JS errors

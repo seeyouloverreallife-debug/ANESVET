@@ -1,12 +1,12 @@
-# ANESVET V15.10.1 — Pre-OR Briefing Hotfix
+# ANESVET V15.10.2 — Briefing → OR LIVE Transition Hotfix
 
 รุ่นนี้เพิ่ม **Pre-OR Anesthesia Briefing** หลัง readiness ผ่านและก่อนเข้า OR LIVE เพื่อสรุปความเสี่ยง สิ่งที่ควรเตรียม Case Drug Plan และ initial support reference เช่น ETT, breathing circuit, O₂ flow, VT/PIP/RR และ fluid reference โดยไม่เขียนค่าเหล่านี้เป็น actual clinical record อัตโนมัติ
 
-ดู `RELEASE_NOTES_V15_10_1.md` สำหรับรายละเอียด hotfix รุ่นนี้
+ดู `RELEASE_NOTES_V15_10_2.md` สำหรับรายละเอียด hotfix รุ่นนี้
 
 ## Previous V15.9.3 notes
 
-รุ่น V15.9.3 ฝัง private pilot feedback endpoint และระบบ queue/retry เดิมไว้ ระบบดังกล่าวยังคงอยู่ใน V15.10.1 แต่ไม่มีการพัฒนาส่วน bug-report เพิ่มในรุ่นนี้
+รุ่น V15.9.3 ฝัง private pilot feedback endpoint และระบบ queue/retry เดิมไว้ ระบบดังกล่าวยังคงอยู่ใน V15.10.2 แต่ไม่มีการพัฒนาส่วน bug-report เพิ่มในรุ่นนี้
 
 ## Previous V15.8 notes
 
@@ -281,3 +281,10 @@ Quick meds จะแสดงเฉพาะรายการ Favorite จา�
 - ปรับ ETT preparation estimate ใหม่จาก species + lean BW + breed/skull conformation
 - Brachycephalic/airway-risk ไม่ใช้ weight estimate เป็น final size และเตรียม tray กว้างขึ้น
 - แมวใช้ adult feline range 3.5–5.0 mm เป็นหลักในการเตรียม พร้อมช่วง 2.0–5.5 mm ให้เลือกตาม anatomy
+
+
+## V15.10.2 hotfix
+- แก้ root cause ของปุ่ม `Reviewed → Open OR LIVE`: `preOrBriefingSignature()` อ้างตัวแปรผิดชื่อ `PREOP_RISK_DEFS` ซึ่งไม่มีอยู่จริง; เปลี่ยนเป็น `PREOP_RISK_FLAGS`
+- เพิ่ม dedicated Briefing → OR LIVE transition: re-check readiness, verify save, close dialog safely, open OR LIVE แบบ one-time forced transition หลัง safety ผ่าน และตรวจยืนยันว่า OR page active จริง
+- Service worker เปลี่ยน navigation/index เป็น network-first เพื่อลดปัญหา hotfix ถูก cache เก่าบน GitHub Pages/PWA
+- Browser-level Chromium test ผ่าน flow Patient → Pre-op → Briefing → Open OR LIVE โดยไม่มี JavaScript error

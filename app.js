@@ -20,7 +20,7 @@ const SESSION_TTL_MS=30000;
 const SESSION_HEARTBEAT_MS=5000;
 const DB_NAME='ANESVET_DB';
 const DB_VERSION=2;
-const APP_VERSION='15.10.1';
+const APP_VERSION='15.10.2';
 const AUTOSAVE_DELAY_MS=450;
 const ACTIVE_CHECKPOINT_MS=15000;
 const SAFETY_CHECKPOINT_KEY='anesvet_v15_active_safety_checkpoint';
@@ -422,7 +422,7 @@ function requestOrLiveAccess(opts={}){
 }
 function invalidatePreOrOverride(){if(state.caseStartedAt)return;if(state.preOrReadinessOverride){state.preOrReadinessOverride=null;save()}renderWorkflowLocks()}
 function preOrBriefingSignature(){
-  const riskIds=PREOP_RISK_DEFS.map(r=>r.id);
+  const riskIds=PREOP_RISK_FLAGS.map(r=>r.id);
   const payload={
     patientName:$('patientName')?.value.trim()||state.patientName||'',species:$('species')?.value||state.species||'',breed:$('breed')?.value||state.breed||'',weight:(currentWeightKg()??Number(state.weight))||null,
     asa:$('asa')?.value||state.asa||'',procedure:$('patientProcedure')?.value.trim()||state.patientProcedure||state.procedure||'',workflow:$('caseWorkflowProfile')?.value||state.caseWorkflowProfile||'routine',
@@ -2139,7 +2139,49 @@ $('preOrGoFixBtn')?.addEventListener('click',()=>{const b=$('preOrGoFixBtn'),tab
 $('preOrOverrideBtn')?.addEventListener('click',()=>{const st=preOrReadinessStatus();if(st.hard.length){toast('Patient identity / saved setup / current BW cannot be overridden');return}const reason=$('preOrOverrideReason')?.value.trim()||'',by=$('preOrOverrideBy')?.value.trim()||'';if(!reason){toast('กรุณาระบุเหตุผลที่ต้องเข้า OR ก่อน checklist ครบ');$('preOrOverrideReason')?.focus();return}if(!by){toast('กรุณาระบุผู้รับผิดชอบ');$('preOrOverrideBy')?.focus();return}state.preOrReadinessOverride={at:Date.now(),by,reason,blockerKeys:st.blockerKeys,missing:st.required.map(x=>x.label)};addAudit('PRE_OR_READINESS_OVERRIDE',`${st.required.map(x=>x.label).join(' • ')} • Reason: ${reason}`,by);save();try{$('preOrReadinessDialog')?.close()}catch(e){}toast('⚠ OR readiness override documented');setTab(pendingPreOrTarget,{force:true})});
 $('preOrBriefingCloseBtn')?.addEventListener('click',()=>{try{$('preOrBriefingDialog')?.close()}catch(e){}});
 $('preOrBriefingBackBtn')?.addEventListener('click',()=>{try{$('preOrBriefingDialog')?.close()}catch(e){}setTab('casesummary',{force:true})});
-$('preOrBriefingOpenBtn')?.addEventListener('click',()=>{const by=$('preOrBriefingBy')?.value.trim()||'';if(!by){toast('กรุณาระบุผู้ที่ทบทวน Pre-OR briefing');$('preOrBriefingBy')?.focus();return}const snapshot=preOrSupportReference();state.preOrBriefingReview={at:Date.now(),by,signature:preOrBriefingSignature(),reference:snapshot};addAudit('PRE_OR_BRIEFING_REVIEWED',`ETT ${snapshot.ett.value} • ${snapshot.circuit.value} • Fluid ${snapshot.fluid.value}`,by);save();try{$('preOrBriefingDialog')?.close()}catch(e){}toast('✓ Pre-OR briefing reviewed');setTab('orlive',{skipBriefing:true})});
+function closeDialogSafe(id){
+  const d=$(id);if(!d)return;
+  try{if(d.open&&typeof d.close==='function')d.close();else d.removeAttribute('open')}catch(e){try{d.removeAttribute('open')}catch(_){}}
+}
+function forceActivateOrLiveUI(){
+  const id='orlive',page=$(id);if(!page)return false;
+  closeMoreMenu();closeRecoveryMoreDialog();exitOrFullscreenForNavigation(id);
+  $$('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===id));
+  $$('.tabpage').forEach(p=>p.classList.toggle('active',p.id===id));
+  document.body.classList.toggle('or-mobile-active',currentSettingsObject().orFocusMode!==false);
+  document.body.classList.remove('recovery-mobile-active');
+  try{localStorage.setItem(TAB_KEY,id)}catch(e){}
+  renderOrLive();renderAirwayPanel();renderWorkflowLocks();scrollAppTop();
+  return page.classList.contains('active');
+}
+function openOrLiveAfterBriefingReview(){
+  const by=$('preOrBriefingBy')?.value.trim()||'';
+  if(!by){toast('กรุณาระบุผู้ที่ทบทวน Pre-OR briefing');$('preOrBriefingBy')?.focus();return false}
+  if(orLiveLockedByRecovery()){toast('Recovery active — OR LIVE เปิดได้ผ่าน Emergency return เท่านั้น');return false}
+  const readiness=preOrReadinessStatus();
+  if(!state.caseStartedAt&&!(readiness.ready||readinessOverrideValid(readiness))){
+    closeDialogSafe('preOrBriefingDialog');renderPreOrReadinessDialog('orlive');toast('ยังมีข้อมูลสำคัญที่ต้องทบทวนก่อนเข้า OR LIVE');return false;
+  }
+  const snapshot=preOrSupportReference();
+  state.preOrBriefingReview={at:Date.now(),by,signature:preOrBriefingSignature(),reference:snapshot};
+  addAudit('PRE_OR_BRIEFING_REVIEWED',`ETT ${snapshot.ett.value} • ${snapshot.circuit.value} • Fluid ${snapshot.fluid.value}`,by);
+  if(!save()){toast('⚠ บันทึก Pre-OR briefing ไม่สำเร็จ — ยังไม่เปิด OR LIVE');return false}
+  // save() re-samples UI fields. Re-sign the exact persisted case state if anything changed during that save.
+  const persistedSignature=preOrBriefingSignature();
+  if(state.preOrBriefingReview.signature!==persistedSignature){
+    state.preOrBriefingReview.signature=persistedSignature;
+    if(!save()){toast('⚠ ยืนยัน Pre-OR briefing ไม่สำเร็จ — ยังไม่เปิด OR LIVE');return false}
+  }
+  closeDialogSafe('preOrBriefingDialog');
+  // All pre-OR safety checks have passed above, so bypass the briefing gate exactly once.
+  setTab('orlive',{force:true});
+  let opened=!!$('orlive')?.classList.contains('active');
+  if(!opened)opened=forceActivateOrLiveUI();
+  if(!opened){console.error('ANESVET: failed to activate OR LIVE after briefing review');toast('⚠ เปิด OR LIVE ไม่สำเร็จ — กรุณาออกจากหน้าปัจจุบันแล้วลองใหม่');return false}
+  toast('✓ Pre-OR briefing reviewed • OR LIVE opened');
+  return true;
+}
+$('preOrBriefingOpenBtn')?.addEventListener('click',openOrLiveAfterBriefingReview);
 
 $('orLeaveFocusBtn')?.addEventListener('click',()=>setTab('casesummary',{force:true}));
 $('recoveryLeaveFocusBtn')?.addEventListener('click',()=>setTab('casesummary',{force:true}));
