@@ -1,8 +1,9 @@
-ANESVET V15.9.3 Feedback Endpoint Update
+ANESVET V15.10.0 Pre-OR Anesthesia Briefing
 Syntax: PASS
 Manifest JSON: PASS
-Static feedback delivery/version contracts: PASS
-Endpoint replacement: PASS
-Old endpoint source check: PASS (not present)
-Endpoint UI exposure: PASS (not shown in UI/docs)
-Live Google Apps Script write verification: NOT RUN from build environment; verify with one test report on a real device
+Version/cache references: PASS
+Pre-OR Briefing DOM/static contracts: PASS
+Briefing review signature + audit contract: PASS
+Risk-aware preparation reference: PASS
+Pre-OR readiness / existing clinical safety paths: preserved
+Headless Chromium browser smoke test: NOT CLAIMED (runtime timeout)

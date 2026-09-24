@@ -1,8 +1,12 @@
-# ANESVET V15.9.3 — Feedback Endpoint Update
+# ANESVET V15.10.0 — Pre-OR Anesthesia Briefing
 
-รุ่นสำหรับ Hospital Pilot ที่ฝังปลายทางรับ report ของผู้พัฒนาไว้ภายในแอป ผู้ทดลองไม่ต้องตั้งค่า webhook และเมื่อ offline ระบบจะเก็บ report ใน local queue เพื่อ sync อัตโนมัติเมื่อออนไลน์
+รุ่นนี้เพิ่ม **Pre-OR Anesthesia Briefing** หลัง readiness ผ่านและก่อนเข้า OR LIVE เพื่อสรุปความเสี่ยง สิ่งที่ควรเตรียม Case Drug Plan และ initial support reference เช่น ETT, breathing circuit, O₂ flow, VT/PIP/RR และ fluid reference โดยไม่เขียนค่าเหล่านี้เป็น actual clinical record อัตโนมัติ
 
-ดู `RELEASE_NOTES_V15_9_3.md` สำหรับรายละเอียดรุ่นนี้
+ดู `RELEASE_NOTES_V15_10_0.md` สำหรับรายละเอียดรุ่นนี้
+
+## Previous V15.9.3 notes
+
+รุ่น V15.9.3 ฝัง private pilot feedback endpoint และระบบ queue/retry เดิมไว้ ระบบดังกล่าวยังคงอยู่ใน V15.10.0 แต่ไม่มีการพัฒนาส่วน bug-report เพิ่มในรุ่นนี้
 
 ## Previous V15.8 notes
 

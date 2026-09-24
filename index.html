@@ -7,12 +7,12 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="description" content="ANESVET V15.9.3 — Private Pilot Feedback Endpoint">
+  <meta name="description" content="ANESVET V15.10.0 — Pre-OR Anesthesia Briefing">
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" href="./icon-192.png">
   <link rel="apple-touch-icon" href="./icon-192.png">
-  <link rel="stylesheet" href="./style.css?v=15.9.3">
-  <title>ANESVET V15.9.3</title>
+  <link rel="stylesheet" href="./style.css?v=15.10.0">
+  <title>ANESVET V15.10.0</title>
 </head>
 <body>
 <header class="topbar">
@@ -20,7 +20,7 @@
     <img class="brand-logo" src="./icon-192.png" alt="ANESVET logo">
     <div>
       <div class="eyebrow">GENOVI PET CARE • DIGITAL ANESTHESIA RECORD</div>
-      <h1>ANESVET <span>V15.9.3</span></h1>
+      <h1>ANESVET <span>V15.10.0</span></h1>
     </div>
   </div>
   <div class="top-actions">
@@ -132,6 +132,31 @@
         <button id="preOrOverrideBtn" class="btn danger-outline" type="button">Document override → OR LIVE</button>
       </div>
       <div class="readiness-actions"><button id="preOrReadinessCancelBtn" class="btn" type="button">Cancel</button><button id="preOrGoFixBtn" class="btn primary" type="button">Review missing items</button></div>
+    </div>
+  </dialog>
+
+
+  <dialog id="preOrBriefingDialog" class="preor-briefing-dialog" aria-labelledby="preOrBriefingTitle">
+    <div class="preor-briefing-sheet">
+      <div class="preor-briefing-head">
+        <div><div class="eyebrow">PRE-OR ANESTHESIA BRIEFING</div><h2 id="preOrBriefingTitle">Case briefing before OR LIVE</h2><p id="preOrBriefingSubtitle">สรุปความเสี่ยง สิ่งที่ควรเตรียม และค่าเริ่มต้นอ้างอิงจากข้อมูลของเคส</p></div>
+        <button id="preOrBriefingCloseBtn" class="btn" type="button">✕</button>
+      </div>
+      <div id="preOrBriefCase" class="preor-brief-case"></div>
+      <div class="preor-brief-grid">
+        <section class="preor-brief-card risk"><h3>⚠ Key risks / watch-outs</h3><div id="preOrBriefRisks" class="preor-brief-list"></div></section>
+        <section class="preor-brief-card prep"><h3>🧰 Prepare before induction</h3><div id="preOrBriefPrep" class="preor-brief-list"></div></section>
+      </div>
+      <section class="preor-brief-card support">
+        <div class="preor-support-head"><div><h3>🫁 Initial support reference</h3><p>ค่าเริ่มต้นเพื่อเตรียมอุปกรณ์/ตั้งต้นเท่านั้น • ปรับตาม ETCO₂, SpO₂, BP, chest excursion, compliance และ clinical judgment</p></div><span class="status-pill">REFERENCE</span></div>
+        <div id="preOrBriefSupport" class="preor-support-grid"></div>
+      </section>
+      <section class="preor-brief-card meds"><h3>💉 Medication plan snapshot</h3><div id="preOrBriefMeds" class="preor-brief-list"></div></section>
+      <div class="preor-brief-warning">ANESVET ไม่ได้สั่งการรักษาอัตโนมัติ และจะไม่คัดลอกค่าจาก briefing ไปเป็น actual record โดยอัตโนมัติ • ETT จากน้ำหนักเป็นเพียงการเตรียมคร่าว ๆ โดยเฉพาะ brachycephalic/BOAS และ obesity ต้องยืนยันจาก anatomy จริง</div>
+      <div class="preor-brief-review">
+        <label>Briefing reviewed by <input id="preOrBriefingBy" type="text" placeholder="Veterinarian / anesthetist"></label>
+        <div class="preor-brief-actions"><button id="preOrBriefingBackBtn" class="btn" type="button">← Review case</button><button id="preOrBriefingOpenBtn" class="btn primary" type="button">Reviewed → Open OR LIVE</button></div>
+      </div>
     </div>
   </dialog>
 
@@ -2511,7 +2536,7 @@
 
 <div id="feedbackDeliveryBanner" class="feedback-delivery-banner" role="status" aria-live="assertive" hidden></div>
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
-<script src="./clinical-workflow.js?v=15.9.3"></script>
-<script src="./app.js?v=15.9.3"></script>
+<script src="./clinical-workflow.js?v=15.10.0"></script>
+<script src="./app.js?v=15.10.0"></script>
 </body>
 </html>

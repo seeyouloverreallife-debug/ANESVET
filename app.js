@@ -20,7 +20,7 @@ const SESSION_TTL_MS=30000;
 const SESSION_HEARTBEAT_MS=5000;
 const DB_NAME='ANESVET_DB';
 const DB_VERSION=2;
-const APP_VERSION='15.9.3';
+const APP_VERSION='15.10.0';
 const AUTOSAVE_DELAY_MS=450;
 const ACTIVE_CHECKPOINT_MS=15000;
 const SAFETY_CHECKPOINT_KEY='anesvet_v15_active_safety_checkpoint';
@@ -88,6 +88,7 @@ let state = {
   protocolSnapshot:null,
   caseDrugPlan:[],caseDrugPlanInitialized:false,caseDrugPlanReviewedAt:null,caseDrugPlanReviewedBy:'',
   preOrReadinessOverride:null,
+  preOrBriefingReview:null,
   orLastTransition:null,
   auditTrail:[],
   amendments:[],
@@ -414,10 +415,122 @@ function renderPreOrReadinessDialog(target='orlive'){
 }
 function requestOrLiveAccess(opts={}){
   if(state.caseStartedAt)return true;
-  const st=preOrReadinessStatus();if(st.ready||readinessOverrideValid(st))return true;
-  if(!opts.silent)renderPreOrReadinessDialog('orlive');return false;
+  const st=preOrReadinessStatus();
+  if(!(st.ready||readinessOverrideValid(st))){if(!opts.silent)renderPreOrReadinessDialog('orlive');return false;}
+  if(opts.skipBriefing)return true;
+  return requestPreOrBriefing();
 }
 function invalidatePreOrOverride(){if(state.caseStartedAt)return;if(state.preOrReadinessOverride){state.preOrReadinessOverride=null;save()}renderWorkflowLocks()}
+function preOrBriefingSignature(){
+  const riskIds=PREOP_RISK_DEFS.map(r=>r.id);
+  const payload={
+    patientName:$('patientName')?.value.trim()||state.patientName||'',species:$('species')?.value||state.species||'',breed:$('breed')?.value||state.breed||'',weight:(currentWeightKg()??Number(state.weight))||null,
+    asa:$('asa')?.value||state.asa||'',procedure:$('patientProcedure')?.value.trim()||state.patientProcedure||state.procedure||'',workflow:$('caseWorkflowProfile')?.value||state.caseWorkflowProfile||'routine',
+    bcs:$('bcs')?.value||state.bcs||'',allergies:$('patientAllergies')?.value.trim()||state.patientAllergies||'',comorbidities:$('patientComorbidities')?.value.trim()||state.patientComorbidities||'',precautions:$('patientPrecautions')?.value.trim()||state.patientPrecautions||'',
+    exam:{mentation:state.preopMentation||'',hr:state.preopHR||'',rr:state.preopRR||'',temp:state.preopTemp||'',mm:state.preopMM||'',crt:state.preopCRT||'',hydration:state.preopHydration||'',heart:state.preopHeart||'',lungs:state.preopLungs||'',notes:state.preopExamNotes||''},
+    risks:Object.fromEntries(riskIds.map(id=>[id,!!state[id]])),riskOther:state.riskOther||'',boasNote:state.riskBOASNotes||'',drugPlan:(state.caseDrugPlan||[]).map(d=>[d.id||d.name,d.name,d.phase,d.role,d.route,d.dose,d.conc,d.concUnit,d.manualOnly])
+  };
+  return JSON.stringify(payload);
+}
+function preOrBriefingReviewValid(){return !!(state.preOrBriefingReview&&state.preOrBriefingReview.signature===preOrBriefingSignature())}
+function fmt1(n){return Number.isFinite(Number(n))?Number(n).toFixed(Number(n)>=10?0:1):'—'}
+function roughEttReference(species,weightKg){
+  const w=Number(weightKg);if(!Number.isFinite(w)||w<=0)return {range:'—',note:'ยืนยันขนาดจาก anatomy จริง'};
+  if(String(species).toLowerCase()==='cat'){
+    if(w<=1.2)return {range:'2.5–3.0 mm ID',note:'เตรียมอย่างน้อย 1 ขนาดเล็กกว่า/ใหญ่กว่า'};
+    if(w<=2.5)return {range:'3.0–3.5 mm ID',note:'เตรียมอย่างน้อย 1 ขนาดเล็กกว่า/ใหญ่กว่า'};
+    if(w<=5)return {range:'3.5–4.5 mm ID',note:'เตรียมอย่างน้อย 1 ขนาดเล็กกว่า/ใหญ่กว่า'};
+    return {range:'4.5–5.0 mm ID',note:'เตรียมอย่างน้อย 1 ขนาดเล็กกว่า/ใหญ่กว่า'};
+  }
+  const bands=[[1.5,'3.5–4.5'],[2.5,'4.5–5.0'],[4,'5.0–5.5'],[5,'5.5–6.0'],[7,'6.5–7.0'],[10,'7.5–8.0'],[15,'8.5–9.0'],[20,'9.5–10.0'],[25,'10.5–11.0'],[30,'11.5–12.0'],[40,'13–14'],[999,'14–16']];
+  const b=bands.find(x=>w<=x[0])||bands[bands.length-1];return {range:`${b[1]} mm ID`,note:'เตรียมอย่างน้อย 1 ขนาดเล็กกว่า/ใหญ่กว่า'};
+}
+function preOrSupportReference(){
+  const species=($('species')?.value||state.species||'').toLowerCase(),w=(currentWeightKg()??Number(state.weight))||0;
+  const ett=roughEttReference(species,w),airwayRisk=!!(state.riskBrachycephalic||state.riskBOAS||state.riskDifficultAirway||state.riskUpperAirway),obese=!!state.riskObesity,respRisk=!!state.riskRespiratoryDisease;
+  let circuit='Rebreathing (circle)',o2='';
+  if(w<3){circuit='Non-rebreathing commonly preferred';o2=`~${fmt1(w*0.2)}–${fmt1(w*0.4)} L/min`;}
+  else if(w<=5){circuit='NRC or pediatric rebreathing';o2=`NRC ~${fmt1(w*0.2)}–${fmt1(w*0.4)} L/min • RC ≥0.5 L/min`;}
+  else{const lo=Math.max(.5,w*.02),hi=Math.max(.5,w*.04);o2=`RC maintenance ~${fmt1(lo)}–${fmt1(hi)} L/min`;}
+  const vtLo=w*8,vtHi=w*10;
+  const fluidRisk=!!(state.riskCardiacDisease||state.riskRenal||state.riskHypovolemia||state.riskEmergency||state.riskMajorHemorrhage||state.riskAnemiaBleeding);
+  let fluid='';
+  if(species==='cat')fluid=fluidRisk?`Individualize • healthy baseline ${fmt1(w*3)}–${fmt1(w*5)} mL/h`:`3–5 mL/kg/h ≈ ${fmt1(w*3)}–${fmt1(w*5)} mL/h`;
+  else fluid=fluidRisk?`Individualize • healthy baseline ${fmt1(w*5)} mL/h`:`5 mL/kg/h ≈ ${fmt1(w*5)} mL/h`;
+  const bagLiters=[0.5,1,2,3,5].find(x=>x*1000>=w*10*5)||5;
+  return {
+    ett:{value:ett.range,note:`${ett.note}${airwayRisk?' • airway-risk case: เตรียม smaller tube เพิ่มและอย่าฝืนใส่':''}${obese?' • obesity: ใช้ lean/ideal BW + anatomy มากกว่าน้ำหนักจริง':''}`},
+    circuit:{value:circuit,note:'เลือกตามอุปกรณ์จริง, resistance/dead space และผู้ป่วย'},
+    oxygen:{value:o2,note:w>5?'เมื่อจำเป็นต้องเปลี่ยน depth เร็ว RC มักใช้ flow สูงชั่วคราว; ติดตาม inspired CO₂/ETCO₂':'ปรับ flow ให้ไม่มี clinically relevant rebreathing; ห้ามใช้ O₂ flush กับ NRC'},
+    vt:{value:`8–10 mL/kg ≈ ${fmt1(vtLo)}–${fmt1(vtHi)} mL`,note:`ถ้าต้อง controlled ventilation • ${obese?'ควรคำนวณจาก lean/ideal BW มากกว่าน้ำหนักจริง • ':''}${respRisk?'respiratory disease: เริ่มแบบ lung-protective/conservative และปรับตาม compliance • ':''}titrate ตาม ETCO₂/chest excursion`},
+    pip:{value:'~10–15 cmH₂O start',note:'ใช้แรงดันต่ำที่สุดที่ได้ ventilation เพียงพอ; ประเมิน BP หลังเริ่ม PPV'},
+    rr:{value:'~10–15 /min start',note:'ปรับตาม capnogram/ETCO₂; surgical-plane ETCO₂ โดยทั่วไป ~40–50 (ถึง ~55) mmHg'},
+    peep:{value:'Individualize',note:'ไม่ auto-set • พิจารณา oxygenation, lung mechanics และ hemodynamics'},
+    fluid:{value:fluid,note:fluidRisk?'มี risk ที่ทำให้ routine elective rate อาจไม่เหมาะ — แก้ hypovolemia/ongoing losses และหลีกเลี่ยง fluid overload ตามบริบท':'balanced crystalloid starting reference; ปรับตาม perfusion/ongoing losses'},
+    bag:{value:`≈ ${bagLiters} L reservoir bag`,note:'rough prep: bag capacity ≈ ≥5× expected VT; เลือกอุปกรณ์ที่เหมาะกับ circuit จริง'},
+    preoxygen:{value:'100% O₂ ~3 min',note:airwayRisk||respRisk||state.riskPregnancy?'PRIORITY: airway/respiratory risk หรือ expected difficult intubation':'พิจารณาเป็นส่วนหนึ่งของ induction sequence'}
+  };
+}
+function preOrRiskBriefItems(){
+  const out=[],push=(icon,title,note)=>out.push({icon,title,note});
+  const asa=String($('asa')?.value||state.asa||'').toUpperCase();
+  if(asa&&/III|IV|V/.test(asa))push('⚑',`ASA ${asa.replace(/^ASA\s*/,'')}`,'Higher ASA status — ใช้ข้อมูลโรค/physiologic reserve และ procedure เพื่อกำหนด monitoring/support plan ให้เข้มขึ้น');
+  const allergy=String($('patientAllergies')?.value||state.patientAllergies||'').trim();if(allergy)push('⚠','Documented allergy / adverse reaction',allergy);
+  const comorb=String($('patientComorbidities')?.value||state.patientComorbidities||'').trim();if(comorb)push('＋','Comorbidity',comorb);
+  const precaution=String($('patientPrecautions')?.value||state.patientPrecautions||'').trim();if(precaution)push('!', 'Case-specific precaution',precaution);
+  const examAlerts=[];
+  if(state.preopMentation&&!String(state.preopMentation).startsWith('BAR'))examAlerts.push(`Mentation: ${state.preopMentation}`);
+  if(state.preopHeart&&!['No obvious abnormality','Not assessed'].includes(state.preopHeart))examAlerts.push(`Heart: ${state.preopHeart}`);
+  if(state.preopRespEffort&&state.preopRespEffort!=='Normal / unlabored')examAlerts.push(`Resp: ${state.preopRespEffort}`);
+  if(state.preopLungs&&!['Clear / no obvious abnormality','Not assessed'].includes(state.preopLungs))examAlerts.push(`Lungs: ${state.preopLungs}`);
+  if(state.preopMM&&state.preopMM!=='Pink')examAlerts.push(`MM: ${state.preopMM}`);
+  if(state.preopCRT&&state.preopCRT!=='< 2 sec'&&state.preopCRT!=='Not assessed')examAlerts.push(`CRT: ${state.preopCRT}`);
+  if(state.preopHydration&&!['Adequate / no obvious dehydration','Not assessed'].includes(state.preopHydration))examAlerts.push(`Hydration: ${state.preopHydration}`);
+  if(String(state.preopExamNotes||'').trim())examAlerts.push(`Exam note: ${String(state.preopExamNotes).trim()}`);
+  if(examAlerts.length)push('🩺','Physical-exam findings to carry into OR',examAlerts.join(' • '));
+  if(state.riskBrachycephalic||state.riskBOAS||state.riskDifficultAirway||state.riskUpperAirway)push('🫁','Airway risk','เตรียม ETT หลายขนาด, laryngoscope, suction และแผน difficult-airway/re-intubation; recovery airway observation ต้องเข้มขึ้น');
+  if(state.riskAspiration||state.riskBOASRegurg)push('⚠','Aspiration / regurgitation risk','เตรียม suction และ airway protection; ลดช่วงเวลาที่ airway ไม่ถูกป้องกันเท่าที่ทำได้');
+  if(state.riskRespiratoryDisease)push('🫁','Reduced respiratory reserve','ให้ความสำคัญกับ preoxygenation, capnography, SpO₂ และ ventilatory support ที่ปรับตาม lung mechanics');
+  if(state.riskCardiacDisease||state.riskArrhythmia)push('♥','Cardiovascular risk','ECG/BP trend ต้องเด่น; หลีกเลี่ยงการใช้ routine fluid/PPV แบบไม่ประเมิน preload และ hemodynamics');
+  if(state.riskHypovolemia)push('💧','Hypovolemia / poor perfusion','ควรแก้ volume deficit ก่อน anesthesia เมื่อทำได้; PPV อาจลด venous return เพิ่ม');
+  if(state.riskAnemiaBleeding||state.riskMajorHemorrhage)push('🩸','Anemia / bleeding risk','ประเมิน blood availability, IV access, suction และแผนประเมิน blood loss/transfusion ตามความเหมาะสม');
+  if(state.riskRenal)push('🧪','Renal risk','รักษา perfusion แต่หลีกเลี่ยง fluid overload; ติดตาม BP/urine output ตามบริบท');
+  if(state.riskHepatic)push('🧪','Hepatic risk','ทบทวน drug plan และ recovery expectation ตาม hepatic function ของผู้ป่วย');
+  if(state.riskMetabolicElectrolyte)push('🧪','Metabolic / electrolyte risk','ยืนยันความผิดปกติที่สำคัญได้รับการประเมิน/แก้ไขก่อน induction และเตรียม recheck ถ้าจำเป็น');
+  if(state.riskHypoglycemia||state.riskPediatric)push('🍬','Glucose / pediatric risk','เตรียม glucose monitoring และ active warming; ลด dead space และใช้อุปกรณ์ขนาดเหมาะสม');
+  if(state.riskGeriatric)push('⏱','Reduced physiologic reserve','titrate drugs to effect และเตรียมรับ hypotension/hypothermia/recovery ที่ช้ากว่าปกติ');
+  if(state.riskObesity)push('⚖','Obesity','ETT/VT reference ควรอิง lean/ideal BW และ anatomy ไม่ใช่ total BW อย่างเดียว');
+  if(state.riskPregnancy)push('🐾','Pregnancy / peripartum','เตรียม aspiration/ventilation support และ neonatal team หากเป็น C-section');
+  if(state.riskPreviousAnesthetic)push('↻','Previous anesthetic event','ทบทวน event เดิมและเตรียม mitigation plan ก่อน induction');
+  if(state.riskEmergency||state.emergency)push('🚨','Emergency / unstable context','stabilization และ perfusion/oxygenation priority; ค่า reference routine อาจใช้ไม่ได้ตรง ๆ');
+  if(state.riskOther)push('⚠','Other documented risk',String(state.riskOther));
+  if(!out.length)push('✓','No additional structured risk flags','ยังต้องใช้ ASA, physical exam, procedure และ clinical judgment ประกอบ');
+  return out;
+}
+function preOrPrepItems(){
+  const out=[],push=(icon,title,note)=>out.push({icon,title,note});const ref=preOrSupportReference();
+  push('🫁',`ETT working range: ${ref.ett.value}`,ref.ett.note);
+  push('⭕',`Breathing circuit: ${ref.circuit.value}`,ref.circuit.note);
+  push('💨',`O₂ flow reference: ${ref.oxygen.value}`,ref.oxygen.note);
+  if(state.riskBrachycephalic||state.riskBOAS||state.riskDifficultAirway||state.riskUpperAirway||state.riskAspiration)push('🧰','Airway rescue setup','Suction + alternative ETT sizes + airway tools ให้หยิบได้ทันที');
+  if(state.riskHypoglycemia||state.riskPediatric)push('🌡','Warming + glucose plan','เตรียม active warming และวิธีตรวจ glucose ก่อน induction');
+  if(state.riskMajorHemorrhage||state.riskAnemiaBleeding)push('🩸','Hemorrhage preparation','ประเมิน blood product availability / large-bore access ตามความเหมาะสมของเคส');
+  if((state.caseDrugPlan||[]).some(d=>String(d.role||'').toLowerCase().includes('emergency')||String(d.phase||'').toLowerCase().includes('emergency')))push('💉','Emergency drugs in Case Drug Plan','ตรวจ concentration / route / access ก่อนเริ่มเคส');
+  return out;
+}
+function renderPreOrBriefing(){
+  const d=$('preOrBriefingDialog');if(!d)return;const species=$('species')?.value||state.species||'—',w=(currentWeightKg()??Number(state.weight))||null,asa=$('asa')?.value||state.asa||'—',procedure=$('patientProcedure')?.value.trim()||state.patientProcedure||state.procedure||'—';
+  $('preOrBriefCase').textContent=`${$('patientName')?.value.trim()||state.patientName||'Unnamed'} • ${species} • ${w?`${w} kg`:'— kg'} • ASA ${asa} • ${procedure}`;
+  const renderList=(id,items)=>{const el=$(id);if(el)el.innerHTML=items.map(x=>`<div class="preor-brief-item"><span>${x.icon||'•'}</span><div><b>${escapeHtml(x.title)}</b><small>${escapeHtml(x.note||'')}</small></div></div>`).join('')};
+  renderList('preOrBriefRisks',preOrRiskBriefItems());renderList('preOrBriefPrep',preOrPrepItems());
+  const ref=preOrSupportReference(),cells=[['Preoxygenation',ref.preoxygen],['VT if PPV',ref.vt],['PIP if PPV',ref.pip],['RR if PPV',ref.rr],['PEEP',ref.peep],['Fluid reference',ref.fluid],['O₂ / FGF',ref.oxygen],['Reservoir bag',ref.bag]];
+  if($('preOrBriefSupport'))$('preOrBriefSupport').innerHTML=cells.map(([label,v])=>`<div class="preor-support-cell"><span>${escapeHtml(label)}</span><b>${escapeHtml(v.value)}</b><small>${escapeHtml(v.note)}</small></div>`).join('');
+  const meds=(state.caseDrugPlan||[]),planned=meds.filter(m=>String(m.role||'').toLowerCase()!=='emergency'&&!String(m.phase||'').toLowerCase().includes('emergency')),emergency=meds.filter(m=>String(m.role||'').toLowerCase()==='emergency'||String(m.phase||'').toLowerCase().includes('emergency'));
+  const medItems=[];if(planned.length)medItems.push({icon:'💉',title:`Planned medications (${planned.length})`,note:planned.slice(0,8).map(x=>x.name||x.id||'Medication').join(' • ')+(planned.length>8?' …':'')});else medItems.push({icon:'—',title:'No reviewed planned medications',note:'ทบทวน Case Drug Plan หากต้องการให้ยาในแผนขึ้นเป็น quick access ใน OR LIVE'});if(emergency.length)medItems.push({icon:'🚨',title:`Emergency / standby (${emergency.length})`,note:emergency.slice(0,8).map(x=>x.name||x.id||'Medication').join(' • ')});renderList('preOrBriefMeds',medItems);
+  if($('preOrBriefingBy'))$('preOrBriefingBy').value=$('anesthetist')?.value.trim()||state.anesthetist||state.preopRiskRecordedBy||state.preopExamRecordedBy||'';
+  if(typeof d.showModal==='function'&&!d.open)d.showModal();
+}
+function requestPreOrBriefing(){if(state.caseStartedAt||preOrBriefingReviewValid())return true;renderPreOrBriefing();return false}
 function recoveryAccessAllowed(){return !!state.caseStartedAt&&['recovery','complete'].includes(state.casePhase)&&!state.emergencyReturnActive;}
 function validateCaseReadyToStart(){
   if(!$('patientName')?.value.trim()){toast('กรุณากรอกชื่อผู้ป่วยก่อนเริ่มเคส');setTab('patient');$('patientName')?.focus();return false}
@@ -426,6 +539,7 @@ function validateCaseReadyToStart(){
   if(currentWeightKg()===null){toast('Current BW required — enter today’s measured weight before Start case');setTab('patient');$('weight')?.focus();return false}
   const readiness=preOrReadinessStatus();
   if(!readiness.ready&&!readinessOverrideValid(readiness)){renderPreOrReadinessDialog('orlive');return false}
+  if(readiness.ready&&!preOrBriefingReviewValid()){renderPreOrBriefing();return false}
   return true;
 }
 function renderWeightSafetyState(){
@@ -792,6 +906,7 @@ function load(){
     if(!('caseDrugPlanReviewedAt' in state))state.caseDrugPlanReviewedAt=null;
     if(!('caseDrugPlanReviewedBy' in state))state.caseDrugPlanReviewedBy='';
     if(!('preOrReadinessOverride' in state))state.preOrReadinessOverride=null;
+    if(!('preOrBriefingReview' in state))state.preOrBriefingReview=null;
     if(!('visitId' in state))state.visitId='';
     if(!('caseIdentitySnapshot' in state))state.caseIdentitySnapshot=null;
     if(state.caseStartedAt&&!state.caseIdentitySnapshot)state.caseIdentitySnapshot={patientMasterId:state.patientMasterId||'',patientName:state.patientName||'',hospitalId:state.hospitalId||'',visitId:state.visitId||'',species:state.species||'',microchip:state.microchip||'',weight:Number(state.weight)||null,capturedAt:state.caseStartedAt,legacyBootstrap:true};
@@ -1973,6 +2088,10 @@ $('preOrReadinessCloseBtn')?.addEventListener('click',()=>{try{$('preOrReadiness
 $('preOrReadinessCancelBtn')?.addEventListener('click',()=>{try{$('preOrReadinessDialog')?.close()}catch(e){}});
 $('preOrGoFixBtn')?.addEventListener('click',()=>{const b=$('preOrGoFixBtn'),tab=b?.dataset.tab||'preop',target=b?.dataset.target||'';try{$('preOrReadinessDialog')?.close()}catch(e){}setTab(tab,{force:true});setTimeout(()=>{const el=$(target)||document.getElementById(target);el?.scrollIntoView?.({behavior:'smooth',block:'center'});el?.focus?.()},100)});
 $('preOrOverrideBtn')?.addEventListener('click',()=>{const st=preOrReadinessStatus();if(st.hard.length){toast('Patient identity / saved setup / current BW cannot be overridden');return}const reason=$('preOrOverrideReason')?.value.trim()||'',by=$('preOrOverrideBy')?.value.trim()||'';if(!reason){toast('กรุณาระบุเหตุผลที่ต้องเข้า OR ก่อน checklist ครบ');$('preOrOverrideReason')?.focus();return}if(!by){toast('กรุณาระบุผู้รับผิดชอบ');$('preOrOverrideBy')?.focus();return}state.preOrReadinessOverride={at:Date.now(),by,reason,blockerKeys:st.blockerKeys,missing:st.required.map(x=>x.label)};addAudit('PRE_OR_READINESS_OVERRIDE',`${st.required.map(x=>x.label).join(' • ')} • Reason: ${reason}`,by);save();try{$('preOrReadinessDialog')?.close()}catch(e){}toast('⚠ OR readiness override documented');setTab(pendingPreOrTarget,{force:true})});
+$('preOrBriefingCloseBtn')?.addEventListener('click',()=>{try{$('preOrBriefingDialog')?.close()}catch(e){}});
+$('preOrBriefingBackBtn')?.addEventListener('click',()=>{try{$('preOrBriefingDialog')?.close()}catch(e){}setTab('casesummary',{force:true})});
+$('preOrBriefingOpenBtn')?.addEventListener('click',()=>{const by=$('preOrBriefingBy')?.value.trim()||'';if(!by){toast('กรุณาระบุผู้ที่ทบทวน Pre-OR briefing');$('preOrBriefingBy')?.focus();return}const snapshot=preOrSupportReference();state.preOrBriefingReview={at:Date.now(),by,signature:preOrBriefingSignature(),reference:snapshot};addAudit('PRE_OR_BRIEFING_REVIEWED',`ETT ${snapshot.ett.value} • ${snapshot.circuit.value} • Fluid ${snapshot.fluid.value}`,by);save();try{$('preOrBriefingDialog')?.close()}catch(e){}toast('✓ Pre-OR briefing reviewed');setTab('orlive',{skipBriefing:true})});
+
 $('orLeaveFocusBtn')?.addEventListener('click',()=>setTab('casesummary',{force:true}));
 $('recoveryLeaveFocusBtn')?.addEventListener('click',()=>setTab('casesummary',{force:true}));
 
@@ -4019,7 +4138,7 @@ function freshState(){
     airwayEttSize:'',airwayEttDepth:'',airwayCuff:'',airwayDifficulty:'',airwayCircuit:'',airwayVentMode:'',airwayVt:'',airwayPip:'',airwayPeep:'',airwayVentRr:'',
     recHR:'',recRR:'',recMAP:'',recSpO2:'',recTemp:'',recExtubation:'',recOxygen:'',recMentation:'',recPain:'',recNaReason:'',recScoreAirway:'',recScoreOxygen:'',recScoreTemp:'',recScoreMentation:'',recScoreComfort:'',recScoreNote:'',
     caseStartedAt:null,caseIdentitySnapshot:null,casePhase:'setup',recoveryStartedAt:null,recoveryCompletedAt:null,recoveryCompletionOverride:null,emergencyReturnActive:false,
-    surgeryEndedAt:null,extubatedAt:null,lastSavedAt:null,caseLocked:false,lockedAt:null,protocolSnapshot:null,caseDrugPlan:[],caseDrugPlanInitialized:false,caseDrugPlanReviewedAt:null,caseDrugPlanReviewedBy:'',preOrReadinessOverride:null,orLastTransition:null,
+    surgeryEndedAt:null,extubatedAt:null,lastSavedAt:null,caseLocked:false,lockedAt:null,protocolSnapshot:null,caseDrugPlan:[],caseDrugPlanInitialized:false,caseDrugPlanReviewedAt:null,caseDrugPlanReviewedBy:'',preOrReadinessOverride:null,preOrBriefingReview:null,orLastTransition:null,
     auditTrail:[],amendments:[],finalSignoff:{anesthetist:null,surgeon:null},finalChecksum:null,checksumAlgorithm:null,checksumCreatedAt:null,
     voidedAt:null,voidedBy:'',voidReason:''
   };
