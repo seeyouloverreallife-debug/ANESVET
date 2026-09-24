@@ -1,5 +1,5 @@
-const CACHE='anesvet-v15-10-2-briefing-or-transition-hotfix';
-const ASSETS=['./','./index.html','./style.css?v=15.10.2','./clinical-workflow.js?v=15.10.2','./app.js?v=15.10.2','./manifest.webmanifest','./icon-192.png','./icon-512.png','./icon-maskable-512.png'];
+const CACHE='anesvet-v15-11-0-mobile-ui-simplification';
+const ASSETS=['./','./index.html','./style.css?v=15.11.0','./clinical-workflow.js?v=15.11.0','./app.js?v=15.11.0','./manifest.webmanifest','./icon-192.png','./icon-512.png','./icon-maskable-512.png'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)))});
 self.addEventListener('message',e=>{if(e.data?.type==='SKIP_WAITING')self.skipWaiting()});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))));self.clients.claim()});

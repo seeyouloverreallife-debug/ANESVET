@@ -1034,3 +1034,98 @@ button,.btn,.tab,.or-primary-action,.or-record-button,.or-action-link,.or-compli
 .preor-support-head{display:flex;gap:12px;justify-content:space-between;align-items:flex-start}.preor-support-head p{margin:.15rem 0;color:var(--muted,#64748b);font-size:.9rem}.preor-support-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin-top:10px}.preor-support-cell{border:1px solid var(--line,#d9e3e8);border-radius:13px;padding:10px;background:rgba(15,118,110,.04)}.preor-support-cell span{display:block;font-size:.76rem;color:var(--muted,#64748b);text-transform:uppercase;letter-spacing:.04em}.preor-support-cell b{display:block;font-size:1.05rem;margin-top:3px;line-height:1.25}.preor-support-cell small{display:block;color:var(--muted,#64748b);margin-top:4px;line-height:1.3}
 .preor-brief-warning{margin-top:12px;padding:10px 12px;border-radius:13px;background:#fff7df;border:1px solid #f0d68a;color:#6a5414;font-size:.88rem;line-height:1.4}.preor-brief-review{display:flex;gap:12px;align-items:end;justify-content:space-between;margin-top:14px}.preor-brief-review label{flex:1}.preor-brief-actions{display:flex;gap:8px}
 @media(max-width:760px){.preor-briefing-dialog{width:100vw;max-width:100vw;height:100dvh;max-height:100dvh;border-radius:0}.preor-briefing-sheet{min-height:100dvh;max-height:100dvh;border-radius:0;padding:14px 14px 96px}.preor-brief-grid{grid-template-columns:1fr}.preor-support-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.preor-brief-review{display:block}.preor-brief-actions{position:sticky;bottom:0;background:var(--panel,#fff);padding:10px 0 calc(8px + env(safe-area-inset-bottom));margin-top:8px}.preor-brief-actions .btn{flex:1;min-height:50px}.preor-brief-review input{font-size:16px}.preor-support-cell b{font-size:1rem}}
+
+/* V15.11.0 — Mobile UI simplification: non-sticky workflow tabs, compact app chrome, lean MORE menus */
+.workflow-tabs{
+  position:relative!important;
+  top:auto!important;
+  z-index:10;
+  backdrop-filter:none;
+}
+
+/* Compact the app header without removing save/timer awareness. */
+.topbar{
+  padding:9px 14px;
+  gap:9px;
+  min-height:52px;
+}
+.brand{gap:8px}
+.brand-logo{width:38px;height:38px}
+.brand h1{font-size:1.2rem;line-height:1.05}
+.brand h1 span{font-size:.66rem}
+.eyebrow{font-size:.56rem;margin-bottom:1px}
+.top-actions{gap:6px;min-width:0}
+.timer-status-wrap{gap:5px;min-width:0}
+.case-clock{font-size:.88rem;padding:5px 7px;border-radius:8px}
+.timer-state{padding:4px 7px;font-size:.62rem}
+.save-state{font-size:.61rem;margin-top:0}
+.connectivity-state{min-height:24px;padding:3px 6px;font-size:.61rem}
+
+/* Global MORE is navigation, not a second dashboard. */
+.more-menu{
+  width:min(360px,calc(100% - 8px));
+  grid-template-columns:1fr;
+  padding:7px;
+  gap:5px;
+}
+.more-menu>button{min-height:43px;padding:9px 11px}
+.more-menu .advanced-menu{padding:4px 0 0;border-top:1px solid var(--line)}
+.more-menu .advanced-menu summary{padding:9px 10px;color:var(--muted);font-size:.78rem}
+.more-menu .advanced-menu button{width:100%;margin-top:4px}
+
+/* OR MORE: keep only clinical actions; customization belongs in Settings. */
+.or-more-sheet{max-height:min(72dvh,620px);overflow:auto}
+.or-more-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+.or-more-action{min-height:68px}
+.or-more-case-btn{margin-top:8px;min-height:44px}
+.recovery-more-secondary{display:none!important}
+
+@media(max-width:1180px), (pointer:coarse) and (max-width:1400px){
+  .topbar{
+    min-height:46px;
+    padding:6px 9px;
+    padding-top:calc(6px + env(safe-area-inset-top));
+  }
+  .brand-logo{width:31px;height:31px}
+  .brand h1{font-size:1.02rem}
+  .brand h1 span{font-size:.56rem}
+  .brand .eyebrow{display:none}
+  .top-actions{gap:4px}
+  .timer-status-wrap{gap:4px;flex-direction:row;align-items:center}
+  .case-clock{font-size:.78rem;padding:4px 6px}
+  .timer-state{font-size:.56rem;padding:4px 6px}
+  .save-state{font-size:.56rem;white-space:nowrap}
+  .connectivity-state{font-size:.56rem;min-height:22px;padding:2px 5px}
+  .topbar #alertFeedbackBtn,.topbar #pilotFeedbackBtn,.topbar #installBtn{display:none!important}
+  .workflow-tabs{padding-top:4px;padding-bottom:7px}
+}
+
+@media(max-width:720px){
+  main{padding-top:8px}
+  .topbar{padding-left:8px;padding-right:8px;gap:5px}
+  .brand-logo{width:28px;height:28px}
+  .brand h1{font-size:.94rem}
+  .top-actions{margin-left:auto}
+  .timer-status-wrap{flex-direction:row!important;align-items:center!important;gap:3px!important}
+  .connectivity-state{display:none!important}
+  .save-state{max-width:92px;overflow:hidden;text-overflow:ellipsis}
+  .workflow-tabs .tab{min-height:40px;padding:7px 10px;font-size:.78rem}
+  .workflow-tabs .step-no{font-size:.62rem}
+  .more-menu{width:calc(100% - 8px)}
+  .or-more-grid{grid-template-columns:1fr 1fr}
+  .or-more-action{min-height:64px;padding:8px}
+}
+
+@media(max-width:430px){
+  .brand-logo{display:none}
+  .brand h1{font-size:.9rem}
+  .case-clock{font-size:.73rem}
+  .timer-state{display:none}
+  .save-state{font-size:.53rem;max-width:78px}
+  .workflow-tabs .tab{padding:7px 9px}
+}
+/* Recovery MORE should only contain exception/finish actions; checklist and score are already visible in the Recovery workspace. */
+.recovery-more-dialog #recoveryMoreChecklistBtn,
+.recovery-more-dialog #recoveryMoreScoreBtn,
+.recovery-more-dialog #recoveryMoreHandoffBtn{display:none!important}
+.recovery-more-dialog .or-more-grid{grid-template-columns:repeat(2,minmax(0,1fr))}

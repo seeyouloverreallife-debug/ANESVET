@@ -7,12 +7,12 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="description" content="ANESVET V15.10.2 — Pre-OR Anesthesia Briefing">
+  <meta name="description" content="ANESVET V15.11.0 — Mobile UI Simplification">
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" href="./icon-192.png">
   <link rel="apple-touch-icon" href="./icon-192.png">
-  <link rel="stylesheet" href="./style.css?v=15.10.2">
-  <title>ANESVET V15.10.2</title>
+  <link rel="stylesheet" href="./style.css?v=15.11.0">
+  <title>ANESVET V15.11.0</title>
 </head>
 <body>
 <header class="topbar">
@@ -20,7 +20,7 @@
     <img class="brand-logo" src="./icon-192.png" alt="ANESVET logo">
     <div>
       <div class="eyebrow">GENOVI PET CARE • DIGITAL ANESTHESIA RECORD</div>
-      <h1>ANESVET <span>V15.10.2</span></h1>
+      <h1>ANESVET <span>V15.11.0</span></h1>
     </div>
   </div>
   <div class="top-actions">
@@ -107,14 +107,17 @@
     <button id="moreMenuBtn" class="tab more-tab" type="button">⋯ เพิ่มเติม</button>
   </nav>
   <div id="moreMenu" class="more-menu" hidden>
-    <button data-more-tab="plan">Anesthesia Plan</button>
     <button data-more-tab="casesummary">Case Summary</button>
-    <button data-more-tab="record">Record</button>
-    <button data-more-tab="trends">Trends</button>
-    <button data-more-tab="timeline">Timeline</button>
-    <button data-more-tab="events">Events & Drugs</button>
-    <button data-more-tab="cases">Cases</button>
-    <button data-more-tab="settings">Settings</button><details class="advanced-menu"><summary>Advanced</summary><button data-more-tab="dashboard">Legacy Monitoring</button></details>
+    <button data-more-tab="cases">Cases / Archive</button>
+    <button data-more-tab="settings">Settings</button>
+    <details class="advanced-menu"><summary>Records & advanced</summary>
+      <button data-more-tab="plan">Anesthesia Plan</button>
+      <button data-more-tab="record">Full Record</button>
+      <button data-more-tab="events">Events & Drugs</button>
+      <button data-more-tab="trends">Trends</button>
+      <button data-more-tab="timeline">Timeline</button>
+      <button data-more-tab="dashboard">Legacy Monitoring</button>
+    </details>
   </div>
 
   <dialog id="preOrReadinessDialog" class="readiness-dialog" aria-labelledby="preOrReadinessTitle">
@@ -758,10 +761,8 @@
           <button id="orMobileTrendsBtn" class="or-more-action" type="button"><span>↗</span><b>Trends</b><small>monitor trends</small></button>
           <button id="orMobileTimelineBtn" class="or-more-action" type="button"><span>≡</span><b>Timeline</b><small>records & events</small></button>
         </div>
-        <div id="orMoreProfileNote" class="or-more-profile-note">Minimal menu • contextual actions only</div>
         <button id="orMobileUndoBtn" class="btn or-more-undo-btn" type="button" hidden>↶ Undo last workflow step</button>
-        <button id="orMobileCaseSummaryBtn" class="btn or-more-case-btn" type="button">← Case summary / leave OR focus</button>
-        <button id="orMoreSettingsBtn" class="btn or-more-settings-btn" type="button">⚙ Customize OR menu</button>
+        <button id="orMobileCaseSummaryBtn" class="btn or-more-case-btn" type="button">← Leave OR / Case summary</button>
         <button id="orMoreReportIssueBtn" class="btn pilot-report-link" type="button">🐞 Report issue / feedback</button>
       </div>
     </dialog>
@@ -1947,9 +1948,9 @@
         <div class="or-more-grid">
           <button id="recoveryMoreChecklistBtn" class="or-more-action" type="button"><span>✓</span><b>Checklist</b><small>airway / O₂ / temp / comfort</small></button>
           <button id="recoveryMoreScoreBtn" class="or-more-action" type="button"><span>◎</span><b>Readiness score</b><small>structured reassessment</small></button>
-          <button id="recoveryMoreProblemsBtn" class="or-more-action" type="button"><span>⚠</span><b>Problems</b><small>alerts / complications</small></button>
-          <button id="recoveryMoreHandoffBtn" class="or-more-action" type="button"><span>⇄</span><b>Handoff</b><small>transfer summary</small></button>
-          <button id="recoveryMoreEventBtn" class="or-more-action" type="button"><span>⚑</span><b>Event / intervention</b><small>open documentation</small></button>
+          <button id="recoveryMoreProblemsBtn" class="or-more-action" type="button"><span>⚠</span><b>Problems / alerts</b><small>review active issues</small></button>
+          <button id="recoveryMoreHandoffBtn" class="or-more-action recovery-more-secondary" type="button"><span>⇄</span><b>Handoff</b><small>transfer summary</small></button>
+          <button id="recoveryMoreEventBtn" class="or-more-action" type="button"><span>⚑</span><b>Event / intervention</b><small>document only when needed</small></button>
           <button id="recoveryMoreCompleteBtn" class="or-more-action recovery-complete-action" type="button"><span>✓</span><b>Complete recovery</b><small>final readiness / override</small></button>
         </div>
         <button id="recoveryMoreUndoBtn" class="btn or-more-undo-btn" type="button" hidden>↶ Undo last workflow step</button>
@@ -2536,7 +2537,7 @@
 
 <div id="feedbackDeliveryBanner" class="feedback-delivery-banner" role="status" aria-live="assertive" hidden></div>
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
-<script src="./clinical-workflow.js?v=15.10.2"></script>
-<script src="./app.js?v=15.10.2"></script>
+<script src="./clinical-workflow.js?v=15.11.0"></script>
+<script src="./app.js?v=15.11.0"></script>
 </body>
 </html>

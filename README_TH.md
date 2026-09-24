@@ -1,8 +1,9 @@
-# ANESVET V15.10.2 — Briefing → OR LIVE Transition Hotfix
+# ANESVET V15.11.0 — Mobile UI Simplification
 
-รุ่นนี้เพิ่ม **Pre-OR Anesthesia Briefing** หลัง readiness ผ่านและก่อนเข้า OR LIVE เพื่อสรุปความเสี่ยง สิ่งที่ควรเตรียม Case Drug Plan และ initial support reference เช่น ETT, breathing circuit, O₂ flow, VT/PIP/RR และ fluid reference โดยไม่เขียนค่าเหล่านี้เป็น actual clinical record อัตโนมัติ
+รุ่นนี้ต่อจาก V15.10.2 และเน้นลด UI chrome บนมือถือ/iPad โดยไม่เปลี่ยน clinical logic: workflow tabs ไม่ sticky, header เตี้ยลง, global MORE เหลือ navigation สำคัญ และ OR/Recovery MORE ลดรายการรอง
 
-ดู `RELEASE_NOTES_V15_10_2.md` สำหรับรายละเอียด hotfix รุ่นนี้
+ดู `RELEASE_NOTES_V15_11_0.md` สำหรับรายละเอียด
+
 
 ## Previous V15.9.3 notes
 
