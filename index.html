@@ -7,16 +7,17 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="description" content="ANESVET V15.19.0 — Progressive Disclosure & Compact Workflow">
+  <meta name="description" content="ANESVET V15.20.0 — Drug Quick Preset Priority">
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" href="./icon-192.png">
   <link rel="apple-touch-icon" href="./icon-192.png">
-  <link rel="stylesheet" href="./style.css?v=15.19.0">
-  <link rel="stylesheet" href="./ui-refinement.css?v=15.19.0">
-<link rel="stylesheet" href="./pilot-efficiency.css?v=15.19.0">
-<link rel="stylesheet" href="./finalization.css?v=15.19.0">
-<link rel="stylesheet" href="./progressive-disclosure.css?v=15.19.0">
-  <title>ANESVET V15.19.0</title>
+  <link rel="stylesheet" href="./style.css?v=15.20.0">
+  <link rel="stylesheet" href="./ui-refinement.css?v=15.20.0">
+<link rel="stylesheet" href="./pilot-efficiency.css?v=15.20.0">
+<link rel="stylesheet" href="./finalization.css?v=15.20.0">
+<link rel="stylesheet" href="./progressive-disclosure.css?v=15.20.0">
+<link rel="stylesheet" href="./drug-priority.css?v=15.20.0">
+  <title>ANESVET V15.20.0</title>
 </head>
 <body>
 <header class="topbar">
@@ -24,7 +25,7 @@
     <img class="brand-logo" src="./icon-192.png" alt="ANESVET logo">
     <div>
       <div class="eyebrow">GENOVI PET CARE • DIGITAL ANESTHESIA RECORD</div>
-      <h1>ANESVET <span>V15.19.0</span></h1>
+      <h1>ANESVET <span>V15.20.0</span></h1>
       <div id="appHospitalName" class="app-hospital-name" hidden></div>
     </div>
   </div>
@@ -1513,6 +1514,44 @@
       </div>
     </section>
 
+    <section class="panel dose-spotlight-panel drug-primary-panel">
+      <div class="section-heading compact drug-primary-heading">
+        <div>
+          <div class="eyebrow">PRIMARY DRUG VIEW</div>
+          <h2>Hospital Quick Presets</h2>
+          <p>ดูยาที่ใช้ประจำของโรงพยาบาลก่อน • แสดงปริมาณฉีดจาก Current BW และ concentration ที่ตั้งไว้</p>
+        </div>
+        <div class="drug-primary-actions">
+          <div class="quick-preset-weight-chip" aria-label="Current body weight">
+            <span>Current BW</span>
+            <b id="quickPresetWeight">— kg</b>
+          </div>
+          <button id="editQuickPresetsBtn" class="btn">⚙ Presets</button>
+        </div>
+      </div>
+      <div class="dose-phase-summary quick-preset-priority-grid">
+        <div class="dose-phase-box preanes-dose-box">
+          <h3><span>1</span> Pre-anesthetic</h3>
+          <div class="quick-preset-row" id="qpPre1Row"><span id="qpPre1Label">—</span><div class="quick-preset-result"><div><b id="qpPre1Vol">—</b><small>mL</small></div><em id="qpPre1Conc">Conc —</em></div></div>
+          <div class="quick-preset-row" id="qpPre2Row"><span id="qpPre2Label">—</span><div class="quick-preset-result"><div><b id="qpPre2Vol">—</b><small>mL</small></div><em id="qpPre2Conc">Conc —</em></div></div>
+        </div>
+        <div class="dose-phase-box induction-dose-box">
+          <h3><span>2</span> Induction</h3>
+          <div class="quick-preset-row" id="qpInd1Row"><span id="qpInd1Label">—</span><div class="quick-preset-result"><div><b id="qpInd1Vol">—</b><small>mL</small></div><em id="qpInd1Conc">Conc —</em></div></div>
+          <div class="quick-preset-row" id="qpInd2Row"><span id="qpInd2Label">—</span><div class="quick-preset-result"><div><b id="qpInd2Vol">—</b><small>mL</small></div><em id="qpInd2Conc">Conc —</em></div></div>
+        </div>
+        <div class="dose-phase-box postanes-dose-box">
+          <h3><span>3</span> Post-anesthetic</h3>
+          <div class="quick-preset-row" id="qpPost1Row"><span id="qpPost1Label">—</span><div class="quick-preset-result"><div><b id="qpPost1Vol">—</b><small>mL</small></div><em id="qpPost1Conc">Conc —</em></div></div>
+          <div class="quick-preset-row" id="qpPost2Row"><span id="qpPost2Label">—</span><div class="quick-preset-result"><div><b id="qpPost2Vol">—</b><small>mL</small></div><em id="qpPost2Conc">Conc —</em></div></div>
+        </div>
+      </div>
+      <div class="quick-preset-footer">
+        <p class="small muted">Quick Presets เป็นตัวลัดสำหรับการเตรียมยา • ตรวจฉลากยาและ concentration บน vial ก่อนให้จริงทุกครั้ง</p>
+        <button id="quickPresetToPlanBtn" class="btn primary" type="button">ต่อไป: Case Drug Plan ↓</button>
+      </div>
+    </section>
+
     <section class="panel case-drug-plan-panel">
       <div class="section-heading">
         <div>
@@ -1540,34 +1579,6 @@
       </div>
       <div id="caseDrugPlanList" class="case-drug-plan-list"></div>
       <div class="settings-note">ยาในแผน = planned/standby only ไม่ถือว่าให้ยาแล้ว • OR LIVE จะบันทึกเฉพาะ actual administered หลังยืนยัน • Emergency items แสดงเป็น STANDBY</div>
-    </section>
-
-    <section class="panel dose-spotlight-panel">
-      <div class="section-heading compact">
-        <div>
-          <div class="dose-spotlight-title">Hospital Quick Presets — calculated injection volume</div>
-          <p>รายการด้านบนปรับเปลี่ยนได้ตาม protocol ของแต่ละโรงพยาบาลจาก Settings → Hospital Quick Presets</p>
-        </div>
-        <button id="editQuickPresetsBtn" class="btn">⚙ เปลี่ยน Quick Presets</button>
-      </div>
-      <div class="dose-phase-summary">
-        <div class="dose-phase-box">
-          <h3>Induction</h3>
-          <div class="quick-preset-row"><span id="qpInd1Label">—</span><b id="qpInd1Vol">—</b><small>mL</small></div>
-          <div class="quick-preset-row"><span id="qpInd2Label">—</span><b id="qpInd2Vol">—</b><small>mL</small></div>
-        </div>
-        <div class="dose-phase-box">
-          <h3>Pre-anesthetic</h3>
-          <div class="quick-preset-row"><span id="qpPre1Label">—</span><b id="qpPre1Vol">—</b><small>mL</small></div>
-          <div class="quick-preset-row"><span id="qpPre2Label">—</span><b id="qpPre2Vol">—</b><small>mL</small></div>
-        </div>
-        <div class="dose-phase-box">
-          <h3>Post-anesthetic</h3>
-          <div class="quick-preset-row"><span id="qpPost1Label">—</span><b id="qpPost1Vol">—</b><small>mL</small></div>
-          <div class="quick-preset-row"><span id="qpPost2Label">—</span><b id="qpPost2Vol">—</b><small>mL</small></div>
-        </div>
-      </div>
-      <p class="small muted">Quick Presets เป็น “ตัวลัด” เท่านั้น สูตรและ concentration ต้องตั้งให้ตรงกับ protocol ของโรงพยาบาล และตรวจฉลากยาก่อนให้จริงทุกครั้ง</p>
     </section>
 
     <section class="panel drug-calculator-intro">
@@ -2567,7 +2578,7 @@
 
       <details id="helpTopicDrugs" data-help-section="drugs">
         <summary><span>3</span><div><b>Drug Calculator & Case Drug Plan</b><small>Calculated dose ≠ Actual administered</small></div></summary>
-        <div class="help-topic-body"><p>ตรวจ concentration ของยาที่โรงพยาบาลใช้จริงก่อนคำนวณ สร้าง Case Drug Plan จาก hospital protocol/preset แล้วปรับให้เหมาะกับเคส เมื่อเริ่มเคสระบบจะ freeze plan ไว้</p><p><b>จุดสำคัญ:</b> ยาที่อยู่ในแผนยังไม่ถือว่าให้แล้ว จนกว่าจะบันทึก <em>Actual administered</em>, route และ preparation/concentration ที่ใช้จริง</p><button class="btn session-safe" type="button" data-help-go="drugs">ไปหน้า Drug Calculator</button></div>
+        <div class="help-topic-body"><p>เริ่มจาก Hospital Quick Presets ด้านบนเพื่อตรวจชื่อยา ปริมาณฉีด และ concentration ที่โรงพยาบาลใช้จริง แล้วจึงสร้าง Case Drug Plan จาก hospital protocol/preset และปรับให้เหมาะกับเคส เมื่อเริ่มเคสระบบจะ freeze plan ไว้</p><p><b>จุดสำคัญ:</b> ยาที่อยู่ในแผนยังไม่ถือว่าให้แล้ว จนกว่าจะบันทึก <em>Actual administered</em>, route และ preparation/concentration ที่ใช้จริง</p><button class="btn session-safe" type="button" data-help-go="drugs">ไปหน้า Drug Calculator</button></div>
       </details>
 
       <details id="helpTopicBriefing" data-help-section="briefing">
@@ -2607,7 +2618,7 @@
     </div>
 
     <section class="help-about-card">
-      <div><small>ABOUT</small><b>ANESVET V15.19.0</b><p>Veterinary anesthesia workflow, monitoring record and clinical decision-support. ไม่ใช่ continuous physiologic monitor และไม่แทน clinical judgment หรือ source monitor data.</p></div>
+      <div><small>ABOUT</small><b>ANESVET V15.20.0</b><p>Veterinary anesthesia workflow, monitoring record and clinical decision-support. ไม่ใช่ continuous physiologic monitor และไม่แทน clinical judgment หรือ source monitor data.</p></div>
       <button id="helpOpenSettingsBtn" class="btn session-safe" type="button">Settings</button>
     </section>
     <div class="workflow-dialog-actions help-center-actions"><button id="helpCenterCloseBottomBtn" class="btn session-safe" type="button">Close</button></div>
@@ -2801,15 +2812,15 @@
 
 <div id="feedbackDeliveryBanner" class="feedback-delivery-banner" role="status" aria-live="assertive" hidden></div>
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
-<script src="./clinical-workflow.js?v=15.19.0"></script>
-<script src="./support.js?v=15.19.0"></script>
-<script src="./reliability.js?v=15.19.0"></script>
-<script src="./branding.js?v=15.19.0"></script>
-<script src="./app.js?v=15.19.0"></script>
-<script src="./help.js?v=15.19.0"></script>
-<script src="./ui-refinement.js?v=15.19.0"></script>
-<script src="./pilot-efficiency.js?v=15.19.0"></script>
-<script src="./finalization.js?v=15.19.0"></script>
-<script src="./progressive-disclosure.js?v=15.19.0"></script>
+<script src="./clinical-workflow.js?v=15.20.0"></script>
+<script src="./support.js?v=15.20.0"></script>
+<script src="./reliability.js?v=15.20.0"></script>
+<script src="./branding.js?v=15.20.0"></script>
+<script src="./app.js?v=15.20.0"></script>
+<script src="./help.js?v=15.20.0"></script>
+<script src="./ui-refinement.js?v=15.20.0"></script>
+<script src="./pilot-efficiency.js?v=15.20.0"></script>
+<script src="./finalization.js?v=15.20.0"></script>
+<script src="./progressive-disclosure.js?v=15.20.0"></script>
 </body>
 </html>

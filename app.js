@@ -20,7 +20,7 @@ const SESSION_TTL_MS=30000;
 const SESSION_HEARTBEAT_MS=5000;
 const DB_NAME='ANESVET_DB';
 const DB_VERSION=2;
-const APP_VERSION='15.19.0';
+const APP_VERSION='15.20.0';
 const AUTOSAVE_DELAY_MS=450;
 const ACTIVE_CHECKPOINT_MS=15000;
 const SAFETY_CHECKPOINT_KEY='anesvet_v15_active_safety_checkpoint';
@@ -3785,19 +3785,41 @@ function presetCandidateById(id){
   const b=builtInPresetCatalog().find(x=>x.id===id);if(b)return {...b,type:'builtin'};
   const d=hospitalDrugLibrary.find(x=>String(x.id)===String(id));return d?{...d,type:'library'}:null;
 }
+function presetConcentrationLabel(candidate){
+  if(!candidate)return 'Conc —';
+  if(candidate.type==='builtin'){
+    let concId='';
+    if(candidate.id==='builtin_diazepam')concId='diazepamConc';
+    else if(candidate.id==='builtin_propofol')concId='propofolConc';
+    else if(candidate.id==='builtin_tramadol')concId='tramadolConc';
+    else if(candidate.id==='builtin_nsaid')concId=$('species')?.value==='cat'?'metacamConc':'rimadylConc';
+    if(concId){
+      const n=Number($(concId)?.value);
+      return n>0?`Conc ${fmtDose(n)} mg/mL`:'Conc not set';
+    }
+    if(candidate.id==='builtin_cefazolin'||candidate.id==='builtin_convenia')return 'Conc not configured';
+    return 'Conc —';
+  }
+  const n=Number(candidate.conc);
+  if(n>0&&candidate.concUnit)return `Conc ${fmtDose(n)} ${candidate.concUnit}`;
+  if(candidate.mode==='mlkg'&&Number(candidate.dose)>0)return `${fmtDose(candidate.dose)} mL/kg`;
+  if(candidate.mode==='bwdiv'&&Number(candidate.dose)>0)return `BW ÷ ${fmtDose(candidate.dose)}`;
+  if(candidate.mode==='manual')return 'Manual preparation';
+  return 'Conc not set';
+}
 function presetCalculated(candidate){
-  if(!candidate)return {name:'—',ml:null};
+  if(!candidate)return {name:'—',ml:null,concLabel:'Conc —'};
   if(candidate.type==='builtin'){
     if(candidate.id==='builtin_nsaid'){
       const cat=$('species')?.value==='cat';
-      return {name:cat?'Meloxicam':'Carprofen',ml:Number((cat?$('metacamMl'):$('rimadylMl'))?.dataset?.rawml||parseFloat((cat?$('metacamMl'):$('rimadylMl'))?.textContent)||null)};
+      return {name:cat?'Meloxicam':'Carprofen',ml:Number((cat?$('metacamMl'):$('rimadylMl'))?.dataset?.rawml||parseFloat((cat?$('metacamMl'):$('rimadylMl'))?.textContent)||null),concLabel:presetConcentrationLabel(candidate)};
     }
     const el=$(candidate.volId);
     const n=Number(el?.dataset?.rawml||parseFloat(el?.textContent));
-    return {name:candidate.name,ml:Number.isFinite(n)?n:null};
+    return {name:candidate.name,ml:Number.isFinite(n)?n:null,concLabel:presetConcentrationLabel(candidate)};
   }
   const r=calculateLibraryDrug(candidate,getVal('weight',0)||0,candidate.dose,candidate.conc);
-  return {name:candidate.name,ml:r.ml};
+  return {name:candidate.name,ml:r.ml,concLabel:presetConcentrationLabel(candidate)};
 }
 function phasePresetOptions(phase){
   const built=builtInPresetCatalog().filter(x=>x.phase===phase).map(x=>({id:x.id,name:x.name}));
@@ -3829,19 +3851,23 @@ function saveQuickPresetSettings(){
 }
 function renderQuickPresetSummary(){
   quickPresets=loadQuickPresets();
+  if($('quickPresetWeight'))$('quickPresetWeight').textContent=currentWeightReady()?`${fmtDose(currentWeightKg())} kg`:'BW required';
   const slots=[
-    ['qpInd1Label','qpInd1Vol','induction',0],['qpInd2Label','qpInd2Vol','induction',1],
-    ['qpPre1Label','qpPre1Vol','pre',0],['qpPre2Label','qpPre2Vol','pre',1],
-    ['qpPost1Label','qpPost1Vol','post',0],['qpPost2Label','qpPost2Vol','post',1]
+    ['qpInd1Label','qpInd1Vol','qpInd1Conc','qpInd1Row','induction',0],['qpInd2Label','qpInd2Vol','qpInd2Conc','qpInd2Row','induction',1],
+    ['qpPre1Label','qpPre1Vol','qpPre1Conc','qpPre1Row','pre',0],['qpPre2Label','qpPre2Vol','qpPre2Conc','qpPre2Row','pre',1],
+    ['qpPost1Label','qpPost1Vol','qpPost1Conc','qpPost1Row','post',0],['qpPost2Label','qpPost2Vol','qpPost2Conc','qpPost2Row','post',1]
   ];
-  slots.forEach(([lid,vid,phase,idx])=>{
+  slots.forEach(([lid,vid,cid,rid,phase,idx])=>{
     const c=presetCandidateById(quickPresets[phase]?.[idx]),r=presetCalculated(c);
     if($(lid))$(lid).textContent=r.name;
     if($(vid))$(vid).textContent=r.ml==null?'—':fmtVol(r.ml);
+    if($(cid)){$(cid).textContent=r.concLabel||'Conc —';$(cid).classList.toggle('quick-preset-conc-missing',/not set|not configured/i.test(r.concLabel||''));}
+    if($(rid)){$(rid).classList.toggle('quick-preset-empty',!c);$(rid).setAttribute('aria-disabled',String(!c));}
   });
 }
 $('saveQuickPresetsBtn')?.addEventListener('click',()=>{if(isProtocolLocked()){toast('Protocol locked — unlock in Settings ก่อนแก้ Quick Presets');return}saveQuickPresetSettings();addProtocolAudit('QUICK_PRESETS_CHANGED',JSON.stringify(loadQuickPresets()))});
-$('editQuickPresetsBtn')?.addEventListener('click',()=>{setTab('settings');setTimeout(()=>$('quickPresetInd1')?.scrollIntoView({behavior:'smooth',block:'center'}),50)});
+$('editQuickPresetsBtn')?.addEventListener('click',()=>{setTab('settings');setTimeout(()=>{const el=$('quickPresetInd1');window.ANESVETProgressiveDisclosure?.openForElement?.(el);el?.scrollIntoView({behavior:'smooth',block:'center'});},80)});
+$('quickPresetToPlanBtn')?.addEventListener('click',()=>{$('.case-drug-plan-panel')?.scrollIntoView({behavior:'smooth',block:'start'})});
 
 function currentProtocolDrugDefinitions(){
   const s=currentSettingsObject(),conc=(key,fallback='')=>s[key]??fallback;

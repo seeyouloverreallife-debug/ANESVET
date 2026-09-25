@@ -1,0 +1,50 @@
+/* ANESVET V15.20.0 — Drug Calculator priority view */
+#drugs .drug-primary-panel{
+  border:2px solid #98c9d4;
+  background:linear-gradient(180deg,#f9fdfe 0%,#f0f8fa 100%);
+  box-shadow:0 10px 28px rgba(13,82,101,.08);
+}
+#drugs .drug-primary-heading{align-items:flex-start;gap:14px}
+#drugs .drug-primary-heading h2{margin:.12rem 0 .28rem;font-size:clamp(1.25rem,2.4vw,1.65rem)}
+#drugs .drug-primary-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.quick-preset-weight-chip{
+  min-width:116px;padding:8px 11px;border:1px solid #b7d5dc;border-radius:12px;background:#fff;text-align:right;
+}
+.quick-preset-weight-chip span{display:block;font-size:.64rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:900}
+.quick-preset-weight-chip b{display:block;margin-top:2px;color:var(--primary);font-size:1.05rem;font-variant-numeric:tabular-nums}
+.quick-preset-priority-grid{gap:10px;margin-top:10px}
+.quick-preset-priority-grid .dose-phase-box{padding:12px;border:1px solid #d3e4e8;border-radius:14px;background:rgba(255,255,255,.92)}
+.quick-preset-priority-grid .dose-phase-box h3{display:flex;align-items:center;gap:7px;margin:0 0 8px;font-size:.82rem;color:#254a54}
+.quick-preset-priority-grid .dose-phase-box h3 span{display:grid;place-items:center;width:21px;height:21px;border-radius:50%;background:#e6f2f5;color:var(--primary);font-size:.68rem}
+.quick-preset-priority-grid .quick-preset-row{
+  display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;gap:10px;align-items:center;
+  min-height:58px;padding:8px 0;border-top:1px solid #e3ecef;
+}
+.quick-preset-priority-grid .quick-preset-row:first-of-type{border-top:0}
+.quick-preset-priority-grid .quick-preset-row>span{font-weight:850;line-height:1.25;overflow-wrap:anywhere}
+.quick-preset-result{text-align:right;min-width:106px}
+.quick-preset-result>div{display:flex;align-items:baseline;justify-content:flex-end;gap:4px;line-height:1}
+.quick-preset-result b{font-size:1.45rem;color:#0b6074;font-variant-numeric:tabular-nums}
+.quick-preset-result small{font-size:.72rem;font-weight:850;color:var(--muted)}
+.quick-preset-result em{display:block;margin-top:5px;font-size:.66rem;font-style:normal;font-weight:800;color:#5c6f75;white-space:nowrap}
+.quick-preset-row.quick-preset-empty{opacity:.48}
+.quick-preset-footer{display:flex;gap:12px;align-items:center;justify-content:space-between;margin-top:10px;padding-top:10px;border-top:1px solid #dbe9ec}
+.quick-preset-footer p{margin:0;max-width:720px}
+#drugs .case-drug-plan-panel{scroll-margin-top:76px}
+/* Secondary calculator content should read as reference after the primary hospital presets. */
+#drugs .drug-calculator-intro{border-style:dashed;background:#fbfcfc}
+@media(max-width:760px){
+  #drugs .drug-primary-heading{display:grid;grid-template-columns:1fr}
+  #drugs .drug-primary-actions{justify-content:space-between;width:100%}
+  .quick-preset-weight-chip{min-width:0;flex:1;text-align:left}
+  .quick-preset-priority-grid{grid-template-columns:1fr!important}
+  .quick-preset-priority-grid .dose-phase-box{padding:10px 11px}
+  .quick-preset-footer{align-items:stretch;flex-direction:column}
+  .quick-preset-footer .btn{width:100%}
+}
+@media(max-width:430px){
+  .quick-preset-priority-grid .quick-preset-row{grid-template-columns:minmax(0,1fr) 102px!important}
+  .quick-preset-result b{font-size:1.3rem}
+  .quick-preset-result em{font-size:.62rem}
+}
+.quick-preset-result em.quick-preset-conc-missing{color:#9a6500;background:#fff4d6;border-radius:999px;padding:2px 6px;display:inline-block}

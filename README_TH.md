@@ -1,20 +1,17 @@
-# ANESVET V15.19.0 — Progressive Disclosure & Compact Workflow
+# ANESVET V15.20.0 — Drug Quick Preset Priority
 
-ต่อยอดจาก V15.18.0 โดยลดการเลื่อนในหน้าที่มีข้อมูลยาว โดยเฉพาะ Settings และส่วนอ้างอิง/ประวัติที่ไม่ได้ต้องใช้ตลอดเวลา
+รุ่นนี้ต่อจาก V15.19.0 โดยปรับหน้า Drug Calculator ให้สิ่งที่ต้องใช้เร็วที่สุดอยู่บนสุด
 
-## จุดใหม่
-- Settings เปลี่ยนเป็น **collapsed sections** ทุกหมวด: เห็นหัวข้อก่อน แล้วค่อยแตะ `เปิด` เพื่อแก้รายละเอียด
-- เพิ่มช่อง **ค้นหา Settings** เช่น `logo`, `alert`, `Drug Library`
-- มี `พับทั้งหมด / เปิดทั้งหมด`
-- จำสถานะการเปิด/พับของแต่ละหมวดไว้ในเครื่อง
-- Patient / Pre-check สามารถพับส่วนรองได้ แต่ clinical core ยังเปิดไว้ก่อน
-- Drug Calculator ซ่อนส่วน reference ยาว ๆ ไว้ก่อน ได้แก่ peri-anesthetic calculator, phase plan และ emergency reference
-- Recovery ซ่อน Handoff และ vital history ไว้ก่อน ส่วน unresolved alerts / readiness score ยังไม่ถูกซ่อน
-- ถ้า input ที่อยู่ใน section พับไว้ได้รับ focus/validation ระบบจะเปิด section นั้นให้อัตโนมัติ
-- ไม่เปลี่ยน clinical calculation, dose, alert threshold, workflow gate, storage schema หรือ report content
+## จุดเด่น
+1. เปิด Drug Calculator แล้วเห็น `Hospital Quick Presets` ก่อน
+2. เห็น Current BW, ชื่อยา, ปริมาณฉีด (mL) และ concentration ในจุดเดียว
+3. เรียงตาม workflow: Pre-anesthetic → Induction → Post-anesthetic
+4. Case Drug Plan อยู่ต่อจาก Quick Presets และมีปุ่มไปต่อโดยตรง
+5. Detailed calculator / references ยังพับไว้เพื่อลดการเลื่อน
+6. ปุ่ม Presets เปิด Settings ไปยังหมวดที่ต้องแก้อัตโนมัติ
 
-## การอัปเดตบน GitHub Pages / PWA
-หลังแทนไฟล์รุ่นเดิม แนะนำเปิดครั้งแรกด้วย `?v=15.19.0` หรือ Hard Refresh หนึ่งครั้ง เพื่อเปลี่ยน service-worker cache
+## หมายเหตุเรื่อง concentration
+ระบบแสดงเฉพาะ concentration ที่ถูกตั้งค่าไว้จริง หาก built-in formula เดิมไม่มี concentration field เช่น Cefazolin / Convenia จะขึ้น `Conc not configured` แทนการคาดเดาค่า
 
-## หมายเหตุ
-ANESVET เป็น workflow/documentation aid สำหรับทีมสัตวแพทย์ ไม่แทน clinical judgment, monitor source data หรือ hospital protocol
+## หลังอัปเดต
+หากใช้ผ่าน GitHub Pages/PWA แนะนำเปิดครั้งแรกด้วย `?v=15.20.0` หรือ Hard Refresh หนึ่งครั้ง เพื่อให้ service worker เปลี่ยน cache รุ่นใหม่

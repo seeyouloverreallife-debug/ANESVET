@@ -1,4 +1,4 @@
-/* ANESVET V15.19.0 — Pilot efficiency / one-hand workflow helpers.
+/* ANESVET V15.20.0 — Pilot efficiency / one-hand workflow helpers.
    UI-only layer. It never marks clinical items complete and never bypasses safety gates. */
 (() => {
   'use strict';
