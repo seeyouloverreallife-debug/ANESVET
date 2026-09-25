@@ -1,0 +1,76 @@
+/* ANESVET V15.18.0 — Pilot efficiency / one-hand workflow polish. */
+
+/* Mobile quick bar: keep jump-to-top + a contextual Continue action where useful. */
+@media(max-width:1180px){
+  .mobile-quick-bar.has-continue:not([hidden]){grid-template-columns:66px minmax(0,1fr) 64px 66px}
+  .mobile-quick-continue{background:#0b5b6c!important;border-color:#0b5b6c!important;color:#fff!important}
+  .mobile-quick-continue:active{background:#084b59!important}
+  .mobile-quick-continue>span{font-size:1rem}
+}
+@media(max-width:430px){
+  .mobile-quick-bar.has-continue:not([hidden]){grid-template-columns:58px minmax(0,1fr) 58px 60px}
+  .mobile-quick-bar.has-continue .mobile-quick-btn{padding-inline:4px}
+  .mobile-quick-bar.has-continue .mobile-quick-btn>b{font-size:.59rem}
+}
+
+/* Shared compact workflow strips. */
+.preop-efficiency-tools,.drug-efficiency-tools,.recovery-efficiency-tools{
+  display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:0 0 12px;padding:8px 9px;
+  border:1px solid #dce7ea;border-radius:13px;background:#f8fbfc
+}
+.preop-next-incomplete,.drug-next-task,.recovery-next-task{min-height:38px!important;padding:7px 10px!important}
+.preop-focus-toggle,.drug-focus-toggle,.recovery-focus-toggle{
+  display:flex;align-items:center;gap:7px;min-height:38px;padding:6px 10px;border:1px solid #d5e3e7;
+  border-radius:11px;background:#fff;color:#405861;font-size:.79rem;font-weight:800;cursor:pointer
+}
+.preop-focus-toggle input,.drug-focus-toggle input,.recovery-focus-toggle input{width:17px;height:17px;margin:0}
+.preop-remaining-summary,.drug-plan-efficiency-summary,.recovery-efficiency-summary{
+  margin-left:auto;padding:5px 8px;border-radius:999px;background:#fff5df;color:#8a5908;
+  font-size:.72rem;font-weight:900;white-space:nowrap
+}
+.preop-remaining-summary.complete,.drug-plan-efficiency-summary.complete,.recovery-efficiency-summary.complete{background:#eaf7ef;color:#176b4d}
+
+/* Pre-op focus. */
+#preop.preop-focus-incomplete .preop-item.na,
+#preop.preop-focus-incomplete .preop-item:has(.preop-check:checked){display:none}
+#preop.preop-focus-incomplete .preop-exam-panel.preop-complete-ui,
+#preop.preop-focus-incomplete .preop-risk-panel.preop-complete-ui{display:none}
+#preop.preop-focus-incomplete .checklist-grid:empty::after{content:'Checklist complete';display:block;padding:14px;color:#187954}
+
+/* Drug Plan focus: optional. It hides calculator/reference panels only; the Case Drug Plan and OR readiness action remain. */
+#drugs.drug-focus-plan .dose-spotlight-panel,
+#drugs.drug-focus-plan .drug-calculator-intro,
+#drugs.drug-focus-plan .phase-drug-panel,
+#drugs.drug-focus-plan .emergency-panel{display:none}
+#drugs.drug-focus-plan .case-drug-plan-panel{box-shadow:0 0 0 2px rgba(13,82,101,.08)}
+#drugs.drug-focus-plan .drug-next-step{margin-top:10px}
+
+/* Recovery focus: remove already-reviewed checklist rows while preserving observations, current vitals and score access. */
+#recovery.recovery-focus-pending .recovery-check-item:has(.recovery-check:checked),
+#recovery.recovery-focus-pending .recovery-check-item:has(.recovery-check-na-btn.active){display:none}
+#recovery.recovery-focus-pending #recoveryChecklistPanel .recovery-check-item:not(:has(.recovery-check:checked)):not(:has(.recovery-check-na-btn.active)){
+  border-color:#d9e5e8;background:#fff
+}
+#recovery.recovery-focus-pending #recoveryChecklistPanel .recovery-check-item:first-of-type{margin-top:6px}
+
+/* Quick navigation readiness at a glance. */
+.mobile-workflow-grid button{position:relative;align-content:center}
+.mobile-step-status{
+  grid-column:2;display:block;margin-top:2px;font-size:.60rem;line-height:1.2;font-weight:800;color:#758890;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:left
+}
+.mobile-step-status[data-tone="good"]{color:#187954}
+.mobile-step-status[data-tone="warn"]{color:#94610b}
+.mobile-step-status[data-tone="muted"]{color:#7b8c93}
+.mobile-workflow-grid button.active .mobile-step-status{color:rgba(255,255,255,.85)}
+
+@media(max-width:720px){
+  .preop-efficiency-tools,.drug-efficiency-tools,.recovery-efficiency-tools{position:relative;margin:0 0 9px;padding:7px;gap:6px}
+  .preop-next-incomplete,.drug-next-task,.recovery-next-task{flex:1 1 100%;width:100%}
+  .preop-focus-toggle,.drug-focus-toggle,.recovery-focus-toggle{flex:1 1 auto;font-size:.74rem}
+  .preop-remaining-summary,.drug-plan-efficiency-summary,.recovery-efficiency-summary{margin-left:0;font-size:.67rem}
+}
+
+@media print{
+  .preop-efficiency-tools,.drug-efficiency-tools,.recovery-efficiency-tools,.mobile-quick-continue,.mobile-step-status{display:none!important}
+}

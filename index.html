@@ -7,12 +7,15 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="description" content="ANESVET V15.13.0 — Help, Onboarding & Pilot UX">
+  <meta name="description" content="ANESVET V15.18.0 — End Case & Report Flow">
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" href="./icon-192.png">
   <link rel="apple-touch-icon" href="./icon-192.png">
-  <link rel="stylesheet" href="./style.css?v=15.13.0">
-  <title>ANESVET V15.13.0</title>
+  <link rel="stylesheet" href="./style.css?v=15.18.0">
+  <link rel="stylesheet" href="./ui-refinement.css?v=15.18.0">
+<link rel="stylesheet" href="./pilot-efficiency.css?v=15.18.0">
+<link rel="stylesheet" href="./finalization.css?v=15.18.0">
+  <title>ANESVET V15.18.0</title>
 </head>
 <body>
 <header class="topbar">
@@ -20,7 +23,8 @@
     <img class="brand-logo" src="./icon-192.png" alt="ANESVET logo">
     <div>
       <div class="eyebrow">GENOVI PET CARE • DIGITAL ANESTHESIA RECORD</div>
-      <h1>ANESVET <span>V15.13.0</span></h1>
+      <h1>ANESVET <span>V15.18.0</span></h1>
+      <div id="appHospitalName" class="app-hospital-name" hidden></div>
     </div>
   </div>
   <div class="top-actions">
@@ -126,6 +130,7 @@
     <button id="mobileQuickTopBtn" class="mobile-quick-btn mobile-quick-current" type="button" title="กลับด้านบนของหน้าปัจจุบัน">
       <small>ตอนนี้</small><b id="mobileQuickStepLabel">ประวัติผู้ป่วย</b><span>↑</span>
     </button>
+    <button id="mobileQuickContinueBtn" class="mobile-quick-btn mobile-quick-continue" type="button" hidden title="ไปขั้นตอนถัดไป"><span>→</span><b>ต่อไป</b></button>
     <button id="mobileQuickReportBtn" class="mobile-quick-btn" type="button"><span>🐞</span><b>Report</b></button>
   </div>
 
@@ -872,6 +877,12 @@
         <div class="page-help-actions"><button class="context-help-btn session-safe" type="button" data-help-topic="preop" aria-label="วิธีใช้ Pre-check">?</button><span id="preopProgress" class="status-pill warn">0/15 REVIEWED</span></div>
       </div>
 
+      <div id="preopEfficiencyTools" class="preop-efficiency-tools" aria-label="Pre-check quick tools">
+        <button id="preopNextIncompleteBtn" type="button" class="btn preop-next-incomplete">↓ รายการถัดไปที่ยังไม่เสร็จ</button>
+        <label class="preop-focus-toggle"><input id="preopFocusIncomplete" type="checkbox"> <span>Focus เฉพาะที่ยังไม่เสร็จ</span></label>
+        <span id="preopRemainingSummary" class="preop-remaining-summary">กำลังตรวจสถานะ…</span>
+      </div>
+
       <section class="preop-exam-panel" aria-labelledby="preopExamHeading">
         <div class="section-heading compact">
           <div>
@@ -1514,6 +1525,11 @@
         </div>
       </div>
       <div id="caseDrugPlanStatus" class="case-drug-plan-status">Plan not reviewed</div>
+      <div class="drug-efficiency-tools" aria-label="Drug Plan quick workflow">
+        <button id="drugNextTaskBtn" class="btn primary drug-next-task" type="button">✓ Review plan</button>
+        <label class="drug-focus-toggle"><input id="drugFocusPlanOnly" type="checkbox"> Focus เฉพาะ Case Drug Plan</label>
+        <span id="drugPlanEfficiencySummary" class="drug-plan-efficiency-summary">—</span>
+      </div>
       <div class="case-drug-plan-add">
         <label>Add another / alternative drug
           <select id="caseDrugPlanAddSelect"></select>
@@ -1553,7 +1569,7 @@
       <p class="small muted">Quick Presets เป็น “ตัวลัด” เท่านั้น สูตรและ concentration ต้องตั้งให้ตรงกับ protocol ของโรงพยาบาล และตรวจฉลากยาก่อนให้จริงทุกครั้ง</p>
     </section>
 
-    <section class="panel">
+    <section class="panel drug-calculator-intro">
       <div class="section-heading">
         <div>
           <h2>Peri-anesthetic drug calculator</h2>
@@ -1870,6 +1886,12 @@
       </div>
     </section>
 
+    <div class="recovery-efficiency-tools" aria-label="Recovery next-task workflow">
+      <button id="recoveryNextTaskBtn" class="btn primary recovery-next-task" type="button">→ งานถัดไป</button>
+      <label class="recovery-focus-toggle"><input id="recoveryFocusPending" type="checkbox"> Focus สิ่งที่ยังไม่เสร็จ</label>
+      <span id="recoveryEfficiencySummary" class="recovery-efficiency-summary">—</span>
+    </div>
+
     <section id="recoveryHandoffPanel" class="panel handoff-panel"><div class="section-heading"><div><h2>Recovery Handoff</h2><p>เฉพาะข้อมูลที่ต้องเห็นทันทีตอนรับช่วงต่อ</p></div><span id="recoveryHandoffProblemBadge" class="status-pill good">0 OPEN</span></div><div id="recoveryHandoffSummary" class="handoff-summary-grid"></div><details class="handoff-full-details"><summary>ดูรายละเอียด Handoff ทั้งหมด</summary><pre id="recoveryHandoffText"></pre></details><details><summary>Snapshots at transfer</summary><div id="recoveryHandoffHistory"></div></details></section>
     <section id="recoveryProblemsPanel" class="panel"><h2>Unresolved alerts / problems</h2><div id="recoveryProblemPanel"></div></section>
     <div class="dashboard-grid">
@@ -2067,7 +2089,14 @@
 
   <section id="printSummaryReport" class="print-report compact-report" aria-hidden="true">
     <div class="report-header compact-report-header">
-      <div><div class="report-brand">ANESVET</div><h1>Anesthesia Case Summary</h1></div>
+      <div id="summaryHospitalBranding" class="report-identity">
+        <img id="summaryHospitalLogo" class="report-hospital-logo" alt="Hospital logo" hidden>
+        <div class="report-identity-copy">
+          <div id="summaryHospitalName" class="report-hospital-name" hidden></div>
+          <div id="summaryHospitalContact" class="report-hospital-contact" hidden></div>
+          <div class="report-brand">ANESVET</div><h1>Anesthesia Case Summary</h1>
+        </div>
+      </div>
       <div class="report-date" id="summaryReportDate"></div>
     </div>
     <div id="summaryVoidNotice" class="report-void-notice" hidden></div>
@@ -2084,14 +2113,19 @@
       <div class="compact-report-card span2"><h2>Recovery / Handoff</h2><div id="summaryRecovery"></div></div>
     </section>
     <div class="compact-report-signoff" id="summarySignoff"></div>
-    <div class="report-disclaimer">Compact clinical summary. Full ANESVET record retains serial vital signs, events, corrections, audit trail and detailed recovery documentation.</div>
+    <div class="report-disclaimer"><div id="summaryHospitalFooter" class="report-hospital-footer" hidden></div>Compact clinical summary. Full ANESVET record retains serial vital signs, events, corrections, audit trail and detailed recovery documentation.</div>
   </section>
 
   <section id="printReport" class="print-report" aria-hidden="true">
     <div class="report-header">
-      <div>
-        <div class="report-brand">ANESVET</div>
-        <h1>Veterinary Anesthesia Record</h1>
+      <div id="reportHospitalBranding" class="report-identity">
+        <img id="reportHospitalLogo" class="report-hospital-logo" alt="Hospital logo" hidden>
+        <div class="report-identity-copy">
+          <div id="reportHospitalName" class="report-hospital-name" hidden></div>
+          <div id="reportHospitalContact" class="report-hospital-contact" hidden></div>
+          <div class="report-brand">ANESVET</div>
+          <h1>Veterinary Anesthesia Record</h1>
+        </div>
       </div>
       <div class="report-date" id="reportDate"></div>
     </div>
@@ -2179,6 +2213,7 @@
     </section>
 
     <div class="report-disclaimer">
+      <div id="reportHospitalFooter" class="report-hospital-footer" hidden></div>
       Generated by ANESVET. This report is a clinical record based on values entered by the veterinary team and does not replace source monitor data or clinical judgment.
     </div>
   </section>
@@ -2193,6 +2228,19 @@
         </div>
         <div class="page-help-actions"><button class="context-help-btn session-safe" type="button" data-help-topic="endcase" aria-label="วิธีใช้ End Case">?</button><span id="endCaseReadiness" class="status-pill warn">REVIEW</span></div>
       </div>
+      <section id="endCaseEfficiencyCard" class="endcase-efficiency-card" aria-live="polite">
+        <div class="endcase-efficiency-copy">
+          <div class="eyebrow">FINALIZATION GUIDE</div>
+          <b id="endCaseEfficiencyTitle">Review final record</b>
+          <span id="endCaseEfficiencySummary">ANESVET จะพาไปยังรายการถัดไปที่ยังต้องตรวจ</span>
+        </div>
+        <div class="endcase-efficiency-actions">
+          <label class="endcase-focus-toggle"><input id="endCaseFocusPending" type="checkbox"> Focus pending</label>
+          <button id="endCaseNextTaskBtn" class="btn primary" type="button">→ รายการถัดไป</button>
+        </div>
+        <div id="endCaseBlockers" class="endcase-blockers"></div>
+      </section>
+
       <div class="end-case-summary">
         <div><span>Patient</span><b id="endPatient">—</b></div>
         <div><span>Procedure</span><b id="endProcedure">—</b></div>
@@ -2230,16 +2278,70 @@
         <label><input id="endConfirmDrugs" type="checkbox"> ตรวจ Drug / Event แล้ว</label>
         <label><input id="endConfirmPdf" type="checkbox"> พร้อม Archive / Export report</label>
       </div>
-      <div class="end-case-actions">
-        <button id="endBackupBtn" class="btn">⬇ Backup all data</button>
-        <button id="endExportSummaryPdfBtn" class="btn primary">1-page Summary PDF</button><button id="endExportPdfBtn" class="btn">Full PDF Report</button>
-        <button id="endSaveArchiveBtn" class="btn primary">✓ End, Lock & Archive Case</button>
+      <section class="endcase-report-panel">
+        <div class="section-heading compact">
+          <div><h3>Report & final archive</h3><p id="endReportIdentity">ANESVET report</p></div>
+          <span id="endReportReadyBadge" class="status-pill warn">REVIEW</span>
+        </div>
+        <div class="endcase-report-primary">
+          <button id="endPreferredReportBtn" class="btn primary xl" type="button">Export preferred report</button>
+          <small id="endPreferredReportHint">ใช้ค่าเริ่มต้นจาก Settings • ยังสามารถเลือก Summary หรือ Full report ได้</small>
+        </div>
+        <div class="end-case-actions endcase-report-actions">
+          <button id="endExportSummaryPdfBtn" class="btn">1-page Summary PDF</button>
+          <button id="endExportPdfBtn" class="btn">Full PDF Report</button>
+          <button id="endBackupBtn" class="btn">⬇ Backup all data</button>
+        </div>
+      </section>
+      <div class="endcase-final-action">
+        <button id="endSaveArchiveBtn" class="btn primary xl">✓ End, Lock & Archive Case</button>
+        <div class="settings-note">Final Lock จะหยุด timer, mark เคสเป็น COMPLETE + LOCKED และ archive เคส • หลัง lock ระบบจะยังคงเคสบนหน้าจอเพื่อให้ Export report ได้ก่อนเริ่มเคสใหม่</div>
       </div>
-      <div class="settings-note">End Case จะหยุด timer, mark เคสเป็น COMPLETE + LOCKED, archive เคส และกลับไปหน้าเริ่มเคสใหม่หลังยืนยัน</div>
     </section>
   </section>
 
-  <section id="settings" class="tabpage"><section class="panel"><div class="section-heading"><h2>Configurable Alert Protocol</h2><button id="editHospitalAlertBtn" class="btn primary">Edit hospital alerts</button></div><pre id="hospitalAlertSummary"></pre><details><summary>Hospital alert history</summary><div id="hospitalAlertHistory"></div></details><p>Default thresholds match V14.6.4. Hospital edits apply to new cases; case overrides require an actor and reason.</p></section><section class="panel"><div class="section-heading"><div><h2>Hospital settings</h2><p>ปรับ default ของโรงพยาบาลโดยไม่ต้องแก้ code</p></div><button id="saveSettingsBtn" class="btn primary">Save settings</button></div><div class="settings-grid">
+  <section id="settings" class="tabpage"><section class="panel"><div class="section-heading"><h2>Configurable Alert Protocol</h2><button id="editHospitalAlertBtn" class="btn primary">Edit hospital alerts</button></div><pre id="hospitalAlertSummary"></pre><details><summary>Hospital alert history</summary><div id="hospitalAlertHistory"></div></details><p>Default thresholds match V14.6.4. Hospital edits apply to new cases; case overrides require an actor and reason.</p></section>
+<section class="panel hospital-branding-panel">
+  <div class="section-heading">
+    <div><h2>Hospital Branding & Report Identity</h2><p>ใส่ชื่อและโลโก้โรงพยาบาลสำหรับ Summary / Full PDF โดยไม่เพิ่มความรกในหน้าทำงาน</p></div>
+    <button id="saveHospitalBrandingBtn" class="btn primary" type="button">Save branding</button>
+  </div>
+  <div class="hospital-branding-layout">
+    <div class="hospital-branding-form">
+      <div class="settings-grid hospital-branding-fields">
+        <label class="span2">Hospital name<input id="settingHospitalName" type="text" maxlength="180" placeholder="ชื่อโรงพยาบาล / คลินิก"></label>
+        <label>Short name<input id="settingHospitalShortName" type="text" maxlength="120" placeholder="ชื่อย่อบน report"></label>
+        <label>Phone<input id="settingHospitalPhone" type="text" maxlength="120" placeholder="02-xxx-xxxx"></label>
+        <label class="span2">Address<input id="settingHospitalAddress" type="text" maxlength="500" placeholder="ที่อยู่ (optional)"></label>
+        <label>Email<input id="settingHospitalEmail" type="text" maxlength="180" placeholder="hospital@example.com"></label>
+        <label>Website / Facebook<input id="settingHospitalWeb" type="text" maxlength="300" placeholder="Website / Facebook Page"></label>
+        <label class="span2">Report footer<input id="settingHospitalFooter" type="text" maxlength="500" placeholder="ข้อความท้ายรายงาน เช่น For clinical use only"></label>
+      </div>
+      <div class="hospital-logo-controls">
+        <label class="hospital-logo-upload">Hospital logo <input id="settingHospitalLogo" type="file" accept="image/png,image/jpeg,image/webp"></label>
+        <button id="removeHospitalLogoBtn" class="btn" type="button">Remove logo</button>
+        <small id="hospitalBrandingLogoStatus">PNG/JPG recommended • ระบบจะย่อภาพก่อนเก็บในเครื่อง</small>
+      </div>
+      <div class="hospital-branding-toggles">
+        <label class="settings-toggle"><span>Show hospital name on report</span><input id="settingShowHospitalNameInReport" type="checkbox" checked></label>
+        <label class="settings-toggle"><span>Show contact details on report</span><input id="settingShowHospitalContactInReport" type="checkbox" checked></label>
+        <label class="settings-toggle"><span>Show hospital name in app header</span><input id="settingShowHospitalInApp" type="checkbox"></label>
+      </div>
+      <div id="hospitalBrandingSaveStatus" class="settings-note">Branding is stored locally with ANESVET settings. Cases started after saving will freeze a branding snapshot for consistent archived reports.</div>
+    </div>
+    <div class="hospital-branding-preview-wrap">
+      <span>REPORT PREVIEW</span>
+      <div class="hospital-branding-preview">
+        <div class="hospital-preview-logo-wrap">
+          <img id="hospitalBrandingPreviewLogo" alt="Hospital logo preview" hidden>
+          <div id="hospitalBrandingPreviewNoLogo" class="hospital-preview-no-logo">LOGO</div>
+        </div>
+        <div><b id="hospitalBrandingPreviewName">Hospital name</b><small id="hospitalBrandingPreviewContact">Contact information will appear here</small><em>ANESVET • Veterinary Anesthesia Record</em></div>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="panel"><div class="section-heading"><div><h2>Hospital settings</h2><p>ปรับ default ของโรงพยาบาลโดยไม่ต้องแก้ code</p></div><button id="saveSettingsBtn" class="btn primary">Save settings</button></div><div class="settings-grid">
 <label>Default OR vitals interval<select id="settingInterval"><option value="3">3 min</option><option value="5">5 min</option><option value="10">10 min</option><option value="15">15 min</option></select></label>
 <label>Temperature unit<select id="settingTemperatureUnit"><option value="C">°C (recommended for Thailand)</option><option value="F">°F</option></select></label>
 <label class="settings-toggle"><span>Show SAP / DAP helper fields</span><input id="settingShowSapDap" type="checkbox" checked></label>
@@ -2492,6 +2594,11 @@
         <div class="help-topic-body"><p>ANESVET บันทึกข้อมูลหลักในเครื่อง/browser แบบ local-first พร้อม autosave และ safety checkpoint ระหว่าง active case จึงทำงานต่อได้แม้ network ไม่เสถียร แต่ local storage ไม่ใช่ hospital server หรือ cloud backup</p><p><b>ช่วง pilot:</b> ควรเก็บ anesthesia record ตามระบบมาตรฐานของโรงพยาบาลเป็น backup และทดสอบการ reopen/refresh/offline บนอุปกรณ์ที่จะใช้จริง</p></div>
       </details>
 
+      <details id="helpTopicBranding" data-help-section="branding">
+        <summary><span>🏥</span><div><b>Hospital Branding & Reports</b><small>ชื่อ • logo • ข้อมูลติดต่อบน PDF</small></div></summary>
+        <div class="help-topic-body"><p>ตั้งชื่อโรงพยาบาล, logo และข้อมูลติดต่อได้ที่ Settings → Hospital Branding & Report Identity ข้อมูลจะถูกใช้กับทั้ง 1-page Summary PDF และ Full PDF</p><p><b>เพื่อความต่อเนื่องของเอกสาร:</b> เมื่อเริ่ม anesthesia case ระบบจะ freeze branding snapshot ของเคสนั้นไว้ ดังนั้นการเปลี่ยน logo/ชื่อโรงพยาบาลภายหลังจะไม่เปลี่ยน report ของเคสใหม่ที่เริ่มไปแล้ว ส่วนเคสเก่าที่ไม่มี snapshot จะใช้ branding ปัจจุบันเป็น fallback</p><button class="btn session-safe" type="button" data-help-go="settings">ไปหน้า Settings</button></div>
+      </details>
+
       <details id="helpTopicSupport" data-help-section="support">
         <summary><span>🐞</span><div><b>พบปัญหา / ติดต่อ ANESVET</b><small>Email หรือ Facebook Page</small></div></summary>
         <div class="help-topic-body"><p>กด Report จาก Mobile Quick Bar, OR/Recovery MORE หรือปุ่มด้านล่าง ระบบจะสร้าง structured report พร้อม app/device context โดยไม่แนบชื่อผู้ป่วย, HN, microchip หรือข้อมูลเจ้าของอัตโนมัติ</p><p><b>Email:</b> anesvetth@gmail.com<br><b>Facebook:</b> Page “Anesvet”</p><button id="helpReportIssueBtn" class="btn primary session-safe" type="button">🐞 Report issue / feedback</button></div>
@@ -2499,7 +2606,7 @@
     </div>
 
     <section class="help-about-card">
-      <div><small>ABOUT</small><b>ANESVET V15.13.0</b><p>Veterinary anesthesia workflow, monitoring record and clinical decision-support. ไม่ใช่ continuous physiologic monitor และไม่แทน clinical judgment หรือ source monitor data.</p></div>
+      <div><small>ABOUT</small><b>ANESVET V15.18.0</b><p>Veterinary anesthesia workflow, monitoring record and clinical decision-support. ไม่ใช่ continuous physiologic monitor และไม่แทน clinical judgment หรือ source monitor data.</p></div>
       <button id="helpOpenSettingsBtn" class="btn session-safe" type="button">Settings</button>
     </section>
     <div class="workflow-dialog-actions help-center-actions"><button id="helpCenterCloseBottomBtn" class="btn session-safe" type="button">Close</button></div>
@@ -2653,6 +2760,27 @@
   </form>
 </dialog>
 
+<dialog id="caseFinalizedDialog" class="drug-admin-dialog finalization-success-dialog">
+  <form method="dialog" class="drug-admin-card" onsubmit="return false;">
+    <div class="section-heading">
+      <div>
+        <div class="eyebrow">FINAL RECORD</div>
+        <h2>✓ Case locked & archived</h2>
+        <p id="caseFinalizedSummary">Final record saved successfully.</p>
+      </div>
+      <span class="status-pill good">LOCKED</span>
+    </div>
+    <div class="finalization-success-note">ข้อมูล clinical record เดิมถูก lock แล้ว คุณสามารถ Export report ตอนนี้ หรือเก็บหน้าจอนี้ไว้เพื่อ review ก่อนเริ่มเคสใหม่</div>
+    <div class="finalization-success-actions">
+      <button id="finalizedPreferredReportBtn" class="btn primary" type="button">Export preferred report</button>
+      <button id="finalizedFullReportBtn" class="btn" type="button">Full PDF</button>
+      <button id="finalizedViewArchiveBtn" class="btn" type="button">Cases / Archive</button>
+      <button id="finalizedStayBtn" class="btn" type="button">อยู่ที่เคสนี้ก่อน</button>
+      <button id="finalizedNewCaseBtn" class="btn primary xl" type="button">＋ Start new case</button>
+    </div>
+  </form>
+</dialog>
+
 <dialog id="sessionDialog" class="dialog session-dialog">
   <form method="dialog">
     <div class="dialog-head">
@@ -2672,10 +2800,14 @@
 
 <div id="feedbackDeliveryBanner" class="feedback-delivery-banner" role="status" aria-live="assertive" hidden></div>
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
-<script src="./clinical-workflow.js?v=15.13.0"></script>
-<script src="./support.js?v=15.13.0"></script>
-<script src="./reliability.js?v=15.13.0"></script>
-<script src="./app.js?v=15.13.0"></script>
-<script src="./help.js?v=15.13.0"></script>
+<script src="./clinical-workflow.js?v=15.18.0"></script>
+<script src="./support.js?v=15.18.0"></script>
+<script src="./reliability.js?v=15.18.0"></script>
+<script src="./branding.js?v=15.18.0"></script>
+<script src="./app.js?v=15.18.0"></script>
+<script src="./help.js?v=15.18.0"></script>
+<script src="./ui-refinement.js?v=15.18.0"></script>
+<script src="./pilot-efficiency.js?v=15.18.0"></script>
+<script src="./finalization.js?v=15.18.0"></script>
 </body>
 </html>
