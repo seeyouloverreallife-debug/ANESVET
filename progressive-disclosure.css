@@ -1,0 +1,116 @@
+/* ANESVET V15.19.0 — Progressive Disclosure & Collapsible Sections */
+
+.pd-settings-toolbar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  padding:14px 16px;
+  margin:0 0 14px;
+  border:1px solid var(--line, #d7e2e5);
+  border-radius:16px;
+  background:linear-gradient(180deg,#ffffff,#f7fbfc);
+  box-shadow:0 8px 24px rgba(13,82,101,.06);
+}
+.pd-settings-toolbar-copy{min-width:0}
+.pd-settings-toolbar-copy b{display:block;font-size:15px;color:var(--ink,#16323a)}
+.pd-settings-toolbar-copy small{display:block;margin-top:3px;color:var(--muted,#667b82);line-height:1.4}
+.pd-settings-tools{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.pd-settings-search{
+  width:min(300px,42vw);
+  min-height:40px;
+  padding:8px 11px;
+  border:1px solid var(--line,#d7e2e5);
+  border-radius:11px;
+  background:#fff;
+  color:var(--ink,#16323a);
+  font:inherit;
+}
+.pd-settings-search:focus{outline:2px solid rgba(13,82,101,.18);border-color:var(--teal,#0d5265)}
+.pd-settings-count{font-size:12px;color:var(--muted,#667b82);white-space:nowrap}
+
+.pd-panel{position:relative}
+.pd-panel > .section-heading{cursor:pointer;align-items:center}
+.pd-panel > .section-heading :is(button,input,select,textarea,a,label){cursor:auto}
+.pd-toggle{
+  flex:0 0 auto;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  min-height:38px;
+  padding:7px 10px;
+  margin-left:auto;
+  border:1px solid var(--line,#d7e2e5);
+  border-radius:10px;
+  background:#f7fbfc;
+  color:var(--teal,#0d5265);
+  font:inherit;
+  font-weight:800;
+  cursor:pointer !important;
+  touch-action:manipulation;
+}
+.pd-toggle:hover{background:#eef7f8}
+.pd-toggle:focus-visible{outline:3px solid rgba(13,82,101,.20);outline-offset:2px}
+.pd-toggle-icon{display:inline-block;transition:transform .16s ease;font-size:13px}
+.pd-open > .section-heading .pd-toggle-icon{transform:rotate(180deg)}
+
+.pd-summary{
+  display:none;
+  padding:0 2px 2px;
+  margin-top:-3px;
+  color:var(--muted,#667b82);
+  font-size:12.5px;
+  line-height:1.45;
+}
+.pd-collapsed > .pd-summary{display:block}
+
+/* The DOM stays in place: only direct panel contents are hidden. This avoids
+   changing existing IDs, event listeners, clinical logic, and query selectors. */
+.pd-collapsed > :not(.section-heading):not(.pd-summary){display:none !important}
+
+/* Keep collapsed settings compact. Actions belong to the expanded editor. */
+#settings .pd-collapsed > .section-heading > .btn:not(.pd-toggle),
+#settings .pd-collapsed > .section-heading > .button-row,
+#settings .pd-collapsed > .section-heading > div > .button-row{display:none !important}
+#settings .pd-collapsed > .section-heading{margin-bottom:0}
+#settings .pd-collapsed{padding-top:13px;padding-bottom:13px}
+
+.pd-panel.pd-collapsed{box-shadow:none}
+.pd-panel.pd-open > .pd-summary{display:none}
+.pd-panel[data-pd-highlight="true"]{outline:2px solid rgba(13,82,101,.20);outline-offset:2px}
+
+.pd-section-tag{
+  display:inline-flex;
+  align-items:center;
+  min-height:24px;
+  padding:3px 8px;
+  border-radius:999px;
+  background:#eef7f8;
+  color:#0d5265;
+  font-size:11px;
+  font-weight:800;
+  letter-spacing:.02em;
+  white-space:nowrap;
+}
+
+@media(max-width:760px){
+  .pd-settings-toolbar{align-items:stretch;flex-direction:column;padding:12px;margin-bottom:10px}
+  .pd-settings-tools{display:grid;grid-template-columns:1fr auto auto;gap:7px;justify-content:stretch}
+  .pd-settings-search{width:100%;min-width:0}
+  .pd-settings-count{grid-column:1/-1}
+  .pd-toggle{min-width:42px;min-height:40px;padding:7px 9px}
+  .pd-toggle-label{display:none}
+  .pd-summary{font-size:12px}
+  #settings > .panel.pd-collapsed{margin-bottom:8px}
+}
+
+@media(max-width:430px){
+  .pd-settings-tools{grid-template-columns:1fr 1fr}
+  .pd-settings-search{grid-column:1/-1}
+  .pd-settings-count{grid-column:1/-1}
+}
+
+@media(prefers-reduced-motion:reduce){
+  .pd-toggle-icon{transition:none}
+}

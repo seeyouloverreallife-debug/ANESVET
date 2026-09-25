@@ -1,4 +1,4 @@
-/* ANESVET V15.18.0 — UI behavior refinement only. No clinical logic. */
+/* ANESVET V15.19.0 — UI behavior refinement only. No clinical logic. */
 (() => {
   'use strict';
   const workflow = document.querySelector('.workflow-tabs');
