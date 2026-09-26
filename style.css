@@ -1213,3 +1213,73 @@ button,.btn,.tab,.or-primary-action,.or-record-button,.or-action-link,.or-compli
 @media(max-width:900px){.hospital-branding-layout{grid-template-columns:1fr}.hospital-branding-toggles{grid-template-columns:1fr}.hospital-branding-preview-wrap{max-width:540px}}
 @media(max-width:520px){.hospital-branding-fields{grid-template-columns:1fr}.hospital-branding-fields .span2{grid-column:span 1}.hospital-logo-controls{align-items:stretch}.hospital-logo-upload{min-width:0}.hospital-branding-preview{padding:12px}.hospital-preview-logo-wrap{width:58px;height:58px}}
 @media print{.report-hospital-logo{width:14mm;height:14mm}.compact-report .report-hospital-logo{width:12mm;height:12mm}.report-hospital-name{font-size:11pt}.report-hospital-contact{font-size:6.5pt}.report-identity{gap:3mm}}
+
+/* V15.23.0 — OR Medication Queue & Fast Documentation */
+.or-medication-queue{border:1px solid #bfd5db;border-radius:15px;background:linear-gradient(180deg,#fbfeff,#f5fafb);padding:11px 12px;display:grid;gap:9px}
+.or-medication-queue[hidden]{display:none!important}.or-medication-queue-head{display:flex;align-items:center;justify-content:space-between;gap:12px}.or-medication-queue-head>div{min-width:0}.or-medication-queue-head span:first-child{display:block;font-size:.6rem;font-weight:950;letter-spacing:.07em;color:#67828b}.or-medication-queue-head b{display:block;margin-top:2px;color:#173f4b}.or-medication-queue-head small{display:block;margin-top:2px;color:#667c84;font-size:.72rem}.or-medication-queue-list{display:grid;gap:6px}.or-medication-queue-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:9px;align-items:center;padding:8px 9px;border:1px solid #d4e2e6;border-radius:11px;background:#fff}.or-medication-queue-row.pending{border-color:#e4c68c;background:#fffdf7}.or-medication-queue-row.given{background:#f5fbf7}.or-medication-queue-drug span{display:block;font-size:.56rem;font-weight:950;letter-spacing:.05em;color:#6b838b}.or-medication-queue-drug b{display:block;font-size:.84rem;color:#183f49}.or-medication-queue-drug small{display:block;margin-top:2px;color:#6b7c82;font-size:.68rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.or-medication-queue-state>b{font-size:.68rem;color:#167044;white-space:nowrap}.or-medication-queue-state .btn{min-height:36px;padding:6px 10px}.or-medication-queue-more{font-size:.68rem;color:#6b7e85;padding:1px 3px}.or-medication-queue-actions{display:flex;gap:7px;justify-content:flex-end;flex-wrap:wrap}.or-medication-queue-actions .btn{min-height:39px}
+.toast{z-index:160}
+@media(max-width:760px){.or-medication-queue{padding:9px;border-radius:13px}.or-medication-queue-head{align-items:flex-start}.or-medication-queue-head small{font-size:.66rem}.or-medication-queue-row{padding:7px}.or-medication-queue-actions{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr)}.or-medication-queue-actions .btn{min-height:44px;font-size:.72rem}.or-medication-queue-drug small{max-width:64vw}body.or-mobile-active .toast,body.recovery-mobile-active .toast{bottom:calc(92px + env(safe-area-inset-bottom));max-width:calc(100vw - 22px);border-radius:13px}}
+.or-quick-med-btn.pending-plan{border-color:#d6ad5c;background:#fff9eb;color:#754f08;box-shadow:inset 0 0 0 1px rgba(214,173,92,.18)}
+
+/* V15.24.0 — OR Vitals Fast Entry: current-vs-last visibility without silent carry-forward */
+.or-vital-delta{display:block;min-height:16px;margin:3px 0 1px;font-size:.66rem;font-weight:850;color:#72858c;line-height:1.2}
+.or-vital-card.changed-from-last{box-shadow:inset 0 0 0 2px rgba(13,82,101,.18)}
+.or-vital-card.changed-from-last .or-vital-delta{color:#0d6275}
+.or-vital-card.blank-from-last{border-style:dashed}
+.or-vital-card.blank-from-last .or-vital-delta{color:#9a6512}
+.or-vital-change-summary{grid-column:1/-1;align-self:center;padding:6px 9px;border-radius:9px;background:#eef6f8;color:#45636c;font-size:.7rem;font-weight:900;letter-spacing:.02em;text-align:center}
+.or-vital-change-summary.has-changes{background:#e8f4f7;color:#0d5d70}
+.or-vital-change-summary.has-blanks{background:#fff6e8;color:#8a5a0a}
+.or-live-page.intraop-mode .or-vital-card{transition:border-color .14s ease,box-shadow .14s ease,background .14s ease}
+.or-live-page.intraop-mode .or-vital-card input:focus{outline:3px solid rgba(13,82,101,.16);outline-offset:2px}
+.or-live-page.intraop-mode .or-bp-panel .section-heading p{display:none}
+.or-live-page.intraop-mode .or-bp-panel,.or-live-page.intraop-mode .or-workflow-problems{box-shadow:none}
+@media(max-width:560px){
+  .or-vital-delta{font-size:.6rem;min-height:14px}
+  .or-vital-change-summary{font-size:.62rem;padding:5px 6px}
+  .or-vitals-focus-actions{grid-template-columns:96px 1fr}
+  .or-vitals-focus-actions .or-vital-change-summary{grid-column:1/-1}
+}
+
+
+/* V15.25.0 — phase-aware mobile OR dock + safer intra-op capture */
+.or-mobile-dock-btn[hidden]{display:none!important}
+.or-more-workflow{border-color:#b7ced4;background:#f8fcfd}
+.or-more-workflow>span{color:#0d5265}
+@media(max-width:1180px), (pointer:coarse) and (max-width:1400px){
+  .or-mobile-dock.intraop{grid-template-columns:minmax(0,2.2fr) minmax(92px,1fr) minmax(78px,.8fr);grid-template-areas:"vitals meds more"}
+  .or-mobile-dock.intraop #orMobileNextBtn{display:none!important}
+  .or-mobile-dock.intraop #orMobileRecordBtn{grid-area:vitals;background:#0d5265;color:#fff;border-color:#0d5265;min-height:66px}
+  .or-mobile-dock.intraop #orMobileMedsBtn{grid-area:meds;display:flex!important;min-height:66px;background:#eef8fa;color:#0d5265;border-color:#9bc5cf}
+  .or-mobile-dock.intraop #orMobileMedsBtn.pending{background:#fff8e8;color:#76530a;border-color:#ddc078;box-shadow:0 0 0 3px rgba(175,125,20,.08)}
+  .or-mobile-dock.intraop #orMobileMedsBtn>span{font-size:1.2rem!important}
+  .or-mobile-dock.intraop #orMobileMedsBtn>b{font-size:.7rem;white-space:normal}
+  .or-mobile-dock.intraop #orMobileMoreBtn{grid-area:more;min-height:66px}
+}
+@media(max-width:780px){
+  .or-mobile-dock.intraop{grid-template-columns:minmax(0,2fr) 92px 70px}
+}
+@media(max-width:390px){
+  .or-mobile-dock.intraop{grid-template-columns:minmax(0,1.8fr) 82px 62px}
+  .or-mobile-dock.intraop #orMobileMedsBtn>b{font-size:.62rem}
+}
+
+/* V15.26.0 — species/context dose reference (display only; never drives protocol calculation) */
+.dose-reference-chip{display:flex;align-items:flex-start;gap:7px;width:100%;text-align:left;border:1px solid #bfd7de;background:#f2fafb;color:#244b57;border-radius:10px;padding:8px 9px;cursor:pointer;line-height:1.32}
+.dose-reference-chip span{flex:0 0 auto;font-size:.65rem;font-weight:900;text-transform:uppercase;letter-spacing:.04em;color:#52717b;padding-top:1px}
+.dose-reference-chip b{font-size:.73rem;font-weight:800;min-width:0}
+.dose-reference-chip:hover,.dose-reference-inline-btn:hover{border-color:var(--primary2);background:var(--primary-soft)}
+.case-drug-plan-main .dose-reference-chip{margin-top:5px;max-width:560px}
+.drug-library-reference{grid-column:1/-2;min-width:0;align-self:center}
+.drug-library-reference>span{display:block;color:var(--muted);font-size:.72rem;padding:6px 8px;background:#f6f8f9;border-radius:8px}
+.drug-library-reference .dose-reference-chip{margin:0}
+.drug-note.has-dose-reference{color:#345d69}
+.dose-reference-inline{margin:8px 0}
+.dose-reference-inline-btn{width:100%;display:grid;grid-template-columns:auto 1fr auto;gap:7px;align-items:center;text-align:left;border:1px solid #bfd7de;background:#f2fafb;border-radius:11px;padding:9px 10px;color:#244b57;cursor:pointer}
+.dose-reference-inline-btn span{font-size:.67rem;font-weight:900;text-transform:uppercase;letter-spacing:.04em}.dose-reference-inline-btn b{font-size:.8rem}.dose-reference-inline-btn small{font-size:.66rem;color:#52717b;white-space:nowrap}
+.dose-reference-card{max-width:780px}.dose-reference-protocol-separation{display:grid;gap:3px;border:1px solid #e5c77d;background:#fff8e8;border-radius:11px;padding:10px 12px;margin:10px 0 12px}.dose-reference-protocol-separation b{color:#76530a}.dose-reference-protocol-separation span{font-size:.79rem;line-height:1.45;color:#67562e}
+.dose-reference-entries{display:grid;gap:8px}.dose-reference-entry{display:grid;grid-template-columns:minmax(180px,1.6fr) minmax(115px,.8fr) minmax(110px,.8fr);gap:7px 12px;align-items:center;border:1px solid var(--line);border-radius:11px;padding:10px 11px;background:#fff}.dose-reference-entry>div{min-width:0}.dose-reference-entry>div span{display:block;color:var(--primary);font-size:.65rem;font-weight:900}.dose-reference-entry>div b{display:block;font-size:.82rem;margin-top:2px}.dose-reference-entry strong{font-size:.92rem;color:#17222d}.dose-reference-entry em{font-style:normal;font-size:.79rem;color:#40515e}.dose-reference-entry small{grid-column:1/-1;color:var(--muted);line-height:1.4}.dose-reference-entry footer{grid-column:1/-1;font-size:.65rem;color:#70808a;font-weight:800;text-transform:uppercase;letter-spacing:.03em}
+.dose-reference-sources{margin-top:11px;display:grid;gap:5px;color:#586973;font-size:.72rem;line-height:1.4}.dose-reference-note{border-left:3px solid var(--warn);padding:6px 8px;background:#fffaf0;color:#66542f}.dose-reference-empty{border:1px dashed var(--line);border-radius:10px;padding:14px;color:var(--muted)}
+@media(max-width:620px){.dose-reference-entry{grid-template-columns:1fr}.dose-reference-entry small,.dose-reference-entry footer{grid-column:1}.dose-reference-inline-btn{grid-template-columns:1fr}.dose-reference-inline-btn small{white-space:normal}.drug-library-reference{grid-column:1/-1}}
+.dose-reference-intro{display:flex;gap:9px;align-items:flex-start;margin-top:9px;padding:9px 11px;border:1px solid #bfd7de;background:#f2fafb;border-radius:10px;color:#345d69;font-size:.79rem;line-height:1.45}.dose-reference-intro b{white-space:nowrap;color:var(--primary)}
+@media(max-width:620px){.dose-reference-intro{display:grid}.dose-reference-intro b{white-space:normal}}

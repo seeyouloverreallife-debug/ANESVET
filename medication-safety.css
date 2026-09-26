@@ -1,0 +1,53 @@
+
+/* ANESVET V15.21 — medication safety visibility */
+.quick-preset-row.quick-preset-safety-blocked {
+  border-color: color-mix(in srgb, var(--warn, #a86b00) 35%, transparent);
+  background: color-mix(in srgb, var(--warn-bg, #fff7e8) 72%, transparent);
+}
+.quick-preset-row.quick-preset-safety-blocked .quick-preset-result > div b {
+  font-size: .92rem;
+  letter-spacing: .02em;
+}
+.quick-preset-row.quick-preset-safety-blocked .quick-preset-result > div small { display:none; }
+.quick-preset-row .quick-preset-safety-note {
+  display:block;
+  margin-top:.2rem;
+  font-size:.72rem;
+  line-height:1.25;
+  color:var(--muted,#65747b);
+}
+.quick-preset-row.quick-preset-safety-blocked .quick-preset-safety-note { color:var(--warn,#8a5a00); font-weight:650; }
+.case-drug-plan-item.reference-blocked .case-drug-plan-volume b { color:var(--warn,#8a5a00); font-size:.88rem; }
+.case-drug-plan-item.reference-blocked { border-color:color-mix(in srgb, var(--warn,#a86b00) 28%, transparent); }
+.med-safety-note {
+  margin:.55rem 0 0;
+  padding:.65rem .75rem;
+  border-radius:12px;
+  background:color-mix(in srgb, var(--info-bg,#eef7fb) 80%, transparent);
+  color:var(--muted,#53656d);
+  font-size:.82rem;
+  line-height:1.35;
+}
+.med-safety-note b { color:var(--text,#18333d); }
+.clinical-validation-summary {
+  display:flex;
+  align-items:center;
+  gap:.55rem;
+  flex-wrap:wrap;
+  margin-top:.6rem;
+}
+.clinical-validation-grid { display:grid; gap:.5rem; margin-top:.65rem; }
+.clinical-validation-check {
+  display:grid;
+  gap:.15rem;
+  padding:.65rem .75rem;
+  border:1px solid var(--line,#d9e4e8);
+  border-radius:12px;
+  background:var(--card,#fff);
+}
+.clinical-validation-check.pass { border-color:color-mix(in srgb,#1d8b5b 35%,var(--line,#d9e4e8)); }
+.clinical-validation-check.fail { border-color:color-mix(in srgb,#b05b00 42%,var(--line,#d9e4e8)); }
+.clinical-validation-check span { color:var(--muted,#65747b); font-size:.78rem; }
+@media (max-width:640px){
+  .clinical-validation-check { padding:.58rem .65rem; }
+}

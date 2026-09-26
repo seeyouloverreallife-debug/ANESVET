@@ -1,8 +1,8 @@
 {
-  "name": "ANESVET V15.20.0 — Drug Quick Preset Priority",
-  "short_name": "ANESVET",
-  "description": "Touch-first local-first veterinary anesthesia workflow with compact progressive-disclosure UI, guided clinical workflow, hospital branding, reports, and safety hardening",
-  "start_url": "./?v=15.20.0",
+  "name": "ANESVET V15.27.0 — Protocol Review & Dose Conflict",
+  "short_name": "ANESVET V15.27",
+  "description": "Touch-first local-first veterinary anesthesia workflow with medication preparation safeguards, clinical calculation validation, hospital branding, reports, and safety hardening",
+  "start_url": "./?v=15.27.0",
   "scope": "./",
   "display": "standalone",
   "background_color": "#f3f7f8",

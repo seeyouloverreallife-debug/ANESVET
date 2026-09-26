@@ -1,0 +1,27 @@
+.protocol-review-panel{border-color:color-mix(in srgb,var(--accent,#2f6fed) 28%,var(--border,#d8dde7));}
+.protocol-review-summary{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0;}
+.protocol-review-summary .review-metric{border:1px solid var(--border,#d8dde7);border-radius:12px;padding:8px 10px;background:var(--panel-soft,#f7f8fb);min-width:105px;}
+.protocol-review-summary .review-metric b{display:block;font-size:1.05rem;}
+.protocol-review-summary .review-metric small{display:block;opacity:.72;margin-top:2px;}
+.protocol-review-results{display:grid;gap:10px;margin-top:10px;}
+.protocol-review-row{border:1px solid var(--border,#d8dde7);border-radius:14px;padding:12px;background:var(--panel,#fff);}
+.protocol-review-row.review-warn{border-color:#d98b2b;background:color-mix(in srgb,#fff7e8 65%,var(--panel,#fff));}
+.protocol-review-row.review-note{border-color:#b8a14d;background:color-mix(in srgb,#fffbe7 58%,var(--panel,#fff));}
+.protocol-review-row.review-good{border-color:#5b9b72;}
+.protocol-review-head{display:flex;gap:10px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;}
+.protocol-review-drug{display:grid;gap:2px;}
+.protocol-review-drug b{font-size:1rem;}
+.protocol-review-drug small{opacity:.7;}
+.protocol-review-species{display:grid;gap:7px;margin-top:9px;}
+.protocol-review-species-line{display:grid;grid-template-columns:minmax(58px,auto) minmax(155px,auto) 1fr;gap:8px;align-items:center;border-top:1px solid color-mix(in srgb,var(--border,#d8dde7) 70%,transparent);padding-top:7px;}
+.protocol-review-species-line:first-child{border-top:0;padding-top:0;}
+.protocol-review-species-line .species-label{font-weight:800;font-size:.78rem;letter-spacing:.04em;}
+.protocol-review-status{font-size:.74rem;font-weight:800;border-radius:999px;padding:4px 8px;width:max-content;border:1px solid currentColor;}
+.protocol-review-status.good{color:#247244;}.protocol-review-status.note{color:#8a6c00;}.protocol-review-status.warn{color:#a14d00;}.protocol-review-status.info{color:#5d6675;}
+.protocol-review-detail{font-size:.83rem;line-height:1.35;opacity:.86;}
+.protocol-review-reference{margin-top:8px;}
+.protocol-review-reference .dose-reference-chip{width:100%;text-align:left;}
+.protocol-review-signoff{display:grid;grid-template-columns:minmax(160px,1fr) minmax(240px,2fr) auto;gap:10px;align-items:end;margin-top:14px;padding-top:12px;border-top:1px solid var(--border,#d8dde7);}
+.protocol-review-signoff label{display:grid;gap:5px;font-size:.82rem;font-weight:700;}
+.protocol-review-empty{padding:12px;border:1px dashed var(--border,#d8dde7);border-radius:12px;opacity:.72;}
+@media(max-width:720px){.protocol-review-signoff{grid-template-columns:1fr}.protocol-review-signoff .btn{width:100%}.protocol-review-species-line{grid-template-columns:52px 1fr}.protocol-review-detail{grid-column:1/-1}}
