@@ -7,20 +7,20 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="description" content="ANESVET V15.27.0 — Protocol Review & Dose Conflict">
+  <meta name="description" content="ANESVET V15.29.0 — Recovery & Handoff 2.0">
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" href="./icon-192.png">
   <link rel="apple-touch-icon" href="./icon-192.png">
-  <link rel="stylesheet" href="./style.css?v=15.27.0">
-  <link rel="stylesheet" href="./ui-refinement.css?v=15.27.0">
-<link rel="stylesheet" href="./pilot-efficiency.css?v=15.27.0">
-<link rel="stylesheet" href="./finalization.css?v=15.27.0">
-<link rel="stylesheet" href="./progressive-disclosure.css?v=15.27.0">
-<link rel="stylesheet" href="./drug-priority.css?v=15.27.0">
-<link rel="stylesheet" href="./medication-safety.css?v=15.27.0">
-<link rel="stylesheet" href="./medication-reconciliation.css?v=15.27.0">
-<link rel="stylesheet" href="./protocol-review.css?v=15.27.0">
-  <title>ANESVET V15.27.0</title>
+  <link rel="stylesheet" href="./style.css?v=15.29.0">
+  <link rel="stylesheet" href="./ui-refinement.css?v=15.29.0">
+<link rel="stylesheet" href="./pilot-efficiency.css?v=15.29.0">
+<link rel="stylesheet" href="./finalization.css?v=15.29.0">
+<link rel="stylesheet" href="./progressive-disclosure.css?v=15.29.0">
+<link rel="stylesheet" href="./drug-priority.css?v=15.29.0">
+<link rel="stylesheet" href="./medication-safety.css?v=15.29.0">
+<link rel="stylesheet" href="./medication-reconciliation.css?v=15.29.0">
+<link rel="stylesheet" href="./protocol-review.css?v=15.29.0">
+  <title>ANESVET V15.29.0</title>
 </head>
 <body>
 <header class="topbar">
@@ -28,7 +28,7 @@
     <img class="brand-logo" src="./icon-192.png" alt="ANESVET logo">
     <div>
       <div class="eyebrow">GENOVI PET CARE • DIGITAL ANESTHESIA RECORD</div>
-      <h1>ANESVET <span>V15.27.0</span></h1>
+      <h1>ANESVET <span>V15.29.0</span></h1>
       <div id="appHospitalName" class="app-hospital-name" hidden></div>
     </div>
   </div>
@@ -1929,7 +1929,19 @@
       <span id="recoveryEfficiencySummary" class="recovery-efficiency-summary">—</span>
     </div>
 
-    <section id="recoveryHandoffPanel" class="panel handoff-panel"><div class="section-heading"><div><h2>Recovery Handoff</h2><p>เฉพาะข้อมูลที่ต้องเห็นทันทีตอนรับช่วงต่อ</p></div><span id="recoveryHandoffProblemBadge" class="status-pill good">0 OPEN</span></div><div id="recoveryHandoffSummary" class="handoff-summary-grid"></div><details class="handoff-full-details"><summary>ดูรายละเอียด Handoff ทั้งหมด</summary><pre id="recoveryHandoffText"></pre></details><details><summary>Snapshots at transfer</summary><div id="recoveryHandoffHistory"></div></details></section>
+    <section id="recoveryHandoffPanel" class="panel handoff-panel handoff-v2">
+      <div class="section-heading"><div><h2>Recovery Handoff</h2><p>Abnormal first • auto-summary from the case • พิมพ์เฉพาะสิ่งที่ต้องส่งต่อเพิ่ม</p></div><span id="recoveryHandoffProblemBadge" class="status-pill good">CLEAR</span></div>
+      <div id="recoveryHandoffAttention" class="handoff-attention" hidden></div>
+      <div id="recoveryHandoffReady" class="handoff-ready-strip" aria-label="Recovery handoff readiness"></div>
+      <div id="recoveryHandoffSummary" class="handoff-summary-grid"></div>
+      <div class="handoff-v2-grid">
+        <div class="handoff-v2-block"><div class="handoff-v2-title"><b>Medications received</b><small>Actual administration • grouped automatically</small></div><div id="recoveryHandoffMedicationRows" class="handoff-med-rows"></div></div>
+        <div class="handoff-v2-block"><div class="handoff-v2-title"><b>Key timeline</b><small>Latest case milestones</small></div><div id="recoveryHandoffTimeline" class="handoff-timeline"></div></div>
+      </div>
+      <label class="handoff-note-field"><span>Extra handoff / watch note <small>optional — only type what ANESVET cannot infer</small></span><input id="recHandoffNote" type="text" placeholder="เช่น recheck airway noise / owner-specific instruction / additional watch point"></label>
+      <details class="handoff-full-details"><summary>ดูรายละเอียด Handoff ทั้งหมด</summary><pre id="recoveryHandoffText"></pre></details>
+      <details><summary>Snapshots at transfer</summary><div id="recoveryHandoffHistory"></div></details>
+    </section>
     <section id="recoveryProblemsPanel" class="panel"><h2>Unresolved alerts / problems</h2><div id="recoveryProblemPanel"></div></section>
     <div class="dashboard-grid">
       <section id="recoveryObservationPanel" class="panel">
@@ -2682,7 +2694,7 @@
     </div>
 
     <section class="help-about-card">
-      <div><small>ABOUT</small><b>ANESVET V15.27.0</b><p>Veterinary anesthesia workflow, monitoring record and clinical decision-support. ไม่ใช่ continuous physiologic monitor และไม่แทน clinical judgment หรือ source monitor data.</p></div>
+      <div><small>ABOUT</small><b>ANESVET V15.29.0</b><p>Veterinary anesthesia workflow, monitoring record and clinical decision-support. ไม่ใช่ continuous physiologic monitor และไม่แทน clinical judgment หรือ source monitor data.</p></div>
       <button id="helpOpenSettingsBtn" class="btn session-safe" type="button">Settings</button>
     </section>
     <div class="workflow-dialog-actions help-center-actions"><button id="helpCenterCloseBottomBtn" class="btn session-safe" type="button">Close</button></div>
@@ -2906,20 +2918,20 @@
 
 <div id="feedbackDeliveryBanner" class="feedback-delivery-banner" role="status" aria-live="assertive" hidden></div>
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
-<script src="./drug-dose-reference.js?v=15.27.0"></script>
-<script src="./protocol-review.js?v=15.27.0"></script>
-<script src="./clinical-workflow.js?v=15.27.0"></script>
-<script src="./support.js?v=15.27.0"></script>
-<script src="./reliability.js?v=15.27.0"></script>
-<script src="./branding.js?v=15.27.0"></script>
-<script src="./clinical-validation.js?v=15.27.0"></script>
-<script src="./app.js?v=15.27.0"></script>
-<script src="./medication-reconciliation.js?v=15.27.0"></script>
-<script src="./help.js?v=15.27.0"></script>
-<script src="./ui-refinement.js?v=15.27.0"></script>
-<script src="./pilot-efficiency.js?v=15.27.0"></script>
-<script src="./finalization.js?v=15.27.0"></script>
-<script src="./progressive-disclosure.js?v=15.27.0"></script>
+<script src="./drug-dose-reference.js?v=15.29.0"></script>
+<script src="./protocol-review.js?v=15.29.0"></script>
+<script src="./clinical-workflow.js?v=15.29.0"></script>
+<script src="./support.js?v=15.29.0"></script>
+<script src="./reliability.js?v=15.29.0"></script>
+<script src="./branding.js?v=15.29.0"></script>
+<script src="./clinical-validation.js?v=15.29.0"></script>
+<script src="./app.js?v=15.29.0"></script>
+<script src="./medication-reconciliation.js?v=15.29.0"></script>
+<script src="./help.js?v=15.29.0"></script>
+<script src="./ui-refinement.js?v=15.29.0"></script>
+<script src="./pilot-efficiency.js?v=15.29.0"></script>
+<script src="./finalization.js?v=15.29.0"></script>
+<script src="./progressive-disclosure.js?v=15.29.0"></script>
 <script>setTimeout(()=>{let p=document.createElement('pre');p.id='test-output';p.textContent=JSON.stringify({title:document.title,status:document.getElementById('protocolReviewStatus')?.textContent,summary:document.getElementById('protocolReviewSummary')?.innerText,runtime:localStorage.getItem('anesvet_v15_runtime_error_log')});document.body.appendChild(p);document.title='TESTDONE'},1500)</script>
 </body>
 </html>

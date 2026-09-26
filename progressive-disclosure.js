@@ -5,6 +5,7 @@
   'use strict';
 
   const STORE_KEY = 'anesvet_pd_state_v1';
+  const HANDOFF_V2_INIT_KEY = 'anesvet_pd_handoff_v2_initialized';
   const state = readState();
   const enhanced = new Map();
 
@@ -28,7 +29,7 @@
 
     // Recovery: safety/problem panels remain visible; long handoff/history
     // sections start compact and auto-open when focused.
-    { selector:'#recovery > section.handoff-panel', group:'recovery', defaultOpen:false },
+    { selector:'#recovery > section.handoff-panel', group:'recovery', defaultOpen:true },
     { selector:'#recovery > section.recovery-score-panel', group:'recovery', defaultOpen:true },
     { selector:'#recovery > section.recovery-record-panel', group:'recovery', defaultOpen:false }
   ];
@@ -99,7 +100,8 @@
     panel.dataset.pdKey = key;
     enhanced.set(panel,{key,title,toggle,group:cfg.group});
 
-    const initial = Object.prototype.hasOwnProperty.call(state,key) ? !!state[key] : !!cfg.defaultOpen;
+    let initial = Object.prototype.hasOwnProperty.call(state,key) ? !!state[key] : !!cfg.defaultOpen;
+    if(panel.classList.contains('handoff-v2')){try{if(!localStorage.getItem(HANDOFF_V2_INIT_KEY)){initial=true;state[key]=true;localStorage.setItem(HANDOFF_V2_INIT_KEY,'1');saveState()}}catch(_){initial=true}}
     setOpen(panel, initial, false);
 
     toggle.addEventListener('click', e => {
