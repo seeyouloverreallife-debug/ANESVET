@@ -1,0 +1,26 @@
+{
+  "appVersion": "16.8.2",
+  "patientBackend": "localStorage fallback",
+  "clinicalValidation": {
+    "ok": true,
+    "passed": 15,
+    "total": 15
+  },
+  "patientSave": {
+    "status": "SAVED",
+    "tab": "preop",
+    "patients": 1,
+    "linked": "1790575535831.537"
+  },
+  "patientSearch": {
+    "cards": 1,
+    "status": "1 matches"
+  },
+  "orchestration": {
+    "patient": true,
+    "vital": true,
+    "recovery": true
+  },
+  "pageErrors": [],
+  "consoleErrors": []
+}

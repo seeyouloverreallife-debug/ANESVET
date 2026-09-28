@@ -1,0 +1,35 @@
+{
+  "backend": {
+    "archive": "IndexedDB",
+    "patient": "IndexedDB"
+  },
+  "restore": {
+    "result": {
+      "ok": true,
+      "rollbackStored": true,
+      "archiveCount": 1,
+      "patientCount": 1
+    },
+    "snapshot": true,
+    "archive": [
+      "Archived A"
+    ],
+    "patients": [
+      "Patient A"
+    ],
+    "storedCurrent": "Restore A"
+  },
+  "rollback": {
+    "result": {
+      "ok": true,
+      "rollbackStored": false,
+      "archiveCount": 0,
+      "patientCount": 0
+    },
+    "snapshot": false,
+    "archiveCount": 0,
+    "patientCount": 0,
+    "storedCurrent": ""
+  },
+  "harnessErrors": []
+}

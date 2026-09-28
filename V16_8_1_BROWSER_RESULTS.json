@@ -1,0 +1,17 @@
+{
+  "title": "ANESVET V16.8.1",
+  "modules": {
+    "patient": true,
+    "or": true,
+    "recovery": true,
+    "storage": true,
+    "session": true
+  },
+  "clinical_validation": "PASS 15/15",
+  "preop_active": true,
+  "patient_search_found": true,
+  "overflow_px": 0,
+  "app_version_text": "ANESVET V16.8.1",
+  "page_errors": [],
+  "console_errors": []
+}

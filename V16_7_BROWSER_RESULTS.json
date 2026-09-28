@@ -1,0 +1,15 @@
+{
+  "title": "ANESVET V16.7.0",
+  "cv": [
+    15,
+    15,
+    true
+  ],
+  "preflight": [
+    true,
+    true
+  ],
+  "errors": [],
+  "mobileOverflow": 0,
+  "runtimeExceptions": []
+}

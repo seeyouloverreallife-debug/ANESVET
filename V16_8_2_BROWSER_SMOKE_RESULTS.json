@@ -1,0 +1,20 @@
+{
+  "appVersion": "16.8.2",
+  "modules": {
+    "patientMaster": true,
+    "orRecord": true,
+    "recovery": true
+  },
+  "clinicalValidation": {
+    "ok": true,
+    "passed": 15,
+    "total": 15
+  },
+  "runtimeOrchestration": {
+    "patient": true,
+    "vital": true,
+    "recovery": true
+  },
+  "pageErrors": [],
+  "consoleErrors": []
+}

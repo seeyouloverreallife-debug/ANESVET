@@ -1,0 +1,116 @@
+{
+  "passed": 22,
+  "total": 22,
+  "results": [
+    {
+      "name": "patient normalize",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "patient case direct id",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "patient case HN alias",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "patient case chip alias",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "patient nonmatch",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "patient history sort",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "patient search alias",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "patient identity HN",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "patient from case",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "OR signature stable",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "OR duplicate in guard",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "OR duplicate outside guard",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "OR duplicate changed",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "OR summary",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "OR alert HR cat",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "OR alert classifier",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "OR no alert",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "Recovery score",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "Recovery score text",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "Recovery ready",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "Recovery missing fields",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "Recovery elapsed",
+      "pass": true,
+      "detail": ""
+    }
+  ]
+}

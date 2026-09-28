@@ -1,0 +1,564 @@
+{
+  "passed": 14,
+  "total": 14,
+  "rows": [
+    {
+      "name": "resolve active",
+      "pass": true,
+      "new": {
+        "patientId": "b",
+        "patientName": "B",
+        "hospitalId": "H2",
+        "microchip": "M2",
+        "mergedInto": "",
+        "retiredAt": null,
+        "hnAliases": [
+          "H1"
+        ],
+        "microchipAliases": [
+          "M1"
+        ]
+      },
+      "old": {
+        "patientId": "b",
+        "patientName": "B",
+        "hospitalId": "H2",
+        "microchip": "M2",
+        "mergedInto": "",
+        "retiredAt": null,
+        "hnAliases": [
+          "H1"
+        ],
+        "microchipAliases": [
+          "M1"
+        ]
+      }
+    },
+    {
+      "name": "find targets",
+      "pass": true,
+      "new": [
+        {
+          "patientId": "b",
+          "patientName": "B",
+          "hospitalId": "H2",
+          "microchip": "M2",
+          "mergedInto": "",
+          "retiredAt": null,
+          "hnAliases": [
+            "H1"
+          ],
+          "microchipAliases": [
+            "M1"
+          ]
+        }
+      ],
+      "old": [
+        {
+          "patientId": "b",
+          "patientName": "B",
+          "hospitalId": "H2",
+          "microchip": "M2",
+          "mergedInto": "",
+          "retiredAt": null,
+          "hnAliases": [
+            "H1"
+          ],
+          "microchipAliases": [
+            "M1"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "merge s4",
+      "pass": true,
+      "new": {
+        "source": {
+          "patientId": "s",
+          "patientName": "S",
+          "hospitalId": "HS",
+          "microchip": "MS",
+          "lastWeight": 8,
+          "lastWeightAt": 20,
+          "lastBcs": "7",
+          "mergedPatientIds": [
+            "x"
+          ],
+          "hnAliases": [
+            "h0"
+          ],
+          "microchipAliases": [
+            "m0"
+          ],
+          "mergeAudit": [],
+          "retiredAt": 123,
+          "retiredReason": "Merged duplicate",
+          "mergedInto": "t"
+        },
+        "target": {
+          "patientId": "t",
+          "patientName": "T",
+          "hospitalId": "HT",
+          "microchip": "MT",
+          "lastWeight": 8,
+          "lastWeightAt": 20,
+          "lastBcs": "7",
+          "mergedPatientIds": [
+            "s",
+            "x"
+          ],
+          "hnAliases": [
+            "HS",
+            "h0"
+          ],
+          "microchipAliases": [
+            "MS",
+            "m0"
+          ],
+          "mergeAudit": [
+            {
+              "epoch": 123,
+              "sourcePatientId": "s",
+              "sourceName": "S",
+              "sourceHn": "HS"
+            }
+          ]
+        }
+      },
+      "old": {
+        "source": {
+          "patientId": "s",
+          "patientName": "S",
+          "hospitalId": "HS",
+          "microchip": "MS",
+          "lastWeight": 8,
+          "lastWeightAt": 20,
+          "lastBcs": "7",
+          "mergedPatientIds": [
+            "x"
+          ],
+          "hnAliases": [
+            "h0"
+          ],
+          "microchipAliases": [
+            "m0"
+          ],
+          "mergeAudit": [],
+          "retiredAt": 123,
+          "retiredReason": "Merged duplicate",
+          "mergedInto": "t"
+        },
+        "target": {
+          "patientId": "t",
+          "patientName": "T",
+          "hospitalId": "HT",
+          "microchip": "MT",
+          "lastWeight": 8,
+          "lastWeightAt": 20,
+          "lastBcs": "7",
+          "mergedPatientIds": [
+            "s",
+            "x"
+          ],
+          "hnAliases": [
+            "HS",
+            "h0"
+          ],
+          "microchipAliases": [
+            "MS",
+            "m0"
+          ],
+          "mergeAudit": [
+            {
+              "epoch": 123,
+              "sourcePatientId": "s",
+              "sourceName": "S",
+              "sourceHn": "HS"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "merge s5",
+      "pass": true,
+      "new": {
+        "source": {
+          "patientId": "s",
+          "patientName": "S",
+          "hospitalId": "",
+          "microchip": "",
+          "breed": "Pug",
+          "lastWeight": 3,
+          "lastWeightAt": 1,
+          "mergedPatientIds": [],
+          "hnAliases": [],
+          "microchipAliases": [],
+          "retiredAt": 123,
+          "retiredReason": "Merged duplicate",
+          "mergedInto": "t"
+        },
+        "target": {
+          "patientId": "t",
+          "patientName": "T",
+          "hospitalId": "HT",
+          "microchip": "MT",
+          "breed": "Pug",
+          "lastWeight": 5,
+          "lastWeightAt": 10,
+          "mergedPatientIds": [
+            "s"
+          ],
+          "hnAliases": [],
+          "microchipAliases": [],
+          "mergeAudit": [
+            {
+              "epoch": 123,
+              "sourcePatientId": "s",
+              "sourceName": "S",
+              "sourceHn": ""
+            }
+          ]
+        }
+      },
+      "old": {
+        "source": {
+          "patientId": "s",
+          "patientName": "S",
+          "hospitalId": "",
+          "microchip": "",
+          "breed": "Pug",
+          "lastWeight": 3,
+          "lastWeightAt": 1,
+          "mergedPatientIds": [],
+          "hnAliases": [],
+          "microchipAliases": [],
+          "retiredAt": 123,
+          "retiredReason": "Merged duplicate",
+          "mergedInto": "t"
+        },
+        "target": {
+          "patientId": "t",
+          "patientName": "T",
+          "hospitalId": "HT",
+          "microchip": "MT",
+          "breed": "Pug",
+          "lastWeight": 5,
+          "lastWeightAt": 10,
+          "mergedPatientIds": [
+            "s"
+          ],
+          "hnAliases": [],
+          "microchipAliases": [],
+          "mergeAudit": [
+            {
+              "epoch": 123,
+              "sourcePatientId": "s",
+              "sourceName": "S",
+              "sourceHn": ""
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "duplicate detection",
+      "pass": true,
+      "new": true,
+      "old": true
+    },
+    {
+      "name": "vital append sort",
+      "pass": true,
+      "new": [
+        {
+          "id": "a",
+          "epoch": 1000,
+          "hr": 80,
+          "rr": 10,
+          "sap": null,
+          "map": 70,
+          "dap": null,
+          "spo2": 99,
+          "etco2": 40,
+          "temp": 100,
+          "vaporizer": 1,
+          "o2flow": 1,
+          "fluidRate": 2,
+          "fluidTotal": 3,
+          "depth": "",
+          "ventilation": "",
+          "note": ""
+        },
+        {
+          "id": "b",
+          "epoch": 5000,
+          "hr": 81,
+          "rr": 10,
+          "sap": null,
+          "map": 70,
+          "dap": null,
+          "spo2": 99,
+          "etco2": 40,
+          "temp": 100,
+          "vaporizer": 1,
+          "o2flow": 1,
+          "fluidRate": 2,
+          "fluidTotal": 3,
+          "depth": "",
+          "ventilation": "",
+          "note": ""
+        }
+      ],
+      "old": [
+        {
+          "id": "a",
+          "epoch": 1000,
+          "hr": 80,
+          "rr": 10,
+          "sap": null,
+          "map": 70,
+          "dap": null,
+          "spo2": 99,
+          "etco2": 40,
+          "temp": 100,
+          "vaporizer": 1,
+          "o2flow": 1,
+          "fluidRate": 2,
+          "fluidTotal": 3,
+          "depth": "",
+          "ventilation": "",
+          "note": ""
+        },
+        {
+          "id": "b",
+          "epoch": 5000,
+          "hr": 81,
+          "rr": 10,
+          "sap": null,
+          "map": 70,
+          "dap": null,
+          "spo2": 99,
+          "etco2": 40,
+          "temp": 100,
+          "vaporizer": 1,
+          "o2flow": 1,
+          "fluidRate": 2,
+          "fluidTotal": 3,
+          "depth": "",
+          "ventilation": "",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "name": "vital delete",
+      "pass": true,
+      "new": [
+        {
+          "id": "b",
+          "epoch": 5000,
+          "hr": 80,
+          "rr": 10,
+          "sap": null,
+          "map": 70,
+          "dap": null,
+          "spo2": 99,
+          "etco2": 40,
+          "temp": 100,
+          "vaporizer": 1,
+          "o2flow": 1,
+          "fluidRate": 2,
+          "fluidTotal": 3,
+          "depth": "",
+          "ventilation": "",
+          "note": ""
+        }
+      ],
+      "old": [
+        {
+          "id": "b",
+          "epoch": 5000,
+          "hr": 80,
+          "rr": 10,
+          "sap": null,
+          "map": 70,
+          "dap": null,
+          "spo2": 99,
+          "etco2": 40,
+          "temp": 100,
+          "vaporizer": 1,
+          "o2flow": 1,
+          "fluidRate": 2,
+          "fluidTotal": 3,
+          "depth": "",
+          "ventilation": "",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "name": "correction record",
+      "pass": true,
+      "new": [
+        {
+          "id": "a",
+          "epoch": 1000,
+          "hr": 80,
+          "rr": 10,
+          "sap": null,
+          "map": 65,
+          "dap": null,
+          "spo2": 99,
+          "etco2": 40,
+          "temp": 100,
+          "vaporizer": 1,
+          "o2flow": 1,
+          "fluidRate": 2,
+          "fluidTotal": 3,
+          "depth": "",
+          "ventilation": "",
+          "note": ""
+        }
+      ],
+      "old": [
+        {
+          "id": "a",
+          "epoch": 1000,
+          "hr": 80,
+          "rr": 10,
+          "sap": null,
+          "map": 65,
+          "dap": null,
+          "spo2": 99,
+          "etco2": 40,
+          "temp": 100,
+          "vaporizer": 1,
+          "o2flow": 1,
+          "fluidRate": 2,
+          "fluidTotal": 3,
+          "depth": "",
+          "ventilation": "",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "name": "correction audit payload",
+      "pass": true,
+      "new": {
+        "id": "cid",
+        "recordId": "a",
+        "field": "map",
+        "oldValue": 70,
+        "newValue": 65,
+        "reason": "x",
+        "epoch": 55,
+        "clock": "01:02"
+      },
+      "old": {
+        "id": "cid",
+        "recordId": "a",
+        "field": "map",
+        "oldValue": 70,
+        "newValue": 65,
+        "reason": "x",
+        "epoch": 55,
+        "clock": "01:02"
+      }
+    },
+    {
+      "name": "recovery score append",
+      "pass": true,
+      "new": [
+        {
+          "id": 1
+        },
+        {
+          "id": 2
+        }
+      ],
+      "old": [
+        {
+          "id": 1
+        },
+        {
+          "id": 2
+        }
+      ]
+    },
+    {
+      "name": "recovery record append",
+      "pass": true,
+      "new": [
+        {
+          "id": 1
+        },
+        {
+          "id": 2
+        }
+      ],
+      "old": [
+        {
+          "id": 1
+        },
+        {
+          "id": 2
+        }
+      ]
+    },
+    {
+      "name": "recovery begin existing start",
+      "pass": true,
+      "new": {
+        "emergencyReturnActive": false,
+        "casePhase": "recovery",
+        "recoveryStartedAt": 77,
+        "recoveryCompletedAt": null
+      },
+      "old": {
+        "emergencyReturnActive": false,
+        "casePhase": "recovery",
+        "recoveryStartedAt": 77,
+        "recoveryCompletedAt": null
+      }
+    },
+    {
+      "name": "recovery begin new start",
+      "pass": true,
+      "new": {
+        "emergencyReturnActive": false,
+        "casePhase": "recovery",
+        "recoveryStartedAt": 99,
+        "recoveryCompletedAt": null
+      },
+      "old": {
+        "emergencyReturnActive": false,
+        "casePhase": "recovery",
+        "recoveryStartedAt": 99,
+        "recoveryCompletedAt": null
+      }
+    },
+    {
+      "name": "recovery complete",
+      "pass": true,
+      "new": {
+        "recoveryCompletionOverride": {
+          "reason": "x"
+        },
+        "recoveryCompletedAt": 111,
+        "casePhase": "complete",
+        "emergencyReturnActive": false
+      },
+      "old": {
+        "recoveryCompletionOverride": {
+          "reason": "x"
+        },
+        "recoveryCompletedAt": 111,
+        "casePhase": "complete",
+        "emergencyReturnActive": false
+      }
+    }
+  ]
+}

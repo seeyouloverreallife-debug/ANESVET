@@ -1,0 +1,38 @@
+{
+  "version": "16.8.1",
+  "js_syntax_passed": 26,
+  "js_total": 26,
+  "js_failures": [],
+  "html_ids": 1144,
+  "unique_ids": 1144,
+  "duplicate_ids": 0,
+  "service_worker_assets": 46,
+  "service_worker_unique": 46,
+  "service_worker_duplicates": 0,
+  "missing_assets": [],
+  "stale_v16_8_0_refs": {
+    "index.html": false,
+    "app.js": false,
+    "service-worker.js": false,
+    "manifest.webmanifest": false
+  },
+  "critical_modules_byte_identical_to_v16_8_0": {
+    "case-runtime.js": true,
+    "core-storage.js": true,
+    "session-coordination.js": true,
+    "clinical-validation.js": true,
+    "clinical-workflow.js": true,
+    "drug-dose-reference.js": true,
+    "protocol-review.js": true,
+    "medication-reconciliation.js": true,
+    "finalization.js": true,
+    "reliability.js": true,
+    "data-resilience.js": true
+  },
+  "app_js_lines": 5051,
+  "new_domain_modules": [
+    "patient-domain.js",
+    "or-domain.js",
+    "recovery-domain.js"
+  ]
+}
