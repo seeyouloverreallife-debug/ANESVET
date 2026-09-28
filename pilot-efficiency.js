@@ -7,7 +7,6 @@
   const q = sel => document.querySelector(sel);
   const qa = sel => [...document.querySelectorAll(sel)];
   const MAIN_FLOW = ['patient','preop','drugs','orlive','recovery','endcase'];
-  const NEXT_FLOW = {patient:'preop',preop:'drugs',drugs:'orlive'};
   let refreshTimer = 0;
 
   function activePageId(){ return q('.tabpage.active')?.id || ''; }
@@ -22,6 +21,7 @@
 
   function scrollAndFocus(target){
     if(!target) return;
+    window.ANESVETFocusedWorkspace?.openForElement?.(target);
     const container = target.closest?.('.panel,.case-drug-plan-panel,.recovery-check-item') || target;
     try{ container.scrollIntoView({behavior:'smooth',block:'center'}); }
     catch(_){ container.scrollIntoView(); }
@@ -29,17 +29,41 @@
     setTimeout(()=>focusable?.focus?.({preventScroll:true}),260);
   }
 
+  function mobileContinueSpec(){
+    const current=activePageId();
+    if(current==='patient'){
+      if(!isGood(byId('patientSaveStatus'))) return {label:'บันทึก & ต่อ',icon:'✓',run:()=>byId('savePatientBtn')?.click()};
+      return {label:'Pre-check',icon:'→',run:()=>clickWorkflowTab('preop')};
+    }
+    if(current==='preop'){
+      if(!isGood(byId('preopProgress'))) return {label:'รายการถัดไป',icon:'↓',run:()=>byId('preopNextIncompleteBtn')?.click()};
+      return {label:'Medications',icon:'→',run:()=>clickWorkflowTab('drugs')};
+    }
+    if(current==='drugs'){
+      const task=byId('drugNextTaskBtn')?.dataset.action||'';
+      if(task==='build')return {label:'สร้างแผน',icon:'↻',run:runDrugNextTask};
+      if(task==='review')return {label:'Review plan',icon:'✓',run:runDrugNextTask};
+      return {label:'OR LIVE',icon:'→',run:runDrugNextTask};
+    }
+    if(current==='endcase'){
+      const next=byId('endCaseNextTaskBtn');
+      if(next)return {label:next.dataset.action==='finalize'?'Lock & Archive':'รายการถัดไป',icon:next.dataset.action==='finalize'?'✓':'→',run:()=>next.click()};
+    }
+    return null;
+  }
+
   function syncContinueButton(){
     const btn=byId('mobileQuickContinueBtn'), bar=byId('mobileQuickBar');
     if(!btn || !bar) return;
-    const current=activePageId(), next=NEXT_FLOW[current] || '';
-    btn.hidden=!next;
-    bar.classList.toggle('has-continue',!!next);
-    if(!next) return;
-    const labels={preop:'Pre-check',drugs:'Drug Plan',orlive:'OR LIVE'};
-    btn.title=`ไป ${labels[next]||next}`;
-    btn.setAttribute('aria-label',`ไปขั้นตอนถัดไป: ${labels[next]||next}`);
-    const b=btn.querySelector('b'); if(b) b.textContent='ต่อไป';
+    const spec=mobileContinueSpec();
+    btn.hidden=!spec;
+    bar.classList.toggle('has-continue',!!spec);
+    if(!spec) return;
+    const icon=btn.querySelector('span'),label=btn.querySelector('b');
+    if(icon)icon.textContent=spec.icon||'→';
+    if(label)label.textContent=spec.label||'ต่อไป';
+    btn.title=spec.label||'ต่อไป';
+    btn.setAttribute('aria-label',spec.label||'ต่อไป');
   }
 
   /* ---------- Pre-op efficiency ---------- */
@@ -236,8 +260,8 @@
   }
 
   byId('mobileQuickContinueBtn')?.addEventListener('click',()=>{
-    const next=NEXT_FLOW[activePageId()];
-    if(next) clickWorkflowTab(next);
+    const spec=mobileContinueSpec();
+    spec?.run?.();
   });
 
   byId('preopNextIncompleteBtn')?.addEventListener('click',()=>scrollAndFocus(firstIncompletePreopTarget()));

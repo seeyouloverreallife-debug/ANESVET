@@ -30,7 +30,7 @@
     // Recovery: safety/problem panels remain visible; long handoff/history
     // sections start compact and auto-open when focused.
     { selector:'#recovery > section.handoff-panel', group:'recovery', defaultOpen:true },
-    { selector:'#recovery > section.recovery-score-panel', group:'recovery', defaultOpen:true },
+    { selector:'#recovery > section.recovery-score-panel', group:'recovery', defaultOpen:false },
     { selector:'#recovery > section.recovery-record-panel', group:'recovery', defaultOpen:false }
   ];
 

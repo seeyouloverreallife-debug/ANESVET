@@ -1,0 +1,7 @@
+(()=>{
+'use strict';
+function commitVital(records,snapshot,{guardMs=12000,findDuplicate}={}){const current=Array.isArray(records)?records:[];const duplicate=typeof findDuplicate==='function'?findDuplicate(current,snapshot,guardMs):null;if(duplicate)return {ok:false,reason:'duplicate',duplicate,records:current};const next=[...current,snapshot].sort((a,b)=>(a?.epoch||0)-(b?.epoch||0));return {ok:true,reason:'saved',record:snapshot,records:next}}
+function deleteVital(records,id){return (Array.isArray(records)?records:[]).filter(r=>String(r?.id)!==String(id))}
+function applyCorrection(records,corrections,{recordId,field,newValue,reason='',epoch=Date.now(),clock='',id=''}={}){const nextRecords=(Array.isArray(records)?records:[]).map(r=>({...r})),rec=nextRecords.find(r=>String(r?.id)===String(recordId));if(!rec)return {ok:false,reason:'record-not-found',records:records||[],corrections:corrections||[]};const oldValue=rec[field];if(String(oldValue)===String(newValue))return {ok:false,reason:'unchanged',oldValue,newValue,records:records||[],corrections:corrections||[]};const correction={id:id||String(epoch),recordId:rec.id,recordElapsedMs:rec.elapsedMs,field,oldValue,newValue,reason,epoch,clock};rec[field]=newValue;return {ok:true,oldValue,newValue,correction,records:nextRecords,corrections:[...(Array.isArray(corrections)?corrections:[]),correction]}}
+window.ANESVET_OR_RECORD_ORCHESTRATION=Object.freeze({commitVital,deleteVital,applyCorrection});
+})();

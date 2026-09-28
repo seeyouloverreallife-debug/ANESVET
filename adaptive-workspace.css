@@ -1,0 +1,172 @@
+/* ANESVET V16.4.0 — Adaptive Workspace & Finishing Polish
+   Presentation-only adaptive layout. No clinical rules or calculations live here. */
+
+:root{
+  --ux-workspace-max:1480px;
+  --ux-rail-min:310px;
+  --ux-motion-fast:140ms;
+  --ux-motion-med:220ms;
+  --ux-ease:cubic-bezier(.2,.75,.25,1);
+}
+
+/* Give large displays useful breathing room rather than merely stretching mobile cards. */
+@media (min-width:1180px){
+  main{max-width:var(--ux-workspace-max)!important;padding:16px 20px 28px!important}
+  .workflow-tabs{display:grid!important;grid-template-columns:repeat(6,minmax(0,1fr)) auto;gap:5px!important;overflow:visible!important;padding:7px!important;border:1px solid var(--line);border-radius:16px;background:rgba(249,251,251,.92)!important;box-shadow:0 7px 24px rgba(18,52,59,.045)}
+  .workflow-tabs .tab{display:flex;align-items:center;justify-content:center;gap:7px;min-width:0;border:0!important;border-radius:11px!important;background:transparent!important;color:#64757a!important;padding:9px 10px!important;font-weight:650!important;transition:background var(--ux-motion-fast) var(--ux-ease),color var(--ux-motion-fast) var(--ux-ease),transform var(--ux-motion-fast) var(--ux-ease)}
+  .workflow-tabs .tab .step-no{display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:#edf2f2;color:#64757a;font-size:.66rem;font-weight:750;flex:0 0 auto}
+  .workflow-tabs .tab.active{background:#eaf3f3!important;color:var(--primary)!important;box-shadow:inset 0 0 0 1px #d7e6e6}
+  .workflow-tabs .tab.active .step-no{background:var(--primary);color:#fff}
+  .workflow-tabs .more-tab{padding-inline:12px!important}
+
+  /* Patient: core form owns the main column; identity/history + ASA become a calm rail. */
+  #patient.tabpage.active{display:grid!important;grid-template-columns:minmax(0,1.7fr) minmax(var(--ux-rail-min),.72fr);gap:14px;align-items:start;grid-auto-flow:row dense}
+  #patient>.patient-hero,#patient>.patient-action-bar{grid-column:1/-1}
+  #patient>.patient-entry-panel{grid-column:1;grid-row:2 / span 2;margin-bottom:0!important}
+  #patient>.patient-master-panel{grid-column:2;grid-row:2;margin-bottom:0!important}
+  #patient>.panel:not(.patient-entry-panel):not(.patient-master-panel){grid-column:2;grid-row:3;margin-bottom:0!important}
+  #patient>.patient-action-bar{margin-top:0!important}
+  #patient .patient-master-panel,#patient>.panel:not(.patient-entry-panel):not(.patient-master-panel){position:relative}
+
+  /* Pre-check: exam is the working canvas, structured risk review is visible alongside it. */
+  #preop>.panel{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(var(--ux-rail-min),.74fr);gap:14px;align-items:start;grid-auto-flow:row dense}
+  #preop>.panel>.section-heading,#preop>.panel>.preop-efficiency-tools,#preop>.panel>.checklist-grid,#preop>.panel>.preop-footer{grid-column:1/-1}
+  #preop>.panel>.preop-exam-panel{grid-column:1;margin:0!important}
+  #preop>.panel>.preop-risk-panel{grid-column:2;margin:0!important}
+  #preop .preop-exam-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+  #preop .preop-risk-panel{position:sticky;top:84px;max-height:calc(100vh - 102px);overflow:auto;overscroll-behavior:contain}
+
+  /* Medications: actual case plan is primary; presets/reference are supporting context. */
+  #drugs.tabpage.active{display:grid!important;grid-template-columns:minmax(0,1.62fr) minmax(var(--ux-rail-min),.72fr);gap:14px;align-items:start;grid-auto-flow:row dense}
+  #drugs>.drug-workflow-head,#drugs>.drug-next-step{grid-column:1/-1}
+  #drugs>.case-drug-plan-panel,#drugs>.phase-drug-panel{grid-column:1;margin-bottom:0!important}
+  #drugs>.dose-spotlight-panel,#drugs>.drug-calculator-intro,#drugs>.emergency-panel{grid-column:2;margin-bottom:0!important}
+  #drugs>.dose-spotlight-panel{grid-row:2}
+  #drugs>.case-drug-plan-panel{grid-row:2 / span 2}
+  #drugs>.drug-calculator-intro{grid-row:3}
+  #drugs>.phase-drug-panel{grid-row:4 / span 2}
+  #drugs>.emergency-panel{grid-row:4}
+
+  /* OR LIVE: primary monitoring/action canvas on the left, context/support rail on the right. */
+  #orlive.tabpage.active{display:grid!important;grid-template-columns:minmax(0,1.72fr) minmax(320px,.68fr);gap:12px 14px;align-items:start;grid-auto-flow:row dense}
+  #orlive>.or-command-bar,#orlive>#orStickyMini,#orlive>#orVitalsFocus,#orlive>.or-lower-grid,#orlive>#orUndoStepBtn,#orlive>#orMobileDock,#orlive>dialog{grid-column:1/-1}
+  #orlive>.or-primary-flow,#orlive>.or-status-row,#orlive>.or-vital-grid,#orlive>.or-secondary-grid,#orlive>#orFluidPanelDetails,#orlive>#orAirwayPanelDetails,#orlive>.or-action-panel{grid-column:1}
+  #orlive>#orMedicationQueue,#orlive>#orCaseContextPanel,#orlive>.or-phase-details,#orlive>.complication-watch-panel{grid-column:2}
+  #orlive>#orMedicationQueue{grid-row:3}
+  #orlive>.or-primary-flow{grid-row:3}
+  #orlive>#orCaseContextPanel{grid-row:4}
+  #orlive>.or-status-row{grid-row:4}
+  #orlive>.or-phase-details{grid-row:5}
+  #orlive>.or-vital-grid{grid-row:5 / span 2}
+  #orlive>.complication-watch-panel{grid-row:6 / span 2}
+  #orlive>.or-secondary-grid{grid-row:7}
+  #orlive>#orFluidPanelDetails{grid-row:8}
+  #orlive>#orAirwayPanelDetails{grid-row:9}
+  #orlive>.or-action-panel{grid-row:10}
+  #orlive .or-vital-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:10px!important}
+  #orlive .or-vital-card{min-height:148px}
+  #orlive .or-vital-card input{font-size:2.35rem!important}
+  #orlive .or-status-row{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+  #orlive .or-record-button{grid-column:1/-1;min-height:48px}
+  #orlive>#orCaseContextPanel,#orlive>.or-phase-details,#orlive>.complication-watch-panel,#orlive>#orMedicationQueue{box-shadow:0 5px 18px rgba(18,52,59,.035)!important}
+
+  /* Recovery: live observations/history left, handoff/readiness/problem context right. */
+  #recovery.tabpage.active{display:grid!important;grid-template-columns:minmax(0,1.58fr) minmax(330px,.72fr);gap:12px 14px;align-items:start;grid-auto-flow:row dense}
+  #recovery>.recovery-command,#recovery>#recoveryFocus,#recovery>.recovery-efficiency-tools,#recovery>#recoveryMobileDock,#recovery>dialog{grid-column:1/-1}
+  #recovery>.dashboard-grid,#recovery>#recoveryRecordPanel{grid-column:1}
+  #recovery>#recoveryHandoffPanel,#recovery>#recoveryProblemsPanel,#recovery>#recoveryScorePanel{grid-column:2;margin-bottom:0!important}
+  #recovery>.dashboard-grid{grid-row:4 / span 3;grid-template-columns:1fr!important}
+  #recovery>#recoveryHandoffPanel{grid-row:4}
+  #recovery>#recoveryProblemsPanel{grid-row:5}
+  #recovery>#recoveryScorePanel{grid-row:6}
+  #recovery>#recoveryRecordPanel{grid-row:7}
+  #recovery>#recoveryHandoffPanel{position:sticky;top:84px;max-height:calc(100vh - 102px);overflow:auto;overscroll-behavior:contain}
+
+  /* End case should read like a document, not an over-wide form. */
+  #endcase>.end-case-panel{max-width:1120px;margin-inline:auto}
+}
+
+/* Tablet landscape: use space better without forcing a desktop rail. */
+@media (min-width:760px) and (max-width:1179px){
+  main{max-width:1080px!important;padding:14px 18px 26px!important}
+  .form-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+  #orlive .or-vital-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+  #orlive .or-status-row{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+  #orlive .or-record-button{grid-column:1/-1}
+  #recovery .recovery-focus-latest{grid-template-columns:repeat(5,minmax(0,1fr))!important}
+  #preop .preop-exam-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  #drugs .drug-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+}
+
+/* Finishing polish: quiet depth, clear press feedback, no decorative motion overload. */
+.btn,.tab,.quick-event,.mobile-quick-btn,.or-primary-action,.or-vitals-save,.recovery-focus-record,details>summary{transition:transform var(--ux-motion-fast) var(--ux-ease),box-shadow var(--ux-motion-med) var(--ux-ease),background-color var(--ux-motion-fast) var(--ux-ease),border-color var(--ux-motion-fast) var(--ux-ease),color var(--ux-motion-fast) var(--ux-ease)}
+.panel,.or-vital-card,.vital-card,.summary-card{transition:border-color var(--ux-motion-fast) var(--ux-ease),box-shadow var(--ux-motion-med) var(--ux-ease),background-color var(--ux-motion-fast) var(--ux-ease)}
+
+@media (hover:hover) and (pointer:fine){
+  .btn:hover,.quick-event:hover{transform:translateY(-1px);box-shadow:0 6px 16px rgba(18,52,59,.08)}
+  .workflow-tabs .tab:hover{background:#f0f5f5!important;color:#3d5b61!important}
+  .or-vital-card:hover,.vital-card:hover{border-color:#cbdcde!important;box-shadow:0 7px 18px rgba(18,52,59,.05)!important}
+  details>summary:hover{color:var(--primary)}
+}
+.btn:active,.quick-event:active,.mobile-quick-btn:active,.or-primary-action:active,.or-vitals-save:active,.recovery-focus-record:active{transform:translateY(0) scale(.985)!important}
+
+/* Keyboard focus is visible but restrained. */
+:where(button,input,select,textarea,summary,[tabindex]):focus-visible{outline:3px solid rgba(20,117,140,.18)!important;outline-offset:2px!important}
+
+/* Subtle save confirmation pulse; JS only adds the transient class after a real saved-state update. */
+#saveState.ux-just-saved{animation:uxSavedPulse 520ms var(--ux-ease)}
+@keyframes uxSavedPulse{0%{transform:scale(.98);opacity:.72}45%{transform:scale(1.035);opacity:1}100%{transform:scale(1);opacity:1}}
+
+/* Native details disclosure gets a gentle state cue without replacing browser semantics. */
+details>summary{cursor:pointer}
+details[open]>summary{border-color:#d6e4e5}
+
+/* Keep print deterministic: adaptive screen layout never alters the report composition. */
+@media print{
+  #patient.tabpage.active,#drugs.tabpage.active,#orlive.tabpage.active,#recovery.tabpage.active,#preop>.panel{display:block!important}
+  #preop .preop-risk-panel,#recovery>#recoveryHandoffPanel{position:static!important;max-height:none!important;overflow:visible!important}
+}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{scroll-behavior:auto!important;transition-duration:.001ms!important;animation-duration:.001ms!important;animation-iteration-count:1!important}
+}
+
+/* V16.4 rail-specific compaction: wide desktop side panels must reflow, never widen the page. */
+@media (min-width:1180px){
+  #orlive>#orCaseContextPanel{grid-template-columns:1fr!important;align-items:start!important}
+  #orlive>#orCaseContextPanel .or-context-metrics{grid-template-columns:1fr 1fr!important;width:100%!important;min-width:0!important}
+  #orlive>#orCaseContextPanel .or-context-actions{grid-column:auto!important;justify-content:flex-start!important;width:100%!important;min-width:0!important}
+  #orlive>#orCaseContextPanel .or-context-actions .btn{white-space:normal!important;max-width:100%!important}
+  #orlive>.or-phase-details .or-phase-steps{grid-template-columns:1fr!important;gap:6px!important}
+  #orlive>.or-phase-details .or-phase-arrow{display:none!important}
+  #orlive>.or-phase-details .or-phase-step{min-width:0!important;min-height:54px!important}
+  #orlive>.or-phase-details .or-phase-steps,#orlive>.or-phase-details .or-phase-action-hint{margin-left:0!important;margin-right:0!important}
+  #orlive>*{min-width:0}
+}
+
+/* Final wide-screen cleanup: avoid duplicated context and keep vitals visually balanced. */
+@media (min-width:1180px){
+  #orlive>#orStickyMini{display:none!important}
+  #orlive .or-vital-card.secondary{grid-column:span 1!important;min-height:148px!important}
+}
+
+/* Tablet clinical workspaces keep one fixed action surface, not two stacked docks. */
+@media (min-width:760px) and (max-width:1179px){
+  body[data-ux-active-tab="orlive"] #mobileQuickBar,
+  body[data-ux-active-tab="recovery"] #mobileQuickBar{display:none!important}
+}
+
+/* Preserve clinical reading order inside the wide OR grid. */
+@media (min-width:1180px){
+  #orlive>.or-command-bar{grid-row:1}
+  #orlive>#orVitalsFocus{grid-row:2}
+  #orlive>.or-primary-flow,#orlive>#orMedicationQueue{grid-row:3}
+  #orlive>.or-status-row,#orlive>#orCaseContextPanel{grid-row:4}
+  #orlive>.or-vital-grid,#orlive>.or-phase-details{grid-row:5}
+  #orlive>.or-secondary-grid,#orlive>.complication-watch-panel{grid-row:6}
+  #orlive>#orFluidPanelDetails{grid-row:7}
+  #orlive>#orAirwayPanelDetails{grid-row:8}
+  #orlive>.or-action-panel{grid-row:9}
+  #orlive>.or-lower-grid{grid-row:10}
+  #orlive>#orUndoStepBtn{grid-row:11}
+}

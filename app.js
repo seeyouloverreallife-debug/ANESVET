@@ -12,6 +12,8 @@ const QUICK_PRESET_KEY='anesvet_v14_3_quick_presets';
 const ALERT_PREF_KEY='anesvet_due_alert_feedback';
 const PROTOCOL_AUDIT_KEY='anesvet_v14_3_protocol_audit';
 const LAST_BACKUP_KEY='anesvet_v14_3_last_backup';
+const BACKUP_RECEIPT_KEY='anesvet_v16_7_last_backup_receipt';
+const LAST_RESTORE_KEY='anesvet_v16_7_last_restore_receipt';
 const BREED_ALIAS_KEY='anesvet_v14_3_breed_aliases';
 const PATIENT_FALLBACK_KEY='anesvet_v14_3_patients_fallback';
 const SESSION_LOCK_KEY='anesvet_v14_3_active_session';
@@ -20,7 +22,7 @@ const SESSION_TTL_MS=30000;
 const SESSION_HEARTBEAT_MS=5000;
 const DB_NAME='ANESVET_DB';
 const DB_VERSION=2;
-const APP_VERSION='15.29.0';
+const APP_VERSION='16.8.2';
 const DOSE_REF=window.ANESVET_DOSE_REFERENCE||null;
 const PROTOCOL_REVIEW=window.ANESVET_PROTOCOL_REVIEW||null;
 const AUTOSAVE_DELAY_MS=450;
@@ -32,6 +34,17 @@ const PILOT_FEEDBACK_FORMAT='ANESVET_PILOT_FEEDBACK_V1';
 const PILOT_FEEDBACK_MAX=250; // legacy queue retained for backup compatibility only
 const RUNTIME_ERROR_KEY='anesvet_v15_runtime_error_log';
 const RUNTIME_ERROR_MAX=25;
+const CASE_RUNTIME=window.ANESVET_CASE_RUNTIME;
+if(!CASE_RUNTIME)throw new Error('ANESVET case-runtime.js failed to load');
+const {makeHumanRecordId,stableSortObject,originalClinicalPayload,sha256Text,computeCaseChecksum,shortChecksum,caseActivityEpoch}=CASE_RUNTIME;
+const PATIENT_DOMAIN=window.ANESVET_PATIENT_DOMAIN;
+const OR_DOMAIN=window.ANESVET_OR_DOMAIN;
+const RECOVERY_DOMAIN=window.ANESVET_RECOVERY_DOMAIN;
+const PATIENT_MASTER_ORCH=window.ANESVET_PATIENT_MASTER_ORCHESTRATION;
+const OR_RECORD_ORCH=window.ANESVET_OR_RECORD_ORCHESTRATION;
+const RECOVERY_ORCH=window.ANESVET_RECOVERY_ORCHESTRATION;
+if(!PATIENT_DOMAIN||!OR_DOMAIN||!RECOVERY_DOMAIN||!PATIENT_MASTER_ORCH||!OR_RECORD_ORCH||!RECOVERY_ORCH)throw new Error('ANESVET domain/orchestration modules failed to load');
+
 
 const numericFields = ['weight','preopHR','preopRR','preopTemp','hr','rr','sap','map','dap','spo2','etco2','temp','vaporizer','o2flow','fluidRateInput','fluidTotal','recHR','recRR','recMAP','recSpO2','recTemp'];
 const dataFields = [
@@ -41,74 +54,13 @@ const dataFields = [
   'recordNote','recHR','recRR','recMAP','recSpO2','recTemp','recExtubation','recOxygen','recMentation','recPain','recHandoffNote','recNaReason','recRecordInterval','recScoreAirway','recScoreOxygen','recScoreTemp','recScoreMentation','recScoreComfort','recScoreNote','planPremed','planInduction','planMaintenance','planAnalgesia','planAntibiotic','planNSAID','planBlock','planNote','actualDiazepamMl','actualPropofolMl','actualTramadolMl','balanceCrystalloid','balanceBolus','balanceBloodIn','balanceBloodLoss','balanceUrine','fluidActualTotal','airwayEttSize','airwayEttDepth','airwayCuff','airwayDifficulty','airwayCircuit','airwayVentMode','airwayVt','airwayPip','airwayPeep','airwayVentRr','diazepamConc','propofolConc','tramadolConc','rimadylConc','metacamConc','adrenalineConc','atropineConc','atropineMode','dopamineDose','dopamineConc'
 ];
 
-let state = {
-  caseId: crypto.randomUUID ? crypto.randomUUID() : String(Date.now()),
-  humanRecordId: makeHumanRecordId(Date.now()),
-  createdAt: Date.now(),
-  timer: {running:false, startedEpoch:null, elapsedMs:0},
-  records: [],
-  events: [],
-  complications: [],
-  drugAdministrations: [],
-  alertEpisodes: [],
-  alertProtocolOverride:null,alertProtocolHistory:[],recoveryHandoffs:[],
-  inductionDocumentationMode:'',inductionMedicationReviewCompletedAt:null,
-  recoveryScores: [],
-  recoveryChecks: [false,false,false,false,false,false],
-  recoveryNA: [false,false,false,false,false,false],
-  recoveryObservationNA:{spo2:false,temp:false,extubation:false},
-  recHandoffNote:'',
-  patientSaved:false,
-  caseWorkflowProfile:'routine',
-  patientMasterId:'',
-  visitId:'',
-  sex:'',
-  reproductiveStatus:'',
-  microchip:'',
-  birthDate:'',
-  birthDateEstimated:false,
-  ageSource:'',
-  estimatedBirthPeriod:'',
-  approxAgeYears:'0',
-  approxAgeMonths:'0',
-  approxAgeWeeks:'0',
-  preopChecks:{},preopNA:{},preopExamRecordedAt:null,preopExamRecordedBy:'',preopRiskRecordedAt:null,preopRiskRecordedBy:'',
-  caseStartedAt:null,
-  caseIdentitySnapshot:null,
-  responses:[],
-  corrections:[],
-  casePhase:'setup',
-  recoveryStartedAt:null,
-  recoveryCompletedAt:null,
-  recoveryCompletionOverride:null,
-  recoveryRecords:[] ,
-  emergencyReturnActive:false,
-  surgeryEndedAt:null,
-  extubatedAt:null,
-  lastSavedAt:null,
-  fluidRateHistory:[],
-  caseLocked:false,
-  lockedAt:null,
-  protocolSnapshot:null,
-  caseDrugPlan:[],caseDrugPlanInitialized:false,caseDrugPlanReviewedAt:null,caseDrugPlanReviewedBy:'',
-  medicationReconciliation:{version:1,decisions:{}},
-  preOrReadinessOverride:null,
-  preOrBriefingReview:null,
-  orLastTransition:null,
-  auditTrail:[],
-  amendments:[],
-  finalSignoff:{anesthetist:null,surgeon:null},
-  finalChecksum:null,checksumAlgorithm:null,checksumCreatedAt:null,
-  voidedAt:null,voidedBy:'',voidReason:''
-};
+let state = CASE_RUNTIME.createState();
 let timerHandle = null;
 let dueReminderToken = null;
 // Prevent unload/visibility autosave from writing stale DOM values back over a fresh reset.
 let resetInProgress = false;
 let sessionMode='initializing';
-let sessionHeartbeatHandle=null;
-let sessionChannel=null;
-const sessionTabId=(()=>{try{let id=sessionStorage.getItem(SESSION_TAB_KEY);if(!id){id=crypto.randomUUID?crypto.randomUUID():String(Date.now()+Math.random());sessionStorage.setItem(SESSION_TAB_KEY,id)}return id}catch(e){return crypto.randomUUID?crypto.randomUUID():String(Date.now()+Math.random())}})();
+let SESSION_COORDINATOR=null;
 
 function escapeHtml(s){
   return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
@@ -164,29 +116,6 @@ function formatElapsed(ms){
   const s=Math.max(0,Math.floor((ms||0)/1000)),h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sec=s%60;
   return `${pad(h)}:${pad(m)}:${pad(sec)}`;
 }
-function makeHumanRecordId(epoch=Date.now()){
-  const d=new Date(epoch),date=`${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}`;
-  const tail=(crypto.randomUUID?crypto.randomUUID().replace(/-/g,'').slice(-5):Math.random().toString(36).slice(-5)).toUpperCase();
-  return `ANV-${date}-${tail}`;
-}
-function stableSortObject(v){
-  if(Array.isArray(v))return v.map(stableSortObject);
-  if(v&&typeof v==='object')return Object.keys(v).sort().reduce((o,k)=>{o[k]=stableSortObject(v[k]);return o},{});
-  return v;
-}
-function originalClinicalPayload(caseObj){
-  const x=JSON.parse(JSON.stringify(caseObj||{}));
-  ['amendments','voidedAt','voidedBy','voidReason','archivedAt','lastSavedAt','finalChecksum','checksumAlgorithm','checksumCreatedAt','auditTrail'].forEach(k=>delete x[k]);
-  if(x.timer){x.timer.running=false;x.timer.startedEpoch=null}
-  return stableSortObject(x);
-}
-async function sha256Text(text){
-  if(crypto.subtle){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(text));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('').toUpperCase()}
-  let h=2166136261;for(let i=0;i<text.length;i++){h^=text.charCodeAt(i);h=Math.imul(h,16777619)}return `FNV1A-${(h>>>0).toString(16).padStart(8,'0').toUpperCase()}`;
-}
-async function computeCaseChecksum(caseObj){return await sha256Text(JSON.stringify(originalClinicalPayload(caseObj)))}
-function shortChecksum(v){if(!v)return '—';const s=String(v).replace(/[^A-Z0-9]/gi,'').toUpperCase();return s.slice(0,16).match(/.{1,4}/g)?.join('-')||v}
-
 function formatShortElapsed(ms){
   const s=Math.max(0,Math.floor((ms||0)/1000)),m=Math.floor(s/60),sec=s%60;
   return m>=60?formatElapsed(ms):`${m}:${pad(sec)}`;
@@ -195,10 +124,10 @@ function toast(msg){
   const t=$('toast');t.textContent=msg;t.classList.add('show');
   clearTimeout(toast._t);toast._t=setTimeout(()=>t.classList.remove('show'),2200);
 }
-function readSessionLock(){try{const x=JSON.parse(localStorage.getItem(SESSION_LOCK_KEY)||'null');return x&&x.tabId?x:null}catch(e){return null}}
-function sessionLockIsFresh(lock){return !!(lock&&lock.tabId&&Number(lock.heartbeatAt)>0&&(Date.now()-Number(lock.heartbeatAt))<SESSION_TTL_MS)}
-function writeSessionLock(){if(sessionMode!=='active')return;const lock={tabId:sessionTabId,heartbeatAt:Date.now(),caseId:state?.caseId||'',patientName:state?.patientName||'',version:APP_VERSION};try{localStorage.setItem(SESSION_LOCK_KEY,JSON.stringify(lock))}catch(e){};try{sessionChannel?.postMessage({type:'HEARTBEAT',...lock})}catch(e){}}
-function releaseSessionLock(){const lock=readSessionLock();if(lock?.tabId===sessionTabId){try{localStorage.removeItem(SESSION_LOCK_KEY)}catch(e){};try{sessionChannel?.postMessage({type:'RELEASE',tabId:sessionTabId})}catch(e){}}}
+function readSessionLock(){return SESSION_COORDINATOR?.readLock?.()||null}
+function sessionLockIsFresh(lock){return !!SESSION_COORDINATOR?.isFresh?.(lock)}
+function writeSessionLock(){return SESSION_COORDINATOR?.writeLock?.()||false}
+function releaseSessionLock(){SESSION_COORDINATOR?.release?.()}
 function sessionSafeTarget(target){return !!target?.closest?.('.session-safe,[data-tab],[data-more-tab],#moreMenuBtn,.archive-pdf,.archive-summary-pdf,.verify-integrity')}
 function renderSessionMode(){
   const view=sessionMode!=='active',banner=$('sessionBanner');document.body.classList.toggle('session-readonly',view);
@@ -206,26 +135,38 @@ function renderSessionMode(){
   if(view){const lock=readSessionLock(),detail=lock?.patientName?`Active tab: ${lock.patientName}`:'Another ANESVET tab currently owns the clinical session';if($('sessionBannerText'))$('sessionBannerText').textContent=`${detail}. This tab will not save or modify clinical records.`}
   else if($('sessionBannerText'))$('sessionBannerText').textContent='This tab has control of the ANESVET clinical session.';
 }
-function setSessionMode(mode,reason=''){
-  sessionMode=mode;if(sessionHeartbeatHandle){clearInterval(sessionHeartbeatHandle);sessionHeartbeatHandle=null}
-  if(mode==='active'){writeSessionLock();sessionHeartbeatHandle=setInterval(writeSessionLock,SESSION_HEARTBEAT_MS);try{$('sessionDialog')?.close()}catch(e){};if(reason)toast(reason)}
-  else{clearInterval(timerHandle);timerHandle=null;if(state?.timer?.running)renderTimerState();if(reason&&$('sessionDialogText'))$('sessionDialogText').textContent=reason}
-  renderSessionMode();
+function renderSessionConflictDialog(lock,reason=''){
+  const text=reason||`Another ANESVET tab is active${lock?.patientName?` with ${lock.patientName}`:''}. View only prevents current-case overwrite. Take control only if the other tab should stop recording.`;
+  if($('sessionDialogText'))$('sessionDialogText').textContent=text;
+  const d=$('sessionDialog');try{if(d&&!d.open)d.showModal()}catch(e){}
 }
-function takeSessionControl(){setSessionMode('active','Control transferred to this tab');try{sessionChannel?.postMessage({type:'TAKE_CONTROL',tabId:sessionTabId,heartbeatAt:Date.now()})}catch(e){}}
-function showSessionConflict(lock){setSessionMode('view');const text=`Another ANESVET tab is active${lock?.patientName?` with ${lock.patientName}`:''}. View only prevents current-case overwrite. Take control only if the other tab should stop recording.`;if($('sessionDialogText'))$('sessionDialogText').textContent=text;const d=$('sessionDialog');try{if(d&&!d.open)d.showModal()}catch(e){}}
-function refreshSessionStatus(){const lock=readSessionLock();if(!sessionLockIsFresh(lock)||lock.tabId===sessionTabId){takeSessionControl();return}showSessionConflict(lock)}
-function initSessionCoordination(){
-  try{if('BroadcastChannel' in window){sessionChannel=new BroadcastChannel('anesvet-session-v14');sessionChannel.onmessage=e=>{const m=e.data||{};if(m.tabId===sessionTabId)return;if(m.type==='TAKE_CONTROL'&&sessionMode==='active'){setSessionMode('view','Another tab took control. This tab is now view-only.');toast('Another tab took control — VIEW ONLY')}else if(m.type==='RELEASE'&&sessionMode!=='active'){renderSessionMode()}}}}
-  catch(e){}
-  const lock=readSessionLock();if(!sessionLockIsFresh(lock)||lock.tabId===sessionTabId)setSessionMode('active','');else showSessionConflict(lock);
-}
+SESSION_COORDINATOR=window.ANESVET_SESSION_COORDINATION?.create?.({
+  lockKey:SESSION_LOCK_KEY,tabKey:SESSION_TAB_KEY,ttlMs:SESSION_TTL_MS,heartbeatMs:SESSION_HEARTBEAT_MS,channelName:'anesvet-session-v14',appVersion:APP_VERSION,
+  getCaseInfo:()=>({caseId:state?.caseId||'',patientName:state?.patientName||''}),
+  onMode:(mode,reason,lock)=>{
+    sessionMode=mode;
+    if(mode==='active'){
+      try{$('sessionDialog')?.close()}catch(e){}
+      if(reason)toast(reason);
+    }else{
+      clearInterval(timerHandle);timerHandle=null;if(state?.timer?.running)renderTimerState();
+      if(reason&&$('sessionDialogText'))$('sessionDialogText').textContent=reason;
+      if(reason&&String(reason).startsWith('Another tab'))toast('Another tab took control — VIEW ONLY');
+    }
+    renderSessionMode();
+  },
+  onMessage:(m,mode)=>{if(m?.type==='RELEASE'&&mode!=='active')renderSessionMode()}
+});
+if(!SESSION_COORDINATOR)throw new Error('ANESVET session-coordination.js failed to load');
+function setSessionMode(mode,reason=''){SESSION_COORDINATOR.setMode(mode,reason)}
+function takeSessionControl(){SESSION_COORDINATOR.takeControl('Control transferred to this tab')}
+function showSessionConflict(lock){SESSION_COORDINATOR.setMode('view','');renderSessionConflictDialog(lock)}
+function refreshSessionStatus(){const r=SESSION_COORDINATOR.refresh();if(r?.mode==='view')renderSessionConflictDialog(r.lock)}
+function initSessionCoordination(){const mode=SESSION_COORDINATOR.init();if(mode==='view')renderSessionConflictDialog(readSessionLock())}
 $('sessionViewOnlyBtn')?.addEventListener('click',()=>{try{$('sessionDialog')?.close()}catch(e){};setSessionMode('view');toast('Opened in VIEW ONLY mode')});
 $('sessionDialogTakeControlBtn')?.addEventListener('click',takeSessionControl);$('sessionTakeControlBtn')?.addEventListener('click',takeSessionControl);$('sessionRefreshBtn')?.addEventListener('click',refreshSessionStatus);
-window.addEventListener('storage',e=>{if(e.key!==SESSION_LOCK_KEY)return;const lock=readSessionLock();if(sessionMode==='active'&&sessionLockIsFresh(lock)&&lock.tabId!==sessionTabId){setSessionMode('view','Another tab took control. This tab is now view-only.');toast('Another tab took control — VIEW ONLY')}else if(sessionMode!=='active')renderSessionMode()});
 document.addEventListener('click',e=>{if(sessionMode==='active'||sessionSafeTarget(e.target))return;const actionable=e.target.closest?.('button,input,select,textarea,label');if(actionable&&actionable.closest?.('.tabpage')){e.preventDefault();e.stopImmediatePropagation();toast('VIEW ONLY — Take control before editing');}},true);
 document.addEventListener('input',e=>{if(sessionMode==='active'||sessionSafeTarget(e.target))return;if(e.target.closest?.('.tabpage')){e.preventDefault();e.stopImmediatePropagation();}},true);
-
 let alertAudioContext=null;
 let alertAudioReady=false;
 let alertFeedbackEnabled=localStorage.getItem(ALERT_PREF_KEY)!=='off';
@@ -706,9 +647,10 @@ function startActiveCheckpoint(){
   },ACTIVE_CHECKPOINT_MS);
 }
 
-let archiveDbPromise=null;
 let archiveCache=[];
 let archiveBackend='initializing';
+let patientCache=[];
+let patientBackend='initializing';
 let currentMirrorTimer=null;
 let autosaveTimer=null;
 let activeCheckpointTimer=null;
@@ -716,72 +658,38 @@ let saveUiMode='saved';
 let startupRecoveryNotice=null;
 let medicationSaveInFlight=false;
 
+const CORE_STORAGE=window.ANESVET_CORE_STORAGE?.create?.({
+  dbName:DB_NAME,dbVersion:DB_VERSION,
+  onBlocked:()=>{
+    archiveBackend='blocked';patientBackend='blocked';
+    const msg='ANESVET database upgrade is blocked by another open tab. Close other ANESVET tabs/windows, then reload this page.';
+    if($('storageStatus'))$('storageStatus').textContent='Storage: BLOCKED — close other ANESVET tabs and reload';
+    try{alert(msg)}catch(e){}
+  }
+});
+if(!CORE_STORAGE)throw new Error('ANESVET core-storage.js failed to load');
+const openAnesvetDb=()=>CORE_STORAGE.openDb();
+const idbGetAllCases=()=>CORE_STORAGE.getAllCases();
+const idbPutCase=c=>CORE_STORAGE.putCase(c);
+const idbDeleteCase=id=>CORE_STORAGE.deleteCase(id);
+const idbClearCases=()=>CORE_STORAGE.clearCases();
+const idbGetAllPatients=()=>CORE_STORAGE.getAllPatients();
+const idbPutPatient=p=>CORE_STORAGE.putPatient(p);
+const idbClearPatients=()=>CORE_STORAGE.clearPatients();
+const idbPutMeta=(key,value)=>CORE_STORAGE.putMeta(key,value);
+const idbGetMeta=key=>CORE_STORAGE.getMeta(key);
+
 function clearSafetyCheckpoint(){try{localStorage.removeItem(SAFETY_CHECKPOINT_KEY)}catch(e){}}
 function readSafetyCheckpoint(){try{const cp=JSON.parse(localStorage.getItem(SAFETY_CHECKPOINT_KEY)||'null');if(!cp||cp.format!==SAFETY_CHECKPOINT_FORMAT||!cp.caseId||!cp.state||cp.state.caseId!==cp.caseId)return null;return cp}catch(e){return null}}
 function writeSafetyCheckpoint(payload){if(state.caseLocked||!hasActiveCaseData()){clearSafetyCheckpoint();return true}try{const copy=JSON.parse(payload||JSON.stringify(state)),cp={format:SAFETY_CHECKPOINT_FORMAT,version:APP_VERSION,caseId:copy.caseId,lastSavedAt:Number(copy.lastSavedAt)||Date.now(),verifiedAt:Date.now(),patientName:copy.patientName||'',state:copy};localStorage.setItem(SAFETY_CHECKPOINT_KEY,JSON.stringify(cp));const verify=JSON.parse(localStorage.getItem(SAFETY_CHECKPOINT_KEY)||'null');if(!verify||verify.format!==SAFETY_CHECKPOINT_FORMAT||verify.caseId!==copy.caseId||Number(verify.lastSavedAt)!==Number(cp.lastSavedAt))throw new Error('Safety checkpoint verification failed');return true}catch(e){console.error('ANESVET safety checkpoint failed',e);return false}}
-function recoverFromSafetyCheckpoint(raw,currentCorrupt=false){const cp=readSafetyCheckpoint();if(!cp)return raw;const c=cp.state;if(c.caseLocked||c.casePhase==='complete'||(!c.patientSaved&&!c.caseStartedAt&&!((c.records||[]).length||(c.events||[]).length||(c.drugAdministrations||[]).length)))return raw;const ct=caseActivityEpoch(c),rt=caseActivityEpoch(raw),same=!raw||raw.caseId===c.caseId;if(!(currentCorrupt||!raw||(same&&ct>rt+250)))return raw;startupRecoveryNotice={patientName:c.patientName||'Unnamed',savedAt:c.lastSavedAt||cp.verifiedAt,reason:currentCorrupt?'Current save was unreadable':'Safety checkpoint was newer than current save'};const restored=JSON.parse(JSON.stringify(c));restored.auditTrail=Array.isArray(restored.auditTrail)?restored.auditTrail:[];restored.auditTrail.push({id:crypto.randomUUID?crypto.randomUUID():String(Date.now()+Math.random()),epoch:Date.now(),clock:formatClock(),elapsedMs:restored.timer?.elapsedMs||0,action:'SAFETY_CHECKPOINT_RECOVERED',detail:startupRecoveryNotice.reason,actor:'System'});try{localStorage.setItem(CURRENT_KEY,JSON.stringify(restored))}catch(e){}return restored}
+function recoverFromSafetyCheckpoint(raw,currentCorrupt=false){const cp=readSafetyCheckpoint();if(!cp)return raw;const c=cp.state;if(c.caseLocked||c.casePhase==='complete'||(!c.patientSaved&&!c.caseStartedAt&&!((c.records||[]).length||(c.events||[]).length||(c.drugAdministrations||[]).length)))return raw;const ct=caseActivityEpoch(c),rt=caseActivityEpoch(raw),same=!raw||raw.caseId===c.caseId;if(!(currentCorrupt||!raw||(same&&ct>rt+250)))return raw;const reason=currentCorrupt?'Current save was unreadable':'Safety checkpoint was newer than current save';startupRecoveryNotice={patientName:c.patientName||'Unnamed',savedAt:c.lastSavedAt||cp.verifiedAt,reason};const restored=JSON.parse(JSON.stringify(c));restored.auditTrail=Array.isArray(restored.auditTrail)?restored.auditTrail:[];restored.auditTrail.push({id:crypto.randomUUID?crypto.randomUUID():String(Date.now()+Math.random()),epoch:Date.now(),clock:formatClock(),elapsedMs:restored.timer?.elapsedMs||0,action:'SAFETY_CHECKPOINT_RECOVERED',detail:reason,actor:'System'});try{localStorage.setItem(CURRENT_KEY,JSON.stringify(restored))}catch(e){}return restored}
 function renderStartupRecoveryNotice(){const box=$('safetyRecoveryBanner');if(!box)return;if(!startupRecoveryNotice){box.hidden=true;return}box.hidden=false;if($('safetyRecoveryText'))$('safetyRecoveryText').textContent=`${startupRecoveryNotice.patientName} • ${startupRecoveryNotice.reason} • ${startupRecoveryNotice.savedAt?new Date(startupRecoveryNotice.savedAt).toLocaleString():''}`}
 
-function openAnesvetDb(){
-  if(archiveDbPromise)return archiveDbPromise;
-  archiveDbPromise=new Promise((resolve,reject)=>{
-    if(!('indexedDB' in window)){reject(new Error('IndexedDB unavailable'));return}
-    const req=indexedDB.open(DB_NAME,DB_VERSION);
-    req.onupgradeneeded=()=>{
-      const db=req.result;
-      if(!db.objectStoreNames.contains('cases')){const s=db.createObjectStore('cases',{keyPath:'caseId'});s.createIndex('archivedAt','archivedAt',{unique:false})}
-      if(!db.objectStoreNames.contains('meta'))db.createObjectStore('meta',{keyPath:'key'});
-      if(!db.objectStoreNames.contains('patients')){
-        const p=db.createObjectStore('patients',{keyPath:'patientId'});
-        p.createIndex('hospitalId','hospitalId',{unique:false});
-        p.createIndex('patientNameLower','patientNameLower',{unique:false});
-        p.createIndex('microchip','microchip',{unique:false});
-        p.createIndex('updatedAt','updatedAt',{unique:false});
-      }
-    };
-    let settled=false;
-    req.onblocked=()=>{
-      if(settled)return;settled=true;archiveDbPromise=null;archiveBackend='blocked';patientBackend='blocked';
-      const msg='ANESVET database upgrade is blocked by another open tab. Close other ANESVET tabs/windows, then reload this page.';
-      if($('storageStatus'))$('storageStatus').textContent='Storage: BLOCKED — close other ANESVET tabs and reload';
-      try{alert(msg)}catch(e){}
-      reject(new Error('IndexedDB upgrade blocked by another ANESVET tab'));
-    };
-    req.onsuccess=()=>{if(settled){try{req.result.close()}catch(e){}return}settled=true;resolve(req.result)};
-    req.onerror=()=>{if(settled)return;settled=true;archiveDbPromise=null;reject(req.error||new Error('IndexedDB failed'))};
-  });
-  return archiveDbPromise;
-}
-async function idbGetAllCases(){const db=await openAnesvetDb();return await new Promise((resolve,reject)=>{const r=db.transaction('cases','readonly').objectStore('cases').getAll();r.onsuccess=()=>resolve((r.result||[]).sort((a,b)=>(b.archivedAt||b.createdAt||0)-(a.archivedAt||a.createdAt||0)));r.onerror=()=>reject(r.error)})}
-async function idbPutCase(c){const db=await openAnesvetDb(),copy=JSON.parse(JSON.stringify(c));if(!copy.caseId)copy.caseId=crypto.randomUUID?crypto.randomUUID():String(Date.now()+Math.random());return await new Promise((resolve,reject)=>{const r=db.transaction('cases','readwrite').objectStore('cases').put(copy);r.onsuccess=()=>resolve(copy);r.onerror=()=>reject(r.error)})}
-async function idbDeleteCase(id){const db=await openAnesvetDb();return await new Promise((resolve,reject)=>{const r=db.transaction('cases','readwrite').objectStore('cases').delete(id);r.onsuccess=()=>resolve();r.onerror=()=>reject(r.error)})}
-async function idbClearCases(){const db=await openAnesvetDb();return await new Promise((resolve,reject)=>{const r=db.transaction('cases','readwrite').objectStore('cases').clear();r.onsuccess=()=>resolve();r.onerror=()=>reject(r.error)})}
-
-let patientCache=[];
-let patientBackend='initializing';
-async function idbGetAllPatients(){
-  const db=await openAnesvetDb();
-  return await new Promise((resolve,reject)=>{const r=db.transaction('patients','readonly').objectStore('patients').getAll();r.onsuccess=()=>resolve((r.result||[]).sort((a,b)=>(b.updatedAt||0)-(a.updatedAt||0)));r.onerror=()=>reject(r.error)});
-}
-async function idbPutPatient(p){
-  const db=await openAnesvetDb(),copy=JSON.parse(JSON.stringify(p));
-  if(!copy.patientId)copy.patientId=crypto.randomUUID?crypto.randomUUID():String(Date.now()+Math.random());
-  copy.patientNameLower=String(copy.patientName||'').toLowerCase();copy.updatedAt=copy.updatedAt||Date.now();
-  return await new Promise((resolve,reject)=>{const r=db.transaction('patients','readwrite').objectStore('patients').put(copy);r.onsuccess=()=>resolve(copy);r.onerror=()=>reject(r.error)});
-}
-async function idbClearPatients(){const db=await openAnesvetDb();return await new Promise((resolve,reject)=>{const r=db.transaction('patients','readwrite').objectStore('patients').clear();r.onsuccess=()=>resolve();r.onerror=()=>reject(r.error)})}
 function loadFallbackPatients(){try{const p=JSON.parse(localStorage.getItem(PATIENT_FALLBACK_KEY)||'[]');return Array.isArray(p)?p:[]}catch(e){return[]}}
 function saveFallbackPatients(){localStorage.setItem(PATIENT_FALLBACK_KEY,JSON.stringify(patientCache))}
-function normalizePatientKey(v){return String(v||'').toLowerCase().trim().replace(/\s+/g,' ')}
-function patientFromCase(c){
-  if(!c?.patientName)return null;
-  return {patientId:c.patientMasterId||crypto.randomUUID?.()||String(Date.now()+Math.random()),hospitalId:c.hospitalId||'',patientName:c.patientName||'',species:c.species||'dog',sex:c.sex||'',reproductiveStatus:c.reproductiveStatus||'',microchip:c.microchip||'',breed:c.breed||'',birthDate:c.birthDate||'',birthDateEstimated:!!c.birthDateEstimated,ageSource:c.ageSource||(c.birthDateEstimated?'estimated':c.birthDate?'dob':''),estimatedBirthPeriod:c.estimatedBirthPeriod||'',approxAgeYears:c.approxAgeYears||'0',approxAgeMonths:c.approxAgeMonths||'0',approxAgeWeeks:c.approxAgeWeeks||'0',lastWeight:c.weight||'',lastWeightAt:c.lastSavedAt||c.archivedAt||c.createdAt||null,lastBcs:c.bcs||'',allergies:c.patientAllergies||'',comorbidities:c.patientComorbidities||'',precautions:c.patientPrecautions||'',retiredAt:null,retiredReason:'',mergedInto:'',mergedPatientIds:[],hnAliases:[],microchipAliases:[],mergeAudit:[],createdAt:c.createdAt||Date.now(),updatedAt:c.archivedAt||c.lastSavedAt||c.createdAt||Date.now()};
-}
-function patientIdentityKey(p){
-  const hn=normalizePatientKey(p.hospitalId),chip=normalizePatientKey(p.microchip);
-  if(hn)return `hn:${hn}`;if(chip)return `chip:${chip}`;
-  return `name:${normalizePatientKey(p.patientName)}|${p.species||''}|${normalizePatientKey(p.birthDate||p.estimatedBirthPeriod||p.breed)}`;
-}
+function normalizePatientKey(v){return PATIENT_DOMAIN.normalizeKey(v)}
+function patientFromCase(c){return PATIENT_DOMAIN.patientFromCase(c)}
+function patientIdentityKey(p){return PATIENT_DOMAIN.patientIdentityKey(p)}
 async function initPatientMaster(){
   try{
     patientCache=await idbGetAllPatients();patientBackend='IndexedDB';
@@ -799,9 +707,6 @@ async function initPatientMaster(){
 }
 function getPatients(){return patientCache||[]}
 
-async function idbPutMeta(key,value){try{const db=await openAnesvetDb();await new Promise((resolve,reject)=>{const r=db.transaction('meta','readwrite').objectStore('meta').put({key,value,updatedAt:Date.now()});r.onsuccess=()=>resolve();r.onerror=()=>reject(r.error)})}catch(e){}}
-async function idbGetMeta(key){try{const db=await openAnesvetDb();return await new Promise((resolve,reject)=>{const r=db.transaction('meta','readonly').objectStore('meta').get(key);r.onsuccess=()=>resolve(r.result||null);r.onerror=()=>reject(r.error)})}catch(e){return null}}
-function caseActivityEpoch(c){if(!c||typeof c!=='object')return 0;const xs=[c.lastSavedAt,c.lockedAt,c.recoveryCompletedAt,c.recoveryStartedAt,c.caseStartedAt,c.createdAt];for(const arrName of ['records','events','complications','drugAdministrations','alertEpisodes','recoveryScores','recoveryRecords']){const a=Array.isArray(c[arrName])?c[arrName]:[];for(const x of a.slice(-3))xs.push(x?.epoch,x?.resolvedAt,x?.acknowledgedAt)}return Math.max(0,...xs.map(Number).filter(Number.isFinite))}
 async function reconcileCurrentFromMirror(){
   // Only the active writer tab may reconcile shared current-case state.
   if(sessionMode!=='active')return false;
@@ -819,7 +724,7 @@ async function reconcileCurrentFromMirror(){
 }
 function queueCurrentMirror(){if(resetInProgress)return;clearTimeout(currentMirrorTimer);const copy=JSON.parse(JSON.stringify(state));currentMirrorTimer=setTimeout(()=>{currentMirrorTimer=null;if(resetInProgress)return;idbPutMeta('current',copy)},180)}
 function getLegacyArchiveSeed(){
-  const keys=['anesvet_v14_2_archive_legacy','anesvet_v14_1_archive_legacy','anesvet_v14_archive_legacy','anesvet_v13_4_archive','anesvet_v13_3_archive','anesvet_v13_2_archive','anesvet_v13_1_archive','anesvet_v13_archive','anesvet_v12_1_archive','anesvet_v12_archive','anesvet_v11_archive','anesvet_v10_archive','anesvet_v9_archive','anesvet_v8_archive','anesvet_v7_archive','anesvet_v6_1_archive','anesvet_v6_archive','anesvet_v5_archive','anesvet_v4_archive','anesvet_v3_archive'];
+  const keys=[ARCHIVE_KEY,'anesvet_v14_2_archive_legacy','anesvet_v14_1_archive_legacy','anesvet_v14_archive_legacy','anesvet_v13_4_archive','anesvet_v13_3_archive','anesvet_v13_2_archive','anesvet_v13_1_archive','anesvet_v13_archive','anesvet_v12_1_archive','anesvet_v12_archive','anesvet_v11_archive','anesvet_v10_archive','anesvet_v9_archive','anesvet_v8_archive','anesvet_v7_archive','anesvet_v6_1_archive','anesvet_v6_archive','anesvet_v5_archive','anesvet_v4_archive','anesvet_v3_archive'];
   for(const key of keys){try{const a=JSON.parse(localStorage.getItem(key)||'null');if(Array.isArray(a)&&a.length)return a.map(c=>{const x=JSON.parse(JSON.stringify(c));if(!x.caseId)x.caseId=crypto.randomUUID?crypto.randomUUID():String((x.createdAt||Date.now())+Math.random());if(!x.humanRecordId)x.humanRecordId=makeHumanRecordId(x.createdAt||Date.now());if(!Array.isArray(x.auditTrail))x.auditTrail=[];if(!Array.isArray(x.amendments))x.amendments=[];if(!x.finalSignoff)x.finalSignoff={anesthetist:null,surgeon:null};if(!('voidedAt' in x))x.voidedAt=null;return x})}catch(e){}}
   return [];
 }
@@ -1313,12 +1218,12 @@ function migrateLegacyAgeUi(){
 }
 
 
-function activePatientById(id){let p=patientCache.find(x=>x.patientId===id);const seen=new Set();while(p?.mergedInto&&!seen.has(p.patientId)){seen.add(p.patientId);p=patientCache.find(x=>x.patientId===p.mergedInto)||p}return p}
-function patientAliasIds(p){return new Set([p?.patientId,...(Array.isArray(p?.mergedPatientIds)?p.mergedPatientIds:[])].filter(Boolean))}
-function patientHnKeys(p){return new Set([p?.hospitalId,...(Array.isArray(p?.hnAliases)?p.hnAliases:[])].map(normalizePatientKey).filter(Boolean))}
-function patientChipKeys(p){return new Set([p?.microchip,...(Array.isArray(p?.microchipAliases)?p.microchipAliases:[])].map(normalizePatientKey).filter(Boolean))}
-function caseMatchesPatient(c,p){if(!c||!p)return false;const ids=patientAliasIds(p);if(c.patientMasterId&&ids.has(c.patientMasterId))return true;const hn=normalizePatientKey(c.hospitalId),chip=normalizePatientKey(c.microchip);if(hn&&patientHnKeys(p).has(hn))return true;if(chip&&patientChipKeys(p).has(chip))return true;return false}
-function patientAnesthesiaHistory(p){return getArchive().filter(c=>caseMatchesPatient(c,p)).sort((a,b)=>(b.archivedAt||b.createdAt||0)-(a.archivedAt||a.createdAt||0))}
+function activePatientById(id){return PATIENT_MASTER_ORCH.resolveActivePatient(patientCache,id)}
+function patientAliasIds(p){return PATIENT_DOMAIN.aliasIds(p)}
+function patientHnKeys(p){return PATIENT_DOMAIN.hnKeys(p)}
+function patientChipKeys(p){return PATIENT_DOMAIN.chipKeys(p)}
+function caseMatchesPatient(c,p){return PATIENT_DOMAIN.caseMatchesPatient(c,p)}
+function patientAnesthesiaHistory(p){return PATIENT_DOMAIN.anesthesiaHistory(getArchive(),p)}
 function caseLowestTemp(c){return globalThis.AnesvetWorkflow.measuredRange(c.records,'temp')?.min??null}
 function caseLowestMap(c){return globalThis.AnesvetWorkflow.measuredRange(c.records,'map')?.min??null}
 function caseLowestSpo2(c){return globalThis.AnesvetWorkflow.measuredRange(c.records,'spo2')?.min??null}
@@ -1333,20 +1238,47 @@ function renderPatientHistory(p=null){
 }
 function openPatientHistoryInArchive(){const p=activePatientById($('patientMasterId')?.value||state.patientMasterId||'');if(!p)return;setTab('cases');if($('archiveSearch'))$('archiveSearch').value=p.hospitalId||p.patientName||'';renderArchives()}
 $('viewPatientHistoryBtn')?.addEventListener('click',openPatientHistoryInArchive);
-async function persistPatientRecord(p){p.updatedAt=Date.now();if(patientBackend==='IndexedDB')await idbPutPatient(p);else saveFallbackPatients()}
-async function retirePatient(id){let p=patientCache.find(x=>x.patientId===id);if(!p)return;if(state.timer.running||(state.timer.elapsedMs||0)>0||(state.records||[]).length){toast('Finish the current anesthesia case before managing Patient Master records');return}if(($('patientMasterId')?.value||state.patientMasterId)===p.patientId){toast('Switch or unlink the current patient before retiring this Patient Master');return}if(p.mergedInto){toast('This record is already merged into another patient');return}if(p.retiredAt){const hn=[...patientHnKeys(p)],chip=[...patientChipKeys(p)],conflict=patientCache.find(x=>x.patientId!==p.patientId&&!x.retiredAt&&!x.mergedInto&&(hn.some(k=>patientHnKeys(x).has(k))||chip.some(k=>patientChipKeys(x).has(k))));if(conflict){alert(`Cannot restore because an active Patient Master already uses the same HN or Microchip:
+async function persistPatientRecord(p){p.updatedAt=Date.now();if(patientBackend==='IndexedDB')await idbPutPatient(p);patientCache=patientCache.filter(x=>x.patientId!==p.patientId);patientCache.unshift(p);if(patientBackend!=='IndexedDB')saveFallbackPatients();return p}
+async function retirePatient(id){
+  const p=patientCache.find(x=>x.patientId===id);if(!p)return;
+  if(state.timer.running||(state.timer.elapsedMs||0)>0||(state.records||[]).length){toast('Finish the current anesthesia case before managing Patient Master records');return}
+  if(($('patientMasterId')?.value||state.patientMasterId)===p.patientId){toast('Switch or unlink the current patient before retiring this Patient Master');return}
+  if(p.mergedInto){toast('This record is already merged into another patient');return}
+  if(p.retiredAt){
+    const conflict=PATIENT_MASTER_ORCH.findRestoreConflict(patientCache,p,{hnKeys:patientHnKeys,chipKeys:patientChipKeys});
+    if(conflict){alert(`Cannot restore because an active Patient Master already uses the same HN or Microchip:
 ${conflict.patientName||'Unnamed'}${conflict.hospitalId?` • HN ${conflict.hospitalId}`:''}
 
-Merge the duplicate records instead.`);return}if(!confirm(`Restore ${p.patientName||'this patient'} to active Patient Master?`))return;p.retiredAt=null;p.retiredReason='';await persistPatientRecord(p);renderPatientMaster();renderLinkedPatient();toast('Patient restored');return}const reason=prompt(`Retire ${p.patientName||'this patient'} from active Patient Master?\nArchived cases will not be deleted.\n\nReason (optional):`,'');if(reason===null)return;p.retiredAt=Date.now();p.retiredReason=reason.trim();await persistPatientRecord(p);renderPatientMaster();renderLinkedPatient();toast('Patient retired — history retained')}
-function findMergeTarget(query,sourceId){const q=normalizePatientKey(query);const exact=patientCache.filter(p=>p.patientId!==sourceId&&!p.mergedInto&&!p.retiredAt&&(normalizePatientKey(p.patientId)===q||normalizePatientKey(p.hospitalId)===q||normalizePatientKey(p.microchip)===q||normalizePatientKey(p.patientName)===q));return exact}
-async function mergePatientRecord(sourceId){const source=patientCache.find(x=>x.patientId===sourceId);if(!source||source.mergedInto)return;if(state.timer.running||(state.timer.elapsedMs||0)>0||(state.records||[]).length){toast('Finish the current anesthesia case before merging Patient Master records');return}const query=prompt(`Merge duplicate Patient Master\n\nSource: ${source.patientName||'Unnamed'}${source.hospitalId?` • HN ${source.hospitalId}`:''}\n\nEnter TARGET HN, Microchip, exact patient name, or Patient ID:`,'');if(!query?.trim())return;const matches=findMergeTarget(query,sourceId);if(matches.length!==1){alert(matches.length?'More than one target matched. Use HN, Microchip, or Patient ID to identify exactly one patient.':'No active target patient found.');return}const target=matches[0];if(!confirm(`Merge duplicate record?\n\nSOURCE (will be retired): ${source.patientName||'Unnamed'}${source.hospitalId?` • HN ${source.hospitalId}`:''}\nTARGET (kept): ${target.patientName||'Unnamed'}${target.hospitalId?` • HN ${target.hospitalId}`:''}\n\nLocked anesthesia records will NOT be rewritten. Their old patient IDs are preserved and linked through an alias.`))return;
-  const fill=['hospitalId','patientName','species','sex','reproductiveStatus','microchip','breed','birthDate','ageSource','estimatedBirthPeriod','allergies','comorbidities','precautions'];fill.forEach(k=>{if(!target[k]&&source[k])target[k]=source[k]});
-  if((source.lastWeightAt||0)>(target.lastWeightAt||0)){target.lastWeight=source.lastWeight;target.lastWeightAt=source.lastWeightAt;target.lastBcs=source.lastBcs||target.lastBcs}
-  target.mergedPatientIds=[...new Set([...(target.mergedPatientIds||[]),source.patientId,...(source.mergedPatientIds||[])])];target.hnAliases=[...new Set([...(target.hnAliases||[]),source.hospitalId,...(source.hnAliases||[])].filter(Boolean))];target.microchipAliases=[...new Set([...(target.microchipAliases||[]),source.microchip,...(source.microchipAliases||[])].filter(Boolean))];target.mergeAudit=[...(target.mergeAudit||[]),{epoch:Date.now(),sourcePatientId:source.patientId,sourceName:source.patientName||'',sourceHn:source.hospitalId||''}];
-  source.retiredAt=Date.now();source.retiredReason='Merged duplicate';source.mergedInto=target.patientId;
-  try{await persistPatientRecord(target);await persistPatientRecord(source)}catch(e){toast('Patient merge failed');return}
-  if(($('patientMasterId')?.value||state.patientMasterId)===source.patientId){usePatientMaster(target.patientId)}
-  renderPatientMaster();renderLinkedPatient();toast('Duplicate merged — original anesthesia records preserved')
+Merge the duplicate records instead.`);return}
+    if(!confirm(`Restore ${p.patientName||'this patient'} to active Patient Master?`))return;
+    await persistPatientRecord(PATIENT_MASTER_ORCH.restoreRecord(p));renderPatientMaster();renderLinkedPatient();toast('Patient restored');return;
+  }
+  const reason=prompt(`Retire ${p.patientName||'this patient'} from active Patient Master?
+Archived cases will not be deleted.
+
+Reason (optional):`,'');if(reason===null)return;
+  await persistPatientRecord(PATIENT_MASTER_ORCH.retireRecord(p,reason,Date.now()));renderPatientMaster();renderLinkedPatient();toast('Patient retired — history retained');
+}
+function findMergeTarget(query,sourceId){return PATIENT_MASTER_ORCH.findMergeTargets(patientCache,query,sourceId,normalizePatientKey)}
+async function mergePatientRecord(sourceId){
+  const source=patientCache.find(x=>x.patientId===sourceId);if(!source||source.mergedInto)return;
+  if(state.timer.running||(state.timer.elapsedMs||0)>0||(state.records||[]).length){toast('Finish the current anesthesia case before merging Patient Master records');return}
+  const query=prompt(`Merge duplicate Patient Master
+
+Source: ${source.patientName||'Unnamed'}${source.hospitalId?` • HN ${source.hospitalId}`:''}
+
+Enter TARGET HN, Microchip, exact patient name, or Patient ID:`,'');if(!query?.trim())return;
+  const matches=findMergeTarget(query,sourceId);if(matches.length!==1){alert(matches.length?'More than one target matched. Use HN, Microchip, or Patient ID to identify exactly one patient.':'No active target patient found.');return}
+  const target=matches[0];if(!confirm(`Merge duplicate record?
+
+SOURCE (will be retired): ${source.patientName||'Unnamed'}${source.hospitalId?` • HN ${source.hospitalId}`:''}
+TARGET (kept): ${target.patientName||'Unnamed'}${target.hospitalId?` • HN ${target.hospitalId}`:''}
+
+Locked anesthesia records will NOT be rewritten. Their old patient IDs are preserved and linked through an alias.`))return;
+  const merged=PATIENT_MASTER_ORCH.mergeRecords(source,target,Date.now());
+  try{await persistPatientRecord(merged.target);await persistPatientRecord(merged.source)}catch(e){toast('Patient merge failed');return}
+  if(($('patientMasterId')?.value||state.patientMasterId)===source.patientId){usePatientMaster(merged.target.patientId)}
+  renderPatientMaster();renderLinkedPatient();toast('Duplicate merged — original anesthesia records preserved');
 }
 function sexReproText(p){const sex=({male:'Male',female:'Female'})[p.sex]||'Sex unknown',repro=({intact:'Intact',neutered:'Neutered',spayed:'Spayed'})[p.reproductiveStatus]||'status unknown';return `${sex} • ${repro}`}
 function patientAgeText(p){const d=dateFromIso(p.birthDate||''),parts=agePartsFromDob(d);return parts?formatAgeThai(parts,!!p.birthDateEstimated):'Age —'}
@@ -1361,7 +1293,7 @@ function renderLinkedPatient(){
   if(!box)return;box.hidden=!p;if(p&&$('linkedPatientText'))$('linkedPatientText').textContent=`${p.patientName}${p.hospitalId?' • HN '+p.hospitalId:''} • ${p.species==='cat'?'Cat':'Dog'}${p.breed?' • '+p.breed:''}${p.retiredAt?' • RETIRED':''}`;
   renderPreviousWeightReference(p||null);renderPatientHistory(p||null);
 }
-function patientSearchMatches(p,q){if(!q)return true;const s=normalizePatientKey(q);return[p.patientName,p.hospitalId,...(p.hnAliases||[]),p.microchip,...(p.microchipAliases||[]),p.breed,p.sex,p.reproductiveStatus,p.patientId].some(v=>normalizePatientKey(v).includes(s))}
+function patientSearchMatches(p,q){return PATIENT_DOMAIN.searchMatches(p,q)}
 function renderPatientMaster(){
   const box=$('patientMasterResults');if(!box)return;const q=($('patientMasterSearch')?.value||'').trim(),showRetired=!!$('showRetiredPatients')?.checked;
   const active=patientCache.filter(p=>!p.retiredAt&&!p.mergedInto);
@@ -2342,7 +2274,7 @@ function exitOrFullscreenForNavigation(id){
   if($('orFullscreenBtn'))$('orFullscreenBtn').textContent='⛶ Full screen';
   if(document.fullscreenElement&&document.exitFullscreen){try{const p=document.exitFullscreen();if(p?.catch)p.catch(()=>{})}catch(e){}}
 }
-const MOBILE_STEP_LABELS={patient:'ประวัติผู้ป่วย',preop:'Pre-check',drugs:'Drug Calculator',orlive:'ช่วงวางยา',recovery:'Recovery',endcase:'End Case',casesummary:'Case Summary',cases:'Cases / Archive',settings:'Settings',plan:'Anesthesia Plan',record:'Full Record',events:'Events & Drugs',trends:'Trends',timeline:'Timeline',dashboard:'Advanced'};
+const MOBILE_STEP_LABELS={patient:'ประวัติผู้ป่วย',preop:'Pre-check',drugs:'Medications',orlive:'ช่วงวางยา',recovery:'Recovery',endcase:'End Case',casesummary:'Case Summary',cases:'Cases / Archive',settings:'Settings',plan:'Anesthesia Plan',record:'Full Record',events:'Events & Drugs',trends:'Trends',timeline:'Timeline',dashboard:'Advanced'};
 function syncMobileWorkflowLocks(){
   $$('[data-mobile-tab]').forEach(btn=>{
     const id=btn.dataset.mobileTab,src=document.querySelector(`.workflow-tabs .tab[data-tab="${id}"]`);
@@ -2380,6 +2312,7 @@ function setTab(id,opts={}){
   document.body.classList.toggle('recovery-mobile-active',id==='recovery');
   localStorage.setItem(TAB_KEY,id);
   if(id==='trends') renderTrends();
+  if(id==='timeline') renderProcedureTimeline();
   if(id==='cases'){renderArchives();renderBackupHealth();}
   if(id==='casesummary') renderCaseSummary();
   if(id==='orlive'){renderOrLive();renderAirwayPanel();}
@@ -2739,29 +2672,19 @@ function showOrVitalSavedFeedback(record){
 function updateOrVitalWorkspace(){renderOrLive()}
 
 const OR_VITAL_DUPLICATE_GUARD_MS=12000;
-function vitalSnapshotSignature(r){
-  if(!r)return '';
-  const keys=['hr','rr','sap','map','dap','spo2','etco2','temp','vaporizer','o2flow','fluidRate','fluidTotal','depth','ventilation','note'];
-  return keys.map(k=>`${k}:${r[k]===null||r[k]===undefined?'':String(r[k]).trim()}`).join('|');
-}
-function recentExactVitalDuplicate(snap){
-  const last=(state.records||[]).at(-1);if(!last)return null;
-  const delta=Number(snap?.epoch||Date.now())-Number(last.epoch||0);
-  if(delta<0||delta>OR_VITAL_DUPLICATE_GUARD_MS)return null;
-  return vitalSnapshotSignature(last)===vitalSnapshotSignature(snap)?{record:last,delta}:null;
-}
+function vitalSnapshotSignature(r){return OR_DOMAIN.vitalSnapshotSignature(r)}
+function recentExactVitalDuplicate(snap){return OR_DOMAIN.recentExactVitalDuplicate(state.records,snap,OR_VITAL_DUPLICATE_GUARD_MS)}
 
 function addRecord(note=''){
   if(!ensureTimerStarted())return false;
   const snap=currentSnapshot(note),warnings=plausibilityWarnings(snap,'anesthesia');
   if(['hr','rr','sap','map','dap','spo2','etco2','temp'].every(k=>snap[k]===null)){toast('No measurement entered — enter at least one measured vital before recording');return false}
-  const duplicate=recentExactVitalDuplicate(snap);
-  if(duplicate){toast(`Already saved this exact vital set ${Math.max(1,Math.round(duplicate.delta/1000))}s ago • duplicate prevented`);showOrVitalSavedFeedback(duplicate.record);return false}
+  const commit=OR_RECORD_ORCH.commitVital(state.records,snap,{guardMs:OR_VITAL_DUPLICATE_GUARD_MS,findDuplicate:OR_DOMAIN.recentExactVitalDuplicate});
+  if(!commit.ok){const duplicate=commit.duplicate;toast(`Already saved this exact vital set ${Math.max(1,Math.round(duplicate.delta/1000))}s ago • duplicate prevented`);showOrVitalSavedFeedback(duplicate.record);return false}
   if(warnings.length&&!confirmPlausibility(warnings,'Anesthesia record'))return false;
   for(const k of WF.metrics)alertObservationRevision[k]=(alertObservationRevision[k]||0)+1;syncAlertEpisodes(snap,{force:true});
-  state.records.push(snap);dueReminderToken=null;
+  state.records=commit.records;dueReminderToken=null;
   addAudit('ANESTHESIA_RECORD_ADDED',`Record ${snap.clock} • HR ${snap.hr} • MAP ${snap.map} • SpO₂ ${snap.spo2} • ETCO₂ ${snap.etco2}`);
-  state.records.sort((a,b)=>a.epoch-b.epoch);
   $('recordNote').value='';
   save();renderRecords();renderTrends();renderProcedureTimeline();renderSmartAlerts();renderOrLive();updateDue();
   const savedRecord=state.records[state.records.length-1];showOrVitalSavedFeedback(savedRecord);toast('✓ Vitals saved • '+savedRecord.clock);
@@ -2769,13 +2692,7 @@ function addRecord(note=''){
 $('recordFromDashboardBtn').addEventListener('click',()=>addRecord(''));
 $('recordNowBtn').addEventListener('click',()=>addRecord(''));
 
-function recordAlert(r){
-  const sp=$('species').value,num=v=>v===null||v===''||v===undefined?null:Number(v);
-  const hr=num(r.hr),rr=num(r.rr),map=num(r.map),spo2=num(r.spo2),et=num(r.etco2),temp=num(r.temp);
-  const hrCritical=hr!==null&&(sp==='cat'?(hr<90||hr>225):(hr<40||hr>190));
-  const rrCritical=rr!==null&&(sp==='cat'?(rr<7):(rr<6));
-  return hrCritical||rrCritical||Object.entries({map,spo2,etco2:et,temp}).some(([k,v])=>WF.classifyAlert(k,v,r.alertProtocol||WF.defaultAlertProtocol())==='danger');
-}
+function recordAlert(r){return OR_DOMAIN.recordAlert(r,{species:$('species').value,classifyAlert:WF.classifyAlert,defaultAlertProtocol:WF.defaultAlertProtocol})}
 function renderRecords(){
   const body=$('recordBody');body.innerHTML='';
   const records=state.records||[];
@@ -2792,7 +2709,7 @@ function renderRecords(){
   $$('#recordBody .record-correct-btn').forEach(b=>b.addEventListener('click',()=>{if($('correctionRecord'))$('correctionRecord').value=String(b.dataset.id);$('correctionField').focus();toast('เลือก field และ corrected value ด้านล่าง')}));
   $$('#recordBody .delete-btn').forEach(b=>b.addEventListener('click',()=>{
     if(!confirm('Delete record นี้? ถ้าเป็นการกรอกค่าผิด แนะนำใช้ Correction แทน'))return;
-    state.records=state.records.filter(r=>String(r.id)!==String(b.dataset.id));
+    state.records=OR_RECORD_ORCH.deleteVital(state.records,b.dataset.id);
     save();renderRecords();renderCorrections();renderTrends();renderProcedureTimeline();renderSmartAlerts();renderOrLive();updateDue();
   }));
   renderCorrections();
@@ -2813,19 +2730,14 @@ function applyCorrection(recordId=null){
   const newValue=field==='temp'?tempDisplayToStoredF(enteredValue):enteredValue;
   const oldValue=rec[field];if(String(oldValue)===String(newValue)){toast('ค่าใหม่เท่ากับค่าเดิม');return}
   if(!reason&&!confirm('ยังไม่ได้ระบุ reason — ต้องการบันทึก correction ต่อหรือไม่?'))return;
-  const c={id:crypto.randomUUID?crypto.randomUUID():String(Date.now()),recordId:rec.id,recordElapsedMs:rec.elapsedMs,field,oldValue,newValue,reason,epoch:Date.now(),clock:formatClock()};
-  state.corrections=state.corrections||[];state.corrections.push(c);rec[field]=newValue;
-  addAudit('RECORD_CORRECTION',`${field.toUpperCase()} ${oldValue} → ${newValue}${reason?' • '+reason:''}`);
-  $('correctionValue').value='';$('correctionReason').value='';save();renderRecords();renderCorrections();renderTrends();renderSmartAlerts();renderOrLive();renderProcedureTimeline();toast(`Corrected ${field.toUpperCase()} ${oldValue} → ${newValue}`);
+  const result=OR_RECORD_ORCH.applyCorrection(state.records,state.corrections,{recordId:rec.id,field,newValue,reason,epoch:Date.now(),clock:formatClock(),id:crypto.randomUUID?crypto.randomUUID():String(Date.now())});
+  if(!result.ok)return;state.records=result.records;state.corrections=result.corrections;
+  addAudit('RECORD_CORRECTION',`${field.toUpperCase()} ${result.oldValue} → ${result.newValue}${reason?' • '+reason:''}`);
+  $('correctionValue').value='';$('correctionReason').value='';save();renderRecords();renderCorrections();renderTrends();renderSmartAlerts();renderOrLive();renderProcedureTimeline();toast(`Corrected ${field.toUpperCase()} ${result.oldValue} → ${result.newValue}`);
 }
 $('applyCorrectionBtn')?.addEventListener('click',()=>applyCorrection());
 function latestRecord(){return state.records?.length?state.records[state.records.length-1]:null}
-function vitalRecordSummary(r){
-  if(!r)return '—';
-  const bits=[`HR ${r.hr??'—'}`,`RR ${r.rr??'—'}`,`MAP ${r.map??'—'}`,`SpO₂ ${r.spo2??'—'}%`,`ETCO₂ ${r.etco2??'—'}`,`Temp ${r.temp==null?'—':tempTextF(r.temp)}`];
-  if(r.vaporizer!==null&&r.vaporizer!==''&&r.vaporizer!==undefined)bits.push(`Vaporizer ${r.vaporizer}%`);
-  return bits.join(' • ');
-}
+function vitalRecordSummary(r){return OR_DOMAIN.vitalRecordSummary(r,{formatTemp:tempTextF})}
 
 const OR_FAST_VITALS=[
   {key:'hr',label:'HR',mainId:'hr',orId:'orHr',deltaId:'orHrDelta'},
@@ -2971,34 +2883,64 @@ function markMilestone(btn){
   btn.classList.add('done');renderCasePhase();
 }
 $$('.milestone-btn').forEach(btn=>btn.addEventListener('click',()=>markMilestone(btn)));
-function renderProcedureTimeline(){
-  const items=[
-    ...(state.events||[]).map(e=>({elapsedMs:e.elapsedMs,clock:e.clock,cat:e.category,text:`${e.name}${e.dose?' • '+e.dose:''}${e.route?' • '+e.route:''}${e.note?' • '+e.note:''}`})),
-    ...(state.records||[]).map(r=>({elapsedMs:r.elapsedMs,clock:r.clock,cat:'Vitals',text:`${vitalRecordSummary(r)}${r.note?' • '+r.note:''}`,isRecord:true})),
-    ...(state.corrections||[]).map(c=>({elapsedMs:c.recordElapsedMs||0,clock:c.clock,cat:'Correction',text:`${c.field.toUpperCase()} ${c.field==='temp'?tempTextF(c.oldValue):c.oldValue} → ${c.field==='temp'?tempTextF(c.newValue):c.newValue}${c.reason?' • '+c.reason:''}`})),
-    ...(state.alertEpisodes||[]).flatMap(a=>[{elapsedMs:a.elapsedMs||0,clock:a.clock,cat:'Alert',text:`${a.label||a.key} started • ${a.trigger||''}${a.acknowledgedAt?' • acknowledged '+formatClock(a.acknowledgedAt):''}`},...(a.resolvedAt?[{elapsedMs:a.resolvedElapsedMs||a.elapsedMs||0,clock:a.resolvedClock||formatClock(a.resolvedAt),cat:'Alert resolved',text:`${a.label||a.key} resolved • duration ${formatShortElapsed(a.resolvedAt-a.startedAt)}`}]:[])]),
-    ...(state.alertEpisodes||[]).flatMap(a=>(a.interventions||[]).map(i=>({elapsedMs:i.elapsedMs,clock:i.clock,cat:'Alert intervention',text:`${a.label||a.key} • ${i.note} • ${i.actor||''}`}))),
-    ...(state.alertProtocolHistory||[]).map(x=>({elapsedMs:Math.max(0,x.epoch-(state.caseStartedAt||x.epoch)),clock:x.clock,cat:'Alert protocol',text:`${x.action} • ${x.reason} • ${x.actor}`})),
-    ...(state.recoveryRecords||[]).map(r=>({elapsedMs:r.caseElapsedMs||0,clock:r.clock,cat:'Recovery Vitals',text:`HR ${r.hr} • RR ${r.rr} • MAP ${r.map??'—'} • SpO₂ ${r.spo2}% • Temp ${r.na?.temp?'N/A':tempTextF(r.temp)}${r.mentation?' • '+r.mentation:''}`}))
-  ].sort((a,b)=>a.elapsedMs-b.elapsedMs);
-  const el=$('procedureTimeline');
-  if(!el)return;
-  if(!items.length){el.className='procedure-timeline empty-state';el.textContent='ยังไม่มี Timeline';}
-  else{
-    el.className='procedure-timeline';
-    el.innerHTML=items.map(i=>`<div class="procedure-item ${i.isRecord?'record':''} ${i.cat==='Complication'?'complication':''}">
-      <div class="ptime">${formatShortElapsed(i.elapsedMs)}<br><small>${escapeHtml(i.clock||'')}</small></div>
-      <div class="pcat">${escapeHtml(i.cat)}</div>
-      <div class="ptext">${escapeHtml(i.text)}</div>
-    </div>`).join('');
-  }
-  if($('timelineRecordCount')) $('timelineRecordCount').textContent=(state.records||[]).length;
-  if($('timelineEventCount')) $('timelineEventCount').textContent=(state.events||[]).length;
-  if($('timelineStartClock')) $('timelineStartClock').textContent=state.caseStartedAt?formatClock(state.caseStartedAt):'—';
-  if($('timelineElapsed')) $('timelineElapsed').textContent=formatElapsed(currentElapsed());
+let unifiedTimelineMode='focus';
+function unifiedVitalSeverity(r){
+  const sp=state.species||$('species')?.value||state.caseIdentitySnapshot?.species||'',num=v=>v===null||v===''||v===undefined?null:Number(v);
+  const values={hr:num(r?.hr),rr:num(r?.rr),map:num(r?.map),spo2:num(r?.spo2),etco2:num(r?.etco2),temp:num(r?.temp)};
+  const levels=[];
+  if(values.hr!==null){if(sp==='cat')levels.push(values.hr<90||values.hr>225?'danger':values.hr<100||values.hr>180?'warn':'good');else levels.push(values.hr<40||values.hr>190?'danger':values.hr<60||values.hr>150?'warn':'good')}
+  if(values.rr!==null){if(sp==='cat')levels.push(values.rr<7?'danger':values.rr<10||values.rr>28?'warn':'good');else levels.push(values.rr<6?'danger':values.rr<8||values.rr>20?'warn':'good')}
+  const protocol=r?.alertProtocol||state.protocolSnapshot?.alertProtocol||WF.defaultAlertProtocol();
+  for(const key of ['map','spo2','etco2','temp'])if(values[key]!==null)levels.push(WF.classifyAlert(key,values[key],protocol));
+  return levels.includes('danger')?'danger':levels.includes('warn')?'warn':'good';
 }
+function unifiedVitalText(r){return `HR ${r.hr??'—'} • MAP ${r.map??'—'} • SpO₂ ${r.spo2??'—'}${r.spo2==null?'':'%'} • ETCO₂ ${r.etco2??'—'} • RR ${r.rr??'—'} • Temp ${r.temp==null?'—':tempTextF(r.temp)}${r.note?' • '+r.note:''}`}
+function unifiedTimelineItems(){
+  const items=[],drugEventIds=new Set((state.drugAdministrations||[]).map(x=>x.eventId).filter(Boolean)),compEventIds=new Set((state.complications||[]).map(x=>x.eventId).filter(Boolean));
+  (state.events||[]).forEach(e=>{
+    if(drugEventIds.has(e.id)||compEventIds.has(e.id))return;
+    const milestone=['Premedication','Induction','Intubation','Surgery start','Incision','Surgery end','Extubation','Recovery complete'].includes(e.name);
+    const severity=e.drugAdministrationVoid?'warn':e.category==='Emergency'?'danger':'neutral';
+    items.push({id:e.id||`event-${e.epoch}`,epoch:e.epoch||0,elapsedMs:e.elapsedMs||0,clock:e.clock||'',kind:milestone?'milestone':'event',cat:milestone?'Workflow':e.category||'Event',severity,focus:true,text:`${e.name}${e.dose?' • '+e.dose:''}${e.route?' • '+e.route:''}${e.note?' • '+e.note:''}`});
+  });
+  const records=state.records||[];
+  records.forEach((r,i)=>{const severity=unifiedVitalSeverity(r),first=i===0,last=i===records.length-1;items.push({id:r.id||`vital-${i}`,epoch:r.epoch||((state.caseStartedAt||0)+(r.elapsedMs||0)),elapsedMs:r.elapsedMs||0,clock:r.clock||'',kind:'vital',cat:severity==='danger'?'Vitals • Critical':severity==='warn'?'Vitals • Reassess':'Vitals',severity,focus:first||last||severity!=='good'||!!r.note,text:unifiedVitalText(r),recordIndex:i});});
+  (state.drugAdministrations||[]).forEach(a=>{items.push({id:a.id||`drug-${a.epoch}`,epoch:a.epoch||0,elapsedMs:a.elapsedMs||0,clock:a.clock||'',kind:'medication',cat:a.voidedAt?'Medication • VOID':'Medication',severity:a.voidedAt?'warn':'neutral',focus:true,text:`${a.drug} • ${fmtDose(Number(a.actual))} ${a.unit||''}${a.route?' • '+a.route:''}${a.administeredBy?' • by '+a.administeredBy:''}${a.voidedAt?' • VOID: '+(a.voidReason||'') : ''}`});});
+  (state.complications||[]).forEach(c=>{items.push({id:c.id||`comp-${c.epoch}`,epoch:c.epoch||0,elapsedMs:c.elapsedMs||0,clock:c.clock||'',kind:'complication',cat:'Complication',severity:c.severity==='emergency'?'danger':'warn',focus:true,text:`${c.type}${c.assessment?' • '+c.assessment:''}${c.intervention?' • '+c.intervention:''}`});if(c.resolvedAt)items.push({id:`${c.id}-resolved`,epoch:c.resolvedAt,elapsedMs:c.resolvedElapsedMs||c.elapsedMs||0,clock:c.resolvedClock||formatClock(c.resolvedAt),kind:'resolution',cat:'Complication resolved',severity:'good',focus:true,text:`${c.type} resolved${c.resolutionNote?' • '+c.resolutionNote:''}`});});
+  (state.alertEpisodes||[]).forEach(a=>{items.push({id:a.id||`alert-${a.startedAt}`,epoch:a.startedAt||a.epoch||0,elapsedMs:a.elapsedMs||0,clock:a.clock||'',kind:'alert',cat:'Alert',severity:a.peakLevel||a.level||'warn',focus:true,text:`${a.label||a.key} started${a.trigger?' • '+a.trigger:''}${a.acknowledgedAt?' • acknowledged '+formatClock(a.acknowledgedAt):''}`});(a.interventions||[]).forEach((x,idx)=>items.push({id:`${a.id}-int-${idx}`,epoch:x.epoch||((state.caseStartedAt||0)+(x.elapsedMs||0)),elapsedMs:x.elapsedMs||0,clock:x.clock||'',kind:'intervention',cat:'Intervention',severity:'warn',focus:true,text:`${a.label||a.key} • ${x.note}${x.actor?' • '+x.actor:''}`}));if(a.resolvedAt)items.push({id:`${a.id}-resolved`,epoch:a.resolvedAt,elapsedMs:a.resolvedElapsedMs||a.elapsedMs||0,clock:a.resolvedClock||formatClock(a.resolvedAt),kind:'resolution',cat:'Alert resolved',severity:'good',focus:true,text:`${a.label||a.key} resolved • ${formatShortElapsed(a.resolvedAt-(a.startedAt||a.epoch||a.resolvedAt))}`});});
+  (state.recoveryRecords||[]).forEach((r,i,arr)=>{const first=i===0,last=i===arr.length-1,p=r.alertProtocol||state.protocolSnapshot?.alertProtocol||WF.defaultAlertProtocol(),levels=[WF.classifyAlert('map',r.map,p),WF.classifyAlert('spo2',r.na?.spo2?null:r.spo2,p),WF.classifyAlert('temp',r.na?.temp?null:r.temp,p)],sev=levels.includes('danger')?'danger':levels.includes('warn')?'warn':'good';items.push({id:r.id||`recovery-${i}`,epoch:r.epoch||((state.recoveryStartedAt||state.caseStartedAt||0)+(r.recoveryElapsedMs||0)),elapsedMs:r.caseElapsedMs||Math.max(0,(r.epoch||0)-(state.caseStartedAt||r.epoch||0)),clock:r.clock||'',kind:'recovery',cat:sev==='danger'?'Recovery • Critical':sev==='warn'?'Recovery • Reassess':'Recovery',severity:sev,focus:first||last||sev!=='good'||!!r.note,text:`HR ${r.hr??'—'} • RR ${r.rr??'—'} • MAP ${r.map??'—'} • SpO₂ ${r.na?.spo2?'N/A':(r.spo2??'—')+(r.spo2==null?'':'%')} • Temp ${r.na?.temp?'N/A':r.temp==null?'—':tempTextF(r.temp)}${r.mentation?' • '+r.mentation:''}${r.note?' • '+r.note:''}`});});
+  (state.auditTrail||[]).filter(a=>['CASE_PHASE_CHANGE','WORKFLOW_STEP_CONFIRMED','WORKFLOW_STEP_UNDONE'].includes(a.action)).forEach(a=>items.push({id:a.id||`audit-${a.epoch}`,epoch:a.epoch||0,elapsedMs:a.elapsedMs||0,clock:a.clock||'',kind:'workflow',cat:'Workflow',severity:a.action==='WORKFLOW_STEP_UNDONE'?'warn':'neutral',focus:true,text:a.detail||a.action}));
+  return items.sort((a,b)=>(a.epoch||0)-(b.epoch||0)||(a.elapsedMs||0)-(b.elapsedMs||0));
+}
+function timelineRangeText(records,key,{percent=false,temp=false}={}){const vals=(records||[]).map(r=>Number(r?.[key])).filter(Number.isFinite);if(!vals.length)return '—';const min=Math.min(...vals),max=Math.max(...vals),last=vals.at(-1),fmt=v=>temp?tempTextF(v):`${fmtDose(v)}${percent?'%':''}`;return `${fmt(min)}–${fmt(max)} • last ${fmt(last)}`}
+function renderTimelineSpark(svgId,key){const svg=$(svgId);if(!svg)return;const pts=(state.records||[]).map(r=>({x:Number(r.elapsedMs)||0,y:Number(r[key])})).filter(p=>Number.isFinite(p.y));while(svg.firstChild)svg.removeChild(svg.firstChild);if(!pts.length){svg.innerHTML='<text x="110" y="36" text-anchor="middle" class="spark-empty">No data</text>';return}const ns='http://www.w3.org/2000/svg',w=220,h=64,pad=7,minX=Math.min(...pts.map(p=>p.x)),maxX=Math.max(...pts.map(p=>p.x)),minY=Math.min(...pts.map(p=>p.y)),maxY=Math.max(...pts.map(p=>p.y)),dx=Math.max(1,maxX-minX),dy=Math.max(1,maxY-minY);const line=document.createElementNS(ns,'polyline');line.setAttribute('class','record-spark-line');line.setAttribute('fill','none');line.setAttribute('points',pts.map(p=>`${pad+(p.x-minX)/dx*(w-pad*2)},${h-pad-(p.y-minY)/dy*(h-pad*2)}`).join(' '));svg.appendChild(line);pts.forEach((p,i)=>{if(i!==0&&i!==pts.length-1)return;const c=document.createElementNS(ns,'circle');c.setAttribute('class','record-spark-point');c.setAttribute('cx',String(pad+(p.x-minX)/dx*(w-pad*2)));c.setAttribute('cy',String(h-pad-(p.y-minY)/dy*(h-pad*2)));c.setAttribute('r','2.6');svg.appendChild(c)});}
+function renderUnifiedRecordOverview(){
+  const recs=state.records||[],drugs=(state.drugAdministrations||[]).filter(x=>!x.voidedAt),activeProblems=(state.complications||[]).filter(x=>x.status!=='resolved').length+(state.alertEpisodes||[]).filter(x=>!x.resolvedAt).length;
+  if($('timelineCaseIdentity'))$('timelineCaseIdentity').innerHTML=`<div><b>${escapeHtml(state.patientName||$('patientName')?.value||'Unnamed patient')}</b><span>${escapeHtml((state.species||$('species')?.value||'—').toUpperCase())} • ${escapeHtml(state.breed||$('breed')?.value||'—')} • BW ${escapeHtml(String(state.weight||$('weight')?.value||'—'))} kg • ASA ${escapeHtml(String(state.asa||$('asa')?.value||'—'))}${state.emergency||$('emergency')?.checked?'-E':''}</span></div><div><b>${escapeHtml(state.procedure||state.patientProcedure||$('procedure')?.value||$('patientProcedure')?.value||'Procedure not specified')}</b><span>HN ${escapeHtml(state.hospitalId||$('hospitalId')?.value||'—')} • Record ${escapeHtml(state.humanRecordId||'—')}</span></div>`;
+  if($('timelineCaseStatus'))$('timelineCaseStatus').textContent=state.caseLocked?'LOCKED FINAL':state.recoveryCompletedAt?'Recovery complete':phaseLabel();
+  if($('timelineProtocol'))$('timelineProtocol').textContent=state.protocolSnapshot?.version||currentSettingsObject().protocolVersion||'unversioned';
+  if($('timelineVitalSummary'))$('timelineVitalSummary').textContent=`${recs.length} • ${recs.length?recs.at(-1).clock:'—'}`;
+  if($('timelineMedicationSummary'))$('timelineMedicationSummary').textContent=String(drugs.length);
+  if($('timelineProblemSummary')){$('timelineProblemSummary').textContent=activeProblems?`${activeProblems} active`:'0 active';$('timelineProblemSummary').classList.toggle('record-warning',activeProblems>0)}
+  if($('timelineRecoverySummary'))$('timelineRecoverySummary').textContent=state.recoveryCompletedAt?'Complete':state.casePhase==='recovery'?'Active':'Not complete';
+  const ranges={timelineHrRange:timelineRangeText(recs,'hr'),timelineMapRange:timelineRangeText(recs,'map'),timelineSpo2Range:timelineRangeText(recs,'spo2',{percent:true}),timelineEtco2Range:timelineRangeText(recs,'etco2'),timelineTempRange:timelineRangeText(recs,'temp',{temp:true})};Object.entries(ranges).forEach(([id,v])=>{if($(id))$(id).textContent=v});
+  renderTimelineSpark('timelineSparkHr','hr');renderTimelineSpark('timelineSparkMap','map');renderTimelineSpark('timelineSparkSpo2','spo2');renderTimelineSpark('timelineSparkEtco2','etco2');renderTimelineSpark('timelineSparkTemp','temp');
+  if($('timelineIntegrityGrid'))$('timelineIntegrityGrid').innerHTML=[['Record ID',state.humanRecordId||'—'],['Case ID',state.caseId||'—'],['Status',state.caseLocked?'LOCKED FINAL':'Working record'],['Final checksum',state.finalChecksum||'Not final locked'],['Last saved',state.lastSavedAt?`${formatDate(state.lastSavedAt)} ${formatClock(state.lastSavedAt)}`:'—'],['Protocol frozen',state.protocolSnapshot?`${state.protocolSnapshot.name||'Protocol'} • ${state.protocolSnapshot.version||'unversioned'}`:'Not frozen']].map(([k,v])=>`<div><span>${escapeHtml(k)}</span><b>${escapeHtml(v)}</b></div>`).join('');
+}
+function focusedUnifiedTimelineItems(items){return items.filter(x=>x.focus!==false)}
+function renderProcedureTimeline(){
+  const all=unifiedTimelineItems(),items=unifiedTimelineMode==='full'?all:focusedUnifiedTimelineItems(all),hidden=Math.max(0,all.length-items.length),el=$('procedureTimeline');
+  if(!el)return;
+  if(!items.length){el.className='procedure-timeline unified-timeline empty-state';el.textContent='ยังไม่มี Timeline';}
+  else{el.className='procedure-timeline unified-timeline';el.innerHTML=items.map(i=>`<div class="procedure-item unified-item ${escapeHtml(i.kind)} ${escapeHtml(i.severity||'neutral')}"><div class="ptime">${escapeHtml(formatShortElapsed(i.elapsedMs||0))}<br><small>${escapeHtml(i.clock||'')}</small></div><div class="pcat">${escapeHtml(i.cat||'Event')}</div><div class="ptext">${escapeHtml(i.text||'')}</div></div>`).join('');}
+  if($('timelineRecordCount'))$('timelineRecordCount').textContent=(state.records||[]).length;if($('timelineEventCount'))$('timelineEventCount').textContent=all.filter(x=>x.kind!=='vital'&&x.kind!=='recovery').length;if($('timelineStartClock'))$('timelineStartClock').textContent=state.caseStartedAt?formatClock(state.caseStartedAt):'—';if($('timelineElapsed'))$('timelineElapsed').textContent=formatElapsed(currentElapsed());
+  if($('timelineFocusNote'))$('timelineFocusNote').textContent=unifiedTimelineMode==='focus'?(hidden?`Focus view • ${hidden} routine timeline item${hidden===1?'':'s'} hidden • use Full timeline to review every vital record`:'Focus view • all current items are clinically relevant'):`Full timeline • showing ${items.length} item${items.length===1?'':'s'}`;
+  $('timelineFocusBtn')?.classList.toggle('primary',unifiedTimelineMode==='focus');$('timelineFullBtn')?.classList.toggle('primary',unifiedTimelineMode==='full');renderUnifiedRecordOverview();
+}
+function reportUnifiedTimelineHtml(){const rows=focusedUnifiedTimelineItems(unifiedTimelineItems()).slice(0,120);return rows.length?`<div class="report-unified-timeline">${rows.map(i=>`<div class="report-event"><b>${escapeHtml(formatShortElapsed(i.elapsedMs||0))}</b><span>${escapeHtml(i.cat||'Event')}</span><div>${escapeHtml(i.text||'')}</div></div>`).join('')}</div>`:'<div style="font-size:8px">No timeline items</div>'}
 $('timelineRecordBtn')?.addEventListener('click',()=>addRecord(''));
 $('timelineEventBtn')?.addEventListener('click',()=>setTab('events'));
+$('timelineFocusBtn')?.addEventListener('click',()=>{unifiedTimelineMode='focus';renderProcedureTimeline()});$('timelineFullBtn')?.addEventListener('click',()=>{unifiedTimelineMode='full';renderProcedureTimeline()});$('timelineOpenTrendsBtn')?.addEventListener('click',()=>setTab('trends'));$('timelineSummaryPdfBtn')?.addEventListener('click',()=>exportPdfSummary());$('timelineFullPdfBtn')?.addEventListener('click',()=>exportPdfReport());
 
 
 let pendingDrugAdministration=null;
@@ -3524,22 +3466,8 @@ function recoveryAnyNA(){return $$('.recovery-check-na-btn').some(x=>x.classList
 function recoveryObservationNA(key){const btn=document.querySelector(`.recovery-observation-na-btn[data-key="${key}"]`);return btn?btn.classList.contains('active'):!!state.recoveryObservationNA?.[key]}
 function recoveryNAReasonValid(){return !recoveryAnyNA()||!!$('recNaReason')?.value.trim()}
 function recoveryReadinessSnapshot(){
-  const all=$$('.recovery-check'),done=all.filter(x=>x.checked).length,na=$$('.recovery-check-na-btn').filter(x=>x.classList.contains('active')).length,reviewed=done+na;
-  const rr=Number($('recRR')?.value||0),spo=Number($('recSpO2')?.value||0),tempF=tempInputStoredF('recTemp'),ment=$('recMentation')?.value||'',ext=$('recExtubation')?.value.trim()||'';
-  const spoOk=spo>0||recoveryObservationNA('spo2'),tempOk=(tempF!==null&&tempF>0)||recoveryObservationNA('temp'),extOk=!!ext||recoveryObservationNA('extubation');
-  const records=(state.recoveryRecords||[]).length,scores=(state.recoveryScores||[]).length,naReasonOk=recoveryNAReasonValid();
-  const missing=[];
-  if(reviewed!==all.length)missing.push(`checklist ${reviewed}/${all.length}`);
-  if(!records)missing.push('vitals');
-  if(!scores)missing.push('score');
-  if(!(rr>0))missing.push('RR');
-  if(!spoOk)missing.push('SpO₂');
-  if(!tempOk)missing.push('Temp');
-  if(!ment)missing.push('mentation');
-  if(!extOk)missing.push('extubation');
-  if(!naReasonOk)missing.push('N/A reason');
-  const ready=reviewed===all.length&&records>0&&scores>0&&rr>0&&spoOk&&tempOk&&!!ment&&extOk&&naReasonOk&&!state.emergencyReturnActive;
-  return {all,done,na,reviewed,rr,spo,tempF,ment,ext,spoOk,tempOk,extOk,records,scores,naReasonOk,missing,ready};
+  const all=$$('.recovery-check'),done=all.filter(x=>x.checked).length,na=$$('.recovery-check-na-btn').filter(x=>x.classList.contains('active')).length;
+  return RECOVERY_DOMAIN.readiness({all,done,na,rr:Number($('recRR')?.value||0),spo:Number($('recSpO2')?.value||0),tempF:tempInputStoredF('recTemp'),ment:$('recMentation')?.value||'',ext:$('recExtubation')?.value.trim()||'',spoNA:recoveryObservationNA('spo2'),tempNA:recoveryObservationNA('temp'),extNA:recoveryObservationNA('extubation'),records:(state.recoveryRecords||[]).length,scores:(state.recoveryScores||[]).length,naReasonOk:recoveryNAReasonValid(),emergencyReturnActive:state.emergencyReturnActive});
 }
 function renderRecoveryFocus(snapshot=recoveryReadinessSnapshot()){
   const latest=(state.recoveryRecords||[]).at(-1),name=$('patientName')?.value.trim()||state.patientName||'Unnamed patient',weight=Number($('weight')?.value||state.weight)||null;
@@ -3568,7 +3496,7 @@ function copyLastRecoveryVitalsToCurrent(){
   if($('recOxygen'))$('recOxygen').value=r.oxygen||'';if($('recMentation'))$('recMentation').value=r.mentation||'';if($('recPain'))$('recPain').value='';
   save();renderRecovery();toast('Copied last Recovery vitals • review changes before Record');return true;
 }
-function scrollRecoveryPanel(id){const el=$(id);if(!el)return;window.ANESVETProgressiveDisclosure?.openForElement?.(el);requestAnimationFrame(()=>el.scrollIntoView({behavior:'smooth',block:'start'}));}
+function scrollRecoveryPanel(id){const el=$(id);if(!el)return;window.ANESVETFocusedWorkspace?.openForElement?.(el);window.ANESVETProgressiveDisclosure?.openForElement?.(el);requestAnimationFrame(()=>el.scrollIntoView({behavior:'smooth',block:'start'}));}
 function closeRecoveryMoreDialog(){const d=$('recoveryMoreDialog');if(d?.open){try{d.close()}catch(e){d.removeAttribute('open')}}}
 function openRecoveryMoreDialog(){const d=$('recoveryMoreDialog');if(!d)return;try{if(!d.open)d.showModal()}catch(e){d.setAttribute('open','')}}
 function renderRecovery(){
@@ -3585,17 +3513,13 @@ $$('.recovery-check').forEach((el,i)=>el.addEventListener('change',()=>{if(el.ch
 $$('.recovery-check-na-btn').forEach((btn,i)=>btn.addEventListener('click',()=>{const active=!btn.classList.contains('active');btn.classList.toggle('active',active);const cb=$$('.recovery-check')[i];if(cb){cb.disabled=active;if(active)cb.checked=false}renderRecovery();save()}));
 $$('.recovery-observation-na-btn').forEach(btn=>btn.addEventListener('click',()=>{const active=!btn.classList.contains('active');btn.classList.toggle('active',active);const input=btn.closest('.recovery-field-na')?.querySelector('input');if(input){input.disabled=active;if(active)input.value=''}renderRecovery();save()}));
 ['recHR','recRR','recMAP','recSpO2','recTemp','recExtubation','recOxygen','recMentation','recPain','recHandoffNote','recNaReason','recRecordInterval'].forEach(id=>{const el=$(id);if(el){const eventName=el.tagName==='SELECT'?'change':'input';el.addEventListener(eventName,()=>{if(eventName==='change')save({reason:`recovery:${id}`});else scheduleAutosave(`recovery:${id}`);renderRecovery()})}});
-function currentRecoveryScore(){
-  const ids={airway:'recScoreAirway',oxygenation:'recScoreOxygen',temperature:'recScoreTemp',mentation:'recScoreMentation',comfort:'recScoreComfort'},domains={};let total=0,possible=0,incomplete=false,na=0;
-  Object.entries(ids).forEach(([k,id])=>{const v=$(id)?.value||'';domains[k]=v;if(v===''){incomplete=true;return}if(v==='NA'){na++;return}const n=Number(v);if(!Number.isFinite(n)){incomplete=true;return}total+=n;possible+=2});
-  return {domains,total,possible,percent:possible?Math.round(total/possible*100):null,incomplete,na,note:$('recScoreNote')?.value.trim()||''};
-}
-function recoveryScoreText(sc){if(!sc||sc.incomplete||!sc.possible)return 'Incomplete';return `${sc.total}/${sc.possible} (${sc.percent}%)${sc.na?` • N/A ${sc.na}`:''}`}
+function currentRecoveryScore(){return RECOVERY_DOMAIN.scoreFromValues({airway:$('recScoreAirway')?.value||'',oxygenation:$('recScoreOxygen')?.value||'',temperature:$('recScoreTemp')?.value||'',mentation:$('recScoreMentation')?.value||'',comfort:$('recScoreComfort')?.value||'',note:$('recScoreNote')?.value.trim()||''})}
+function recoveryScoreText(sc){return RECOVERY_DOMAIN.scoreText(sc)}
 function saveRecoveryScore(){
   if(state.casePhase!=='recovery'||state.emergencyReturnActive){toast('Recovery score บันทึกได้ใน active Recovery mode');return}
   const sc=currentRecoveryScore();if(sc.incomplete){toast('กรุณาให้คะแนนทุก domain หรือเลือก N/A ที่อนุญาต');return}if(sc.na&&!$('recNaReason')?.value.trim()){toast('กรุณาระบุ N/A reason สำหรับ Recovery');$('recNaReason')?.focus();return}
-  state.recoveryScores=state.recoveryScores||[];const entry={id:crypto.randomUUID?crypto.randomUUID():String(Date.now()+Math.random()),epoch:Date.now(),clock:formatClock(),caseElapsedMs:currentElapsed(),recoveryElapsedMs:recoveryElapsed(),...sc,naReason:sc.na?$('recNaReason').value.trim():'',snapshot:{hr:Number($('recHR')?.value||0)||null,rr:Number($('recRR')?.value||0)||null,map:Number($('recMAP')?.value||0)||null,spo2:recoveryObservationNA('spo2')?null:(Number($('recSpO2')?.value||0)||null),temp:recoveryObservationNA('temp')?null:tempInputStoredF('recTemp'),mentation:$('recMentation')?.value||''}};
-  state.recoveryScores.push(entry);addAudit('RECOVERY_SCORE_ADDED',`${entry.total}/${entry.possible} (${entry.percent}%)${entry.naReason?' • N/A: '+entry.naReason:''}`);save();renderRecoveryScores();renderEndCase();toast(`Recovery score saved • ${entry.total}/${entry.possible}`);
+  const entry={id:crypto.randomUUID?crypto.randomUUID():String(Date.now()+Math.random()),epoch:Date.now(),clock:formatClock(),caseElapsedMs:currentElapsed(),recoveryElapsedMs:recoveryElapsed(),...sc,naReason:sc.na?$('recNaReason').value.trim():'',snapshot:{hr:Number($('recHR')?.value||0)||null,rr:Number($('recRR')?.value||0)||null,map:Number($('recMAP')?.value||0)||null,spo2:recoveryObservationNA('spo2')?null:(Number($('recSpO2')?.value||0)||null),temp:recoveryObservationNA('temp')?null:tempInputStoredF('recTemp'),mentation:$('recMentation')?.value||''}};
+  state.recoveryScores=RECOVERY_ORCH.appendScore(state.recoveryScores,entry);addAudit('RECOVERY_SCORE_ADDED',`${entry.total}/${entry.possible} (${entry.percent}%)${entry.naReason?' • N/A: '+entry.naReason:''}`);save();renderRecoveryScores();renderEndCase();toast(`Recovery score saved • ${entry.total}/${entry.possible}`);
 }
 function renderRecoveryScores(){
   const live=currentRecoveryScore(),arr=state.recoveryScores||[];if($('recoveryScoreCurrent'))$('recoveryScoreCurrent').textContent=recoveryScoreText(live);if($('recoveryScoreCount'))$('recoveryScoreCount').textContent=String(arr.length);if($('recoveryScoreLatest'))$('recoveryScoreLatest').textContent=arr.length?`${arr.at(-1).total}/${arr.at(-1).possible} • ${arr.at(-1).clock}`:'—';
@@ -3612,7 +3536,7 @@ function addRecoveryRecord(){
   const rec={id:crypto.randomUUID?crypto.randomUUID():String(Date.now()+Math.random()),epoch:Date.now(),clock:formatClock(),caseElapsedMs:currentElapsed(),recoveryElapsedMs:recoveryElapsed(),hr,rr,map:mapRaw===''||mapRaw==null?null:Number(mapRaw),spo2,temp,na:{spo2:spoNA,temp:tempNA},naReason:(spoNA||tempNA)?$('recNaReason')?.value.trim()||'':'',oxygen:$('recOxygen')?.value||'',mentation:$('recMentation')?.value||'',note:$('recPain')?.value.trim()||'',recoveryScoreId:(state.recoveryScores||[]).at(-1)?.id||null};
   const warnings=plausibilityWarnings(rec,'recovery');if(warnings.length&&!confirmPlausibility(warnings,'Recovery record'))return;
   for(const k of ['map','spo2','temp'])alertObservationRevision[k]=(alertObservationRevision[k]||0)+1;rec.alertProtocol=WF.clone(activeAlertProtocol());syncAlertEpisodes(rec,{force:true,context:'recovery'});
-  state.recoveryRecords=state.recoveryRecords||[];state.recoveryRecords.push(rec);recoveryDueReminderToken=null;
+  state.recoveryRecords=RECOVERY_ORCH.appendRecord(state.recoveryRecords,rec);recoveryDueReminderToken=null;
   addAudit('RECOVERY_RECORD_ADDED',`HR ${rec.hr} • RR ${rec.rr} • MAP ${rec.map??'—'} • SpO₂ ${rec.na?.spo2?'N/A':rec.spo2} • Temp ${rec.na?.temp?'N/A':tempTextF(rec.temp)}${rec.naReason?' • N/A: '+rec.naReason:''}`);
   save();renderRecoveryRecords();renderRecovery();renderProcedureTimeline();updateRecoveryDue();toast(`Recovery vitals recorded • ${rec.clock}`);
 }
@@ -3665,7 +3589,7 @@ $('recoveryMoreEmergencyBtn')?.addEventListener('click',()=>{closeRecoveryMoreDi
 $('recoveryMoreUndoBtn')?.addEventListener('click',()=>{closeRecoveryMoreDialog();$('recoveryUndoStepBtn')?.click()});
 $('recoveryMoreCaseSummaryBtn')?.addEventListener('click',()=>{closeRecoveryMoreDialog();setTab('casesummary')});
 
-function recoveryElapsed(){return state.recoveryStartedAt?Math.max(0,(state.recoveryCompletedAt||Date.now())-state.recoveryStartedAt):0}
+function recoveryElapsed(){return RECOVERY_DOMAIN.elapsed(state.recoveryStartedAt,state.recoveryCompletedAt)}
 function renderRecoveryState(){
   document.body.classList.toggle('recovery-session-active',state.casePhase==='recovery'&&!state.recoveryCompletedAt&&!state.emergencyReturnActive);
   if($('recoveryPhaseBadge')){
@@ -3686,7 +3610,7 @@ function beginRecovery({skipConfirm=false}={}){
   if(state.recoveryCompletedAt){toast('Recovery already completed');return false}
   if(!skipConfirm&&!confirm('เริ่ม Recovery mode? ระบบจะบันทึกเวลาเริ่ม recovery ใน timeline'))return false;
   seedRecoveryVitalsFromCurrent();
-  state.emergencyReturnActive=false;state.casePhase='recovery';if(!state.recoveryStartedAt)state.recoveryStartedAt=Date.now();state.recoveryCompletedAt=null;renderCasePhase();
+  RECOVERY_ORCH.applyPatch(state,RECOVERY_ORCH.beginPatch(state,Date.now()));renderCasePhase();
   captureRecoveryHandoff('Recovery started');
   addEvent({category:'Recovery',name:'Recovery started',note:'Post-anesthetic recovery mode'});save();renderRecoveryState();renderOrLive();setTab('recovery',{force:true});toast('✓ Recovery mode opened');return true;
 }
@@ -3705,8 +3629,7 @@ Reason for completing despite incomplete readiness (required):`,'');if(!reason?.
     if(!confirm(`Mark Recovery complete with documented override?\n${reason.trim()}\nBy ${actor.trim()}`))return;
     completionOverride={epoch:Date.now(),reason:reason.trim(),actor:actor.trim(),reviewed,required:checks.length,recoveryRecords:rc,recoveryScores:scoreCount};
   }
-  state.recoveryCompletionOverride=completionOverride;
-  state.recoveryCompletedAt=Date.now();state.casePhase='complete';state.emergencyReturnActive=false;renderCasePhase();
+  RECOVERY_ORCH.applyPatch(state,RECOVERY_ORCH.completePatch(completionOverride,Date.now()));renderCasePhase();
   if(state.timer.running)pauseTimer();
   releaseScreenWakeLock(true);addAudit('RECOVERY_COMPLETE',`Recovery records ${(state.recoveryRecords||[]).length} • Recovery scores ${(state.recoveryScores||[]).length}${completionOverride?' • OVERRIDE: '+completionOverride.reason:''}`,completionOverride?.actor||'');
   addEvent({category:'Recovery',name:'Recovery complete',note:`Recovery duration ${formatShortElapsed(recoveryElapsed())} • ${rc} recovery records • ${(state.recoveryScores||[]).length} scores`});captureRecoveryHandoff('Recovery complete');save();renderRecoveryState();renderRecoveryRecords();renderRecoveryScores();toast('Recovery marked complete');
@@ -3813,6 +3736,7 @@ function buildPdfReport(){
   $('reportSummaryGrid').innerHTML=summary.map(([l,v])=>`<div class="report-summary-item"><span>${escapeHtml(l)}</span><b>${escapeHtml(v)}</b></div>`).join('');
 
   const recs=state.records||[];
+  if($('reportUnifiedTimeline'))$('reportUnifiedTimeline').innerHTML=reportUnifiedTimelineHtml();
   $('reportRecordTable').innerHTML=recs.length?`<table class="report-table">
     <thead><tr><th>#</th><th>Elapsed</th><th>HR</th><th>RR</th><th>SAP</th><th>MAP</th><th>DAP</th><th>SpO₂</th><th>ETCO₂</th><th>Temp ${tempSymbol()}</th><th>Vap%</th><th>Fluid</th><th>Note</th></tr></thead>
     <tbody>${recs.map((r,i)=>`<tr><td>${i+1}</td><td>${formatShortElapsed(r.elapsedMs)}</td><td>${r.hr??''}</td><td>${r.rr??''}</td><td>${r.sap??''}</td><td>${r.map??''}</td><td>${r.dap??''}</td><td>${r.spo2??''}</td><td>${r.etco2??''}</td><td>${r.temp==null||r.temp===''?'':tempStoredFToDisplay(r.temp)}</td><td>${r.vaporizer??''}</td><td>${r.fluidRate??''}</td><td class="note">${escapeHtml(r.note||'')}</td></tr>`).join('')}</tbody>
@@ -3921,6 +3845,7 @@ async function renderBackupHealth(){
   if($('backupLastTime'))$('backupLastTime').textContent=last?`${formatDate(last)} ${formatClock(last)}`:'Never';
   if($('backupAgeStatus')){const days=age==null?null:Math.floor(age/86400000);$('backupAgeStatus').textContent=days==null?'Backup recommended':days>=7?`⚠ ${days} days ago`:days===0?'✓ Today':`✓ ${days} day${days===1?'':'s'} ago`;$('backupAgeStatus').className=days==null||days>=7?'health-warn':'health-good'}
   try{if(navigator.storage?.estimate){const e=await navigator.storage.estimate();if($('storageUsedHealth'))$('storageUsedHealth').textContent=formatBytes(e.usage);if($('storageQuotaHealth'))$('storageQuotaHealth').textContent=e.quota?`of ${formatBytes(e.quota)} browser quota`:'Browser estimate'}}catch(e){}
+  try{window.AnesvetDataResilience?.renderHealth?.()}catch(e){}
 }
 $('backupNowHealthBtn')?.addEventListener('click',()=>backupAllData());
 
@@ -3930,48 +3855,63 @@ async function verifyBackupPayloadIntegrity(raw){
   return out;
 }
 
-async function backupAllData(){
-  save();await initArchiveDb();await initPatientMaster();
-  const payload={format:'ANESVET_BACKUP',version:APP_VERSION,exportedAt:Date.now(),current:state,archive:getArchive(),patients:getPatients(),breedAliases:loadBreedAliases(),settings:(()=>{try{return JSON.parse(localStorage.getItem(SETTINGS_KEY)||'null')}catch(e){return null}})(),drugLibrary:loadDrugLibraryData(),quickPresets:loadQuickPresets(),protocolAudit:getProtocolAudit(),pilotFeedbackQueue:getPilotFeedbackQueue()};
-  downloadBlob(JSON.stringify(payload,null,2),'application/json',`ANESVET_BACKUP_${formatDate(Date.now())}.json`);
-  const backupEpoch=Date.now();localStorage.setItem(LAST_BACKUP_KEY,String(backupEpoch));
-  if($('backupStatus'))$('backupStatus').textContent=`Backup created ${formatClock(backupEpoch)} • ${payload.archive.length} cases • ${payload.patients.length} patients`;
-  renderBackupHealth();toast('Full backup created');
+function backupUuid(){return crypto.randomUUID?crypto.randomUUID():`backup-${Date.now()}-${Math.random().toString(16).slice(2)}`}
+function normalizedRestorePatients(raw){
+  if(Array.isArray(raw?.patients)&&raw.patients.length)return raw.patients.map(p=>({...p}));
+  const seen=new Map();for(const c of [...(raw?.archive||[]),raw?.current].filter(Boolean)){const p=patientFromCase(c);if(!p)continue;const k=patientIdentityKey(p);if(!seen.has(k))seen.set(k,p)}return [...seen.values()];
 }
-$('backupAllBtn')?.addEventListener('click',backupAllData);
-$('restoreBackupBtn')?.addEventListener('click',()=>$('restoreBackupInput')?.click());
-$('restoreBackupInput')?.addEventListener('change',async e=>{
-  const file=e.target.files?.[0];if(!file)return;
+async function buildBackupPayload(){
+  save();await initArchiveDb();await initPatientMaster();
+  const archive=getArchive().map(c=>JSON.parse(JSON.stringify(c))),patients=getPatients().map(p=>JSON.parse(JSON.stringify(p))),current=JSON.parse(JSON.stringify(state));
+  const latestArchiveAt=Math.max(0,...archive.map(c=>Number(c.archivedAt||c.createdAt||0)).filter(Number.isFinite));
+  return {format:'ANESVET_BACKUP',backupSchema:2,backupId:backupUuid(),version:APP_VERSION,sourceAppVersion:APP_VERSION,exportedAt:Date.now(),summary:{archiveCount:archive.length,lockedCount:archive.filter(c=>c.caseLocked).length,voidedCount:archive.filter(c=>c.voidedAt).length,patientCount:patients.length,latestArchiveAt,currentCaseId:current.caseId||'',currentPatientName:current.patientName||'',currentPhase:current.casePhase||'preop',currentLocked:!!current.caseLocked,currentLastSavedAt:Number(current.lastSavedAt)||0,archiveBackend,patientBackend},current,archive,patients,breedAliases:loadBreedAliases(),settings:(()=>{try{return JSON.parse(localStorage.getItem(SETTINGS_KEY)||'null')}catch(e){return null}})(),drugLibrary:loadDrugLibraryData(),quickPresets:loadQuickPresets(),protocolAudit:getProtocolAudit(),pilotFeedbackQueue:getPilotFeedbackQueue()};
+}
+function writeBackupReceipt(payload){const r={backupId:payload.backupId||'',epoch:Number(payload.exportedAt)||Date.now(),version:payload.version||APP_VERSION,archiveCount:payload.archive?.length||0,patientCount:payload.patients?.length||0,lockedCount:(payload.archive||[]).filter(c=>c.caseLocked).length,latestArchiveAt:Math.max(0,...(payload.archive||[]).map(c=>Number(c.archivedAt||c.createdAt||0)).filter(Number.isFinite)),currentCaseId:payload.current?.caseId||'',currentLastSavedAt:Number(payload.current?.lastSavedAt)||0};localStorage.setItem(LAST_BACKUP_KEY,String(r.epoch));localStorage.setItem(BACKUP_RECEIPT_KEY,JSON.stringify(r));return r}
+function readBackupReceipt(){try{return JSON.parse(localStorage.getItem(BACKUP_RECEIPT_KEY)||'null')}catch(e){return null}}
+async function downloadBackupPayload(payload){downloadBlob(JSON.stringify(payload,null,2),'application/json',`ANESVET_BACKUP_${formatDate(payload.exportedAt||Date.now())}_V${APP_VERSION}.json`);const r=writeBackupReceipt(payload);if($('backupStatus'))$('backupStatus').textContent=`Backup created ${formatClock(r.epoch)} • ${r.archiveCount} cases • ${r.patientCount} patients`;renderBackupHealth();toast('Full backup created');return payload}
+async function backupAllData({direct=false}={}){if(!direct&&window.AnesvetDataResilience?.openBackupPreflight)return window.AnesvetDataResilience.openBackupPreflight();const payload=await buildBackupPayload();return downloadBackupPayload(payload)}
+async function idbReplaceClinicalStores(raw){
+  const archive=(raw.archive||[]).map(c=>{const x=JSON.parse(JSON.stringify(c));if(!x.caseId)x.caseId=crypto.randomUUID?crypto.randomUUID():String(Date.now()+Math.random());return x}),patients=normalizedRestorePatients(raw).map(p=>{const x=JSON.parse(JSON.stringify(p));if(!x.patientId)x.patientId=crypto.randomUUID?crypto.randomUUID():String(Date.now()+Math.random());x.patientNameLower=String(x.patientName||'').toLowerCase();x.updatedAt=x.updatedAt||Date.now();return x});
+  await CORE_STORAGE.replaceDataset({cases:archive,patients,current:raw.current,meta:{last_restore:{backupId:raw.backupId||'',sourceVersion:raw.version||'',restoredAt:Date.now()}}});
+  return {archive,patients};
+}
+async function storePreRestoreSnapshot(){const payload=await buildBackupPayload();try{const stored=await idbPutMeta('pre_restore_backup',{createdAt:Date.now(),payload});return {stored:stored===true,payload}}catch(e){console.error('Pre-restore snapshot failed',e);return {stored:false,payload}}}
+async function getPreRestoreSnapshot(){const r=await idbGetMeta('pre_restore_backup');return r?.value||null}
+async function clearPreRestoreSnapshot(){try{await idbPutMeta('pre_restore_backup',null)}catch(e){}}
+function localStorageRestoreKeys(){return [CURRENT_KEY,SETTINGS_KEY,DRUG_LIBRARY_KEY,QUICK_PRESET_KEY,PROTOCOL_AUDIT_KEY,BREED_ALIAS_KEY,PILOT_FEEDBACK_KEY,PATIENT_FALLBACK_KEY,ARCHIVE_KEY]}
+async function applyRestorePayload(raw,{storeRollback=true}={}){
+  if(raw?.format!=='ANESVET_BACKUP'||!raw.current||!Array.isArray(raw.archive))throw new Error('Invalid backup');
+  const rollback=storeRollback?await storePreRestoreSnapshot():null,old=new Map();for(const k of localStorageRestoreKeys())old.set(k,localStorage.getItem(k));
   try{
-    const raw=JSON.parse(await file.text());
-    if(raw.format!=='ANESVET_BACKUP'||!raw.current||!Array.isArray(raw.archive))throw new Error('Invalid backup');
-    if($('backupStatus'))$('backupStatus').textContent='Validating backup integrity…';
-    const integrity=await verifyBackupPayloadIntegrity(raw);
-    const integrityText=`Locked final records: ${integrity.locked}\nChecksum verified: ${integrity.valid}/${integrity.verifiable}\nUnverifiable legacy/no checksum: ${integrity.unverifiable}\nMISMATCH: ${integrity.mismatch}`;
-    if(integrity.mismatch>0){const code=prompt(`⚠ BACKUP INTEGRITY WARNING\n\n${integrityText}\n\nAt least one locked record does not match its stored checksum. Restore is NOT recommended until the file is checked.\n\nType RESTORE to continue anyway.`,'');if(code!=='RESTORE'){if($('backupStatus'))$('backupStatus').textContent='Restore cancelled — checksum mismatch detected';return}}
-    else if(!confirm(`Restore ANESVET backup?\nExported: ${new Date(raw.exportedAt||Date.now()).toLocaleString()}\nCases: ${raw.archive.length}\nPatients: ${Array.isArray(raw.patients)?raw.patients.length:'derive from cases'}\n\n${integrityText}\n\nCurrent browser data will be replaced.`)){if($('backupStatus'))$('backupStatus').textContent='Restore cancelled';return}
-
+    await initArchiveDb();let restored;
+    if(archiveBackend==='IndexedDB')restored=await idbReplaceClinicalStores(raw);else restored={archive:(raw.archive||[]).map(c=>({...c,caseId:c.caseId||(crypto.randomUUID?crypto.randomUUID():String(Date.now()+Math.random()))})),patients:normalizedRestorePatients(raw)};
     localStorage.setItem(CURRENT_KEY,JSON.stringify(raw.current));
-    if(raw.settings)localStorage.setItem(SETTINGS_KEY,JSON.stringify(raw.settings));if(Array.isArray(raw.pilotFeedbackQueue))setPilotFeedbackQueue(raw.pilotFeedbackQueue);
-    if(Array.isArray(raw.drugLibrary))localStorage.setItem(DRUG_LIBRARY_KEY,JSON.stringify(raw.drugLibrary));
-    if(raw.quickPresets)localStorage.setItem(QUICK_PRESET_KEY,JSON.stringify(raw.quickPresets));
-    if(Array.isArray(raw.protocolAudit))localStorage.setItem(PROTOCOL_AUDIT_KEY,JSON.stringify(raw.protocolAudit));
-    if(Array.isArray(raw.breedAliases))localStorage.setItem(BREED_ALIAS_KEY,JSON.stringify(raw.breedAliases));
-    await initArchiveDb();archiveCache=[];
-    if(archiveBackend==='IndexedDB'){
-      await idbClearCases();
-      for(const c0 of raw.archive){const c={...c0};if(!c.caseId)c.caseId=crypto.randomUUID?crypto.randomUUID():String(Date.now()+Math.random());await idbPutCase(c);archiveCache.push(c)}
-      await idbClearPatients();patientCache=[];
-      if(Array.isArray(raw.patients)){for(const p0 of raw.patients){const p={...p0};if(!p.patientId)p.patientId=crypto.randomUUID?crypto.randomUUID():String(Date.now()+Math.random());await idbPutPatient(p);patientCache.push(p)}}
-      await idbPutMeta('current',raw.current);
-    }else{
-      archiveCache=raw.archive.map(c=>({...c,caseId:c.caseId||(crypto.randomUUID?crypto.randomUUID():String(Date.now()+Math.random()))}));localStorage.setItem(ARCHIVE_KEY,JSON.stringify(archiveCache));
-      patientCache=Array.isArray(raw.patients)?raw.patients:[];saveFallbackPatients();
+    raw.settings?localStorage.setItem(SETTINGS_KEY,JSON.stringify(raw.settings)):localStorage.removeItem(SETTINGS_KEY);
+    Array.isArray(raw.pilotFeedbackQueue)?setPilotFeedbackQueue(raw.pilotFeedbackQueue):setPilotFeedbackQueue([]);
+    Array.isArray(raw.drugLibrary)?localStorage.setItem(DRUG_LIBRARY_KEY,JSON.stringify(raw.drugLibrary)):localStorage.removeItem(DRUG_LIBRARY_KEY);
+    raw.quickPresets?localStorage.setItem(QUICK_PRESET_KEY,JSON.stringify(raw.quickPresets)):localStorage.removeItem(QUICK_PRESET_KEY);
+    Array.isArray(raw.protocolAudit)?localStorage.setItem(PROTOCOL_AUDIT_KEY,JSON.stringify(raw.protocolAudit)):localStorage.removeItem(PROTOCOL_AUDIT_KEY);
+    Array.isArray(raw.breedAliases)?localStorage.setItem(BREED_ALIAS_KEY,JSON.stringify(raw.breedAliases)):localStorage.removeItem(BREED_ALIAS_KEY);
+    archiveCache=restored.archive;patientCache=restored.patients;archiveCache.sort((a,b)=>(b.archivedAt||b.createdAt||0)-(a.archivedAt||a.createdAt||0));
+    if(archiveBackend!=='IndexedDB'){localStorage.setItem(ARCHIVE_KEY,JSON.stringify(archiveCache));saveFallbackPatients()}
+    localStorage.setItem(LAST_RESTORE_KEY,JSON.stringify({epoch:Date.now(),backupId:raw.backupId||'',sourceVersion:raw.version||'',rollbackStored:!!rollback?.stored}));
+    return {ok:true,rollbackStored:!!rollback?.stored,archiveCount:archiveCache.length,patientCount:patientCache.length};
+  }catch(err){
+    for(const [k,v] of old){try{v===null?localStorage.removeItem(k):localStorage.setItem(k,v)}catch(e){}}
+    if(rollback?.payload){
+      try{if(archiveBackend==='IndexedDB'){const restored=await idbReplaceClinicalStores(rollback.payload);archiveCache=restored.archive;patientCache=restored.patients}else{archiveCache=(rollback.payload.archive||[]).map(c=>JSON.parse(JSON.stringify(c)));patientCache=normalizedRestorePatients(rollback.payload)}}catch(revertErr){console.error('Automatic restore rollback failed',revertErr)}
     }
-    archiveCache.sort((a,b)=>(b.archivedAt||b.createdAt||0)-(a.archivedAt||a.createdAt||0));restartAtAppRoot();
-  }catch(err){console.error(err);toast('Restore failed: invalid backup file')}
-  finally{e.target.value=''}
-});
+    throw err
+  }
+}
+async function rollbackLastRestore(){const snap=await getPreRestoreSnapshot();if(!snap?.payload)throw new Error('No pre-restore snapshot available');const result=await applyRestorePayload(snap.payload,{storeRollback:false});await clearPreRestoreSnapshot();return result}
+async function verifyAllArchiveIntegrity(progress){const list=getArchive(),out={locked:0,verifiable:0,valid:0,mismatch:0,unverifiable:0,details:[]};let done=0;for(const c of list){if(!c?.caseLocked){done++;progress?.(done,list.length,out);continue}out.locked++;if(!c.finalChecksum||String(c.finalChecksum).startsWith('FNV1A-')){out.unverifiable++;done++;progress?.(done,list.length,out);continue}const alg=String(c.checksumAlgorithm||'SHA-256').toUpperCase();if(alg!=='SHA-256'){out.unverifiable++;done++;progress?.(done,list.length,out);continue}out.verifiable++;const got=await computeCaseChecksum(c);if(String(got).toUpperCase()===String(c.finalChecksum).toUpperCase())out.valid++;else{out.mismatch++;out.details.push(`${c.humanRecordId||c.caseId||'case'}: checksum mismatch`)}done++;progress?.(done,list.length,out)}return out}
+async function recoveryCopyStatus(){const cp=readSafetyCheckpoint(),rawMirror=(await idbGetMeta('current'))?.value||null,rollback=await getPreRestoreSnapshot();const mirrorHasData=!!(rawMirror&&(rawMirror.patientSaved||rawMirror.caseStartedAt||rawMirror.timer?.running||(rawMirror.timer?.elapsedMs||0)>0||(rawMirror.records||[]).length||(rawMirror.events||[]).length||(rawMirror.drugAdministrations||[]).length));const mirror=mirrorHasData?rawMirror:null;return {checkpoint:cp?{caseId:cp.caseId,patientName:cp.patientName||cp.state?.patientName||'',savedAt:cp.lastSavedAt||cp.verifiedAt||0}:null,mirror:mirror?{caseId:mirror.caseId||'',patientName:mirror.patientName||'',savedAt:mirror.lastSavedAt||caseActivityEpoch(mirror)}:null,rollback:rollback?{createdAt:rollback.createdAt||0,sourceVersion:rollback.payload?.version||'',archiveCount:rollback.payload?.archive?.length||0}:null}}
+
+$('backupAllBtn')?.addEventListener('click',()=>backupAllData());
+$('restoreBackupBtn')?.addEventListener('click',()=>$('restoreBackupInput')?.click());
+$('restoreBackupInput')?.addEventListener('change',async e=>{const file=e.target.files?.[0];if(!file)return;try{if(window.AnesvetDataResilience?.previewRestoreFile){await window.AnesvetDataResilience.previewRestoreFile(file);return}const raw=JSON.parse(await file.text()),integrity=await verifyBackupPayloadIntegrity(raw);if(integrity.mismatch)throw new Error('Backup checksum mismatch');if(confirm(`Restore backup from ${new Date(raw.exportedAt||Date.now()).toLocaleString()}?`)){await applyRestorePayload(raw);restartAtAppRoot()}}catch(err){console.error(err);toast(`Restore failed: ${err.message||'invalid backup file'}`)}finally{e.target.value=''}});
+window.AnesvetDataBridge={appVersion:()=>APP_VERSION,buildBackupPayload,downloadBackupPayload,verifyBackupPayloadIntegrity,applyRestorePayload,rollbackLastRestore,getPreRestoreSnapshot,clearPreRestoreSnapshot,verifyAllArchiveIntegrity,recoveryCopyStatus,getArchive:()=>getArchive(),getPatients:()=>getPatients(),getCurrent:()=>JSON.parse(JSON.stringify(state)),getArchiveBackend:()=>archiveBackend,getPatientBackend:()=>patientBackend,getLastBackupEpoch,getBackupReceipt:readBackupReceipt,restart:restartAtAppRoot,renderBackupHealth,renderArchives,hasMutableActiveCase:()=>versionReloadUnsafe(),toast:(msg)=>toast(msg),legacyArchiveSeed:()=>getLegacyArchiveSeed(),runClinicalValidation:(announce=false)=>runClinicalValidation({announce})};
 $('printSummaryBtn')?.addEventListener('click',exportPdfSummary);$('printBtn').addEventListener('click',exportPdfReport);
 $('printCaseSummaryBtn')?.addEventListener('click',exportPdfSummary);$('printCaseBtn').addEventListener('click',exportPdfReport);$('endExportSummaryPdfBtn')?.addEventListener('click',exportPdfSummary);
 
@@ -4599,6 +4539,11 @@ function runReliabilitySelfCheck({announce=false}={}){
   try{preOrBriefingSignature();checks.push({ok:true,label:'Pre-OR briefing engine',detail:'Briefing signature generated without JavaScript error'})}catch(e){checks.push({ok:false,label:'Pre-OR briefing engine',detail:e.message||String(e)})}
   try{const d=dogNormalAnatomyEtt(10),c=catNormalAnatomyEtt(4);checks.push({ok:d.min===7&&d.max===8&&c.min===4&&c.max===4.5,label:'ETT preparation references',detail:`10 kg dog ${d.range} • 4 kg cat ${c.range}`})}catch(e){checks.push({ok:false,label:'ETT preparation references',detail:e.message||String(e)})}
   try{const cv=runClinicalValidation();checks.push({ok:cv.ok,label:'Clinical validation matrix',detail:`${cv.passed}/${cv.total} medication + ETT checks passed`})}catch(e){checks.push({ok:false,label:'Clinical validation matrix',detail:e.message||String(e)})}
+  try{const activeProbe={patientSaved:true,timer:{running:false,elapsedMs:0},records:[],events:[],complications:[],drugAdministrations:[],alertEpisodes:[],recoveryScores:[],caseLocked:false,finalChecksum:null,lockedAt:null},sealedProbe={...activeProbe,caseLocked:true,finalChecksum:'TEST-CHECKSUM',lockedAt:Date.now()};checks.push({ok:versionReloadUnsafe(activeProbe)&&!versionReloadUnsafe(sealedProbe),label:'Version reload guard',detail:'Mutable current case blocks reload; sealed Final Lock permits safe version reload'})}catch(e){checks.push({ok:false,label:'Version reload guard',detail:e.message||String(e)})}
+  try{const ids=getArchive().map(c=>c?.caseId).filter(Boolean),unique=new Set(ids);checks.push({ok:ids.length===unique.size,label:'Archive case identity',detail:ids.length===unique.size?`${ids.length} archived case ID(s) unique`:`Duplicate caseId detected: ${ids.length-unique.size}`})}catch(e){checks.push({ok:false,label:'Archive case identity',detail:e.message||String(e)})}
+  try{const patients=getPatients(),ids=patients.map(x=>x?.patientId).filter(Boolean),unique=new Set(ids);checks.push({ok:ids.length===unique.size,label:'Patient Master identity',detail:ids.length===unique.size?`${ids.length} patient ID(s) unique`:`Duplicate patientId detected: ${ids.length-unique.size}`})}catch(e){checks.push({ok:false,label:'Patient Master identity',detail:e.message||String(e)})}
+  try{const overflow=Math.max(0,document.documentElement.scrollWidth-window.innerWidth);checks.push({ok:overflow<=1,label:'Viewport horizontal integrity',detail:overflow<=1?'No page-level horizontal overflow':`${overflow}px horizontal overflow detected`})}catch(e){checks.push({ok:false,label:'Viewport horizontal integrity',detail:e.message||String(e)})}
+  try{checks.push({ok:!state.caseLocked||!!state.finalChecksum,label:'Final Lock checksum',detail:!state.caseLocked?'Current case is not Final Locked':state.finalChecksum?'Locked current case has checksum':'Locked current case is missing checksum'})}catch(e){checks.push({ok:false,label:'Final Lock checksum',detail:e.message||String(e)})}
   const result=R?R.summarize(checks):{ok:checks.every(x=>x.ok),passed:checks.filter(x=>x.ok).length,total:checks.length,checks};result.epoch=Date.now();result.version=APP_VERSION;
   const box=$('reliabilityCheckResults');if(box)box.innerHTML=checks.map(x=>`<div class="reliability-check ${x.ok?'pass':'fail'}"><b>${x.ok?'✓':'⚠'} ${escapeHtml(x.label)}</b><span>${escapeHtml(x.detail)}</span></div>`).join('');
   const badge=$('reliabilityCheckBadge');if(badge){badge.textContent=result.ok?`PASS ${result.passed}/${result.total}`:`CHECK ${result.passed}/${result.total}`;badge.className=`status-pill ${result.ok?'good':'warn'}`}
@@ -4693,6 +4638,8 @@ function resetCurrent(){
   restartAtAppRoot();
 }
 function hasActiveCaseData(){return !!(state.timer.running||(state.timer.elapsedMs||0)>0||(state.records||[]).length||(state.events||[]).length||(state.complications||[]).length||(state.drugAdministrations||[]).length||(state.alertEpisodes||[]).length||(state.recoveryScores||[]).length||state.patientSaved)}
+function finalCaseIsSealed(caseObj=state){return !!(caseObj?.caseLocked&&caseObj?.finalChecksum&&caseObj?.lockedAt)}
+function versionReloadUnsafe(caseObj=state){if(finalCaseIsSealed(caseObj))return false;return !!(caseObj?.timer?.running||(caseObj?.timer?.elapsedMs||0)>0||(caseObj?.records||[]).length||(caseObj?.events||[]).length||(caseObj?.complications||[]).length||(caseObj?.drugAdministrations||[]).length||(caseObj?.alertEpisodes||[]).length||(caseObj?.recoveryScores||[]).length||caseObj?.patientSaved)}
 $('newCaseBtn').addEventListener('click',()=>{
   if(hasActiveCaseData()&&!confirm('Current case มีข้อมูลอยู่\n\nแนะนำ Archive หรือ Backup ก่อนเริ่มเคสใหม่\n\nต้องการเริ่ม New case ต่อหรือไม่?'))return;
   if(state.timer.running&&!confirm('Case timer กำลัง RUNNING — ยืนยันอีกครั้งว่าจะจบ current case และเริ่มใหม่?'))return;resetCurrent();
@@ -4741,15 +4688,15 @@ $('installBtn').addEventListener('click',async()=>{if(!deferredPrompt)return;def
 window.addEventListener('appinstalled',()=>{$('installBtn').hidden=true});
 let pendingServiceWorkerRegistration=null;let reloadingForServiceWorker=false;
 function renderPwaUpdateBanner(reg){
-  pendingServiceWorkerRegistration=reg||pendingServiceWorkerRegistration;const b=$('updateBanner');if(!b||!pendingServiceWorkerRegistration?.waiting)return;const active=hasActiveCaseData();b.hidden=false;
+  pendingServiceWorkerRegistration=reg||pendingServiceWorkerRegistration;const b=$('updateBanner');if(!b||!pendingServiceWorkerRegistration?.waiting)return;const active=versionReloadUnsafe();b.hidden=false;
   if($('updateBannerTitle'))$('updateBannerTitle').textContent=active?'ANESVET update ready — deferred for active case':'ANESVET update ready';
-  if($('updateBannerText'))$('updateBannerText').textContent=active?'เพื่อความปลอดภัย ระบบจะไม่เปลี่ยน version ระหว่าง current case. End/Archive หรือ Reset current case ก่อนอัปเดต':'เวอร์ชันใหม่ดาวน์โหลดแล้ว พร้อมติดตั้งโดย reload แอปหนึ่งครั้ง';
+  if($('updateBannerText'))$('updateBannerText').textContent=active?'เพื่อความปลอดภัย ระบบจะไม่เปลี่ยน version ระหว่าง current case. Finish + Final Lock หรือ Reset current case ก่อนอัปเดต':'เวอร์ชันใหม่ดาวน์โหลดแล้ว พร้อมติดตั้งโดย reload แอปหนึ่งครั้ง';
   if($('updateNowBtn')){$('updateNowBtn').disabled=active;$('updateNowBtn').textContent=active?'Update after case':'Update now'}
 }
 async function setupServiceWorkerUpdates(){
   if(!('serviceWorker'in navigator))return;try{const reg=await navigator.serviceWorker.register('./service-worker.js');pendingServiceWorkerRegistration=reg;if(reg.waiting)renderPwaUpdateBanner(reg);reg.addEventListener('updatefound',()=>{const nw=reg.installing;if(!nw)return;nw.addEventListener('statechange',()=>{if(nw.state==='installed'&&navigator.serviceWorker.controller)renderPwaUpdateBanner(reg)})});navigator.serviceWorker.addEventListener('controllerchange',()=>{if(reloadingForServiceWorker)return;reloadingForServiceWorker=true;window.location.reload()})}catch(e){}
 }
-$('updateNowBtn')?.addEventListener('click',()=>{const reg=pendingServiceWorkerRegistration;if(!reg?.waiting)return;if(hasActiveCaseData()){renderPwaUpdateBanner(reg);toast('Finish / archive current case before updating');return}reg.waiting.postMessage({type:'SKIP_WAITING'})});
+$('updateNowBtn')?.addEventListener('click',()=>{const reg=pendingServiceWorkerRegistration;if(!reg?.waiting)return;if(versionReloadUnsafe()){renderPwaUpdateBanner(reg);toast('Finish and Final Lock the current case, or Reset it, before updating');return}reg.waiting.postMessage({type:'SKIP_WAITING'})});
 $('updateLaterBtn')?.addEventListener('click',()=>{if($('updateBanner'))$('updateBanner').hidden=true});
 window.addEventListener('load',setupServiceWorkerUpdates);
 
@@ -5107,7 +5054,8 @@ window.AnesvetApp=Object.freeze({
   renderEndCase:()=>renderEndCase(),
   clinicalWriteAllowed:()=>clinicalWriteAllowed(),
   medicationQueue:()=>plannedRoutineMedicationRows().map(r=>({planIndex:r.planIndex,item:WF.clone(r.item),status:r.status,actual:r.actual?WF.clone(r.actual):null})),
-  openMedication:(options={})=>openOrQuickDrug(options)
+  openMedication:(options={})=>openOrQuickDrug(options),
+  releaseCandidate:Object.freeze({isFinalSealed:(caseObj)=>finalCaseIsSealed(caseObj),versionReloadUnsafe:(caseObj)=>versionReloadUnsafe(caseObj)})
 });
 
 initSessionCoordination();

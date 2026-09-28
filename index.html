@@ -3,24 +3,30 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#0d5265">
+  <meta name="theme-color" content="#123f48">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="description" content="ANESVET V15.29.0 — Recovery & Handoff 2.0">
+  <meta name="description" content="ANESVET V16.8.2 — Architecture Refactor Phase 3">
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" href="./icon-192.png">
   <link rel="apple-touch-icon" href="./icon-192.png">
-  <link rel="stylesheet" href="./style.css?v=15.29.0">
-  <link rel="stylesheet" href="./ui-refinement.css?v=15.29.0">
-<link rel="stylesheet" href="./pilot-efficiency.css?v=15.29.0">
-<link rel="stylesheet" href="./finalization.css?v=15.29.0">
-<link rel="stylesheet" href="./progressive-disclosure.css?v=15.29.0">
-<link rel="stylesheet" href="./drug-priority.css?v=15.29.0">
-<link rel="stylesheet" href="./medication-safety.css?v=15.29.0">
-<link rel="stylesheet" href="./medication-reconciliation.css?v=15.29.0">
-<link rel="stylesheet" href="./protocol-review.css?v=15.29.0">
-  <title>ANESVET V15.29.0</title>
+  <link rel="stylesheet" href="./style.css?v=16.8.2">
+  <link rel="stylesheet" href="./ui-refinement.css?v=16.8.2">
+<link rel="stylesheet" href="./pilot-efficiency.css?v=16.8.2">
+<link rel="stylesheet" href="./finalization.css?v=16.8.2">
+<link rel="stylesheet" href="./progressive-disclosure.css?v=16.8.2">
+<link rel="stylesheet" href="./drug-priority.css?v=16.8.2">
+<link rel="stylesheet" href="./medication-safety.css?v=16.8.2">
+<link rel="stylesheet" href="./medication-reconciliation.css?v=16.8.2">
+<link rel="stylesheet" href="./protocol-review.css?v=16.8.2">
+  <link rel="stylesheet" href="./clinical-calm.css?v=16.8.2">
+  <link rel="stylesheet" href="./focused-workspace.css?v=16.8.2">
+  <link rel="stylesheet" href="./progressive-clinical-flow.css?v=16.8.2">
+  <link rel="stylesheet" href="./adaptive-workspace.css?v=16.8.2">
+  <link rel="stylesheet" href="./usability-hardening.css?v=16.8.2">
+  <link rel="stylesheet" href="./data-resilience.css?v=16.8.2">
+  <title>ANESVET V16.8.2</title>
 </head>
 <body>
 <header class="topbar">
@@ -28,7 +34,7 @@
     <img class="brand-logo" src="./icon-192.png" alt="ANESVET logo">
     <div>
       <div class="eyebrow">GENOVI PET CARE • DIGITAL ANESTHESIA RECORD</div>
-      <h1>ANESVET <span>V15.29.0</span></h1>
+      <h1>ANESVET <span>V16.8.2</span></h1>
       <div id="appHospitalName" class="app-hospital-name" hidden></div>
     </div>
   </div>
@@ -454,7 +460,7 @@
   <section id="orlive" class="tabpage or-live-page">
     <section class="or-command-bar">
       <div class="or-patient-block">
-        <div class="eyebrow dark">OPERATING ROOM • LIVE WORKSPACE</div>
+        <div class="eyebrow dark">OR LIVE</div>
         <div class="or-patient-line">
           <h2 id="orPatientName">—</h2>
           <span id="orPatientMeta">—</span>
@@ -490,13 +496,13 @@
       <div><span>CASE TIME</span><b id="orStickyClock">00:00:00</b></div>
       <div class="or-sticky-due"><span>NEXT VITALS</span><b id="orStickyDue">Not started</b></div>
       <button id="orStickyDrugBtn" class="btn or-sticky-med" type="button" hidden>💉 MEDS</button>
-      <button id="orStickyRecordBtn" class="btn primary">＋ RECORD NOW</button>
+      <button id="orStickyRecordBtn" class="btn primary">＋ Record vitals</button>
     </section>
 
     <section id="orVitalsFocus" class="or-vitals-focus" hidden aria-label="Intraoperative vitals workspace">
       <div class="or-vitals-focus-head">
         <div>
-          <div class="or-vitals-focus-kicker">INTRAOPERATIVE • VITALS FIRST</div>
+          <div class="or-vitals-focus-kicker">INTRAOPERATIVE MONITORING</div>
           <h2>Record vital signs</h2>
           <p>ค่าบนการ์ดด้านล่างคือชุดที่จะบันทึก • ใช้ Copy last แล้วแก้เฉพาะค่าที่เปลี่ยนได้</p>
         </div>
@@ -506,8 +512,8 @@
         </div>
       </div>
       <div class="or-vitals-focus-actions">
-        <button id="orCopyLastVitalsBtn" class="btn or-copy-last" type="button">↻ FILL BLANKS</button>
-        <button id="orVitalsFocusSaveBtn" class="or-vitals-save" type="button">＋ SAVE VITALS</button>
+        <button id="orCopyLastVitalsBtn" class="btn or-copy-last" type="button">↻ Fill blanks</button>
+        <button id="orVitalsFocusSaveBtn" class="or-vitals-save" type="button">＋ Save vitals</button>
         <div id="orVitalChangeSummary" class="or-vital-change-summary" role="status" aria-live="polite">No previous vital set</div>
         <div id="orVitalSaveFeedback" class="or-vital-save-feedback" role="status" aria-live="polite" hidden>✓ Vitals saved</div>
       </div>
@@ -584,7 +590,7 @@
       <div class="or-status-box"><span>Overall status</span><b id="orGlobalStatus" class="or-status-good">STABLE</b></div>
       <div class="or-status-box"><span>Last record</span><b id="orLastRecord">—</b></div>
       <div class="or-status-box"><span>Next record</span><b id="orNextDue">After first record</b><small id="orNextDueClock">—</small></div>
-      <button id="orRecordNowBtn" class="or-record-button">＋ RECORD NOW</button>
+      <button id="orRecordNowBtn" class="or-record-button">＋ Record vitals</button>
     </section>
 
     <section class="or-vital-grid">
@@ -1485,24 +1491,69 @@
 
 
   <section id="timeline" class="tabpage">
-    <section class="panel">
+    <section class="panel unified-record-hero">
       <div class="section-heading">
         <div>
-          <h2>Procedure timeline</h2>
-          <p>รวม milestones, drugs, complications และ record notes เรียงตามเวลา</p>
+          <div class="eyebrow">V16 CORE RECORD</div>
+          <h2>Unified Case Timeline & Anesthesia Record</h2>
+          <p>รวมข้อมูลสำคัญของเคสจาก Vitals, Medication, Workflow, Alerts, Complications และ Recovery โดยไม่ให้ต้องบันทึกซ้ำ</p>
         </div>
         <div class="button-row">
+          <button id="timelineSummaryPdfBtn" class="btn">1-page Summary</button>
+          <button id="timelineFullPdfBtn" class="btn primary">Full Anesthesia Record</button>
+        </div>
+      </div>
+      <div id="timelineCaseIdentity" class="unified-record-identity"></div>
+      <div class="unified-record-status-grid">
+        <div><span>Case status</span><b id="timelineCaseStatus">—</b></div>
+        <div><span>Protocol</span><b id="timelineProtocol">—</b></div>
+        <div><span>Vitals</span><b id="timelineVitalSummary">0</b></div>
+        <div><span>Medications</span><b id="timelineMedicationSummary">0</b></div>
+        <div><span>Problems</span><b id="timelineProblemSummary">0</b></div>
+        <div><span>Recovery</span><b id="timelineRecoverySummary">—</b></div>
+      </div>
+    </section>
+
+    <section class="panel unified-trends-panel">
+      <div class="section-heading compact">
+        <div><h2>Record trends</h2><p>ภาพรวมจาก anesthesia vital records • รายละเอียดเต็มยังอยู่ในหน้า Trends</p></div>
+        <button id="timelineOpenTrendsBtn" class="btn">Open full trends</button>
+      </div>
+      <div class="record-spark-grid">
+        <article class="record-spark-card"><div><span>HR</span><b id="timelineHrRange">—</b></div><svg id="timelineSparkHr" viewBox="0 0 220 64" aria-label="Heart rate trend"></svg></article>
+        <article class="record-spark-card"><div><span>MAP</span><b id="timelineMapRange">—</b></div><svg id="timelineSparkMap" viewBox="0 0 220 64" aria-label="MAP trend"></svg></article>
+        <article class="record-spark-card"><div><span>SpO₂</span><b id="timelineSpo2Range">—</b></div><svg id="timelineSparkSpo2" viewBox="0 0 220 64" aria-label="SpO2 trend"></svg></article>
+        <article class="record-spark-card"><div><span>ETCO₂</span><b id="timelineEtco2Range">—</b></div><svg id="timelineSparkEtco2" viewBox="0 0 220 64" aria-label="ETCO2 trend"></svg></article>
+        <article class="record-spark-card"><div><span>Temp</span><b id="timelineTempRange">—</b></div><svg id="timelineSparkTemp" viewBox="0 0 220 64" aria-label="Temperature trend"></svg></article>
+      </div>
+    </section>
+
+    <section class="panel unified-timeline-panel">
+      <div class="section-heading">
+        <div>
+          <h2>Unified case timeline</h2>
+          <p><b>Focus</b> แสดง milestones, medication, abnormal/first/latest vitals, alerts, interventions และ recovery • <b>Full</b> แสดง vital records ทุกชุด</p>
+        </div>
+        <div class="button-row timeline-mode-buttons">
+          <button id="timelineFocusBtn" class="btn primary" type="button">Focus</button>
+          <button id="timelineFullBtn" class="btn" type="button">Full timeline</button>
           <button id="timelineRecordBtn" class="btn">＋ Record current values</button>
-          <button id="timelineEventBtn" class="btn primary">＋ Add custom event</button>
+          <button id="timelineEventBtn" class="btn">＋ Event</button>
         </div>
       </div>
       <div class="timeline-ruler">
         <div><span>Case start</span><b id="timelineStartClock">—</b></div>
         <div><span>Elapsed</span><b id="timelineElapsed">00:00:00</b></div>
-        <div><span>Records</span><b id="timelineRecordCount">0</b></div>
-        <div><span>Events</span><b id="timelineEventCount">0</b></div>
+        <div><span>Vital records</span><b id="timelineRecordCount">0</b></div>
+        <div><span>Clinical events</span><b id="timelineEventCount">0</b></div>
       </div>
-      <div id="procedureTimeline" class="procedure-timeline empty-state">ยังไม่มี Timeline</div>
+      <div id="timelineFocusNote" class="timeline-focus-note"></div>
+      <div id="procedureTimeline" class="procedure-timeline unified-timeline empty-state">ยังไม่มี Timeline</div>
+    </section>
+
+    <section class="panel unified-integrity-panel">
+      <div class="section-heading compact"><div><h2>Record integrity</h2><p>สถานะของ anesthesia record ปัจจุบัน</p></div></div>
+      <div id="timelineIntegrityGrid" class="unified-integrity-grid"></div>
     </section>
   </section>
 
@@ -1901,7 +1952,7 @@
     <section id="recoveryFocus" class="recovery-focus" aria-label="Recovery quick workspace">
       <div class="recovery-focus-main">
         <div class="recovery-focus-head">
-          <div><div class="recovery-focus-kicker">RECOVERY • QUICK WORKSPACE</div><h2>Record → reassess → handoff</h2><p id="recoveryFocusPatient">—</p></div>
+          <div><div class="recovery-focus-kicker">RECOVERY</div><h2>Record → reassess → handoff</h2><p id="recoveryFocusPatient">—</p></div>
           <div class="recovery-focus-timing">
             <div><span>RECOVERY</span><b id="recoveryFocusElapsed">00:00:00</b></div>
             <div><span>NEXT VITALS</span><b id="recoveryFocusDue">FIRST RECORD DUE</b></div>
@@ -2045,7 +2096,7 @@
     </section>
 
     <nav id="recoveryMobileDock" class="recovery-mobile-dock" aria-label="Recovery primary actions">
-      <button id="recoveryMobileRecordBtn" class="recovery-mobile-dock-btn primary" type="button"><span>＋</span><b>RECORD VITALS</b><small id="recoveryMobileDue">DUE</small></button>
+      <button id="recoveryMobileRecordBtn" class="recovery-mobile-dock-btn primary" type="button"><span>＋</span><b>Record vitals</b><small id="recoveryMobileDue">DUE</small></button>
       <button id="recoveryMobileMedicationBtn" class="recovery-mobile-dock-btn" type="button"><span>💉</span><b>MEDS</b></button>
       <button id="recoveryMobileMoreBtn" class="recovery-mobile-dock-btn" type="button"><span>•••</span><b>MORE</b></button>
     </nav>
@@ -2092,6 +2143,23 @@
           <div><span>Archived cases</span><b id="archiveCountHealth">0</b></div>
           <div><span>Last backup</span><b id="backupLastTime">Never</b><small id="backupAgeStatus">Backup recommended</small></div>
           <div><span>Storage</span><b id="storageUsedHealth">—</b><small id="storageQuotaHealth">Browser estimate</small></div>
+        </div>
+        <div class="data-resilience-center">
+          <div class="section-heading compact">
+            <div><h3>Data resilience</h3><p id="dataHealthMeta">Checking local data protection…</p></div>
+          </div>
+          <div class="data-resilience-grid">
+            <div class="data-resilience-card"><span>Persistent storage</span><b id="persistentStorageHealth" class="data-health-value">Checking…</b><small id="persistentStorageDetail">Browser protection status</small></div>
+            <div class="data-resilience-card"><span>Storage health</span><b id="storageRiskHealth" class="data-health-value">Checking…</b><small id="storageRiskDetail">Browser quota estimate</small></div>
+            <div class="data-resilience-card"><span>Backup coverage</span><b id="backupCoverageHealth" class="data-health-value">Checking…</b><small id="backupCoverageDetail">Comparing current data with last backup</small></div>
+            <div class="data-resilience-card"><span>Archive integrity</span><b id="archiveIntegrityHealth" class="data-health-value">Not checked</b><small id="archiveIntegrityDetail">Checksum audit for locked records</small></div>
+            <div class="data-resilience-card"><span>Recovery copies</span><b id="recoveryCopiesHealth" class="data-health-value">Checking…</b><small id="recoveryCopiesDetail">Checkpoint / mirror / restore rollback</small></div>
+          </div>
+          <div class="data-resilience-actions">
+            <button id="requestPersistentStorageBtn" class="btn" type="button">Protect local storage</button>
+            <button id="verifyAllArchivesBtn" class="btn" type="button">Verify all locked records</button>
+            <button id="rollbackRestoreBtn" class="btn danger-outline" type="button" hidden>Rollback last restore</button>
+          </div>
         </div>
       </section>
 
@@ -2205,6 +2273,11 @@
     <section class="report-section">
       <h2>Case Summary</h2>
       <div id="reportSummaryGrid" class="report-summary-grid"></div>
+    </section>
+
+    <section class="report-section">
+      <h2>Unified Case Timeline</h2>
+      <div id="reportUnifiedTimeline"></div>
     </section>
 
     <section class="report-section">
@@ -2444,7 +2517,7 @@
 
 <section class="panel reliability-panel">
   <div class="section-heading">
-    <div><h2>Clinical Safety & Reliability</h2><p>ตรวจความพร้อมของ storage, workflow helpers, Pre-OR briefing และ calculation sanity checks บนอุปกรณ์นี้</p></div>
+    <div><h2>Clinical Safety & RC Validation</h2><p>ตรวจ storage, workflow helpers, calculation sanity checks, archive identity, viewport integrity และ version-reload guard บนอุปกรณ์นี้</p></div>
     <span id="reliabilityCheckBadge" class="status-pill neutral">NOT RUN</span>
   </div>
   <div class="button-row">
@@ -2459,7 +2532,7 @@
   </div>
   <div id="clinicalValidationResults" class="clinical-validation-grid"></div>
   <div id="reliabilityCheckMeta" class="settings-note">Self-check has not run yet.</div>
-  <div class="settings-note">Self-check เป็น technical safety check ไม่ได้แทน clinical verification • Browser/device pilot testing ยังต้องทำบน iPhone/iPad/Android จริง</div>
+  <div class="settings-note">RC self-check เป็น technical safety check ไม่ได้แทน clinical verification • Real-device testing บน iPad/Android/Windows ยังเป็นส่วนหนึ่งของ RC acceptance</div>
 </section>
 
 <section class="panel pilot-feedback-settings-panel">
@@ -2694,7 +2767,7 @@
     </div>
 
     <section class="help-about-card">
-      <div><small>ABOUT</small><b>ANESVET V15.29.0</b><p>Veterinary anesthesia workflow, monitoring record and clinical decision-support. ไม่ใช่ continuous physiologic monitor และไม่แทน clinical judgment หรือ source monitor data.</p></div>
+      <div><small>ABOUT</small><b>ANESVET V16.8.2</b><p>Veterinary anesthesia workflow, monitoring record and clinical decision-support. ไม่ใช่ continuous physiologic monitor และไม่แทน clinical judgment หรือ source monitor data.</p></div>
       <button id="helpOpenSettingsBtn" class="btn session-safe" type="button">Settings</button>
     </section>
     <div class="workflow-dialog-actions help-center-actions"><button id="helpCenterCloseBottomBtn" class="btn session-safe" type="button">Close</button></div>
@@ -2899,6 +2972,28 @@
   </form>
 </dialog>
 
+<dialog id="backupPreflightDialog" class="drug-admin-dialog resilience-dialog">
+  <form method="dialog" class="drug-admin-card" onsubmit="return false;">
+    <div class="section-heading"><div><div class="eyebrow">BACKUP PREFLIGHT</div><h2>Full ANESVET backup</h2><p>ตรวจจำนวนข้อมูลและ checksum ก่อนสร้างไฟล์สำรอง</p></div></div>
+    <div id="backupPreflightSummary"></div>
+    <div id="backupPreflightIntegrity"></div>
+    <div class="drug-admin-safety">Backup เป็นไฟล์ภายนอกที่ควรเก็บแยกจากอุปกรณ์ ANESVET เครื่องนี้ เพื่อให้กู้คืนได้กรณี browser/device เสียหาย</div>
+    <div class="dialog-actions"><button id="backupPreflightCancelBtn" class="btn" type="button">Cancel</button><button id="confirmCreateBackupBtn" class="btn primary" type="button" disabled>⬇ Create verified backup</button></div>
+  </form>
+</dialog>
+
+<dialog id="restorePreviewDialog" class="drug-admin-dialog resilience-dialog">
+  <form method="dialog" class="drug-admin-card" onsubmit="return false;">
+    <div class="section-heading"><div><div class="eyebrow">RESTORE PREVIEW</div><h2>Review before replacing local data</h2><p>ANESVET จะตรวจ backup และสร้าง rollback snapshot ก่อน restore เมื่อ IndexedDB พร้อมใช้งาน</p></div></div>
+    <div id="restorePreviewSummary"></div>
+    <div id="restorePreviewIntegrity"></div>
+    <label class="restore-ack"><input id="restoreAcknowledge" type="checkbox"><span>I understand that restore replaces the current local ANESVET dataset on this device.</span></label>
+    <label id="restoreMismatchWrap" hidden>Checksum mismatch override<input id="restoreMismatchCode" type="text" autocomplete="off" placeholder="Type RESTORE to override"></label>
+    <div id="restoreProgress" class="restore-progress" hidden></div>
+    <div class="dialog-actions"><button id="restorePreviewCancelBtn" class="btn" type="button">Cancel</button><button id="confirmRestoreBtn" class="btn danger" type="button" disabled>Restore this backup</button></div>
+  </form>
+</dialog>
+
 <dialog id="sessionDialog" class="dialog session-dialog">
   <form method="dialog">
     <div class="dialog-head">
@@ -2918,19 +3013,33 @@
 
 <div id="feedbackDeliveryBanner" class="feedback-delivery-banner" role="status" aria-live="assertive" hidden></div>
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
-<script src="./drug-dose-reference.js?v=15.29.0"></script>
-<script src="./protocol-review.js?v=15.29.0"></script>
-<script src="./clinical-workflow.js?v=15.29.0"></script>
-<script src="./support.js?v=15.29.0"></script>
-<script src="./reliability.js?v=15.29.0"></script>
-<script src="./branding.js?v=15.29.0"></script>
-<script src="./clinical-validation.js?v=15.29.0"></script>
-<script src="./app.js?v=15.29.0"></script>
-<script src="./medication-reconciliation.js?v=15.29.0"></script>
-<script src="./help.js?v=15.29.0"></script>
-<script src="./ui-refinement.js?v=15.29.0"></script>
-<script src="./pilot-efficiency.js?v=15.29.0"></script>
-<script src="./finalization.js?v=15.29.0"></script>
-<script src="./progressive-disclosure.js?v=15.29.0"></script>
+<script src="./drug-dose-reference.js?v=16.8.2"></script>
+<script src="./protocol-review.js?v=16.8.2"></script>
+<script src="./clinical-workflow.js?v=16.8.2"></script>
+<script src="./support.js?v=16.8.2"></script>
+<script src="./reliability.js?v=16.8.2"></script>
+<script src="./branding.js?v=16.8.2"></script>
+<script src="./clinical-validation.js?v=16.8.2"></script>
+<script src="./case-runtime.js?v=16.8.2"></script>
+<script src="./core-storage.js?v=16.8.2"></script>
+<script src="./session-coordination.js?v=16.8.2"></script>
+<script src="./patient-domain.js?v=16.8.2"></script>
+<script src="./or-domain.js?v=16.8.2"></script>
+<script src="./recovery-domain.js?v=16.8.2"></script>
+<script src="./patient-master-orchestration.js?v=16.8.2"></script>
+<script src="./or-record-orchestration.js?v=16.8.2"></script>
+<script src="./recovery-orchestration.js?v=16.8.2"></script>
+<script src="./app.js?v=16.8.2"></script>
+<script src="./data-resilience.js?v=16.8.2"></script>
+<script src="./medication-reconciliation.js?v=16.8.2"></script>
+<script src="./help.js?v=16.8.2"></script>
+<script src="./ui-refinement.js?v=16.8.2"></script>
+<script src="./pilot-efficiency.js?v=16.8.2"></script>
+<script src="./finalization.js?v=16.8.2"></script>
+<script src="./progressive-disclosure.js?v=16.8.2"></script>
+<script src="./focused-workspace.js?v=16.8.2"></script>
+<script src="./progressive-clinical-flow.js?v=16.8.2"></script>
+<script src="./adaptive-workspace.js?v=16.8.2"></script>
+<script src="./usability-hardening.js?v=16.8.2"></script>
 </body>
 </html>

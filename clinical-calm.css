@@ -1,0 +1,151 @@
+/* ANESVET V16.1.0 — Clinical Calm design system
+   Presentation-only visual refresh. Clinical behavior is intentionally unchanged. */
+
+:root{
+  --bg:#f5f7f7;
+  --panel:#ffffff;
+  --ink:#172326;
+  --muted:#708086;
+  --line:#e2e8e9;
+  --line-strong:#ced9dc;
+  --primary:#135c67;
+  --primary2:#1a7180;
+  --primary-soft:#eef6f6;
+  --good:#277a55;
+  --good-bg:#eef8f3;
+  --warn:#9a6413;
+  --warn-bg:#fff7e8;
+  --danger:#b33b37;
+  --danger-bg:#fff1f0;
+  --neutral:#69777c;
+  --shadow:0 1px 2px rgba(17,42,47,.025),0 8px 24px rgba(17,42,47,.045);
+  --shadow-float:0 18px 52px rgba(19,50,57,.14);
+  --radius-xs:8px;
+  --radius-sm:10px;
+  --radius-md:14px;
+  --radius-lg:18px;
+  --radius-xl:22px;
+  --focus:0 0 0 3px rgba(26,113,128,.13);
+}
+
+html{background:var(--bg);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Noto Sans Thai","Tahoma",sans-serif;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+body{color:var(--ink);letter-spacing:-.006em}
+main{max-width:1280px;padding:18px 18px 110px}
+
+/* App chrome */
+.topbar{background:#123f48;padding:14px 20px;min-height:72px;box-shadow:none;border-bottom:1px solid rgba(255,255,255,.08)}
+.brand{gap:11px}.brand-logo{width:44px;height:44px;box-shadow:none;border-color:rgba(255,255,255,.2)}
+.brand h1{font-size:1.34rem;font-weight:720;letter-spacing:-.025em}.brand h1 span{font-size:.67rem;font-weight:650;opacity:.6}
+.eyebrow{font-size:.62rem;font-weight:700;letter-spacing:.065em;opacity:.68}
+.case-clock{font-size:.98rem;font-weight:680;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);border-radius:var(--radius-sm);padding:8px 10px}
+
+.case-strip{border-color:var(--line);border-radius:var(--radius-md);padding:11px 14px;box-shadow:none;margin-bottom:12px}
+.case-summary{gap:20px}.case-summary .label{font-size:.63rem;letter-spacing:.035em;font-weight:680;text-transform:none}.case-summary strong{font-weight:680}
+.status-pill{padding:6px 9px;border-radius:999px;font-size:.68rem;font-weight:720;letter-spacing:.015em;border:1px solid transparent}
+.status-pill.good{border-color:#d8ebe2}.status-pill.warn{border-color:#f0deb8}.status-pill.danger{border-color:#efd0ce}
+
+.tabs{gap:4px;padding:7px 0 12px;background:rgba(245,247,247,.92);backdrop-filter:blur(14px)}
+.tab{border:0;background:transparent;color:#647278;border-radius:10px;padding:9px 11px;font-size:.82rem;font-weight:650;transition:background .14s ease,color .14s ease}
+.tab:hover{background:#eef2f2;color:#32464b}.tab.active{background:#e8f1f2;color:var(--primary);box-shadow:inset 0 0 0 1px #d7e4e6}
+.tab .step-no{opacity:.65}
+
+/* Typography + surfaces */
+h2{font-size:1.08rem;font-weight:700;letter-spacing:-.018em}h3{font-weight:680;letter-spacing:-.012em}
+.panel{border-color:var(--line);border-radius:var(--radius-lg);padding:18px;box-shadow:none;margin-bottom:14px}
+.section-heading>div:first-child p,.standalone p{font-size:.82rem;line-height:1.5;color:var(--muted)}
+
+/* Inputs: calm until focused */
+label{font-size:.77rem;font-weight:650;color:#526269}
+input[type=text],input[type=number],select,textarea{border-color:#d7e0e2;border-radius:var(--radius-sm);background:#fff;color:var(--ink);padding:10px 11px;box-shadow:inset 0 1px 0 rgba(0,0,0,.012);transition:border-color .14s ease,box-shadow .14s ease,background .14s ease}
+input[type=text]:hover,input[type=number]:hover,select:hover,textarea:hover{border-color:#bdcccf}
+input:focus,select:focus,textarea:focus,button:focus-visible{outline:none!important;border-color:#80aeb6!important;box-shadow:var(--focus)!important}
+
+/* Buttons: one strong action, quiet secondary actions */
+.btn{border-color:#d5dee0;border-radius:var(--radius-sm);background:#fff;color:#365960;font-weight:680;padding:9px 12px;box-shadow:none;transition:background .12s ease,border-color .12s ease,transform .08s ease,color .12s ease}
+.btn:hover{background:#f6f9f9;border-color:#c4d1d4}.btn.primary{background:var(--primary);border-color:var(--primary);color:#fff;box-shadow:0 4px 12px rgba(19,92,103,.13)}
+.btn.primary:hover{background:#0e515b;border-color:#0e515b}.btn.danger-outline{background:#fff;color:var(--danger);border-color:#e8c8c6}.btn.danger-solid{background:var(--danger);border-color:var(--danger)}
+
+/* Global card language */
+.summary-card,.chart-card,.archive-card,.interpret-card,.due-grid>div,.preview-item{box-shadow:none;border-color:var(--line);border-radius:var(--radius-md)}
+.info-line{background:#f2f7f7;color:#49686e;border:1px solid #e3eded;font-weight:600}
+.empty-state{color:#879398}
+.settings-note{border-radius:var(--radius-sm)!important;background:#f8fafa!important;border-color:#e6ecee!important;color:#637177!important}
+
+/* OR LIVE — clinical instrument, not form dashboard */
+.or-command-bar{background:#183f47!important;color:#fff;border:0!important;border-radius:var(--radius-xl)!important;padding:17px 19px!important;margin-bottom:12px!important;box-shadow:0 8px 24px rgba(18,63,72,.10)!important}
+.or-command-bar .eyebrow.dark{font-size:.6rem!important;font-weight:650!important;letter-spacing:.055em!important;color:rgba(255,255,255,.58)!important}
+.or-patient-line{gap:8px!important}.or-patient-line h2{font-size:1.5rem!important;font-weight:720!important;letter-spacing:-.028em}.or-patient-line>span:not(.status-pill){font-weight:520!important;color:rgba(255,255,255,.72)!important}
+.or-procedure-line,.or-team-line{color:rgba(255,255,255,.7)!important;font-size:.8rem!important}.or-risk-line{background:rgba(255,255,255,.08)!important;border-color:rgba(255,255,255,.1)!important}
+.or-case-clock{font-weight:650!important;letter-spacing:.01em}.timer-state{font-weight:650!important}
+.or-tools-menu summary{border-color:rgba(255,255,255,.15)!important;background:rgba(255,255,255,.06)!important;font-weight:650!important}
+
+.or-sticky-mini{border:1px solid var(--line)!important;border-radius:var(--radius-md)!important;background:rgba(255,255,255,.96)!important;box-shadow:0 6px 20px rgba(24,54,61,.06)!important;backdrop-filter:blur(12px)}
+.or-sticky-mini span{font-size:.58rem!important;font-weight:650!important;letter-spacing:.04em!important;text-transform:none!important}.or-sticky-mini b{font-weight:680!important}
+
+.or-vitals-focus{border:1px solid #dbe6e8!important;border-radius:var(--radius-lg)!important;background:#fff!important;box-shadow:none!important}
+.or-vitals-focus-kicker{font-size:.61rem!important;font-weight:680!important;letter-spacing:.05em!important;color:#6f858a!important}
+.or-vitals-focus h2{font-size:1.25rem!important;font-weight:700!important}.or-vitals-focus p{color:var(--muted)!important;font-size:.78rem!important}
+.or-vitals-focus-timing>div{border-color:var(--line)!important;border-radius:var(--radius-sm)!important;background:#f8fafa!important}.or-vitals-focus-timing span{font-weight:650!important;color:#7c8c90!important}.or-vitals-focus-timing b{font-weight:680!important}
+.or-vitals-save{border-radius:var(--radius-md)!important;background:var(--primary)!important;box-shadow:0 6px 16px rgba(19,92,103,.14)!important;font-weight:720!important;letter-spacing:-.01em}
+.or-vital-change-summary{font-weight:600!important;color:#6c7a7f!important;background:#f7f9f9!important;border-color:var(--line)!important}
+.or-quick-med-strip{border-color:var(--line)!important;background:#fbfcfc!important;border-radius:var(--radius-md)!important}.or-quick-med-strip>span{font-weight:680!important;letter-spacing:.04em!important;color:#6c7c80!important}
+
+.or-primary-flow{border:1px solid #d5e2e4!important;border-radius:var(--radius-lg)!important;background:#f9fbfb!important;box-shadow:none!important;padding:15px 17px!important}
+.or-primary-kicker span{font-weight:650!important;letter-spacing:.045em!important;color:#72848a!important}.or-primary-copy>b{font-size:1.08rem!important;font-weight:700!important}.or-primary-copy>small{color:#748287!important;line-height:1.45!important}.or-primary-action{border-radius:var(--radius-md)!important;background:var(--primary)!important;box-shadow:0 4px 12px rgba(19,92,103,.12)!important;font-weight:720!important}
+
+.or-status-row{grid-template-columns:repeat(3,minmax(0,1fr)) minmax(170px,1.25fr)!important;gap:8px!important}.or-status-box{border:0!important;border-top:1px solid var(--line)!important;border-radius:0!important;background:transparent!important;padding:10px 4px!important;box-shadow:none!important}.or-status-box span{font-size:.61rem!important;font-weight:650!important;letter-spacing:.025em!important;text-transform:none!important}.or-status-box b{font-size:.98rem!important;font-weight:680!important}.or-record-button{border-radius:var(--radius-md)!important;background:var(--primary)!important;box-shadow:0 5px 14px rgba(19,92,103,.13)!important;font-weight:720!important}
+
+.or-vital-grid{gap:9px!important}.or-vital-card{position:relative;border:1px solid var(--line)!important;border-radius:var(--radius-lg)!important;background:#fff!important;padding:13px 14px!important;box-shadow:none!important;overflow:hidden;transition:border-color .14s ease,background .14s ease,box-shadow .14s ease}
+.or-vital-card>div:first-child span{font-size:.78rem!important;font-weight:680!important;color:#5a6a70!important}.or-vital-card>div:first-child small{font-size:.62rem!important;font-weight:550!important;color:#98a2a5!important}
+.or-vital-card input{font-size:2.05rem!important;font-weight:680!important;letter-spacing:-.045em!important;color:#15272b!important;margin:5px 0 1px!important}
+.or-vital-card .or-vital-delta{font-size:.66rem!important;color:#879397!important;font-weight:560!important}.or-vital-card footer{margin-top:7px!important;padding-top:7px!important;border-top:1px solid #eef2f2!important;background:transparent!important;font-size:.66rem!important;font-weight:600!important}
+.or-vital-card.good{border-color:var(--line)!important;background:#fff!important}.or-vital-card.good:before,.or-vital-card.warn:before,.or-vital-card.danger:before{content:"";position:absolute;left:0;top:12px;bottom:12px;width:3px;border-radius:0 4px 4px 0}.or-vital-card.good:before{background:#87bca3;opacity:.4}.or-vital-card.warn{border-color:#eadbbd!important;background:#fffdf9!important}.or-vital-card.warn:before{background:#c89335}.or-vital-card.danger{border-color:#e7c7c5!important;background:#fffafa!important}.or-vital-card.danger:before{background:var(--danger)}
+.or-vital-card.changed-from-last{box-shadow:inset 0 0 0 1px rgba(19,92,103,.12)!important}.or-vital-card.blank-from-last{border-style:dashed!important}
+
+.or-medication-queue,.or-context-panel{border:1px solid var(--line)!important;border-radius:var(--radius-lg)!important;background:#fff!important;box-shadow:none!important}.or-medication-queue-head>div>span,.or-context-copy>span{font-weight:650!important;letter-spacing:.04em!important;color:#79898e!important}.or-medication-queue-head>div>b,.or-context-copy>b{font-weight:700!important}.or-context-help,.or-medication-queue-head small{color:var(--muted)!important}
+
+.or-collapsible-panel,.complication-watch-panel,.or-lower-grid .panel{border-color:var(--line)!important;background:#fff!important;box-shadow:none!important}.or-collapsible-summary{padding:0!important}.or-collapsible-summary span>b{font-weight:680!important}.or-collapsible-summary span>small{color:var(--muted)!important;font-weight:520!important}
+
+/* Recovery — less stacking, clearer handoff */
+.recovery-command{background:#fff!important;border:1px solid var(--line)!important;border-radius:var(--radius-xl)!important;padding:16px 18px!important;box-shadow:none!important}.recovery-command .eyebrow.dark{color:#728287!important;font-weight:650!important}.recovery-command h2{font-size:1.28rem!important;font-weight:700!important}.recovery-command p{color:var(--muted)!important;font-size:.8rem!important}
+.recovery-command-actions .btn{font-size:.79rem!important}.recovery-command-actions>strong{font-weight:650!important;font-size:1.08rem!important}
+
+.recovery-focus{grid-template-columns:minmax(0,1.5fr) minmax(280px,.5fr)!important;gap:14px!important;padding:16px!important;border:1px solid var(--line)!important;border-radius:var(--radius-xl)!important;background:#fff!important;box-shadow:none!important}
+.recovery-focus-kicker{font-size:.61rem!important;font-weight:680!important;letter-spacing:.05em!important;color:#76878c!important}.recovery-focus h2{font-size:1.28rem!important;font-weight:700!important}.recovery-focus p{color:var(--muted)!important}
+.recovery-focus-timing>div{padding:8px 10px!important;border:0!important;border-left:1px solid var(--line)!important;border-radius:0!important;background:transparent!important}.recovery-focus-timing span{font-weight:650!important;color:#839196!important}.recovery-focus-timing b{font-weight:680!important}
+.recovery-focus-latest{gap:0!important;border-top:1px solid var(--line)!important;border-bottom:1px solid var(--line)!important}.recovery-focus-latest>div{border:0!important;border-right:1px solid #edf1f1!important;border-radius:0!important;background:transparent!important;padding:11px 12px!important}.recovery-focus-latest>div:last-child{border-right:0!important}.recovery-focus-latest span{font-size:.58rem!important;font-weight:650!important;color:#849297!important}.recovery-focus-latest b{font-size:1.02rem!important;font-weight:680!important;color:#1c3439!important}
+.recovery-focus-actions .btn,.recovery-focus-record{border-radius:var(--radius-md)!important;font-weight:680!important}.recovery-focus-record{background:var(--primary)!important;box-shadow:0 5px 14px rgba(19,92,103,.13)!important}.recovery-focus-record.due{background:var(--danger)!important;box-shadow:0 0 0 3px rgba(179,59,55,.08)!important}
+.recovery-focus-readiness{border-top:1px solid var(--line)!important}.recovery-focus-readiness span{font-weight:680!important;color:#486167!important}.recovery-focus-readiness small{color:var(--muted)!important}
+
+.recovery-score-panel{border-color:var(--line)!important;background:#fff!important}.recovery-score-summary>div,.recovery-record-summary>div{border-color:var(--line)!important;background:#f9fbfb!important;border-radius:var(--radius-sm)!important}.recovery-score-summary span,.recovery-record-summary span{font-weight:650!important;text-transform:none!important;letter-spacing:0!important}.recovery-score-summary b,.recovery-record-summary b{font-weight:680!important;color:#2d555d!important}
+.recovery-check-item{border-bottom-color:#edf1f1!important}.recovery-readiness,.recovery-status{border-radius:var(--radius-sm)!important;font-weight:680!important}
+
+/* Timeline + report surfaces */
+.timeline-item{grid-template-columns:72px 100px 1fr!important;border-left-width:2px!important;border-left-color:#8fb7be!important;background:#fafcfc!important;border-radius:0 var(--radius-sm) var(--radius-sm) 0!important;padding:9px 11px!important}.timeline-item .time{font-weight:680!important}.timeline-item .cat{font-weight:650!important;color:#7a898e!important}
+.event-category{font-weight:650!important;background:#eef5f5!important;color:#4b6b71!important}
+
+/* Dialogs / sheets */
+.or-more-dialog::backdrop,.workflow-dialog::backdrop{background:rgba(13,32,36,.44)!important;backdrop-filter:blur(4px)!important}.or-more-sheet,.or-step-confirm-sheet,.quick-drug-dialog-body,.workflow-dialog{background:#fbfcfc!important;border-color:#dce5e6!important;box-shadow:var(--shadow-float)!important}.or-more-sheet{border-radius:24px 24px 0 0!important}.or-more-action{border-color:var(--line)!important;border-radius:var(--radius-md)!important;background:#fff!important;box-shadow:none!important}.or-more-action>b{font-weight:680!important}.or-more-action>small{color:#7d8c90!important}
+
+/* Mobile bottom actions: one clear primary action */
+@media(max-width:720px){
+  main{padding:10px 10px calc(92px + env(safe-area-inset-bottom))}
+  .topbar{padding:10px 12px;min-height:60px}.brand-logo{width:38px;height:38px}.brand h1{font-size:1.12rem}.top-actions{gap:6px}.case-clock{font-size:.88rem;padding:6px 8px}
+  .case-strip{border-radius:12px;padding:9px 10px}.case-summary{gap:9px}
+  .tabs{margin-inline:-10px;padding-inline:10px;scroll-padding-inline:10px}.tab{padding:8px 10px;font-size:.75rem}
+  .panel{border-radius:15px;padding:14px;margin-bottom:10px}
+  .or-command-bar{border-radius:18px!important;padding:14px!important}.or-patient-line h2{font-size:1.34rem!important}.or-procedure-line,.or-team-line{font-size:.73rem!important}
+  .or-primary-flow{border-radius:15px!important;padding:13px!important}.or-primary-copy>b{font-size:1rem!important}.or-primary-copy>small{font-size:.72rem!important}
+  .or-status-row{grid-template-columns:repeat(3,1fr)!important}.or-status-row .or-record-button{grid-column:1/-1!important;min-height:48px!important}
+  .or-vital-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important}.or-vital-card{border-radius:15px!important;padding:11px 12px!important}.or-vital-card input{font-size:1.9rem!important;min-height:46px!important}
+  .or-vitals-focus{padding:13px!important}.or-vitals-focus-actions{gap:7px!important}.or-vitals-save{min-height:50px!important}
+  .recovery-command{padding:14px!important;border-radius:18px!important}.recovery-focus{grid-template-columns:1fr!important;padding:14px!important;border-radius:18px!important}.recovery-focus-timing{min-width:0!important;width:100%!important}.recovery-focus-latest{grid-template-columns:repeat(5,minmax(78px,1fr))!important;overflow-x:auto!important;scrollbar-width:none}.recovery-focus-latest::-webkit-scrollbar{display:none}.recovery-focus-latest>div{min-width:78px!important}
+  .or-mobile-dock,.recovery-mobile-dock{left:8px!important;right:8px!important;bottom:calc(8px + env(safe-area-inset-bottom))!important;border:1px solid rgba(208,220,222,.88)!important;border-radius:18px!important;background:rgba(255,255,255,.93)!important;box-shadow:0 12px 36px rgba(18,52,59,.14)!important;backdrop-filter:blur(18px)!important;padding:6px!important;gap:4px!important}
+  .or-mobile-dock-btn,.recovery-mobile-dock-btn{border:0!important;border-radius:13px!important;background:transparent!important;color:#52666b!important;min-height:54px!important;font-weight:650!important}.or-mobile-dock-btn.primary,.recovery-mobile-dock-btn.primary{background:var(--primary)!important;color:#fff!important;box-shadow:0 3px 10px rgba(19,92,103,.15)!important}.or-mobile-dock-btn>b,.recovery-mobile-dock-btn>b{font-size:.69rem!important;letter-spacing:0!important}.or-mobile-dock-btn>span,.recovery-mobile-dock-btn>span{font-size:1rem!important}
+  .or-mobile-next{min-width:0!important;flex:1.55!important}.or-mobile-next-copy small{font-size:.48rem!important;letter-spacing:.04em!important;opacity:.7}.or-mobile-next-copy b{font-size:.7rem!important}
+}
+
+@media(min-width:721px) and (max-width:1050px){main{padding-inline:14px}.or-vital-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important}.recovery-focus{grid-template-columns:1fr!important}}
+
+/* Reduced motion is the default courtesy in clinical use. */
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition-duration:.01ms!important;animation-duration:.01ms!important;animation-iteration-count:1!important}}

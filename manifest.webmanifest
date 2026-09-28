@@ -1,12 +1,12 @@
 {
-  "name": "ANESVET V15.29.0 — Recovery & Handoff 2.0",
-  "short_name": "ANESVET V15.29",
-  "description": "Touch-first local-first veterinary anesthesia workflow with medication preparation safeguards, clinical calculation validation, hospital branding, reports, and safety hardening",
-  "start_url": "./?v=15.29.0",
+  "name": "ANESVET V16.8.2 — Architecture Refactor Phase 3",
+  "short_name": "ANESVET V16.8.2",
+  "description": "Local-first veterinary anesthesia workflow with a unified case timeline, anesthesia record, recovery handoff, medication safety, clinical validation, reporting, and audit-ready record integrity",
+  "start_url": "./?v=16.8.2",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#f3f7f8",
-  "theme_color": "#0d5265",
+  "background_color": "#f5f7f7",
+  "theme_color": "#123f48",
   "lang": "th",
   "icons": [
     {

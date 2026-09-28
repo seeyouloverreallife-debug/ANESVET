@@ -1,0 +1,18 @@
+.data-resilience-center{margin-top:14px;padding-top:14px;border-top:1px solid var(--line,#d9e2e4)}
+.data-resilience-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:10px}
+.data-resilience-card{border:1px solid var(--line,#d9e2e4);border-radius:14px;padding:12px;background:var(--surface,#fff);min-width:0}
+.data-resilience-card span{display:block;font-size:11px;color:var(--muted,#66757a);margin-bottom:5px}
+.data-resilience-card b{display:block;font-size:14px;line-height:1.25;overflow-wrap:anywhere}
+.data-resilience-card small{display:block;margin-top:5px;color:var(--muted,#66757a);line-height:1.35;overflow-wrap:anywhere}
+.data-health-good{color:#166534}.data-health-watch{color:#a16207}.data-health-critical{color:#b42318}.data-health-neutral{color:var(--ink,#24363a)}
+.data-resilience-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center}.data-resilience-actions .btn{min-height:44px}
+.resilience-dialog .drug-admin-card{width:min(760px,calc(100vw - 24px));max-height:min(88vh,820px);overflow:auto}
+.resilience-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:12px 0}.resilience-metrics>div{padding:10px;border:1px solid var(--line,#d9e2e4);border-radius:12px;background:var(--surface-subtle,#f7fafb);min-width:0}.resilience-metrics span{display:block;color:var(--muted,#66757a);font-size:11px}.resilience-metrics b{display:block;margin-top:4px;font-size:17px;overflow-wrap:anywhere}.metric-danger{border-color:#f2b8b5!important;background:#fff6f5!important;color:#b42318}
+.resilience-note,.resilience-loading{font-size:12px;color:var(--muted,#66757a);line-height:1.45}.resilience-warning{margin-top:10px;padding:10px 12px;border-left:3px solid #d97706;background:#fff9ed;border-radius:8px;font-size:12px;line-height:1.45;overflow-wrap:anywhere}
+.restore-file-head{display:grid;gap:3px;margin-bottom:12px}.restore-file-head b{font-size:16px}.restore-file-head span{font-size:12px;color:var(--muted,#66757a)}
+.restore-compare{display:grid;grid-template-columns:1fr 1fr;gap:10px}.restore-compare>div{display:grid;gap:4px;padding:12px;border:1px solid var(--line,#d9e2e4);border-radius:12px}.restore-compare span{font-size:12px;color:var(--muted,#66757a)}
+.restore-ack{display:flex;align-items:flex-start;gap:10px;padding:12px;border:1px solid var(--line,#d9e2e4);border-radius:12px;margin-top:12px}.restore-ack input{width:20px;height:20px;flex:0 0 auto}.restore-ack span{font-size:12px;line-height:1.4}
+#restoreMismatchWrap{margin-top:10px}#restoreMismatchWrap input{width:100%;margin-top:5px}.restore-progress{margin-top:10px;padding:10px;border-radius:10px;background:#eef7f6;font-size:12px;color:#155e58}
+@media(max-width:900px){.data-resilience-grid{grid-template-columns:1fr 1fr}.resilience-metrics{grid-template-columns:1fr 1fr}}
+@media(max-width:520px){.data-resilience-grid{grid-template-columns:1fr}.restore-compare{grid-template-columns:1fr}.resilience-dialog .drug-admin-card{width:calc(100vw - 16px);padding:14px}.resilience-metrics{gap:6px}.resilience-metrics>div{padding:9px}}
+@media(prefers-reduced-motion:reduce){.data-resilience-center *{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
