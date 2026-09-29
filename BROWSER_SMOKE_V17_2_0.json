@@ -1,0 +1,12 @@
+{
+  "version": "17.2.0",
+  "httpServe": {"status": "PASS", "httpStatus": 200},
+  "headlessChromium": {
+    "status": "BLOCKED / PENDING_REAL_DEVICE",
+    "timeoutSeconds": 20,
+    "domBytes": 0,
+    "exitCode": 124,
+    "environmentErrors": ["D-Bus unavailable", "Chromium service/zygote environment did not complete DOM load"]
+  },
+  "interpretation": "Static/package serving passed. Interactive browser acceptance is not counted as PASS and still requires a real supported device/browser run."
+}

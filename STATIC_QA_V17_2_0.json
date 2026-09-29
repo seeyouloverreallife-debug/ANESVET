@@ -1,0 +1,178 @@
+{
+  "version": "17.2.0",
+  "suite": "static-qa",
+  "passed": 34,
+  "total": 34,
+  "checks": [
+    {
+      "name": "JavaScript syntax",
+      "pass": true,
+      "detail": "57/57 PASS"
+    },
+    {
+      "name": "HTML IDs unique",
+      "pass": true,
+      "detail": "1325/1325 unique"
+    },
+    {
+      "name": "Local script/style references present",
+      "pass": true,
+      "detail": "86/86"
+    },
+    {
+      "name": "Service Worker assets present",
+      "pass": true,
+      "detail": "88/88"
+    },
+    {
+      "name": "App version aligned",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "Sync Foundation version aligned",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "Sync Transport version aligned",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "Architecture Registry version aligned",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "Manifest version aligned",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "Index version aligned",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "Service Worker cache version aligned",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "Sync Transport loads before Sync Foundation",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "DB_VERSION remains 2",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "backupSchema remains 3",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "identity registry schema remains 2",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "PIN PBKDF2 iterations retained",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "Sync default remains disabled",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "V17.1 durable queue key retained",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "Unresolved conflict creates case-level hold",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "Conflict review explicitly does not resolve",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "Remote pull is preview-only",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "No remote pull auto-apply path exposed",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "Strict clinical conflict types retained",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "Medication conflict policy retained",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "Snapshot coalescing limited to case-snapshot",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "Local save verifies before sync capture",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "Sync error remains non-blocking for clinical save",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "administeredBy/documentedBy semantic separation retained",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "Provider-neutral HTTP adapter present",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "Public HTTP rejected",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "Capability handshake validates canonical endpoint",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "Operation IDs sent for idempotency",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "Fault injection adapter present",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "Architecture Registry includes transport and sync modules",
+      "pass": true,
+      "detail": ""
+    }
+  ]
+}

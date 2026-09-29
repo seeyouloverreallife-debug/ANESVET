@@ -32,6 +32,8 @@ function create({getCaseInfo=()=>({}),toast=()=>{},onMode=()=>{},appVersion='',l
   function init(){const next=coordinator.init();if(next==='view')renderConflict(readLock());return next}
   function isActive(){return mode==='active'}
   function bind(){
+    root.addEventListener?.('pageshow',()=>render());
+    root.document?.addEventListener?.('visibilitychange',()=>{if(root.document.visibilityState==='visible')render()});
     $('sessionViewOnlyBtn')?.addEventListener('click',()=>{try{$('sessionDialog')?.close()}catch(_){ }setMode('view');toast('Opened in VIEW ONLY mode')});
     $('sessionDialogTakeControlBtn')?.addEventListener('click',takeControl);$('sessionTakeControlBtn')?.addEventListener('click',takeControl);$('sessionRefreshBtn')?.addEventListener('click',refresh);
     document.addEventListener('click',e=>{if(isActive()||safeTarget(e.target))return;const actionable=e.target.closest?.('button,input,select,textarea,label');if(actionable&&actionable.closest?.('.tabpage')){e.preventDefault();e.stopImmediatePropagation();toast('VIEW ONLY — Take control before editing')}},true);

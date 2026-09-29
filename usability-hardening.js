@@ -129,7 +129,7 @@
 
   function ensureReturnShortcut(){
     if($('uxReturnCase'))return $('uxReturnCase');
-    const btn=document.createElement('button');btn.id='uxReturnCase';btn.type='button';btn.className='ux-return-case';btn.hidden=true;
+    const btn=document.createElement('button');btn.id='uxReturnCase';btn.type='button';btn.className='ux-return-case session-safe';btn.hidden=true;
     btn.addEventListener('click',()=>{const s=api()?.getState?.()||{};const target=s.casePhase==='recovery'?'recovery':'orlive';api()?.setTab?.(target,{force:true});});
     document.body.appendChild(btn);return btn;
   }

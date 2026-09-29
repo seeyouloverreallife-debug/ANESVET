@@ -25,7 +25,7 @@ const SESSION_TTL_MS=30000;
 const SESSION_HEARTBEAT_MS=5000;
 const DB_NAME='ANESVET_DB';
 const DB_VERSION=2;
-const APP_VERSION='17.1.0';
+const APP_VERSION='17.2.1';
 const SECURITY=window.ANESVET_SECURITY_BASELINE||null;
 const SYNC_FOUNDATION=window.ANESVET_SYNC_FOUNDATION||null;
 const DOSE_REF=window.ANESVET_DOSE_REFERENCE||null;
@@ -1686,6 +1686,30 @@ function renderMobileQuickBar(id){
 function openMobileWorkflowDialog(){const d=$('mobileWorkflowDialog');if(!d)return;syncMobileWorkflowLocks();try{if(typeof d.showModal==='function')d.showModal();else d.setAttribute('open','')}catch(e){d.setAttribute('open','')}}
 function closeMobileWorkflowDialog(){const d=$('mobileWorkflowDialog');if(!d)return;try{if(d.open&&typeof d.close==='function')d.close();else d.removeAttribute('open')}catch(e){d.removeAttribute('open')}}
 
+// V17.2.1 interaction recovery: a modal left in the browser top-layer can make the
+// underlying clinical page look normal while swallowing every tap. Always close
+// navigation-only dialogs before a real page transition, and recover only dialogs
+// that are open but no longer render a usable surface.
+const TRANSIENT_NAV_DIALOG_IDS=['mobileWorkflowDialog','orMoreDialog','orStepConfirmDialog','recoveryMoreDialog','helpCenterDialog','onboardingDialog','preOrReadinessDialog','preOrBriefingDialog'];
+function safeCloseOpenDialog(d){
+  if(!d?.open)return false;
+  try{if(typeof d.close==='function')d.close();else d.removeAttribute('open')}catch(e){try{d.removeAttribute('open')}catch(_){}}
+  return !d.open;
+}
+function closeTransientNavigationDialogs(){
+  TRANSIENT_NAV_DIALOG_IDS.forEach(id=>safeCloseOpenDialog($(id)));
+}
+function recoverInvisibleModalBlockers(){
+  document.querySelectorAll('dialog[open]').forEach(d=>{
+    if(d.id?.startsWith('security'))return;
+    let invisible=false;
+    try{const cs=getComputedStyle(d),r=d.getBoundingClientRect();invisible=cs.display==='none'||cs.visibility==='hidden'||Number(cs.opacity)===0||r.width<2||r.height<2}catch(e){}
+    if(invisible)safeCloseOpenDialog(d);
+  });
+}
+window.addEventListener('pageshow',()=>setTimeout(recoverInvisibleModalBlockers,0));
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')setTimeout(recoverInvisibleModalBlockers,0)});
+
 function setTab(id,opts={}){
   if(!id || !document.getElementById(id)) return;
   if(id==='orlive' && orLiveLockedByRecovery() && !opts.force){
@@ -1697,6 +1721,8 @@ function setTab(id,opts={}){
     const msg=!state.caseStartedAt?'Recovery ยังไม่เปิด — เริ่มเคสและดำเนิน workflow ก่อน':'Recovery จะเปิดหลัง Extubation / Begin Recovery';
     toast(msg);renderWorkflowLocks();scrollAppTop();return;
   }
+  closeTransientNavigationDialogs();
+  recoverInvisibleModalBlockers();
   exitOrFullscreenForNavigation(id);
   closeMoreMenu();closeRecoveryMoreDialog();
   $$('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===id));
@@ -4009,7 +4035,7 @@ window.AnesvetApp=Object.freeze({
   security:Object.freeze({enabled:()=>!!SECURITY?.enabled?.(),locked:()=>!!SECURITY?.locked?.(),identity:()=>SECURITY?.activeIdentity?.()||null,session:()=>SECURITY?.sessionSnapshot?.()||null,device:()=>SECURITY?.deviceIdentity?.()||null,can:(action)=>SECURITY?.can?.(action)!==false,snapshot:()=>SECURITY?.snapshot?.()||null,lock:()=>SECURITY?.lock?.('manual')}),
   caseReview:Object.freeze({archives:()=>JSON.parse(JSON.stringify(getArchive()||[])),current:()=>JSON.parse(JSON.stringify(state||{}))}),
   architecture:Object.freeze({health:()=>window.ANESVET_ARCHITECTURE_REGISTRY?.summarize?.()||null}),
-  syncFoundation:Object.freeze({snapshot:()=>SYNC_FOUNDATION?.snapshot?.()||null,inspect:()=>SYNC_FOUNDATION?.inspect?.()||null,syncNow:()=>SYNC_FOUNDATION?.syncNow?.()||Promise.resolve(null)}),
+  syncFoundation:Object.freeze({snapshot:()=>SYNC_FOUNDATION?.snapshot?.()||null,inspect:()=>SYNC_FOUNDATION?.inspect?.()||null,syncNow:()=>SYNC_FOUNDATION?.syncNow?.()||Promise.resolve(null),probe:()=>SYNC_FOUNDATION?.probeAdapter?.()||Promise.resolve(null),previewRemote:(caseId,options)=>SYNC_FOUNDATION?.previewRemoteChanges?.(caseId,options)||Promise.resolve(null),reviewConflict:(id,options)=>SYNC_FOUNDATION?.reviewConflict?.(id,options)||null,exportConflictEvidence:(id)=>SYNC_FOUNDATION?.exportConflictEvidence?.(id)||null}),
   caseLifecycle:Object.freeze({hasActive:()=>hasActiveCaseData(),isFinalSealed:(caseObj)=>finalCaseIsSealed(caseObj),reloadUnsafe:(caseObj)=>versionReloadUnsafe(caseObj)})
 });
 

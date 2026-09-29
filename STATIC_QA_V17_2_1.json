@@ -1,0 +1,188 @@
+{
+  "version": "17.2.1",
+  "suite": "static-qa-interaction-hotfix",
+  "passed": 36,
+  "total": 36,
+  "checks": [
+    {
+      "name": "JavaScript syntax",
+      "pass": true,
+      "detail": "57/57 PASS"
+    },
+    {
+      "name": "HTML IDs unique",
+      "pass": true,
+      "detail": "1325/1325 unique"
+    },
+    {
+      "name": "Local script/style references present",
+      "pass": true,
+      "detail": "86/86"
+    },
+    {
+      "name": "Service Worker assets present",
+      "pass": true,
+      "detail": "88/88"
+    },
+    {
+      "name": "App patch version aligned",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "Unchanged Sync Foundation remains 17.2.0",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "Unchanged Sync Transport remains 17.2.0",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "Unchanged Architecture Registry remains 17.2.0",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "Manifest patch version aligned",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "Index patch version aligned",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "Service Worker cache patch version aligned",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "Sync Transport loads before Sync Foundation",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "DB_VERSION remains 2",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "backupSchema remains 3",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "identity registry schema remains 2",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "PIN PBKDF2 iterations retained",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "Sync default remains disabled",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "V17.1 durable queue key retained",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "Unresolved conflict creates case-level hold",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "Conflict review explicitly does not resolve",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "Remote pull remains preview-only",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "No remote pull auto-apply path exposed",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "Strict clinical conflict types retained",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "Medication conflict policy retained",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "Local save verifies before sync capture",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "Sync error remains non-blocking for clinical save",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "administeredBy/documentedBy separation retained",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "OR More dialog included in navigation cleanup",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "Tab transition closes transient navigation dialogs",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "Invisible modal blocker recovery present",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "Modal recovery runs on pageshow",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "Security inert/overlay invariant present",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "Security invariant runs on pageshow",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "Session readonly DOM reconciles on pageshow",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "OR return shortcut remains session-safe",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "Clinical dialog security exclusions retained",
+      "pass": true,
+      "detail": ""
+    }
+  ]
+}
