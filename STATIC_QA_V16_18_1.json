@@ -1,0 +1,98 @@
+{
+  "version": "16.18.1",
+  "scope": "Architecture hardening Phase 5 \u2014 Patient Master + Pre-op controller extraction",
+  "passed": 17,
+  "total": 17,
+  "ok": true,
+  "checks": [
+    {
+      "label": "JavaScript syntax",
+      "ok": true,
+      "detail": "43/43 PASS"
+    },
+    {
+      "label": "HTML IDs unique",
+      "ok": true,
+      "detail": "1260 / 1260 unique"
+    },
+    {
+      "label": "HTML script/style references",
+      "ok": true,
+      "detail": "68 references \u2022 all present"
+    },
+    {
+      "label": "Service-worker assets",
+      "ok": true,
+      "detail": "71/71 present"
+    },
+    {
+      "label": "App version",
+      "ok": true,
+      "detail": "16.18.1"
+    },
+    {
+      "label": "IndexedDB schema unchanged",
+      "ok": true,
+      "detail": "DB_VERSION = 2"
+    },
+    {
+      "label": "Patient Master controller loads before app",
+      "ok": true,
+      "detail": "patient-master-controller.js \u2192 app.js"
+    },
+    {
+      "label": "Pre-op controller loads before app",
+      "ok": true,
+      "detail": "preop-controller.js \u2192 app.js"
+    },
+    {
+      "label": "Architecture registry loads after extracted controllers",
+      "ok": true,
+      "detail": "controllers \u2192 architecture-registry.js"
+    },
+    {
+      "label": "Patient Master legacy controller bodies removed from app",
+      "ok": true,
+      "detail": "owned by patient-master-controller.js"
+    },
+    {
+      "label": "Pre-op legacy controller bodies removed from app",
+      "ok": true,
+      "detail": "owned by preop-controller.js"
+    },
+    {
+      "label": "Controller bindings active",
+      "ok": true,
+      "detail": "both controller bind() calls present"
+    },
+    {
+      "label": "Architecture registry includes Patient Master controller",
+      "ok": true,
+      "detail": "registered"
+    },
+    {
+      "label": "Architecture registry includes Pre-op controller",
+      "ok": true,
+      "detail": "registered"
+    },
+    {
+      "label": "app.js reduced without rewrite",
+      "ok": true,
+      "detail": "5319 \u2192 5064 lines (\u2212255)"
+    },
+    {
+      "label": "Extracted controller regression tests",
+      "ok": true,
+      "detail": "5/5 PASS"
+    },
+    {
+      "label": "Critical clinical module parity",
+      "ok": true,
+      "detail": "18/18 byte-identical to V16.18.0"
+    }
+  ],
+  "javascriptFailures": [],
+  "duplicateIds": [],
+  "missingHtmlRefs": [],
+  "missingServiceWorkerAssets": []
+}

@@ -43,7 +43,7 @@ function createState(epoch=Date.now()){
     inductionDocumentationMode:'',inductionMedicationReviewCompletedAt:null,
     recoveryScores: [],recoveryChecks: [false,false,false,false,false,false],recoveryNA: [false,false,false,false,false,false],
     recoveryObservationNA:{spo2:false,temp:false,extubation:false},recHandoffNote:'',
-    patientSaved:false,caseWorkflowProfile:'routine',patientMasterId:'',visitId:'',sex:'',reproductiveStatus:'',microchip:'',
+    patientSaved:false,procedureTemplateId:'custom',procedureTemplateSnapshot:null,caseWorkflowProfile:'routine',patientMasterId:'',visitId:'',sex:'',reproductiveStatus:'',microchip:'',
     birthDate:'',birthDateEstimated:false,ageSource:'',estimatedBirthPeriod:'',approxAgeYears:'0',approxAgeMonths:'0',approxAgeWeeks:'0',
     preopChecks:{},preopNA:{},preopExamRecordedAt:null,preopExamRecordedBy:'',preopRiskRecordedAt:null,preopRiskRecordedBy:'',
     caseStartedAt:null,caseIdentitySnapshot:null,responses:[],corrections:[],casePhase:'setup',recoveryStartedAt:null,recoveryCompletedAt:null,

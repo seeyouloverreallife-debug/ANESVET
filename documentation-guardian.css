@@ -1,0 +1,37 @@
+/* ANESVET V16.12.0 — Documentation Guardian */
+.documentation-guardian{margin:12px 0;border:1px solid rgba(18,63,72,.16);border-radius:18px;background:linear-gradient(180deg,#fbfdfd,#f7faf9);box-shadow:0 8px 22px rgba(20,55,60,.045);overflow:hidden}
+.documentation-guardian[hidden]{display:none!important}
+.documentation-guardian.has-danger{border-color:rgba(174,61,61,.28)}
+.documentation-guardian-head{display:flex;align-items:center;gap:12px;padding:12px 14px;border-bottom:1px solid rgba(18,63,72,.08)}
+.documentation-guardian-head>div{min-width:0;flex:1;display:grid;gap:2px}
+.documentation-guardian-head span:not(.status-pill){font-size:.68rem;letter-spacing:.09em;font-weight:800;color:#6c7d80}
+.documentation-guardian-head b{font-size:.98rem;color:#173f46}
+.documentation-guardian-head small{font-size:.76rem;line-height:1.35;color:#6c7d80}
+.documentation-guardian-list{display:grid;gap:0}
+.documentation-guardian-issue{display:grid;grid-template-columns:10px minmax(0,1fr) auto;gap:10px;align-items:center;padding:11px 14px;border-top:1px solid rgba(18,63,72,.07)}
+.documentation-guardian-issue:first-child{border-top:0}
+.documentation-guardian-dot{width:8px;height:8px;border-radius:999px;background:#c78b2a;box-shadow:0 0 0 4px rgba(199,139,42,.1)}
+.documentation-guardian-issue.danger .documentation-guardian-dot{background:#b44e4e;box-shadow:0 0 0 4px rgba(180,78,78,.11)}
+.documentation-guardian-copy{min-width:0;display:grid;gap:2px}
+.documentation-guardian-copy b{font-size:.86rem;color:#21444b}
+.documentation-guardian-copy small{font-size:.73rem;line-height:1.35;color:#6b797c}
+.documentation-guardian-action{white-space:nowrap;min-height:38px}
+.documentation-guardian-clear{display:flex;align-items:center;gap:10px;padding:11px 14px;color:#2f6c5d}
+.documentation-guardian-clear>span{display:grid;place-items:center;width:24px;height:24px;border-radius:999px;background:#e8f5ef;font-weight:900}
+.documentation-guardian-clear>div{display:grid;gap:1px}.documentation-guardian-clear b{font-size:.82rem}.documentation-guardian-clear small{font-size:.72rem;color:#70807d}
+.documentation-completeness-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:12px 14px;border-bottom:1px solid rgba(18,63,72,.08)}
+.documentation-completeness-item{display:grid;grid-template-columns:24px minmax(0,1fr);gap:8px;align-items:start;padding:9px 10px;border-radius:12px;background:#f4f7f7;border:1px solid rgba(18,63,72,.08)}
+.documentation-completeness-item>span{display:grid;place-items:center;width:22px;height:22px;border-radius:999px;font-weight:900;background:#fff;color:#8c6b2d;border:1px solid rgba(140,107,45,.18)}
+.documentation-completeness-item.good{background:#f1f8f4}.documentation-completeness-item.good>span{color:#34745f;border-color:rgba(52,116,95,.18)}
+.documentation-completeness-item>div{display:grid;gap:2px;min-width:0}.documentation-completeness-item b{font-size:.78rem;color:#27474d}.documentation-completeness-item small{font-size:.68rem;line-height:1.3;color:#718083}
+#endDocumentationGuardian{margin-top:10px}
+@media(max-width:760px){
+  .documentation-guardian{border-radius:15px;margin:10px 0}
+  .documentation-guardian-head{padding:10px 11px;gap:8px}
+  .documentation-guardian-head small{display:none}
+  .documentation-guardian-issue{grid-template-columns:9px minmax(0,1fr);padding:10px 11px;gap:8px}
+  .documentation-guardian-action{grid-column:2;width:100%;min-height:40px}
+  .documentation-completeness-grid{grid-template-columns:repeat(2,minmax(0,1fr));padding:10px 11px;gap:7px}
+  .documentation-completeness-item{padding:8px}
+}
+@media(max-width:360px){.documentation-completeness-grid{grid-template-columns:1fr}.documentation-guardian-head .status-pill{font-size:.64rem}}

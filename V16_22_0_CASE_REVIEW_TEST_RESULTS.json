@@ -1,0 +1,56 @@
+{
+  "version": "16.22.0",
+  "passed": 12,
+  "total": 12,
+  "status": "PASS",
+  "tests": [
+    {
+      "name": "module version",
+      "status": "PASS"
+    },
+    {
+      "name": "final dataset excludes voided and working",
+      "status": "PASS"
+    },
+    {
+      "name": "voided dataset selects voided record",
+      "status": "PASS"
+    },
+    {
+      "name": "working dataset selects unlocked record",
+      "status": "PASS"
+    },
+    {
+      "name": "90-day filter excludes old final case",
+      "status": "PASS"
+    },
+    {
+      "name": "species filter works",
+      "status": "PASS"
+    },
+    {
+      "name": "protocol filter works",
+      "status": "PASS"
+    },
+    {
+      "name": "median elapsed and recovery durations are descriptive",
+      "status": "PASS"
+    },
+    {
+      "name": "documented alert episode counted by type",
+      "status": "PASS"
+    },
+    {
+      "name": "protocol distribution retained",
+      "status": "PASS"
+    },
+    {
+      "name": "recovery override is counted without changing readiness semantics",
+      "status": "PASS"
+    },
+    {
+      "name": "structured completeness uses existing documentation domains",
+      "status": "PASS"
+    }
+  ]
+}

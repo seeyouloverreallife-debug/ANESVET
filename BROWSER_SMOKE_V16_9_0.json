@@ -1,0 +1,100 @@
+{
+  "viewport": [
+    390,
+    844
+  ],
+  "errors_before": [],
+  "grid": {
+    "buttons": 9,
+    "columns": "153.5px 153.5px",
+    "width": "314px"
+  },
+  "selections": [
+    {
+      "requested": "csection",
+      "hit": {
+        "target": "csection",
+        "top": 371.671875,
+        "bottom": 414.671875
+      },
+      "values": {
+        "id": "csection",
+        "name": "C-section",
+        "profile": "csection",
+        "procedure": "Cesarean section / C-section",
+        "stateId": "csection"
+      }
+    },
+    {
+      "requested": "emergency",
+      "hit": {
+        "target": "emergency",
+        "top": 371.671875,
+        "bottom": 414.671875
+      },
+      "values": {
+        "id": "emergency",
+        "name": "Emergency / critical",
+        "profile": "critical",
+        "procedure": "Emergency procedure",
+        "stateId": "emergency"
+      }
+    },
+    {
+      "requested": "ovh",
+      "hit": {
+        "target": "ovh",
+        "top": 371.796875,
+        "bottom": 414.796875
+      },
+      "values": {
+        "id": "ovh",
+        "name": "OVH / OHE",
+        "profile": "routine",
+        "procedure": "OVH / OHE",
+        "stateId": "ovh"
+      }
+    },
+    {
+      "requested": "dental",
+      "hit": {
+        "target": "dental",
+        "top": 371.796875,
+        "bottom": 414.796875
+      },
+      "values": {
+        "id": "dental",
+        "name": "Dental",
+        "profile": "routine",
+        "procedure": "Dental / scaling ± extraction",
+        "stateId": "dental"
+      }
+    },
+    {
+      "requested": "custom",
+      "hit": {
+        "target": "custom",
+        "top": 371.671875,
+        "bottom": 414.671875
+      },
+      "values": {
+        "id": "custom",
+        "name": "Custom / other",
+        "profile": "custom",
+        "procedure": "Dental / scaling ± extraction",
+        "stateId": "custom"
+      }
+    }
+  ],
+  "dock": {
+    "left": "8px",
+    "right": "8px",
+    "transform": "none",
+    "width": "374px",
+    "rectLeft": 8,
+    "rectRight": 382,
+    "viewport": 390
+  },
+  "errors": [],
+  "pass": true
+}

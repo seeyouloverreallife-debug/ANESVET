@@ -1,0 +1,16 @@
+{
+  "version": "16.18.4",
+  "status": "BLOCKED_PENDING",
+  "ok": false,
+  "attempted": true,
+  "method": "Chromium headless --dump-dom via local HTTP server",
+  "timeout_seconds": 20,
+  "exit_code": 124,
+  "dom_bytes": 0,
+  "environment_notes": [
+    "Chromium emitted D-Bus/service-process errors in the execution environment",
+    "No DOM output was produced before timeout",
+    "This result is not counted as a browser PASS or application failure"
+  ],
+  "required_followup": "Run the V16.17 Production Pilot / real-device matrix, including medication workspace, on target Android/tablet/desktop PWA devices."
+}

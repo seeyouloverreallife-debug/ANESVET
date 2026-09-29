@@ -1,0 +1,29 @@
+{
+  "from": "16.14.0",
+  "to": "16.15.0",
+  "scope": "all files except generated checksum manifests",
+  "baseFiles": 231,
+  "outputFiles": 240,
+  "unchangedCount": 224,
+  "changed": [
+    "README_TH.md",
+    "app.js",
+    "index.html",
+    "manifest.webmanifest",
+    "medication-reconciliation.js",
+    "recovery-domain.js",
+    "service-worker.js"
+  ],
+  "new": [
+    "BROWSER_SMOKE_V16_15_0.json",
+    "KNOWN_LIMITATIONS_V16_15_0.md",
+    "MIGRATION_V16_14_0_TO_V16_15_0.md",
+    "QA_V16_15_0.md",
+    "RELEASE_NOTES_V16_15_0.md",
+    "SOURCE_PARITY_V16_15_0.json",
+    "STATIC_QA_V16_15_0.json",
+    "V16_15_0_RECOVERY2_TEST_RESULTS.json",
+    "recovery-2.css"
+  ],
+  "missing": []
+}

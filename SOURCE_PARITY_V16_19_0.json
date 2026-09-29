@@ -1,0 +1,33 @@
+{
+  "baseFiles": 337,
+  "outputFiles": 350,
+  "unchanged": 327,
+  "changed": [
+    "CHECKSUM_SHA256.txt",
+    "README_TH.md",
+    "SHA256SUMS.txt",
+    "app.js",
+    "architecture-registry.js",
+    "backup-restore-controller.js",
+    "data-resilience.js",
+    "index.html",
+    "manifest.webmanifest",
+    "service-worker.js"
+  ],
+  "new": [
+    "ARCHITECTURE_V16_19_0.md",
+    "BROWSER_SMOKE_V16_19_0.json",
+    "KNOWN_LIMITATIONS_V16_19_0.md",
+    "MIGRATION_V16_18_6_TO_V16_19_0.md",
+    "PACKAGE_SHA256_VERIFICATION_V16_19_0.json",
+    "QA_V16_19_0.md",
+    "RELEASE_NOTES_V16_19_0.md",
+    "SOURCE_PARITY_V16_19_0.json",
+    "STATIC_QA_V16_19_0.json",
+    "V16_19_0_DATA_SAFETY_TEST_RESULTS.json",
+    "V16_19_0_DATA_SAFETY_UI_TEST_RESULTS.json",
+    "data-safety-2.css",
+    "data-safety-2.js"
+  ],
+  "removed": []
+}

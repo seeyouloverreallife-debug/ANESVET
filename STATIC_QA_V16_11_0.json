@@ -1,0 +1,240 @@
+{
+  "javascript_syntax": {
+    "passed": 31,
+    "total": 31,
+    "ok": true,
+    "files": [
+      {
+        "file": "adaptive-workspace.js",
+        "ok": true,
+        "stderr": ""
+      },
+      {
+        "file": "app.js",
+        "ok": true,
+        "stderr": ""
+      },
+      {
+        "file": "branding.js",
+        "ok": true,
+        "stderr": ""
+      },
+      {
+        "file": "case-runtime.js",
+        "ok": true,
+        "stderr": ""
+      },
+      {
+        "file": "clinical-validation.js",
+        "ok": true,
+        "stderr": ""
+      },
+      {
+        "file": "clinical-workflow.js",
+        "ok": true,
+        "stderr": ""
+      },
+      {
+        "file": "core-storage.js",
+        "ok": true,
+        "stderr": ""
+      },
+      {
+        "file": "data-resilience.js",
+        "ok": true,
+        "stderr": ""
+      },
+      {
+        "file": "drug-dose-reference.js",
+        "ok": true,
+        "stderr": ""
+      },
+      {
+        "file": "finalization.js",
+        "ok": true,
+        "stderr": ""
+      },
+      {
+        "file": "focused-workspace.js",
+        "ok": true,
+        "stderr": ""
+      },
+      {
+        "file": "help.js",
+        "ok": true,
+        "stderr": ""
+      },
+      {
+        "file": "medication-reconciliation.js",
+        "ok": true,
+        "stderr": ""
+      },
+      {
+        "file": "or-domain.js",
+        "ok": true,
+        "stderr": ""
+      },
+      {
+        "file": "or-record-orchestration.js",
+        "ok": true,
+        "stderr": ""
+      },
+      {
+        "file": "or-speed-hardening.js",
+        "ok": true,
+        "stderr": ""
+      },
+      {
+        "file": "patient-domain.js",
+        "ok": true,
+        "stderr": ""
+      },
+      {
+        "file": "patient-master-orchestration.js",
+        "ok": true,
+        "stderr": ""
+      },
+      {
+        "file": "pilot-efficiency.js",
+        "ok": true,
+        "stderr": ""
+      },
+      {
+        "file": "procedure-templates.js",
+        "ok": true,
+        "stderr": ""
+      },
+      {
+        "file": "progressive-clinical-flow.js",
+        "ok": true,
+        "stderr": ""
+      },
+      {
+        "file": "progressive-disclosure.js",
+        "ok": true,
+        "stderr": ""
+      },
+      {
+        "file": "protocol-review.js",
+        "ok": true,
+        "stderr": ""
+      },
+      {
+        "file": "recovery-domain.js",
+        "ok": true,
+        "stderr": ""
+      },
+      {
+        "file": "recovery-orchestration.js",
+        "ok": true,
+        "stderr": ""
+      },
+      {
+        "file": "reliability.js",
+        "ok": true,
+        "stderr": ""
+      },
+      {
+        "file": "service-worker.js",
+        "ok": true,
+        "stderr": ""
+      },
+      {
+        "file": "session-coordination.js",
+        "ok": true,
+        "stderr": ""
+      },
+      {
+        "file": "support.js",
+        "ok": true,
+        "stderr": ""
+      },
+      {
+        "file": "ui-refinement.js",
+        "ok": true,
+        "stderr": ""
+      },
+      {
+        "file": "usability-hardening.js",
+        "ok": true,
+        "stderr": ""
+      }
+    ]
+  },
+  "html_ids": {
+    "total": 1168,
+    "unique": 1168,
+    "duplicates": [],
+    "ok": true
+  },
+  "service_worker_assets": {
+    "total": 54,
+    "missing": [],
+    "ok": true
+  },
+  "version_alignment": {
+    "checks": {
+      "app": true,
+      "index_title": true,
+      "index_assets": true,
+      "manifest": true,
+      "service_worker_cache": true,
+      "service_worker_assets_version": true,
+      "hardening_css": true,
+      "hardening_js": true
+    },
+    "ok": true
+  },
+  "or_speed_hardening_contract": {
+    "checks": {
+      "six_fields": true,
+      "enter_capture": true,
+      "shift_previous": true,
+      "ctrl_save": true,
+      "page_freeze_flush": true,
+      "bfcache_pageshow": true,
+      "visual_viewport": true,
+      "safe_area": true,
+      "dock_transform_guard": true,
+      "keyboard_dock_hide": true,
+      "drug_enter_navigation": true
+    },
+    "ok": true
+  },
+  "storage_schema_parity": {
+    "items": {
+      "DB_VERSION": {
+        "old": "2",
+        "new": "2",
+        "same": true
+      },
+      "CURRENT_KEY": {
+        "old": "'anesvet_v14_3_current'",
+        "new": "'anesvet_v14_3_current'",
+        "same": true
+      },
+      "ARCHIVE_KEY": {
+        "old": "'anesvet_v14_3_archive_legacy'",
+        "new": "'anesvet_v14_3_archive_legacy'",
+        "same": true
+      },
+      "SETTINGS_KEY": {
+        "old": "'anesvet_v14_3_settings'",
+        "new": "'anesvet_v14_3_settings'",
+        "same": true
+      },
+      "PATIENT_FALLBACK_KEY": {
+        "old": "'anesvet_v14_3_patients_fallback'",
+        "new": "'anesvet_v14_3_patients_fallback'",
+        "same": true
+      },
+      "SAFETY_CHECKPOINT_KEY": {
+        "old": "'anesvet_v15_active_safety_checkpoint'",
+        "new": "'anesvet_v15_active_safety_checkpoint'",
+        "same": true
+      }
+    },
+    "ok": true
+  },
+  "ok": true
+}

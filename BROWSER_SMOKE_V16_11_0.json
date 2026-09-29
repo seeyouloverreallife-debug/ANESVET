@@ -1,0 +1,222 @@
+{
+  "engine": "Chromium injected runtime",
+  "tests": [
+    {
+      "viewport": [
+        320,
+        640
+      ],
+      "title": "ANESVET V16.11.0",
+      "hardening_version": "16.11.0",
+      "fast_rail": {
+        "x": 4,
+        "y": 576,
+        "left": 4,
+        "right": 316,
+        "top": 576,
+        "bottom": 634,
+        "width": 312,
+        "height": 58,
+        "display": "grid",
+        "transform": "none",
+        "cssLeft": "4px",
+        "cssRight": "4px",
+        "position": "fixed"
+      },
+      "or_dock_display_while_entry": "none",
+      "focused_initial": "orHr",
+      "focused_after_enter": "orMap",
+      "focused_after_shift_enter": "orHr",
+      "or_dock": {
+        "x": 5,
+        "y": 564,
+        "left": 5,
+        "right": 315,
+        "top": 564,
+        "bottom": 632,
+        "width": 310,
+        "height": 68,
+        "display": "grid",
+        "transform": "none",
+        "cssLeft": "5px",
+        "cssRight": "5px",
+        "position": "fixed"
+      },
+      "recovery_dock": {
+        "x": 5,
+        "y": 560,
+        "left": 5,
+        "right": 315,
+        "top": 560,
+        "bottom": 632,
+        "width": 310,
+        "height": 72,
+        "display": "grid",
+        "transform": "none",
+        "cssLeft": "5px",
+        "cssRight": "5px",
+        "position": "fixed"
+      },
+      "page_errors": [],
+      "console_errors_warnings": [],
+      "checks": {
+        "version": true,
+        "rail_visible": true,
+        "dock_hidden_during_entry": true,
+        "enter_next": true,
+        "shift_enter_prev": true,
+        "or_dock_inside": true,
+        "recovery_dock_inside": true,
+        "no_page_errors": true
+      },
+      "pass": true
+    },
+    {
+      "viewport": [
+        390,
+        844
+      ],
+      "title": "ANESVET V16.11.0",
+      "hardening_version": "16.11.0",
+      "fast_rail": {
+        "x": 4,
+        "y": 780,
+        "left": 4,
+        "right": 386,
+        "top": 780,
+        "bottom": 838,
+        "width": 382,
+        "height": 58,
+        "display": "grid",
+        "transform": "none",
+        "cssLeft": "4px",
+        "cssRight": "4px",
+        "position": "fixed"
+      },
+      "or_dock_display_while_entry": "none",
+      "focused_initial": "orHr",
+      "focused_after_enter": "orMap",
+      "focused_after_shift_enter": "orHr",
+      "or_dock": {
+        "x": 5,
+        "y": 768,
+        "left": 5,
+        "right": 385,
+        "top": 768,
+        "bottom": 836,
+        "width": 380,
+        "height": 68,
+        "display": "grid",
+        "transform": "none",
+        "cssLeft": "5px",
+        "cssRight": "5px",
+        "position": "fixed"
+      },
+      "recovery_dock": {
+        "x": 5,
+        "y": 764,
+        "left": 5,
+        "right": 385,
+        "top": 764,
+        "bottom": 836,
+        "width": 380,
+        "height": 72,
+        "display": "grid",
+        "transform": "none",
+        "cssLeft": "5px",
+        "cssRight": "5px",
+        "position": "fixed"
+      },
+      "quick_drug_nav": [
+        "orQuickDrugRoute",
+        "orQuickDrugConcentration",
+        "orQuickDrugSaveBtn"
+      ],
+      "page_errors": [],
+      "console_errors_warnings": [],
+      "checks": {
+        "version": true,
+        "rail_visible": true,
+        "dock_hidden_during_entry": true,
+        "enter_next": true,
+        "shift_enter_prev": true,
+        "or_dock_inside": true,
+        "recovery_dock_inside": true,
+        "no_page_errors": true,
+        "quick_drug_nav": true
+      },
+      "pass": true
+    },
+    {
+      "viewport": [
+        844,
+        390
+      ],
+      "title": "ANESVET V16.11.0",
+      "hardening_version": "16.11.0",
+      "fast_rail": {
+        "x": 62,
+        "y": 334,
+        "left": 62,
+        "right": 782,
+        "top": 334,
+        "bottom": 387,
+        "width": 720,
+        "height": 53,
+        "display": "grid",
+        "transform": "none",
+        "cssLeft": "6px",
+        "cssRight": "6px",
+        "position": "fixed"
+      },
+      "or_dock_display_while_entry": "none",
+      "focused_initial": "orHr",
+      "focused_after_enter": "orMap",
+      "focused_after_shift_enter": "orHr",
+      "or_dock": {
+        "x": 5,
+        "y": 329,
+        "left": 5,
+        "right": 839,
+        "top": 329,
+        "bottom": 387,
+        "width": 834,
+        "height": 58,
+        "display": "grid",
+        "transform": "none",
+        "cssLeft": "5px",
+        "cssRight": "5px",
+        "position": "fixed"
+      },
+      "recovery_dock": {
+        "x": 5,
+        "y": 316,
+        "left": 5,
+        "right": 839,
+        "top": 316,
+        "bottom": 387,
+        "width": 834,
+        "height": 71,
+        "display": "grid",
+        "transform": "none",
+        "cssLeft": "5px",
+        "cssRight": "5px",
+        "position": "fixed"
+      },
+      "page_errors": [],
+      "console_errors_warnings": [],
+      "checks": {
+        "version": true,
+        "rail_visible": true,
+        "dock_hidden_during_entry": true,
+        "enter_next": true,
+        "shift_enter_prev": true,
+        "or_dock_inside": true,
+        "recovery_dock_inside": true,
+        "no_page_errors": true
+      },
+      "pass": true
+    }
+  ],
+  "pass": true
+}

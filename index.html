@@ -7,26 +7,40 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="description" content="ANESVET V16.8.2 — Architecture Refactor Phase 3">
+  <meta name="description" content="ANESVET V17.1.0 — Multi-device Sync Foundation">
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" href="./icon-192.png">
   <link rel="apple-touch-icon" href="./icon-192.png">
-  <link rel="stylesheet" href="./style.css?v=16.8.2">
-  <link rel="stylesheet" href="./ui-refinement.css?v=16.8.2">
-<link rel="stylesheet" href="./pilot-efficiency.css?v=16.8.2">
-<link rel="stylesheet" href="./finalization.css?v=16.8.2">
-<link rel="stylesheet" href="./progressive-disclosure.css?v=16.8.2">
-<link rel="stylesheet" href="./drug-priority.css?v=16.8.2">
-<link rel="stylesheet" href="./medication-safety.css?v=16.8.2">
-<link rel="stylesheet" href="./medication-reconciliation.css?v=16.8.2">
-<link rel="stylesheet" href="./protocol-review.css?v=16.8.2">
-  <link rel="stylesheet" href="./clinical-calm.css?v=16.8.2">
-  <link rel="stylesheet" href="./focused-workspace.css?v=16.8.2">
-  <link rel="stylesheet" href="./progressive-clinical-flow.css?v=16.8.2">
-  <link rel="stylesheet" href="./adaptive-workspace.css?v=16.8.2">
-  <link rel="stylesheet" href="./usability-hardening.css?v=16.8.2">
-  <link rel="stylesheet" href="./data-resilience.css?v=16.8.2">
-  <title>ANESVET V16.8.2</title>
+  <link rel="stylesheet" href="./style.css?v=17.1.0">
+  <link rel="stylesheet" href="./ui-refinement.css?v=17.1.0">
+<link rel="stylesheet" href="./pilot-efficiency.css?v=17.1.0">
+<link rel="stylesheet" href="./finalization.css?v=17.1.0">
+<link rel="stylesheet" href="./final-archive-assurance.css?v=17.1.0">
+<link rel="stylesheet" href="./progressive-disclosure.css?v=17.1.0">
+<link rel="stylesheet" href="./drug-priority.css?v=17.1.0">
+<link rel="stylesheet" href="./medication-safety.css?v=17.1.0">
+<link rel="stylesheet" href="./medication-reconciliation.css?v=17.1.0">
+<link rel="stylesheet" href="./protocol-review.css?v=17.1.0">
+  <link rel="stylesheet" href="./hospital-protocol-governance.css?v=17.1.0">
+  <link rel="stylesheet" href="./security-baseline.css?v=17.1.0">
+  <link rel="stylesheet" href="./sync-foundation.css?v=17.1.0">
+  <link rel="stylesheet" href="./clinical-calm.css?v=17.1.0">
+  <link rel="stylesheet" href="./focused-workspace.css?v=17.1.0">
+  <link rel="stylesheet" href="./progressive-clinical-flow.css?v=17.1.0">
+  <link rel="stylesheet" href="./adaptive-workspace.css?v=17.1.0">
+  <link rel="stylesheet" href="./usability-hardening.css?v=17.1.0">
+  <link rel="stylesheet" href="./data-resilience.css?v=17.1.0">
+  <link rel="stylesheet" href="./data-safety-2.css?v=17.1.0">
+  <link rel="stylesheet" href="./procedure-templates.css?v=17.1.0">
+  <link rel="stylesheet" href="./recovery-refinement.css?v=17.1.0">
+  <link rel="stylesheet" href="./recovery-2.css?v=17.1.0">
+  <link rel="stylesheet" href="./or-speed-hardening.css?v=17.1.0">
+  <link rel="stylesheet" href="./documentation-guardian.css?v=17.1.0">
+  <link rel="stylesheet" href="./problem-response-review.css?v=17.1.0">
+  <link rel="stylesheet" href="./production-pilot.css?v=17.1.0">
+  <link rel="stylesheet" href="./validation-center.css?v=17.1.0">
+  <link rel="stylesheet" href="./case-review-dashboard.css?v=17.1.0">
+  <title>ANESVET V17.1.0</title>
 </head>
 <body>
 <header class="topbar">
@@ -34,7 +48,7 @@
     <img class="brand-logo" src="./icon-192.png" alt="ANESVET logo">
     <div>
       <div class="eyebrow">GENOVI PET CARE • DIGITAL ANESTHESIA RECORD</div>
-      <h1>ANESVET <span>V16.8.2</span></h1>
+      <h1>ANESVET <span>V17.1.0</span></h1>
       <div id="appHospitalName" class="app-hospital-name" hidden></div>
     </div>
   </div>
@@ -362,18 +376,39 @@
       </div>
 
       <div class="patient-clinical-grid">
+        <div class="procedure-template-block">
+          <div class="procedure-template-head">
+            <div>
+              <b>Procedure template</b>
+              <small>แตะเลือกเพื่อเติมชื่อ procedure และเตรียม OR LIVE ให้เหมาะกับงานที่ทำ โดยไม่เปลี่ยน protocol ยา, alert threshold หรือ clinical decision</small>
+            </div>
+            <span id="procedureTemplateLock" class="procedure-template-lock" hidden>FROZEN FOR ACTIVE CASE</span>
+          </div>
+          <div class="procedure-template-toolbar">
+            <button id="manageProcedureTemplatesBtn" class="btn" type="button">⚙ Hospital templates</button>
+            <button id="newHospitalProcedureTemplateBtn" class="btn" type="button">＋ New template</button>
+            <small>Built-in templates are read-only. Hospital templates are stored locally and included in full backup.</small>
+          </div>
+          <div id="procedureTemplateGrid" class="procedure-template-grid" aria-label="Procedure templates"></div>
+          <div class="procedure-template-meta">
+            <div><span>CURRENT TEMPLATE</span><b id="procedureTemplateName">Custom / other</b><small id="procedureTemplateFocus">Clinician-defined procedure</small></div>
+            <div><span>DOCUMENTATION PATH</span><b id="procedureTemplateMilestones">Induction → Airway → Surgery → Emergence → Recovery</b><small id="procedureTemplateNote">Template changes documentation layout only.</small></div>
+          </div>
+        </div>
+        <input id="procedureTemplateId" type="hidden" value="custom">
         <label class="span2">Procedure ที่จะทำ
           <input id="patientProcedure" type="text" placeholder="เช่น OHE / Dental / Exploratory laparotomy">
+          <small>แก้ข้อความได้ตามจริง แม้เลือก template แล้ว</small>
         </label>
         <input id="procedure" type="hidden">
-        <label class="span2">OR workflow profile
+        <label class="span2">OR workflow profile <span class="muted small">(advanced override)</span>
           <select id="caseWorkflowProfile">
             <option value="routine">Routine / Elective</option>
             <option value="critical">Emergency / Critical</option>
             <option value="csection">Cesarean section / C-section</option>
             <option value="custom">Custom / Other</option>
           </select>
-          <small>เปลี่ยนลำดับและปุ่มใน OR LIVE เพื่อช่วย documentation เท่านั้น • ไม่เปลี่ยน dose, threshold หรือ clinical protocol</small>
+          <small id="caseWorkflowProfileHint">Procedure template จะตั้งค่านี้ให้อัตโนมัติ • เปลี่ยนเองได้ก่อนเริ่ม induction • ไม่มีผลต่อ dose, threshold หรือ clinical protocol</small>
         </label>
         <label class="span2">ประวัติแพ้ยา / สิ่งที่ต้องหลีกเลี่ยง
           <input id="patientAllergies" type="text" placeholder="เช่น แพ้ amoxicillin / ไม่ทราบประวัติแพ้ยา">
@@ -529,6 +564,7 @@
         <div class="or-primary-kicker"><span>NEXT CLINICAL STEP</span><span id="orPrimaryStepCounter" class="or-primary-step-counter">STEP 1 OF 5</span></div>
         <b id="orPrimaryActionTitle">Start induction</b>
         <small id="orPrimaryActionHelp">กดครั้งเดียวเพื่อ timestamp Induction + เริ่มจับเวลา — ปริมาณยาค่อยลงย้อนหลังได้หลัง airway stable</small>
+        <div id="orPrimaryDocumentationNote" class="or-primary-documentation-note" hidden></div>
       </div>
       <div class="or-primary-buttons">
         <button id="orPrimaryActionBtn" class="or-primary-action" type="button">▶ Start induction</button>
@@ -553,6 +589,14 @@
       </div>
     </section>
 
+    <section id="orDocumentationGuardian" class="documentation-guardian" aria-label="OR documentation guardian" aria-live="polite" hidden>
+      <div class="documentation-guardian-head">
+        <div><span>DOCUMENTATION GUARDIAN</span><b>Current-stage documentation</b><small>State-derived reminders only • never marks medication or clinical actions as completed automatically</small></div>
+        <span id="orDocumentationGuardianBadge" class="status-pill good">CLEAR</span>
+      </div>
+      <div id="orDocumentationGuardianList" class="documentation-guardian-list"></div>
+    </section>
+
     <section id="orCaseContextPanel" class="or-context-panel routine" aria-label="Case-specific OR workflow">
       <div class="or-context-copy">
         <span id="orContextEyebrow">WORKFLOW PROFILE</span>
@@ -561,6 +605,7 @@
       </div>
       <div id="orContextMetrics" class="or-context-metrics"></div>
       <div id="orContextActions" class="or-context-actions"></div>
+      <div id="orTemplateContextNote" class="or-template-context-note" hidden></div>
     </section>
 
     <details class="or-phase-tracker-panel or-phase-details">
@@ -772,6 +817,7 @@
           <button class="or-milestone" data-cat="Surgery" data-label="Surgery end">Surgery end</button>
           <button class="or-milestone" data-cat="Airway" data-label="Extubation">Extubation</button>
         </div>
+        <div id="orTemplateQuickActions" class="or-template-quick-actions" hidden></div>
         <div class="or-action-buttons">
           <button class="or-complication warn" data-complication="Hypotension">Hypotension</button>
           <button class="or-complication warn" data-complication="Bradycardia">Bradycardia</button>
@@ -816,6 +862,16 @@
       <button id="orMobileRecordBtn" class="or-mobile-dock-btn or-mobile-vitals" type="button"><span>＋</span><b>VITALS</b></button>
       <button id="orMobileMedsBtn" class="or-mobile-dock-btn or-mobile-meds" type="button" hidden><span>💉</span><b id="orMobileMedsLabel">MEDS</b></button>
       <button id="orMobileMoreBtn" class="or-mobile-dock-btn" type="button"><span>•••</span><b>MORE</b></button>
+    </nav>
+
+    <nav id="orFastEntryRail" class="or-fast-entry-rail" aria-label="Fast vital entry controls" hidden>
+      <button id="orFastEntryPrevBtn" type="button" aria-label="Previous vital">‹ PREV</button>
+      <div class="or-fast-entry-current" aria-live="polite">
+        <small id="orFastEntryProgress">VITAL 1/6</small>
+        <b id="orFastEntryCurrent">HR • blank</b>
+      </div>
+      <button id="orFastEntryNextBtn" type="button" aria-label="Next vital">NEXT ›</button>
+      <button id="orFastEntrySaveBtn" class="or-fast-entry-save" type="button">✓ SAVE</button>
     </nav>
 
     <dialog id="orMoreDialog" class="or-more-dialog" aria-labelledby="orMoreTitle">
@@ -875,6 +931,7 @@
         <div><span>Patient</span><b id="summaryPatient">—</b></div>
         <div><span>ASA</span><b id="summaryAsa">—</b></div>
         <div><span>Procedure</span><b id="summaryProcedure">—</b></div>
+        <div><span>Template</span><b id="summaryProcedureTemplate">Custom / other</b></div>
         <div><span>Surgeon</span><b id="summarySurgeon">—</b></div>
         <div><span>Anesthetist</span><b id="summaryAnesthetist">—</b></div>
         <div><span>Assistant</span><b id="summaryAssistant">—</b></div>
@@ -1528,6 +1585,29 @@
       </div>
     </section>
 
+    <section class="panel pir-review-panel">
+      <div class="section-heading">
+        <div class="pir-review-intro">
+          <div class="eyebrow">V16.14 CASE REVIEW</div>
+          <h2>Problem → Intervention → Response</h2>
+          <p>เชื่อม alert episode และ complication ที่บันทึกไว้กับ intervention, follow-up measurement และ documented outcome เพื่อทบทวนเคสโดยไม่เพิ่มการตัดสินใจรักษาอัตโนมัติ</p>
+        </div>
+      </div>
+      <div class="pir-summary-grid" aria-label="Problem response review summary">
+        <div><span>Episodes</span><b id="pirEpisodeCount">0</b></div>
+        <div><span>With intervention</span><b id="pirInterventionCount">0</b></div>
+        <div><span>Follow-up evidence</span><b id="pirResponseCount">0</b></div>
+        <div><span>Unresolved</span><b id="pirActiveCount">0</b></div>
+      </div>
+      <div class="pir-filter-row">
+        <button class="btn primary" type="button" data-pir-filter="all">All</button>
+        <button class="btn" type="button" data-pir-filter="active">Active</button>
+        <button class="btn" type="button" data-pir-filter="resolved">Resolved</button>
+      </div>
+      <div id="pirReviewList" class="pir-review-list"><div class="empty-state">No alert episodes or structured complications documented in this case.</div></div>
+      <div class="pir-safety-note">Review layer only: ANESVET แสดงข้อมูลที่ถูกบันทึกและเทียบ follow-up value กับ configured alert threshold เท่านั้น ไม่สรุปว่า intervention สำเร็จ/ล้มเหลว และไม่สร้างคำแนะนำการรักษาใหม่</div>
+    </section>
+
     <section class="panel unified-timeline-panel">
       <div class="section-heading">
         <div>
@@ -1972,6 +2052,10 @@
         <span id="recoveryFocusReadiness">Complete observations / checklist</span>
         <small id="recoveryFocusLatestTime">No recovery record yet</small>
       </div>
+      <div id="recoveryTransitionStrip" class="recovery-transition-strip" aria-live="polite">
+        <div><span>TRANSITION</span><b id="recoveryTransitionTitle">Recovery not started</b></div>
+        <small id="recoveryTransitionText">Extubation and handoff status will appear here.</small>
+      </div>
     </section>
 
     <div class="recovery-efficiency-tools" aria-label="Recovery next-task workflow">
@@ -1980,18 +2064,57 @@
       <span id="recoveryEfficiencySummary" class="recovery-efficiency-summary">—</span>
     </div>
 
-    <section id="recoveryHandoffPanel" class="panel handoff-panel handoff-v2">
-      <div class="section-heading"><div><h2>Recovery Handoff</h2><p>Abnormal first • auto-summary from the case • พิมพ์เฉพาะสิ่งที่ต้องส่งต่อเพิ่ม</p></div><span id="recoveryHandoffProblemBadge" class="status-pill good">CLEAR</span></div>
-      <div id="recoveryHandoffAttention" class="handoff-attention" hidden></div>
-      <div id="recoveryHandoffReady" class="handoff-ready-strip" aria-label="Recovery handoff readiness"></div>
-      <div id="recoveryHandoffSummary" class="handoff-summary-grid"></div>
-      <div class="handoff-v2-grid">
-        <div class="handoff-v2-block"><div class="handoff-v2-title"><b>Medications received</b><small>Actual administration • grouped automatically</small></div><div id="recoveryHandoffMedicationRows" class="handoff-med-rows"></div></div>
-        <div class="handoff-v2-block"><div class="handoff-v2-title"><b>Key timeline</b><small>Latest case milestones</small></div><div id="recoveryHandoffTimeline" class="handoff-timeline"></div></div>
+    <section id="recoveryDocumentationGuardian" class="documentation-guardian" aria-label="Recovery documentation guardian" aria-live="polite" hidden>
+      <div class="documentation-guardian-head">
+        <div><span>DOCUMENTATION GUARDIAN</span><b>Recovery documentation</b><small>Highlights missing or overdue documentation without inferring a clinical action</small></div>
+        <span id="recoveryDocumentationGuardianBadge" class="status-pill good">CLEAR</span>
       </div>
-      <label class="handoff-note-field"><span>Extra handoff / watch note <small>optional — only type what ANESVET cannot infer</small></span><input id="recHandoffNote" type="text" placeholder="เช่น recheck airway noise / owner-specific instruction / additional watch point"></label>
-      <details class="handoff-full-details"><summary>ดูรายละเอียด Handoff ทั้งหมด</summary><pre id="recoveryHandoffText"></pre></details>
-      <details><summary>Snapshots at transfer</summary><div id="recoveryHandoffHistory"></div></details>
+      <div id="recoveryDocumentationGuardianList" class="documentation-guardian-list"></div>
+    </section>
+
+    <section id="recoveryTrendPanel" class="panel recovery2-trend-panel" aria-label="Recovery trends and support">
+      <div class="section-heading">
+        <div><h2>Recovery trend & support</h2><p>สรุปจาก Recovery records ที่บันทึกจริง • แสดงแนวโน้มเชิงพรรณนา ไม่สรุปผลการรักษาอัตโนมัติ</p></div>
+        <span id="recoveryTrendRecordBadge" class="status-pill good">0 RECORDS</span>
+      </div>
+      <div id="recoveryTrendCards" class="recovery2-trend-grid">
+        <div class="recovery2-trend-card"><span>TEMPERATURE</span><b>—</b><small>No recovery records</small></div>
+        <div class="recovery2-trend-card"><span>O₂ SUPPORT</span><b>—</b><small>No recovery records</small></div>
+        <div class="recovery2-trend-card"><span>MENTATION</span><b>—</b><small>No recovery records</small></div>
+        <div class="recovery2-trend-card"><span>COMFORT</span><b>—</b><small>Not assessed</small></div>
+        <div class="recovery2-trend-card"><span>GI / MOBILITY</span><b>—</b><small>Not assessed</small></div>
+      </div>
+    </section>
+
+    <section id="recoveryPostopMedicationPanel" class="panel recovery2-med-panel" aria-label="Post-anesthetic medication reconciliation">
+      <div class="section-heading">
+        <div><h2>Post-anesthetic medication review</h2><p>เทียบ frozen Case Drug Plan กับ actual administration / explicit Not-given decision • ไม่ถือว่า “ไม่ได้ให้ยา” เพียงเพราะยังไม่มี record</p></div>
+        <span id="recoveryPostopMedicationBadge" class="status-pill good">CLEAR</span>
+      </div>
+      <div id="recoveryPostopMedicationList" class="recovery2-med-list empty-state compact">No post-anesthetic planned medications.</div>
+      <div class="recovery2-panel-actions">
+        <button id="recoveryPostopRecordMedicationBtn" class="btn primary" type="button">💉 Record recovery medication</button>
+        <button id="recoveryPostopFullReconcileBtn" class="btn" type="button">Review full reconciliation</button>
+      </div>
+    </section>
+
+    <section id="recoveryHandoffPanel" class="panel handoff-panel handoff-v2 recovery-handoff-compact-panel">
+      <div class="section-heading"><div><h2>Recovery Handoff</h2><p>Auto-summary first • เปิดรายละเอียดเมื่อจำเป็น • ไม่ต้องพิมพ์ข้อมูลซ้ำ</p></div><span id="recoveryHandoffProblemBadge" class="status-pill good">CLEAR</span></div>
+      <div id="recoveryHandoffAttention" class="handoff-attention" hidden></div>
+      <div id="recoveryHandoffCompact" class="recovery-handoff-compact" aria-label="Recovery handoff quick summary"></div>
+      <button id="recoveryHandoffExpandBtn" class="btn recovery-handoff-expand" type="button" aria-controls="recoveryHandoffDetails" aria-expanded="false">Open handoff details</button>
+      <details id="recoveryHandoffDetails" class="recovery-handoff-details">
+        <summary>Full transfer details <small>vitals • medication • timeline • optional note</small></summary>
+        <div id="recoveryHandoffReady" class="handoff-ready-strip" aria-label="Recovery handoff readiness"></div>
+        <div id="recoveryHandoffSummary" class="handoff-summary-grid"></div>
+        <div class="handoff-v2-grid">
+          <div class="handoff-v2-block"><div class="handoff-v2-title"><b>Medications received</b><small>Actual administration • grouped automatically</small></div><div id="recoveryHandoffMedicationRows" class="handoff-med-rows"></div></div>
+          <div class="handoff-v2-block"><div class="handoff-v2-title"><b>Key timeline</b><small>Latest case milestones</small></div><div id="recoveryHandoffTimeline" class="handoff-timeline"></div></div>
+        </div>
+        <label class="handoff-note-field"><span>Extra handoff / watch note <small>optional — only type what ANESVET cannot infer</small></span><input id="recHandoffNote" type="text" placeholder="เช่น recheck airway noise / owner-specific instruction / additional watch point"></label>
+        <details class="handoff-full-details"><summary>ดูข้อความ Handoff ทั้งหมด</summary><pre id="recoveryHandoffText"></pre></details>
+        <details><summary>Snapshots at transfer</summary><div id="recoveryHandoffHistory"></div></details>
+      </details>
     </section>
     <section id="recoveryProblemsPanel" class="panel"><h2>Unresolved alerts / problems</h2><div id="recoveryProblemPanel"></div></section>
     <div class="dashboard-grid">
@@ -2034,9 +2157,31 @@
           <label>Record interval
             <select id="recRecordInterval"><option value="5">5 min</option><option value="10">10 min</option><option value="15">15 min</option></select>
           </label>
-          <label class="span2">Pain / Recovery note
-            <input id="recPain" type="text" placeholder="เช่น CMPS-SF 3/24, calm, dysphoric...">
+          <label class="span2">Recovery note
+            <input id="recPain" type="text" placeholder="clinical context / watch point / additional note">
           </label>
+          <div class="span3 recovery2-structured-wrap">
+            <details class="recovery2-structured" open>
+              <summary><span>Structured recovery assessment</span><small>optional documentation • does not change readiness criteria</small></summary>
+              <div class="recovery2-structured-grid">
+                <label>Pain scale
+                  <select id="recPainScale"><option value="">Not assessed</option><option>CMPS-SF</option><option>Feline Grimace Scale</option><option>Colorado State</option><option>Other</option></select>
+                </label>
+                <label>Pain score / result
+                  <input id="recPainScore" type="text" maxlength="40" placeholder="e.g. 3/24 or 2/10">
+                </label>
+                <label>Dysphoria / agitation
+                  <select id="recDysphoria"><option value="">Not assessed</option><option>None observed</option><option>Mild</option><option>Moderate</option><option>Severe</option></select>
+                </label>
+                <label>Nausea / vomiting
+                  <select id="recNausea"><option value="">Not assessed</option><option>None observed</option><option>Nausea signs</option><option>Retching</option><option>Vomited</option></select>
+                </label>
+                <label>Mobility / ambulation
+                  <select id="recAmbulation"><option value="">Not assessed</option><option>Recumbent</option><option>Sternal only</option><option>Stands with assistance</option><option>Ambulatory with assistance</option><option>Ambulatory independently</option></select>
+                </label>
+              </div>
+            </details>
+          </div>
         </div>
       </section>
 
@@ -2088,15 +2233,37 @@
       </div>
       <div class="table-wrap">
         <table class="data-table recovery-data-table">
-          <thead><tr><th>#</th><th>Recovery</th><th>Clock</th><th>HR</th><th>RR</th><th>MAP</th><th>SpO₂</th><th id="recoveryTempHeader">Temp °F</th><th>O₂</th><th>Mentation</th><th>Note</th></tr></thead>
-          <tbody id="recoveryRecordBody"><tr><td colspan="11" class="empty-state">ยังไม่มี Recovery record</td></tr></tbody>
+          <thead><tr><th>#</th><th>Recovery</th><th>Clock</th><th>HR</th><th>RR</th><th>MAP</th><th>SpO₂</th><th id="recoveryTempHeader">Temp °F</th><th>O₂</th><th>Mentation</th><th>Pain</th><th>Dysphoria</th><th>N/V</th><th>Mobility</th><th>Note</th></tr></thead>
+          <tbody id="recoveryRecordBody"><tr><td colspan="15" class="empty-state">ยังไม่มี Recovery record</td></tr></tbody>
         </table>
       </div>
       <div class="settings-note">ใช้ค่าปัจจุบันจาก Recovery observations ด้านบน แล้วบันทึก snapshot เมื่อกด Record recovery vitals • ถ้าค่า SpO₂/Temp ใช้ไม่ได้จริง ให้ mark N/A พร้อมเหตุผล แทนการใส่ค่าเดา</div>
     </section>
 
+    <section id="recoveryTransferPanel" class="panel recovery2-transfer-panel" aria-label="Recovery transfer and ward handoff">
+      <div class="section-heading">
+        <div><h2>Transfer / ward handoff</h2><p>Document destination and receiving person when the patient leaves active Recovery. Optional record; does not replace hospital discharge criteria.</p></div>
+        <span id="recoveryTransferBadge" class="status-pill warn">NOT DOCUMENTED</span>
+      </div>
+      <div class="form-grid three recovery2-transfer-grid">
+        <label>Destination
+          <select id="recDestination"><option value="">—</option><option>Ward</option><option>ICU / critical care</option><option>Outpatient / discharge area</option><option>Owner handoff</option><option>Other</option></select>
+        </label>
+        <label>Handoff to
+          <input id="recHandoffTo" type="text" maxlength="80" placeholder="name / role">
+        </label>
+        <label class="span1">Transfer note
+          <input id="recTransferNote" type="text" maxlength="200" placeholder="watch point / oxygen / warming / other">
+        </label>
+      </div>
+      <div class="recovery2-panel-actions">
+        <button id="captureRecoveryTransferBtn" class="btn primary" type="button">Capture transfer snapshot</button>
+        <span id="recoveryTransferLatest" class="recovery2-transfer-latest">No transfer snapshot</span>
+      </div>
+    </section>
+
     <nav id="recoveryMobileDock" class="recovery-mobile-dock" aria-label="Recovery primary actions">
-      <button id="recoveryMobileRecordBtn" class="recovery-mobile-dock-btn primary" type="button"><span>＋</span><b>Record vitals</b><small id="recoveryMobileDue">DUE</small></button>
+      <button id="recoveryMobileRecordBtn" class="recovery-mobile-dock-btn primary" type="button" data-primary-action="record"><span id="recoveryMobilePrimaryIcon">＋</span><b id="recoveryMobilePrimaryLabel">Record vitals</b><small id="recoveryMobileDue">DUE</small></button>
       <button id="recoveryMobileMedicationBtn" class="recovery-mobile-dock-btn" type="button"><span>💉</span><b>MEDS</b></button>
       <button id="recoveryMobileMoreBtn" class="recovery-mobile-dock-btn" type="button"><span>•••</span><b>MORE</b></button>
     </nav>
@@ -2161,6 +2328,28 @@
             <button id="rollbackRestoreBtn" class="btn danger-outline" type="button" hidden>Rollback last restore</button>
           </div>
         </div>
+
+        <div class="data-safety2-center">
+          <div class="section-heading compact">
+            <div><h3>Data Safety 2.0</h3><p id="dataSafety2Meta">Checking backup history and off-device protection…</p></div>
+          </div>
+          <div class="data-safety2-grid">
+            <div class="data-safety2-card"><span>Verified backup file</span><b id="verifiedBackupFileHealth" class="data-health-value">Checking…</b><small id="verifiedBackupFileDetail">Whole-file SHA-256 verification</small></div>
+            <div class="data-safety2-card"><span>Off-device copy</span><b id="offDeviceBackupHealth" class="data-health-value">Checking…</b><small id="offDeviceBackupDetail">Copy stored outside this browser/device</small></div>
+            <div class="data-safety2-card"><span>Restore verification</span><b id="restoreVerificationHealth" class="data-health-value">Checking…</b><small id="restoreVerificationDetail">Post-restore dataset comparison</small></div>
+            <div class="data-safety2-card"><span>Backup history</span><b id="backupHistoryHealth" class="data-health-value">Checking…</b><small id="backupHistoryDetail">Local backup receipts</small></div>
+          </div>
+          <div class="data-safety2-actions">
+            <button id="verifyBackupFileBtn" class="btn" type="button">✓ Verify backup file</button>
+            <input id="verifyBackupFileInput" type="file" accept="application/json,.json" hidden>
+            <button id="markOffDeviceBtn" class="btn" type="button">↗ Mark latest copy off-device</button>
+          </div>
+          <div class="data-safety2-note">Off-device status is a user-confirmed receipt only. V16.21.0 still does not upload to or verify a remote cloud/NAS/USB destination automatically.</div>
+          <div class="data-safety-history">
+            <div class="data-safety-history-head"><b>Recent backup history</b><small>Latest 10 receipts shown</small></div>
+            <div id="backupHistoryList"></div>
+          </div>
+        </div>
       </section>
 
       <div class="button-row backup-row">
@@ -2176,6 +2365,40 @@
         <button id="exportJsonBtn" class="btn">Export Full Case JSON</button>
         <button id="printCaseSummaryBtn" class="btn primary">1-page Summary PDF</button><button id="printCaseBtn" class="btn">Full PDF Report</button>
       </div>
+    </section>
+
+    <section id="caseReviewDashboard" class="panel case-review-panel">
+      <div class="section-heading case-review-heading">
+        <div>
+          <div class="eyebrow">V16.22 CASE REVIEW</div>
+          <h2>Identity, Roles & Multi-user Foundation</h2>
+          <p class="case-review-disclaimer">Descriptive review of archived anesthesia documentation. ANESVET does not grade clinicians, infer causality, or decide whether treatment was appropriate.</p>
+        </div>
+        <div class="button-row"><button id="caseReviewRefreshBtn" class="btn" type="button">Refresh</button><button id="caseReviewExportBtn" class="btn primary" type="button">Export review CSV</button></div>
+      </div>
+      <div class="case-review-filter-grid">
+        <label>Period<select id="caseReviewPeriod"><option value="30">Last 30 days</option><option value="90" selected>Last 90 days</option><option value="365">Last 12 months</option><option value="0">All dates</option></select></label>
+        <label>Dataset<select id="caseReviewDataset"><option value="final" selected>Final locked records</option><option value="voided">Voided final records</option><option value="working">Working copies</option><option value="all">All archived records</option></select></label>
+        <label>Species<select id="caseReviewSpecies"><option value="all">All species</option><option value="dog">Dog</option><option value="cat">Cat</option><option value="other">Other</option></select></label>
+        <label>Protocol<select id="caseReviewProtocol"><option value="all">All protocol versions</option></select></label>
+        <label class="case-review-search">Search case / procedure<input id="caseReviewSearch" type="search" placeholder="Patient, HN, Record ID, procedure…"></label>
+      </div>
+      <div class="case-review-cards">
+        <div class="case-review-card"><span>Cases in review</span><b id="caseReviewCount">0 cases</b><small id="caseReviewDatasetNote">Final locked records only.</small></div>
+        <div class="case-review-card"><span>Median recorded case elapsed</span><b id="caseReviewMedianDuration">—</b><small>Based on ANESVET timer / recorded case timestamps</small></div>
+        <div class="case-review-card"><span>Median Recovery duration</span><b id="caseReviewMedianRecovery">—</b><small id="caseReviewOverrides">—</small></div>
+        <div class="case-review-card"><span>Structured documentation domains</span><b id="caseReviewStructuredComplete">—</b><small id="caseReviewStructuredDetail">No cases in current filter</small></div>
+      </div>
+      <div class="case-review-grid">
+        <section class="case-review-box"><h3>Documented physiologic alerts</h3><p id="caseReviewAlertSummary">No cases in current filter</p><div id="caseReviewAlertBreakdown"></div></section>
+        <section class="case-review-box"><h3>Documentation completeness</h3><p>Presence of structured documentation domains already used by Documentation Guardian. This is not a clinical performance score.</p><div id="caseReviewCompleteness"></div></section>
+        <section class="case-review-box"><h3>Problem → Intervention → Response</h3><p>Counts existing structured alert/complication documentation without judging treatment success.</p><div id="caseReviewProblems"></div></section>
+        <section class="case-review-box"><h3>Protocol versions used</h3><p>Frozen protocol snapshot recorded at case start.</p><div id="caseReviewProtocols"></div></section>
+      </div>
+      <div class="case-review-table-wrap">
+        <table class="case-review-table"><thead><tr><th>Date</th><th>Patient / HN</th><th>Procedure</th><th>Protocol</th><th>Alerts</th><th>Complications</th><th>Recovery</th><th>Structured docs</th></tr></thead><tbody id="caseReviewTableBody"><tr><td colspan="8"><div class="empty-state compact">No archived cases in current review.</div></td></tr></tbody></table>
+      </div>
+      <div class="case-review-footer"><small>Use these aggregates to find documentation patterns and cases worth reviewing. Differences may reflect case mix, monitoring/documentation frequency, threshold configuration, or workflow changes.</small></div>
     </section>
 
     <section class="panel archive-browser-panel">
@@ -2300,6 +2523,10 @@
       <div id="reportComplications"></div>
     </section>
     <section class="report-section">
+      <h2>Recovery 2.0</h2>
+      <div id="reportProblemResponseReview"></div>
+    </section>
+    <section class="report-section">
       <h2>Medication Administration Audit</h2>
       <div id="reportDrugAdministrations"></div>
     </section>
@@ -2363,6 +2590,15 @@
         <div id="endCaseBlockers" class="endcase-blockers"></div>
       </section>
 
+      <section id="endDocumentationGuardian" class="documentation-guardian" aria-label="Clinical record completeness" aria-live="polite">
+        <div class="documentation-guardian-head">
+          <div><span>DOCUMENTATION GUARDIAN</span><b>Clinical record completeness</b><small>Checks for documentation gaps only. It does not determine whether care was clinically adequate.</small></div>
+          <span id="endDocumentationGuardianBadge" class="status-pill warn">REVIEW</span>
+        </div>
+        <div id="endDocumentationGuardianCompleteness" class="documentation-completeness-grid"></div>
+        <div id="endDocumentationGuardianList" class="documentation-guardian-list"></div>
+      </section>
+
       <div class="end-case-summary">
         <div><span>Patient</span><b id="endPatient">—</b></div>
         <div><span>Procedure</span><b id="endProcedure">—</b></div>
@@ -2410,6 +2646,29 @@
         <label><input id="endConfirmDrugs" type="checkbox"> ตรวจ Drug / Event แล้ว</label>
         <label><input id="endConfirmPdf" type="checkbox"> พร้อม Archive / Export report</label>
       </div>
+      <section id="finalArchiveAssurancePanel" class="final-archive-assurance" aria-label="Final archive assurance" aria-live="polite">
+        <div class="final-archive-assurance-head">
+          <div>
+            <div class="eyebrow">FINAL RECORD ASSURANCE</div>
+            <h3>Lock → Archive → Verify</h3>
+            <p id="finalArchiveAssuranceSummary">Final record verification will run automatically after Final Lock.</p>
+          </div>
+          <span id="finalArchiveAssuranceBadge" class="status-pill muted">WAITING</span>
+        </div>
+        <div id="finalArchiveAssuranceGrid" class="final-archive-assurance-grid">
+          <div><span>Final Lock</span><b id="finalArchiveLockStatus">Pending</b></div>
+          <div><span>Archive copy</span><b id="finalArchiveCopyStatus">Pending</b></div>
+          <div><span>Checksum</span><b id="finalArchiveChecksumStatus">Pending</b></div>
+          <div><span>Archive backend</span><b id="finalArchiveBackendStatus">—</b></div>
+        </div>
+        <div id="finalArchiveAssuranceDetail" class="final-archive-assurance-detail">ANESVET will verify that the archived copy exists and matches the locked clinical checksum before the record is considered safely archived.</div>
+        <div class="final-archive-assurance-actions">
+          <button id="finalArchiveVerifyBtn" class="btn" type="button" disabled>Verify final archive</button>
+          <button id="finalArchiveRetryBtn" class="btn primary" type="button" hidden>Retry archive & verify</button>
+          <button id="finalArchiveBackupBtn" class="btn" type="button" hidden>Backup all data</button>
+        </div>
+      </section>
+
       <section class="endcase-report-panel">
         <div class="section-heading compact">
           <div><h3>Report & final archive</h3><p id="endReportIdentity">ANESVET report</p></div>
@@ -2535,6 +2794,59 @@
   <div class="settings-note">RC self-check เป็น technical safety check ไม่ได้แทน clinical verification • Real-device testing บน iPad/Android/Windows ยังเป็นส่วนหนึ่งของ RC acceptance</div>
 </section>
 
+<section class="panel production-pilot-panel">
+  <div class="section-heading">
+    <div><h2>Production Pilot — Real-device Reliability</h2><p>Production Validation Center (introduced in V16.19.1) สำหรับเก็บหลักฐานการทดสอบ workflow บนมือถือ / tablet / Windows เครื่องจริงแบบเป็นรอบ โดยไม่เปลี่ยน clinical logic</p></div>
+    <span id="productionPilotBadge" class="status-pill neutral">PILOT 0/11</span>
+  </div>
+  <div class="production-pilot-overview">
+    <div><span>Automated device readiness</span><b>Storage • PWA • viewport • recovery copies</b><small>รันบนอุปกรณ์ที่ใช้ใน OR จริง ไม่ใช่แค่ development machine</small></div>
+    <div><span>Real-device acceptance</span><b>11 required scenarios</b><small>background, force-close, offline, Recovery, Final Lock, backup/restore และ long-case endurance</small></div>
+    <div><span>Lifecycle evidence</span><b id="productionPilotLifecycleBadge">0 EVENTS</b><small>บันทึกเฉพาะ technical state เช่น hidden / pageshow / online / offline; ไม่เก็บชื่อผู้ป่วย</small></div>
+  </div>
+  <div class="production-pilot-actions">
+    <button id="productionPilotRunBtn" class="btn primary" type="button">Run device readiness</button>
+    <button id="productionPilotExportBtn" class="btn" type="button">Export pilot report</button>
+    <button id="productionPilotRefreshBtn" class="btn" type="button">Refresh</button>
+    <button id="productionPilotResetBtn" class="btn danger-outline" type="button">Reset pilot results</button>
+  </div>
+  <div id="productionPilotAutomatedResults" class="pilot-auto-grid"></div>
+  <details open>
+    <summary><b>Real-device acceptance matrix</b> — mark PASS only after observing the full scenario on this device</summary>
+    <div id="productionPilotScenarioList" class="pilot-scenario-list"></div>
+  </details>
+  <details class="pilot-lifecycle-wrap">
+    <summary><b>Lifecycle evidence</b> — latest 20 events</summary>
+    <div id="productionPilotLifecycleLog" class="pilot-life-log"></div>
+  </details>
+
+  <div class="validation-center-wrap">
+    <div class="validation-center-head">
+      <div><h3>Production Validation Center</h3><p>ทดสอบ workflow เดียวกันเป็นรอบบนอุปกรณ์จริง • run จะคงอยู่หลัง force-close/reopen เพื่อให้ทดสอบ lifecycle ได้ครบ</p></div>
+      <div class="validation-badges"><span id="validationCenterBadge" class="status-pill neutral">NOT RUN</span><span id="validationEvidenceTarget" class="status-pill neutral">0/20 consecutive PASS</span></div>
+    </div>
+    <div class="validation-controls">
+      <label>Device label<input id="validationDeviceLabel" type="text" maxlength="80" placeholder="เช่น OR Android Tablet 01"></label>
+      <button id="validationStartRunBtn" class="btn primary" type="button">Start validation run</button>
+      <button id="validationCompleteRunBtn" class="btn" type="button" disabled>Complete run</button>
+      <button id="validationAbortRunBtn" class="btn" type="button" disabled>Abort</button>
+      <button id="validationExportBtn" class="btn" type="button">Export validation report</button>
+      <button id="validationResetBtn" class="btn danger-outline" type="button">Reset history</button>
+    </div>
+    <div id="validationRunMeta" class="validation-note">No validation run started on this device.</div>
+    <details open>
+      <summary><b>12-step real-device workflow protocol</b> — mark PASS only after the complete step is observed</summary>
+      <div id="validationStepList" class="validation-step-list"></div>
+    </details>
+    <details>
+      <summary><b>Recent validation runs</b></summary>
+      <div id="validationHistoryList" class="validation-history"></div>
+    </details>
+  </div>
+  <div id="productionPilotMeta" class="production-pilot-note">Pilot has not been evaluated on this device yet.</div>
+  <div class="settings-note">PASS ใน panel นี้หมายถึง scenario ที่ผู้ใช้สังเกตว่าผ่านบนอุปกรณ์/build นี้เท่านั้น ไม่ใช่ regulatory certification และไม่แทน clinical validation / professional judgment. ข้อมูล validation เป็น technical evidence และไม่เก็บชื่อผู้ป่วย/HN/microchip โดยอัตโนมัติ.</div>
+</section>
+
 <section class="panel pilot-feedback-settings-panel">
   <div class="section-heading">
     <div><h2>Support / Report</h2><p>ส่งปัญหาให้ทีม ANESVET ผ่าน Email หรือ Facebook โดยไม่ใช้ Google Apps Script / webhook แล้ว</p></div>
@@ -2581,13 +2893,27 @@
 <section class="panel protocol-governance-panel">
   <div class="section-heading">
     <div>
+      <div class="eyebrow">V16.20+ • VERSIONED HOSPITAL CONFIGURATION</div>
       <h2>Hospital Protocol Governance</h2>
-      <p>กำหนดชื่อ/เวอร์ชัน protocol และล็อกการแก้ยา/สูตรเพื่อป้องกันการเปลี่ยนโดยไม่ตั้งใจระหว่างใช้งานจริง</p>
+      <p>จัดการ protocol แบบ Draft → Reviewed → Published → Retired และ freeze เวอร์ชันที่ Published เข้าแต่ละเคสตอน Start Case</p>
     </div>
     <div class="button-row">
+      <span id="protocolGovernanceStage" class="status-pill warn">UNMANAGED</span>
       <span id="protocolLockStatus" class="status-pill warn">UNLOCKED</span>
-      <button id="toggleProtocolLockBtn" class="btn">🔒 Lock protocol</button>
+      <button id="toggleProtocolLockBtn" class="btn">🔒 Legacy lock</button>
     </div>
+  </div>
+  <div class="protocol-governance-status-grid">
+    <div class="protocol-governance-card"><span>Active published protocol</span><b id="protocolActiveVersion">No active published protocol</b></div>
+    <div class="protocol-governance-card"><span>Working configuration</span><b id="protocolDraftState">No working draft</b></div>
+  </div>
+  <div class="protocol-governance-actions">
+    <button id="protocolCreateDraftBtn" class="btn" type="button">＋ Create draft</button>
+    <button id="protocolReviewDraftBtn" class="btn" type="button">✓ Mark REVIEWED</button>
+    <button id="protocolPublishDraftBtn" class="btn primary" type="button">🚀 Publish</button>
+    <button id="protocolDiscardDraftBtn" class="btn light" type="button">Discard draft</button>
+    <button id="protocolRetirePublishedBtn" class="btn light" type="button">Retire published</button>
+    <button id="protocolExportRegistryBtn" class="btn light" type="button">Export registry</button>
   </div>
   <div class="settings-grid">
     <label>Protocol name
@@ -2606,6 +2932,9 @@
   <div id="protocolGovernanceNote" class="settings-note">
     เมื่อเริ่มเคส ระบบจะ freeze protocol version + drug configuration snapshot ไว้กับเคสนั้น
   </div>
+  <div id="protocolGovernanceWorkflowNote" class="settings-note">Legacy/unmanaged mode.</div>
+  <div class="section-subheading"><b>Protocol version history</b><span>ล่าสุด 8 รายการ</span></div>
+  <div id="protocolVersionHistory" class="protocol-version-history"></div>
 </section>
 
 <section class="panel protocol-review-panel">
@@ -2717,7 +3046,7 @@
     <div class="help-topics">
       <details id="helpTopicPatient" data-help-section="patient">
         <summary><span>1</span><div><b>Patient & Case Setup</b><small>เริ่มเคสให้ถูกคนและถูก procedure</small></div></summary>
-        <div class="help-topic-body"><p>ค้น Patient Master ก่อนถ้าเป็นผู้ป่วยเดิม จากนั้นตรวจชื่อ, species, breed, เพศ, อายุ, Current BW, procedure และทีมในเคสให้ครบ ข้อมูลชุดนี้จะตามไป OR LIVE, Recovery และรายงาน</p><p><b>จุดสำคัญ:</b> Current BW เป็นฐานของการคำนวณยา ถ้าเปลี่ยนน้ำหนักหลัง review Drug Plan ระบบจะให้ทบทวนแผนอีกครั้ง</p><button class="btn session-safe" type="button" data-help-go="patient">ไปหน้า Patient</button></div>
+        <div class="help-topic-body"><p>ค้น Patient Master ก่อนถ้าเป็นผู้ป่วยเดิม จากนั้นตรวจชื่อ, species, breed, เพศ, อายุ และ Current BW ให้ครบ แล้วเลือก Procedure template เพื่อลดการพิมพ์ซ้ำ (ชื่อ procedure ยังแก้เองได้) ก่อนตรวจทีมในเคส ข้อมูลชุดนี้จะตามไป OR LIVE, Recovery และรายงาน</p><p><b>จุดสำคัญ:</b> Current BW เป็นฐานของการคำนวณยา ถ้าเปลี่ยนน้ำหนักหลัง review Drug Plan ระบบจะให้ทบทวนแผนอีกครั้ง</p><button class="btn session-safe" type="button" data-help-go="patient">ไปหน้า Patient</button></div>
       </details>
 
       <details id="helpTopicPreop" data-help-section="preop">
@@ -2742,7 +3071,7 @@
 
       <details id="helpTopicRecovery" data-help-section="recovery">
         <summary><span>6</span><div><b>Recovery</b><small>Record → reassess → handoff</small></div></summary>
-        <div class="help-topic-body"><p>ติดตาม airway, oxygenation, temperature, comfort และ mentation ต่อเนื่อง ใช้ Recovery vitals, readiness score และ problem tracking จน criteria ของโรงพยาบาล/สัตวแพทย์ผู้รับผิดชอบครบ</p><p>Emergency return to OR LIVE จะบันทึก workflow transition ไว้ และ Recovery complete ต้องผ่าน readiness review หรือมี documented override</p><button class="btn session-safe" type="button" data-help-go="recovery">ไปหน้า Recovery</button></div>
+        <div class="help-topic-body"><p>ติดตาม airway, oxygenation, temperature, comfort และ mentation ต่อเนื่อง ใช้ Recovery vitals, readiness score และ problem tracking จน criteria ของโรงพยาบาล/สัตวแพทย์ผู้รับผิดชอบครบ</p><p>Recovery 2.0 เพิ่ม structured pain/comfort, dysphoria, nausea/vomiting, mobility, trend summary, post-anesthetic medication review และ transfer handoff โดยเป็น documentation aid และไม่เพิ่ม discharge criterion อัตโนมัติ</p><p>Emergency return to OR LIVE จะบันทึก workflow transition ไว้ และ Recovery complete ต้องผ่าน readiness review เดิมหรือมี documented override</p><button class="btn session-safe" type="button" data-help-go="recovery">ไปหน้า Recovery</button></div>
       </details>
 
       <details id="helpTopicEndcase" data-help-section="endcase">
@@ -2767,7 +3096,7 @@
     </div>
 
     <section class="help-about-card">
-      <div><small>ABOUT</small><b>ANESVET V16.8.2</b><p>Veterinary anesthesia workflow, monitoring record and clinical decision-support. ไม่ใช่ continuous physiologic monitor และไม่แทน clinical judgment หรือ source monitor data.</p></div>
+      <div><small>ABOUT</small><b>ANESVET V17.1.0</b><p>Veterinary anesthesia workflow, monitoring record and clinical decision-support. ไม่ใช่ continuous physiologic monitor และไม่แทน clinical judgment หรือ source monitor data.</p></div>
       <button id="helpOpenSettingsBtn" class="btn session-safe" type="button">Settings</button>
     </section>
     <div class="workflow-dialog-actions help-center-actions"><button id="helpCenterCloseBottomBtn" class="btn session-safe" type="button">Close</button></div>
@@ -2961,13 +3290,18 @@
       </div>
       <span class="status-pill good">LOCKED</span>
     </div>
-    <div class="finalization-success-note">ข้อมูล clinical record เดิมถูก lock แล้ว คุณสามารถ Export report ตอนนี้ หรือเก็บหน้าจอนี้ไว้เพื่อ review ก่อนเริ่มเคสใหม่</div>
+    <div class="finalization-success-note">ข้อมูล clinical record เดิมถูก lock แล้ว • ANESVET จะตรวจว่า archived copy ตรงกับ final checksum ก่อนเปิดทางให้เริ่มเคสใหม่</div>
+    <div id="finalizedArchiveAssurance" class="finalized-archive-assurance" aria-live="polite">
+      <span id="finalizedArchiveAssuranceBadge" class="status-pill warn">VERIFYING</span>
+      <b id="finalizedArchiveAssuranceText">Verifying archived final record…</b>
+    </div>
     <div class="finalization-success-actions">
       <button id="finalizedPreferredReportBtn" class="btn primary" type="button">Export preferred report</button>
       <button id="finalizedFullReportBtn" class="btn" type="button">Full PDF</button>
       <button id="finalizedViewArchiveBtn" class="btn" type="button">Cases / Archive</button>
       <button id="finalizedStayBtn" class="btn" type="button">อยู่ที่เคสนี้ก่อน</button>
-      <button id="finalizedNewCaseBtn" class="btn primary xl" type="button">＋ Start new case</button>
+      <button id="finalizedRetryArchiveBtn" class="btn" type="button" hidden>Retry archive & verify</button>
+      <button id="finalizedNewCaseBtn" class="btn primary xl" type="button" disabled>＋ Start new case</button>
     </div>
   </form>
 </dialog>
@@ -2994,6 +3328,22 @@
   </form>
 </dialog>
 
+
+<dialog id="offDeviceBackupDialog" class="drug-admin-dialog resilience-dialog">
+  <form method="dialog" class="drug-admin-card">
+    <div class="dialog-head"><div><small>DATA SAFETY 2.0</small><h2>Record off-device backup copy</h2><p>This records where you placed the backup file. ANESVET does not remotely confirm that destination.</p></div></div>
+    <div id="offDeviceBackupSummary" class="offdevice-summary"></div>
+    <input id="offDeviceBackupId" type="hidden">
+    <div class="offdevice-form-grid">
+      <label>Storage destination<select id="offDeviceDestination"><option value="drive">Google Drive / cloud drive</option><option value="hospital_pc">Hospital PC</option><option value="usb">USB / external drive</option><option value="nas">NAS / server</option><option value="other">Other off-device storage</option></select></label>
+      <label>Location / label<input id="offDeviceLabel" maxlength="160" placeholder="e.g. Hospital Drive / ANESVET Backups"></label>
+      <label class="span2">Note<textarea id="offDeviceNote" rows="2" maxlength="500" placeholder="Optional note"></textarea></label>
+      <label class="span2 offdevice-confirm"><input id="offDeviceConfirm" type="checkbox"><span>I confirm that a copy of this backup file has been stored outside this ANESVET browser/device.</span></label>
+    </div>
+    <div class="dialog-actions"><button id="cancelOffDeviceReceiptBtn" class="btn" type="button">Cancel</button><button id="saveOffDeviceReceiptBtn" class="btn primary" type="button" disabled>Save receipt</button></div>
+  </form>
+</dialog>
+
 <dialog id="sessionDialog" class="dialog session-dialog">
   <form method="dialog">
     <div class="dialog-head">
@@ -3011,35 +3361,105 @@
   </form>
 </dialog>
 
+<dialog id="procedureTemplateManagerDialog" class="workflow-dialog procedure-template-manager-dialog" aria-labelledby="procedureTemplateManagerTitle">
+  <div class="workflow-dialog-body procedure-template-manager-body">
+    <div class="procedure-template-manager-head">
+      <div><small>PROCEDURE TEMPLATES 2.0</small><h2 id="procedureTemplateManagerTitle">Hospital template library</h2><p>สร้าง workflow สำหรับการบันทึกในโรงพยาบาล • ไม่สั่งยา ไม่กำหนด dose และไม่เปลี่ยน physiologic alert thresholds</p></div>
+      <button id="procedureTemplateManagerCloseTop" class="dialog-close-x" type="button" aria-label="Close template manager">×</button>
+    </div>
+    <div class="procedure-template-manager-toolbar">
+      <label>Hospital template<select id="procedureTemplateManagerSelect"><option value="">— New hospital template —</option></select></label>
+      <button id="procedureTemplateManagerNewBtn" class="btn" type="button">＋ New</button>
+      <button id="procedureTemplateManagerDuplicateBtn" class="btn" type="button">Duplicate current</button>
+    </div>
+    <div id="procedureTemplateManagerStatus" class="procedure-template-manager-status"></div>
+    <input id="procedureTemplateEditId" type="hidden">
+    <div class="procedure-template-editor-grid">
+      <label>Template name <span class="required">*</span><input id="procedureTemplateEditLabel" maxlength="80" placeholder="เช่น OVH — Geno V"></label>
+      <label>Badge<input id="procedureTemplateEditBadge" maxlength="24" placeholder="OVH"></label>
+      <label class="span2">Default procedure<input id="procedureTemplateEditProcedure" maxlength="140" placeholder="ชื่อ procedure ที่เติมอัตโนมัติ"></label>
+      <label>Workflow profile<select id="procedureTemplateEditWorkflow"><option value="routine">Routine / Elective</option><option value="critical">Emergency / Critical</option><option value="csection">C-section</option><option value="custom">Custom / Other</option></select></label>
+      <label>Documentation interval<select id="procedureTemplateEditInterval"><option value="">Use current / hospital default</option><option value="3">3 min</option><option value="5">5 min</option><option value="10">10 min</option><option value="15">15 min</option><option value="20">20 min</option><option value="30">30 min</option></select><small>ใช้เป็น reminder/charting interval เท่านั้น ไม่ใช่คำแนะนำความถี่ monitoring สำหรับผู้ป่วยทุกตัว</small></label>
+      <label class="span2">Focus<input id="procedureTemplateEditFocus" maxlength="180" placeholder="สิ่งที่ต้องการให้ OR LIVE เน้น"></label>
+      <label class="span2">Extra milestones<textarea id="procedureTemplateEditMilestones" rows="4" placeholder="หนึ่งรายการต่อบรรทัด เช่น
+Tourniquet on
+Tourniquet off"></textarea><small>เป็น timestamp/documentation shortcut เท่านั้น ไม่บังคับให้ต้องทำ milestone นั้น</small></label>
+      <label class="span2">Quick events<textarea id="procedureTemplateEditEvents" rows="4" placeholder="Category | Event name
+Positioning | Repositioned
+Procedure | Closure started"></textarea></label>
+      <label class="span2">Quick medications<textarea id="procedureTemplateEditDrugs" rows="3" placeholder="ชื่อยาหนึ่งรายการต่อบรรทัด เช่น
+Cefazolin
+Tramadol"></textarea><small>แสดง shortcut ไป Medication workspace เท่านั้น • ไม่เพิ่มยาเข้า plan และไม่ mark ว่าให้ยาแล้ว</small></label>
+      <label class="span2">Fluid / setup note<textarea id="procedureTemplateEditFluidNote" rows="2" maxlength="240" placeholder="เช่น ตรวจ fluid setup ตาม case plan ก่อน incision"></textarea><small>ข้อความเตือนของโรงพยาบาลเท่านั้น ไม่มี automatic fluid rate</small></label>
+      <label class="span2">Procedure note<textarea id="procedureTemplateEditProcedureNote" rows="2" maxlength="240" placeholder="ข้อมูล workflow ที่ควรเห็นระหว่างเคส"></textarea></label>
+      <label class="span2">Template note<textarea id="procedureTemplateEditNote" rows="2" maxlength="240" placeholder="คำอธิบาย / ขอบเขตของ template"></textarea></label>
+    </div>
+    <p id="procedureTemplateManagerError" class="workflow-error" role="alert"></p>
+    <div class="procedure-template-library-actions">
+      <button id="procedureTemplateExportBtn" class="btn" type="button">Export library</button>
+      <button id="procedureTemplateImportBtn" class="btn" type="button">Import library</button>
+      <input id="procedureTemplateImportInput" type="file" accept="application/json,.json" hidden>
+      <span class="procedure-template-action-spacer"></span>
+      <button id="procedureTemplateDeleteBtn" class="btn danger-outline" type="button" disabled>Delete</button>
+      <button id="procedureTemplateSaveBtn" class="btn primary" type="button">Save hospital template</button>
+    </div>
+  </div>
+</dialog>
+
 <div id="feedbackDeliveryBanner" class="feedback-delivery-banner" role="status" aria-live="assertive" hidden></div>
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
-<script src="./drug-dose-reference.js?v=16.8.2"></script>
-<script src="./protocol-review.js?v=16.8.2"></script>
-<script src="./clinical-workflow.js?v=16.8.2"></script>
-<script src="./support.js?v=16.8.2"></script>
-<script src="./reliability.js?v=16.8.2"></script>
-<script src="./branding.js?v=16.8.2"></script>
-<script src="./clinical-validation.js?v=16.8.2"></script>
-<script src="./case-runtime.js?v=16.8.2"></script>
-<script src="./core-storage.js?v=16.8.2"></script>
-<script src="./session-coordination.js?v=16.8.2"></script>
-<script src="./patient-domain.js?v=16.8.2"></script>
-<script src="./or-domain.js?v=16.8.2"></script>
-<script src="./recovery-domain.js?v=16.8.2"></script>
-<script src="./patient-master-orchestration.js?v=16.8.2"></script>
-<script src="./or-record-orchestration.js?v=16.8.2"></script>
-<script src="./recovery-orchestration.js?v=16.8.2"></script>
-<script src="./app.js?v=16.8.2"></script>
-<script src="./data-resilience.js?v=16.8.2"></script>
-<script src="./medication-reconciliation.js?v=16.8.2"></script>
-<script src="./help.js?v=16.8.2"></script>
-<script src="./ui-refinement.js?v=16.8.2"></script>
-<script src="./pilot-efficiency.js?v=16.8.2"></script>
-<script src="./finalization.js?v=16.8.2"></script>
-<script src="./progressive-disclosure.js?v=16.8.2"></script>
-<script src="./focused-workspace.js?v=16.8.2"></script>
-<script src="./progressive-clinical-flow.js?v=16.8.2"></script>
-<script src="./adaptive-workspace.js?v=16.8.2"></script>
-<script src="./usability-hardening.js?v=16.8.2"></script>
+<script src="./drug-dose-reference.js?v=17.1.0"></script>
+<script src="./protocol-review.js?v=17.1.0"></script>
+<script src="./clinical-workflow.js?v=17.1.0"></script>
+<script src="./app-shell.js?v=17.1.0"></script>
+<script src="./case-lifecycle.js?v=17.1.0"></script>
+<script src="./support.js?v=17.1.0"></script>
+<script src="./reliability.js?v=17.1.0"></script>
+<script src="./branding.js?v=17.1.0"></script>
+<script src="./clinical-validation.js?v=17.1.0"></script>
+<script src="./case-runtime.js?v=17.1.0"></script>
+<script src="./core-storage.js?v=17.1.0"></script>
+<script src="./session-coordination.js?v=17.1.0"></script>
+<script src="./session-controller.js?v=17.1.0"></script>
+<script src="./pwa-controller.js?v=17.1.0"></script>
+<script src="./dose-reference-controller.js?v=17.1.0"></script>
+<script src="./patient-domain.js?v=17.1.0"></script>
+<script src="./or-domain.js?v=17.1.0"></script>
+<script src="./recovery-domain.js?v=17.1.0"></script>
+<script src="./patient-master-orchestration.js?v=17.1.0"></script>
+<script src="./or-record-orchestration.js?v=17.1.0"></script>
+<script src="./recovery-orchestration.js?v=17.1.0"></script>
+<script src="./patient-master-controller.js?v=17.1.0"></script>
+<script src="./preop-controller.js?v=17.1.0"></script>
+<script src="./medication-workspace-controller.js?v=17.1.0"></script>
+<script src="./or-live-controller.js?v=17.1.0"></script>
+<script src="./recovery-controller.js?v=17.1.0"></script>
+<script src="./backup-restore-controller.js?v=17.1.0"></script>
+<script src="./finalization-archive-controller.js?v=17.1.0"></script>
+<script src="./procedure-templates.js?v=17.1.0"></script>
+<script src="./validation-center.js?v=17.1.0"></script>
+<script src="./hospital-protocol-governance.js?v=17.1.0"></script>
+<script src="./security-baseline.js?v=17.1.0"></script>
+<script src="./sync-foundation.js?v=17.1.0"></script>
+<script src="./case-review-dashboard.js?v=17.1.0"></script>
+<script src="./architecture-registry.js?v=17.1.0"></script>
+<script src="./production-pilot.js?v=17.1.0"></script>
+<script src="./app.js?v=17.1.0"></script>
+<script src="./data-resilience.js?v=17.1.0"></script>
+<script src="./data-safety-2.js?v=17.1.0"></script>
+<script src="./medication-reconciliation.js?v=17.1.0"></script>
+<script src="./help.js?v=17.1.0"></script>
+<script src="./ui-refinement.js?v=17.1.0"></script>
+<script src="./pilot-efficiency.js?v=17.1.0"></script>
+<script src="./finalization.js?v=17.1.0"></script>
+<script src="./final-archive-assurance.js?v=17.1.0"></script>
+<script src="./documentation-guardian.js?v=17.1.0"></script>
+<script src="./problem-response-review.js?v=17.1.0"></script>
+<script src="./progressive-disclosure.js?v=17.1.0"></script>
+<script src="./focused-workspace.js?v=17.1.0"></script>
+<script src="./progressive-clinical-flow.js?v=17.1.0"></script>
+<script src="./adaptive-workspace.js?v=17.1.0"></script>
+<script src="./usability-hardening.js?v=17.1.0"></script>
+<script src="./or-speed-hardening.js?v=17.1.0"></script>
 </body>
 </html>

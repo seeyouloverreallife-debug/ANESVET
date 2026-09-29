@@ -1,0 +1,53 @@
+/* ANESVET V16.15.0 — Recovery 2.0
+   Structured recovery documentation, trend summary, post-anesthetic medication
+   review, and transfer handoff. These styles do not change clinical criteria. */
+
+.recovery2-trend-panel,.recovery2-med-panel,.recovery2-transfer-panel{overflow:visible}
+.recovery2-trend-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin-top:10px}
+.recovery2-trend-card{min-width:0;padding:10px 11px;border:1px solid #d7e3e6;border-radius:12px;background:#fbfdfe}
+.recovery2-trend-card>span{display:block;font-size:.56rem;font-weight:950;letter-spacing:.075em;color:#73888e}
+.recovery2-trend-card>b{display:block;margin-top:4px;font-size:.82rem;line-height:1.3;color:#244d59;overflow-wrap:anywhere}
+.recovery2-trend-card>small{display:block;margin-top:4px;font-size:.64rem;line-height:1.35;color:#76898e;overflow-wrap:anywhere}
+
+.recovery2-structured-wrap{margin-top:2px}
+.recovery2-structured{border:1px solid #d8e3e6;border-radius:12px;background:#fbfdfe;padding:0 10px}
+.recovery2-structured>summary{cursor:pointer;list-style:none;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 1px;font-weight:850;color:#315b66}
+.recovery2-structured>summary::-webkit-details-marker{display:none}
+.recovery2-structured>summary small{font-size:.62rem;font-weight:650;color:#788b90;text-align:right}
+.recovery2-structured[open]>summary{border-bottom:1px solid #e2e9eb;margin-bottom:10px}
+.recovery2-structured-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:9px;padding-bottom:10px}
+.recovery2-structured-grid label{min-width:0}
+.recovery2-structured-grid input,.recovery2-structured-grid select{width:100%;box-sizing:border-box}
+
+.recovery2-med-list{display:grid;gap:7px;margin-top:10px}
+.recovery2-med-row{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:10px;padding:9px 11px;border:1px solid #d9e3e5;border-radius:11px;background:#fff}
+.recovery2-med-row>div{min-width:0}
+.recovery2-med-row span{display:block;font-size:.56rem;font-weight:900;letter-spacing:.06em;color:#77898f;text-transform:uppercase}
+.recovery2-med-row b{display:block;margin-top:2px;color:#294f59;font-size:.8rem}
+.recovery2-med-row small{display:block;margin-top:3px;color:#76878c;font-size:.64rem;line-height:1.35}
+.recovery2-med-row strong{font-size:.66rem;white-space:nowrap;color:#3d6670}
+.recovery2-med-row.pending{border-color:#e5cf98;background:#fffaf0}
+.recovery2-med-row.given{border-color:#c8dece;background:#f7fcf8}
+.recovery2-med-row.not-given{border-color:#d8dfe1;background:#fafbfb}
+.recovery2-panel-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:10px}
+
+.recovery2-transfer-grid{margin-top:10px}
+.recovery2-transfer-latest{font-size:.69rem;color:#657b81;line-height:1.35}
+
+/* The serial table is intentionally horizontally scrollable on mobile. */
+.recovery-data-table th,.recovery-data-table td{white-space:nowrap}
+
+@media(max-width:1100px){
+  .recovery2-trend-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .recovery2-structured-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:620px){
+  .recovery2-trend-grid{grid-template-columns:1fr}
+  .recovery2-structured{padding:0 9px}
+  .recovery2-structured>summary{align-items:flex-start;flex-direction:column;gap:3px}
+  .recovery2-structured>summary small{text-align:left}
+  .recovery2-structured-grid{grid-template-columns:1fr}
+  .recovery2-med-row{grid-template-columns:1fr}
+  .recovery2-med-row strong{justify-self:start}
+  .recovery2-panel-actions .btn{min-height:44px}
+}

@@ -1,0 +1,30 @@
+{
+  "base": "V16.21.0",
+  "target": "V16.22.0",
+  "unchanged_count": 384,
+  "changed_count": 6,
+  "new_count": 11,
+  "removed_count": 0,
+  "changed": [
+    "README_TH.md",
+    "app.js",
+    "architecture-registry.js",
+    "index.html",
+    "manifest.webmanifest",
+    "service-worker.js"
+  ],
+  "new": [
+    "ARCHITECTURE_V16_22_0.md",
+    "BROWSER_SMOKE_V16_22_0.json",
+    "CASE_REVIEW_GUIDE_V16_22_TH.md",
+    "KNOWN_LIMITATIONS_V16_22_0.md",
+    "MIGRATION_V16_21_0_TO_V16_22_0.md",
+    "QA_V16_22_0.md",
+    "RELEASE_NOTES_V16_22_0.md",
+    "STATIC_QA_V16_22_0.json",
+    "V16_22_0_CASE_REVIEW_TEST_RESULTS.json",
+    "case-review-dashboard.css",
+    "case-review-dashboard.js"
+  ],
+  "removed": []
+}

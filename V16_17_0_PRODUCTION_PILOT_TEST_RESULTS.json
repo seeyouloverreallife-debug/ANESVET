@@ -1,0 +1,43 @@
+{
+  "version": "16.17.0",
+  "suite": "production-pilot-domain-static",
+  "passed": 7,
+  "total": 7,
+  "checks": [
+    {
+      "label": "Module version",
+      "ok": true,
+      "detail": "16.17.0"
+    },
+    {
+      "label": "Scenario count",
+      "ok": true,
+      "detail": "12 scenarios"
+    },
+    {
+      "label": "Required scenario count",
+      "ok": true,
+      "detail": "11 required + 1 optional"
+    },
+    {
+      "label": "Four manual statuses",
+      "ok": true,
+      "detail": "pass/fail/blocked/not-run"
+    },
+    {
+      "label": "IndexedDB real R/W probe",
+      "ok": true,
+      "detail": "temporary write/read + 4s timeout"
+    },
+    {
+      "label": "Lifecycle identifiers excluded",
+      "ok": true,
+      "detail": "lifecycle case snapshot excludes patientName/HN/microchip/owner identifiers"
+    },
+    {
+      "label": "Clinical state is read-only from pilot module",
+      "ok": true,
+      "detail": "no direct clinical-state mutation patterns"
+    }
+  ]
+}

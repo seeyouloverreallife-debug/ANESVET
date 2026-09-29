@@ -8,6 +8,7 @@
   let refreshToken=null;
   const api=()=>window.AnesvetApp||null;
   const st=()=>api()?.getState?.()||null;
+  const archiveAssurance=()=>window.AnesvetFinalArchiveAssurance||null;
   const esc=value=>api()?.escapeHtml?.(value)??String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
 
   function settings(){
@@ -56,12 +57,12 @@
   }
   function renderBlockers(list){
     const s=st(),wrap=$('endCaseBlockers');if(!wrap||!s)return;
-    if(s.caseLocked){wrap.innerHTML='<span class="endcase-blocker-chip good">✓ Final record locked & archived</span>';return;}
+    if(s.caseLocked){const verified=archiveAssurance()?.canStartNewCase?.()===true;wrap.innerHTML=verified?'<span class="endcase-blocker-chip good">✓ Final record locked & archive verified</span>':'<span class="endcase-blocker-chip warn">⚠ Final record locked • archive verification required</span>';return;}
     if(!list.length){wrap.innerHTML='<span class="endcase-blocker-chip good">✓ Final checks complete</span>';return;}
     wrap.innerHTML=list.slice(0,9).map(x=>`<span class="endcase-blocker-chip ${x.tone||'muted'}">${esc(x.label)}</span>`).join('');
   }
   function nextDescriptor(list){
-    const s=st();if(s?.caseLocked)return {label:'＋ Start new case',action:'new-case'};
+    const s=st();if(s?.caseLocked){const verified=archiveAssurance()?.canStartNewCase?.()===true;return verified?{label:'＋ Start new case',action:'new-case'}:{label:'↻ Verify final archive',action:'archive-assurance'};}
     const order=['recovery','alerts','complications','med-reconciliation','sign-anesthetist','sign-surgeon','endConfirmRecovery','endConfirmRecord','endConfirmDrugs','endConfirmPdf'];
     for(const key of order){const hit=list.find(x=>x.type===key);if(hit)return {label:`→ ${hit.label}`,action:key};}
     return {label:'✓ End, Lock & Archive Case',action:'finalize'};
@@ -77,7 +78,7 @@
     window.AnesvetMedicationReconciliation?.render?.();
     const list=blockers(),next=nextDescriptor(list),progress=checklistProgress(),meds=medicationSummary();
     const title=$('endCaseEfficiencyTitle'),summary=$('endCaseEfficiencySummary'),btn=$('endCaseNextTaskBtn');
-    if(s.caseLocked){if(title)title.textContent='Final record complete';if(summary)summary.textContent='เคสถูก lock และ archive แล้ว • Export report ได้ต่อก่อนเริ่มเคสใหม่';}
+    if(s.caseLocked){const verified=archiveAssurance()?.canStartNewCase?.()===true;if(title)title.textContent=verified?'Final record complete':'Final record locked • verify archive';if(summary)summary.textContent=verified?'เคสถูก lock และ archived copy ผ่าน checksum verification แล้ว':'Clinical record ถูก lock แล้ว • ตรวจ archived copy ให้ผ่านก่อนเริ่มเคสใหม่';}
     else if(!list.length){if(title)title.textContent='พร้อม Final Lock';if(summary)summary.textContent='Recovery, medication reconciliation, sign-off และ final checklist ครบแล้ว';}
     else{if(title)title.textContent='ทำรายการที่ยังค้างให้ครบ';if(summary)summary.textContent=`Final checklist ${progress.done}/${progress.total} • Med reconciliation ${meds.total-meds.pending}/${meds.total} • ${list.length} รายการยังต้อง review`;}
     if(btn){btn.textContent=next.label;btn.dataset.action=next.action;btn.classList.toggle('good',!list.length&&!s.caseLocked);}
@@ -90,7 +91,8 @@
   function scrollTo(el){if(!el)return;try{el.scrollIntoView({behavior:'smooth',block:'center'});}catch(e){el.scrollIntoView();}el.classList.add('endcase-target-pulse');setTimeout(()=>el.classList.remove('endcase-target-pulse'),1100);}
   function runNext(){
     const action=$('endCaseNextTaskBtn')?.dataset.action||'';
-    if(action==='new-case'){if(confirm('เริ่มเคสใหม่? Final record นี้ถูก archive แล้ว'))api()?.resetCurrent?.();return;}
+    if(action==='archive-assurance'){archiveAssurance()?.refresh?.({force:true});return;}
+    if(action==='new-case'){if(archiveAssurance()?.canStartNewCase?.()!==true){api()?.toast?.('Verify the archived final record before starting a new case');archiveAssurance()?.refresh?.({force:true});return;}if(confirm('เริ่มเคสใหม่? Final record นี้ถูก archive และ verify แล้ว'))api()?.resetCurrent?.();return;}
     if(action==='recovery'){api()?.setTab?.('recovery',{force:true});setTimeout(()=>scrollTo($('recoveryFocusCompleteBtn')||$('recoveryReadiness')),120);return;}
     if(action==='alerts'){api()?.setTab?.(st()?.casePhase==='recovery'?'recovery':'orlive',{force:true});setTimeout(()=>scrollTo($('recoveryProblemsPanel')||q('.or-alert-panel')),120);return;}
     if(action==='complications'){api()?.setTab?.('events');setTimeout(()=>scrollTo(q('.complication-workflow-panel')),120);return;}
@@ -103,7 +105,7 @@
   function markReportReviewed(){const s=st(),cb=$('endConfirmPdf');if(cb&&!cb.checked&&!s?.caseLocked){cb.checked=true;cb.dispatchEvent(new Event('change',{bubbles:true}));}schedule();}
   function exportPreferred(){markReportReviewed();if(preferredReport()==='full')api()?.exportPdfReport?.();else api()?.exportPdfSummary?.();}
   function openFinalizedDialog(){
-    render();const s=st(),d=$('caseFinalizedDialog');if($('caseFinalizedSummary')){const patient=$('patientName')?.value.trim()||s?.patientName||'Patient';$('caseFinalizedSummary').textContent=`${patient} • Final record ถูก lock และบันทึกใน Cases แล้ว`;}
+    render();archiveAssurance()?.refresh?.({silent:true});const s=st(),d=$('caseFinalizedDialog');if($('caseFinalizedSummary')){const patient=$('patientName')?.value.trim()||s?.patientName||'Patient';$('caseFinalizedSummary').textContent=`${patient} • Final record ถูก lock แล้ว • กำลังตรวจ archived copy`;}
     if(!d)return;try{if(!d.open)d.showModal();}catch(e){d.setAttribute('open','');}
   }
   function closeFinalizedDialog(){const d=$('caseFinalizedDialog');if(!d)return;try{if(d.open)d.close();else d.removeAttribute('open');}catch(e){d.removeAttribute('open');}}
@@ -118,12 +120,13 @@
   $('finalizedFullReportBtn')?.addEventListener('click',()=>api()?.exportPdfReport?.());
   $('finalizedViewArchiveBtn')?.addEventListener('click',()=>{closeFinalizedDialog();api()?.setTab?.('cases');});
   $('finalizedStayBtn')?.addEventListener('click',()=>{closeFinalizedDialog();api()?.setTab?.('endcase');});
-  $('finalizedNewCaseBtn')?.addEventListener('click',()=>{closeFinalizedDialog();api()?.resetCurrent?.();});
+  $('finalizedNewCaseBtn')?.addEventListener('click',()=>{if(archiveAssurance()?.canStartNewCase?.()!==true){api()?.toast?.('Archive verification must pass before starting a new case');archiveAssurance()?.refresh?.({force:true});return;}closeFinalizedDialog();api()?.resetCurrent?.();});
   ['endConfirmRecovery','endConfirmRecord','endConfirmDrugs','endConfirmPdf','signAnesthetistBtn','signSurgeonBtn','endSaveArchiveBtn'].forEach(id=>$(id)?.addEventListener('click',schedule));
   document.addEventListener('change',e=>{if(e.target.closest?.('#endcase'))schedule();});
   document.addEventListener('click',e=>{if(e.target.closest?.('[data-tab="endcase"],[data-mobile-tab="endcase"]'))setTimeout(render,40);});
   document.addEventListener('anesvet:medication-reconciliation-changed',schedule);
   document.addEventListener('anesvet:drug-administration-changed',schedule);
+  document.addEventListener('anesvet:final-archive-assurance-changed',schedule);
   const readinessSignal=$('endCaseReadiness');if(readinessSignal&&window.MutationObserver)new MutationObserver(schedule).observe(readinessSignal,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['class']});
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',render,{once:true});else render();
 })();

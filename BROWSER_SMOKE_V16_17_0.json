@@ -1,0 +1,10 @@
+{
+  "version": "16.17.0",
+  "status": "blocked",
+  "viewportAttempted": "default headless",
+  "engine": "system Chromium headless",
+  "url": "http://127.0.0.1:8765/index.html",
+  "result": "timeout after 20 seconds; dump-dom empty",
+  "claim": "No browser smoke PASS claimed",
+  "detail": "Chromium launched but did not complete page load in this sandbox. Real-device Android/iPad/Windows PWA acceptance is the purpose of the V16.17 Production Pilot panel."
+}

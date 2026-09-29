@@ -1,0 +1,16 @@
+{
+  "version": "16.22.0",
+  "status": "BLOCKED",
+  "result": "PENDING_REAL_DEVICE",
+  "local_http_status": 200,
+  "command": "chromium --headless=new --no-sandbox --disable-gpu --disable-dev-shm-usage --virtual-time-budget=5000 --dump-dom http://127.0.0.1:8772/index.html",
+  "timeout_seconds": 20,
+  "exit_code": 124,
+  "dom_bytes": 0,
+  "environment_errors": [
+    "D-Bus connection/object_proxy failures",
+    "UPower D-Bus unavailable",
+    "zygote termination-status communication failure"
+  ],
+  "interpretation": "Interactive Chromium smoke could not complete in the build sandbox. This is not a PASS and does not replace Android/Windows/iPad PWA validation."
+}

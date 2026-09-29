@@ -1,0 +1,35 @@
+{
+  "version": "16.14.0",
+  "javascript": {
+    "passed": 33,
+    "total": 33,
+    "failures": []
+  },
+  "html_ids": {
+    "total": 1214,
+    "unique": 1214,
+    "duplicates": []
+  },
+  "service_worker": {
+    "asset_count": 58,
+    "missing": []
+  },
+  "version_alignment": {
+    "index": true,
+    "app": true,
+    "manifest": true,
+    "service_worker": true,
+    "module": true
+  },
+  "db_version": 2,
+  "safety_boundary": {
+    "no_new_localstorage_key": true,
+    "no_app_save_call": true,
+    "no_app_audit_call": true,
+    "review_module_read_only": true
+  },
+  "browser_smoke": {
+    "ran": false,
+    "reason": "Chromium navigation is blocked by the current execution sandbox policy; use real-device Android/PWA smoke before production deployment."
+  }
+}

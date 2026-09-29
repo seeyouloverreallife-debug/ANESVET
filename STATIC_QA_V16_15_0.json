@@ -1,0 +1,62 @@
+{
+  "version": "16.15.0",
+  "suite": "static-and-domain",
+  "passed": 9,
+  "total": 9,
+  "checks": [
+    {
+      "label": "JavaScript syntax",
+      "ok": true,
+      "detail": "33/33 PASS"
+    },
+    {
+      "label": "HTML unique IDs",
+      "ok": true,
+      "detail": "1234/1234 unique"
+    },
+    {
+      "label": "Recovery 2 DOM contract",
+      "ok": true,
+      "detail": "all required IDs present"
+    },
+    {
+      "label": "Service Worker assets",
+      "ok": true,
+      "detail": "59/59 present"
+    },
+    {
+      "label": "Version alignment",
+      "ok": true,
+      "detail": "app/html/manifest/cache = 16.15.0"
+    },
+    {
+      "label": "IndexedDB schema unchanged",
+      "ok": true,
+      "detail": "DB_VERSION=2"
+    },
+    {
+      "label": "Recovery readiness logic unchanged",
+      "ok": true,
+      "detail": "ac5b44a3993a3feb1fd35794db2e0de8ce123e1072f5b6b8cd5ca5466e18525e"
+    },
+    {
+      "label": "Recovery 2 domain tests",
+      "ok": true,
+      "detail": "10/10 PASS"
+    },
+    {
+      "label": "Source parity / no removals",
+      "ok": true,
+      "detail": "224 unchanged • 7 changed • 9 new • 0 removed"
+    }
+  ],
+  "browserSmoke": {
+    "version": "16.15.0",
+    "status": "blocked",
+    "viewportAttempted": "390x844",
+    "engine": "system Chromium headless",
+    "result": "timeout",
+    "claim": "No browser smoke PASS claimed",
+    "detail": "Chromium did not complete app load in the sandbox and was terminated after timeout. Static/domain QA passed; real-device Android PWA smoke remains required."
+  }
+}

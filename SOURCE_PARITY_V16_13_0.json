@@ -1,0 +1,28 @@
+{
+  "base": "V16.12.0",
+  "target": "V16.13.0",
+  "common_files": 213,
+  "identical_files": 206,
+  "changed_existing_files": [
+    "README_TH.md",
+    "app.js",
+    "index.html",
+    "manifest.webmanifest",
+    "procedure-templates.css",
+    "procedure-templates.js",
+    "service-worker.js"
+  ],
+  "new_files": [
+    "BROWSER_SMOKE_V16_13_0.json",
+    "KNOWN_LIMITATIONS_V16_13_0.md",
+    "MIGRATION_V16_12_0_TO_V16_13_0.md",
+    "PREVIEW_V16_13_PROCEDURE_TEMPLATES_2_MOBILE.png",
+    "QA_V16_13_0.md",
+    "RELEASE_NOTES_V16_13_0.md",
+    "SOURCE_PARITY_V16_13_0.json",
+    "STATIC_QA_V16_13_0.json",
+    "V16_13_0_PROCEDURE_TEMPLATE_TEST_RESULTS.json"
+  ],
+  "missing_files": [],
+  "ok": true
+}

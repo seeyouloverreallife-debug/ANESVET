@@ -1,0 +1,122 @@
+{
+  "version": "16.13.0",
+  "passed": 18,
+  "total": 18,
+  "ok": true,
+  "checks": [
+    {
+      "name": "module version",
+      "ok": true,
+      "actual": "16.13.0",
+      "expected": "16.13.0"
+    },
+    {
+      "name": "built-in count",
+      "ok": true,
+      "actual": 9,
+      "expected": 9
+    },
+    {
+      "name": "initial hospital count",
+      "ok": true,
+      "actual": 0,
+      "expected": 0
+    },
+    {
+      "name": "hospital id namespace",
+      "ok": true,
+      "actual": "hospital:5848c645-0265-4ed4-9c6b-194b72d54338",
+      "expected": "hospital:*"
+    },
+    {
+      "name": "hospital persisted",
+      "ok": true,
+      "actual": 1,
+      "expected": 1
+    },
+    {
+      "name": "get hospital",
+      "ok": true,
+      "actual": "OVH Geno V",
+      "expected": "OVH Geno V"
+    },
+    {
+      "name": "charting interval",
+      "ok": true,
+      "actual": 5,
+      "expected": 5
+    },
+    {
+      "name": "extra milestones",
+      "ok": true,
+      "actual": 2,
+      "expected": 2
+    },
+    {
+      "name": "quick event",
+      "ok": true,
+      "actual": "Patient repositioned",
+      "expected": "Patient repositioned"
+    },
+    {
+      "name": "quick drug",
+      "ok": true,
+      "actual": "Cefazolin",
+      "expected": "Cefazolin"
+    },
+    {
+      "name": "snapshot schema 2",
+      "ok": true,
+      "actual": 2,
+      "expected": 2
+    },
+    {
+      "name": "snapshot source hospital",
+      "ok": true,
+      "actual": "hospital",
+      "expected": "hospital"
+    },
+    {
+      "name": "snapshot carries quick refs",
+      "ok": true,
+      "actual": 1,
+      "expected": 1
+    },
+    {
+      "name": "snapshot capturedAt",
+      "ok": true,
+      "actual": 12345,
+      "expected": 12345
+    },
+    {
+      "name": "export format",
+      "ok": true,
+      "actual": "ANESVET_PROCEDURE_TEMPLATE_LIBRARY_V1",
+      "expected": "ANESVET_PROCEDURE_TEMPLATE_LIBRARY_V1"
+    },
+    {
+      "name": "replace clears",
+      "ok": true,
+      "actual": 0,
+      "expected": 0
+    },
+    {
+      "name": "import restores",
+      "ok": true,
+      "actual": {
+        "imported": 1,
+        "total": 1
+      },
+      "expected": {
+        "imported": 1,
+        "total": 1
+      }
+    },
+    {
+      "name": "delete hospital",
+      "ok": true,
+      "actual": 0,
+      "expected": 0
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "version": "16.20.0",
+  "algorithm": "SHA-256",
+  "manifest": "CHECKSUM_SHA256.txt",
+  "files_verified": 375,
+  "passed": 375,
+  "failed": 0,
+  "status": "PASS",
+  "failures": [],
+  "note": "Verification covers all release files except CHECKSUM_SHA256.txt and this verification JSON to avoid recursive hashing."
+}

@@ -1,0 +1,98 @@
+{
+  "version": "16.18.3",
+  "scope": "Architecture hardening Phase 7 — OR LIVE controller extraction",
+  "passed": 17,
+  "total": 17,
+  "ok": true,
+  "checks": [
+    {
+      "label": "JavaScript syntax",
+      "ok": true,
+      "detail": "45/45 PASS"
+    },
+    {
+      "label": "HTML IDs unique",
+      "ok": true,
+      "detail": "1260 / 1260 unique"
+    },
+    {
+      "label": "HTML script/style references",
+      "ok": true,
+      "detail": "69 references • all present"
+    },
+    {
+      "label": "Service-worker assets",
+      "ok": true,
+      "detail": "73/73 present"
+    },
+    {
+      "label": "App version",
+      "ok": true,
+      "detail": "16.18.3"
+    },
+    {
+      "label": "IndexedDB schema unchanged",
+      "ok": true,
+      "detail": "DB_VERSION = 2"
+    },
+    {
+      "label": "OR LIVE controller loads before app",
+      "ok": true,
+      "detail": "or-live-controller.js → app.js"
+    },
+    {
+      "label": "Architecture registry loads after extracted controller",
+      "ok": true,
+      "detail": "OR LIVE controller → architecture-registry.js"
+    },
+    {
+      "label": "Architecture registry includes OR LIVE controller",
+      "ok": true,
+      "detail": "registered"
+    },
+    {
+      "label": "OR LIVE legacy controller bodies removed from app",
+      "ok": true,
+      "detail": "implementation bodies moved; compatibility wrappers remain in app composition"
+    },
+    {
+      "label": "OR LIVE controller binding active",
+      "ok": true,
+      "detail": "controller created + bind compatibility hook present"
+    },
+    {
+      "label": "OR LIVE extraction parity",
+      "ok": true,
+      "detail": "58/58 extracted functions present • 53/53 event bindings preserved"
+    },
+    {
+      "label": "Existing OR Domain unchanged",
+      "ok": true,
+      "detail": "byte-identical"
+    },
+    {
+      "label": "Existing OR Record Orchestration unchanged",
+      "ok": true,
+      "detail": "byte-identical"
+    },
+    {
+      "label": "app.js reduced without rewrite",
+      "ok": true,
+      "detail": "4810 → 4350 lines (−460)"
+    },
+    {
+      "label": "OR LIVE controller regression tests",
+      "ok": true,
+      "detail": "10/10 PASS"
+    },
+    {
+      "label": "Critical clinical module parity",
+      "ok": true,
+      "detail": "18/18 byte-identical to V16.18.2"
+    }
+  ],
+  "javascriptFailures": [],
+  "duplicateIds": [],
+  "missingHtmlRefs": [],
+  "missingServiceWorkerAssets": []
+}

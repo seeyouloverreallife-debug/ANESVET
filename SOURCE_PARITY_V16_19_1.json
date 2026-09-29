@@ -1,0 +1,31 @@
+{
+  "base": "V16.19.0",
+  "version": "V16.19.1",
+  "unchangedCount": 341,
+  "changedCount": 7,
+  "addedCount": 11,
+  "removedCount": 0,
+  "changed": [
+    "README_TH.md",
+    "app.js",
+    "architecture-registry.js",
+    "index.html",
+    "manifest.webmanifest",
+    "production-pilot.js",
+    "service-worker.js"
+  ],
+  "added": [
+    "ARCHITECTURE_V16_19_1.md",
+    "BROWSER_SMOKE_V16_19_1.json",
+    "KNOWN_LIMITATIONS_V16_19_1.md",
+    "MIGRATION_V16_19_0_TO_V16_19_1.md",
+    "PRODUCTION_VALIDATION_PROTOCOL_V16_19_1_TH.md",
+    "QA_V16_19_1.md",
+    "RELEASE_NOTES_V16_19_1.md",
+    "STATIC_QA_V16_19_1.json",
+    "V16_19_1_VALIDATION_CENTER_TEST_RESULTS.json",
+    "validation-center.css",
+    "validation-center.js"
+  ],
+  "removed": []
+}

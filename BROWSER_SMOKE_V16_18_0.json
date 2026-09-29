@@ -1,0 +1,4 @@
+{
+  "status": "BLOCKED",
+  "reason": "System Chromium headless timed out after 25 seconds against a reachable local HTTP server; no PASS claimed."
+}

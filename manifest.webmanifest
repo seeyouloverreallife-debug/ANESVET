@@ -1,8 +1,8 @@
 {
-  "name": "ANESVET V16.8.2 — Architecture Refactor Phase 3",
-  "short_name": "ANESVET V16.8.2",
+  "name": "ANESVET V17.1.0 — Multi-device Sync Foundation",
+  "short_name": "ANESVET V17.1.0",
   "description": "Local-first veterinary anesthesia workflow with a unified case timeline, anesthesia record, recovery handoff, medication safety, clinical validation, reporting, and audit-ready record integrity",
-  "start_url": "./?v=16.8.2",
+  "start_url": "./?v=17.1.0",
   "scope": "./",
   "display": "standalone",
   "background_color": "#f5f7f7",

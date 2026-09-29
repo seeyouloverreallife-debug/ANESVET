@@ -1,0 +1,21 @@
+{
+  "tests": [
+    {
+      "name": "nine templates retained",
+      "pass": true
+    },
+    {
+      "name": "OVH inference retained",
+      "pass": true
+    },
+    {
+      "name": "C-section extra milestones retained",
+      "pass": true
+    },
+    {
+      "name": "Emergency remains documentation-only",
+      "pass": true
+    }
+  ],
+  "pass": true
+}

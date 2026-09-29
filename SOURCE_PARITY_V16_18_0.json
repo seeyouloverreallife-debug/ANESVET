@@ -1,0 +1,37 @@
+{
+  "from": "16.17.0",
+  "to": "16.18.0",
+  "scope": "all files except CHECKSUM_SHA256.txt and SOURCE_PARITY_V16_18_0.json",
+  "old_file_count": 257,
+  "new_file_count": 271,
+  "unchanged_count": 250,
+  "changed_count": 7,
+  "added_count": 14,
+  "removed_count": 0,
+  "changed_files": [
+    "README_TH.md",
+    "app.js",
+    "index.html",
+    "manifest.webmanifest",
+    "production-pilot.css",
+    "production-pilot.js",
+    "service-worker.js"
+  ],
+  "added_files": [
+    "ARCHITECTURE_V16_18.md",
+    "BROWSER_SMOKE_V16_18_0.json",
+    "KNOWN_LIMITATIONS_V16_18_0.md",
+    "MIGRATION_V16_17_0_TO_V16_18_0.md",
+    "QA_V16_18_0.md",
+    "RELEASE_NOTES_V16_18_0.md",
+    "STATIC_QA_V16_18_0.json",
+    "V16_18_0_CASE_LIFECYCLE_TEST_RESULTS.json",
+    "app-shell.js",
+    "architecture-registry.js",
+    "case-lifecycle.js",
+    "dose-reference-controller.js",
+    "pwa-controller.js",
+    "session-controller.js"
+  ],
+  "removed_files": []
+}

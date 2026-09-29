@@ -1,0 +1,100 @@
+{
+  "base": "ANESVET_V16_18_3_OR_LIVE_Controller_Extraction",
+  "release": "ANESVET_V16_18_4_Medication_Workspace_Controller_Extraction",
+  "unchanged_count": 297,
+  "changed_count": 7,
+  "new_count": 6,
+  "removed_count": 0,
+  "changed_files": [
+    "README_TH.md",
+    "app.js",
+    "architecture-registry.js",
+    "index.html",
+    "manifest.webmanifest",
+    "production-pilot.js",
+    "service-worker.js"
+  ],
+  "new_files": [
+    "ARCHITECTURE_V16_18_4.md",
+    "KNOWN_LIMITATIONS_V16_18_4.md",
+    "MIGRATION_V16_18_3_TO_V16_18_4.md",
+    "RELEASE_NOTES_V16_18_4.md",
+    "V16_18_4_MEDICATION_WORKSPACE_CONTROLLER_TEST_RESULTS.json",
+    "medication-workspace-controller.js"
+  ],
+  "removed_files": [],
+  "critical_clinical_files": [
+    {
+      "file": "case-runtime.js",
+      "byte_identical": true
+    },
+    {
+      "file": "clinical-workflow.js",
+      "byte_identical": true
+    },
+    {
+      "file": "drug-dose-reference.js",
+      "byte_identical": true
+    },
+    {
+      "file": "protocol-review.js",
+      "byte_identical": true
+    },
+    {
+      "file": "medication-reconciliation.js",
+      "byte_identical": true
+    },
+    {
+      "file": "finalization.js",
+      "byte_identical": true
+    },
+    {
+      "file": "final-archive-assurance.js",
+      "byte_identical": true
+    },
+    {
+      "file": "documentation-guardian.js",
+      "byte_identical": true
+    },
+    {
+      "file": "problem-response-review.js",
+      "byte_identical": true
+    },
+    {
+      "file": "recovery-domain.js",
+      "byte_identical": true
+    },
+    {
+      "file": "or-domain.js",
+      "byte_identical": true
+    },
+    {
+      "file": "or-record-orchestration.js",
+      "byte_identical": true
+    },
+    {
+      "file": "recovery-orchestration.js",
+      "byte_identical": true
+    },
+    {
+      "file": "or-speed-hardening.js",
+      "byte_identical": true
+    },
+    {
+      "file": "clinical-validation.js",
+      "byte_identical": true
+    },
+    {
+      "file": "patient-domain.js",
+      "byte_identical": true
+    },
+    {
+      "file": "patient-master-orchestration.js",
+      "byte_identical": true
+    },
+    {
+      "file": "recovery-2.css",
+      "byte_identical": true
+    }
+  ]
+}

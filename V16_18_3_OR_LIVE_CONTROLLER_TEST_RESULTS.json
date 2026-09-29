@@ -1,0 +1,19 @@
+{
+  "version": "16.18.3",
+  "scope": "OR LIVE controller targeted regression",
+  "passed": 10,
+  "total": 10,
+  "ok": true,
+  "stdout": [
+    "PASS factory/version",
+    "PASS medication identity normalization",
+    "PASS workflow profile defaults routine",
+    "PASS procedure milestone lookup",
+    "PASS medication queue matches actual by frozen drug id",
+    "PASS post-anesthetic medication remains later during intraop",
+    "PASS pre/induction pending medication needs review intraop",
+    "PASS deferred induction documentation completion semantics",
+    "PASS start case freezes identity/template without changing schema",
+    "PASS confirmed C-section milestone uses existing event path"
+  ]
+}

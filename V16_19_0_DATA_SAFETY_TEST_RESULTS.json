@@ -1,0 +1,72 @@
+{
+  "version": "16.19.0",
+  "passed": 13,
+  "total": 13,
+  "tests": [
+    {
+      "name": "factory/version/schema",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "build schema 3 + integrity manifest",
+      "ok": true,
+      "detail": "9945fa4db08d"
+    },
+    {
+      "name": "whole-file manifest validates",
+      "ok": true,
+      "detail": "{\"available\":true,\"valid\":true,\"expected\":\"9945fa4db08dbb1b0868122abe547eedacd541f54c42ab98a0803187251bf3bc\",\"actual\":\"9945fa4db08dbb1b0868122abe547eedacd541f54c42ab98a0803187251bf3bc\",\"algorithm\":\"SHA-256\"}"
+    },
+    {
+      "name": "tamper detection",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "download writes receipt + history",
+      "ok": true,
+      "detail": 1
+    },
+    {
+      "name": "verify backup file updates history",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "off-device receipt",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "data safety snapshot",
+      "ok": true,
+      "detail": 1
+    },
+    {
+      "name": "restore + post-restore full verification",
+      "ok": true,
+      "detail": "{\"ok\":true,\"level\":\"full\",\"countsMatch\":true,\"archiveIdsMatch\":true,\"patientIdsMatch\":true,\"currentMatch\":true,\"clinicalDigestMatch\":true,\"expectedClinicalDigest\":\"9c41e3d95c8d2c9ede0319a4955abfba9346a897323314c3e5de901669e04fdd\",\"actualClinicalDigest\":\"9c41e3d95c8d2c9ede0319a4955abfba9346a897323314c3e5de901669e04fdd\",\"archiveCount\":1,\"patientCount\":1,\"verifiedAt\":1790665249951,\"backupId\":\"488e2c7a-5e36-4791-ac8a-b49c0790d31c\"}"
+    },
+    {
+      "name": "last restore verification receipt",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "structural mismatch detection",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "legacy schema 2 remains readable",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "manifest mismatch blocks restore before mutation",
+      "ok": true,
+      "detail": ""
+    }
+  ]
+}

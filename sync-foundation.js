@@ -1,0 +1,169 @@
+/* ANESVET V17.1.0 — Multi-device Sync Foundation
+   Experimental local/mock synchronization architecture.
+   Local clinical persistence remains authoritative; this module must never block a local save. */
+(function(root){
+'use strict';
+const VERSION='17.1.0',SCHEMA=1;
+const KEYS=Object.freeze({
+  config:'anesvet_v17_1_sync_config_v1',
+  queue:'anesvet_v17_1_sync_queue_v1',
+  queueCorrupt:'anesvet_v17_1_sync_queue_corrupt_v1',
+  revisions:'anesvet_v17_1_sync_revisions_v1',
+  conflicts:'anesvet_v17_1_sync_conflicts_v1',
+  canonical:'anesvet_v17_1_sync_mock_canonical_v1',
+  status:'anesvet_v17_1_sync_status_v1'
+});
+const META_KEYS=Object.freeze({queue:'sync.queue.v1',revisions:'sync.revisions.v1',conflicts:'sync.conflicts.v1',status:'sync.status.v1'});
+const TERMINAL=new Set(['acknowledged','conflict']);
+const STRICT_TYPES=new Set(['final-signoff','final-lock','archive','clinical-void']);
+const APPEND_TYPES=new Set(['vital','event']);
+const MEDICATION_TYPES=new Set(['medication','medication-administration']);
+const REVIEW_TYPES=new Set(['patient','patient-demographics','settings','case-snapshot','case-document']);
+function clone(v){return v==null?v:JSON.parse(JSON.stringify(v))}
+function createMemoryStorage(){const map=new Map();return{getItem:k=>map.has(String(k))?map.get(String(k)):null,setItem:(k,v)=>map.set(String(k),String(v)),removeItem:k=>map.delete(String(k)),clear:()=>map.clear(),_map:map}}
+function safeStorage(candidate){try{const s=candidate||createMemoryStorage(),k='__anesvet_sync_probe__';s.setItem(k,'1');s.removeItem(k);return s}catch(_){return createMemoryStorage()}}
+function parse(storage,key,fallback){try{const raw=storage.getItem(key);if(raw==null)return clone(fallback);const x=JSON.parse(raw);return x==null?clone(fallback):x}catch(_){return clone(fallback)}}
+function write(storage,key,value){storage.setItem(key,JSON.stringify(value));return value}
+function fnv1a(text){let h=2166136261;for(let i=0;i<text.length;i++){h^=text.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).padStart(8,'0').toUpperCase()}
+function defaultUuid(){return root.crypto?.randomUUID?.()||`sync-${Date.now()}-${Math.random().toString(16).slice(2)}`}
+function shortId(v,n=8){const s=String(v||'');return s.length<=n?s:s.slice(-n)}
+function normalizeRecordType(v){return String(v||'case-document').trim().toLowerCase()||'case-document'}
+function defaultConfig(){return{schema:SCHEMA,enabled:false,adapter:'mock',autoSync:true,createdAt:0,updatedAt:0}}
+function defaultStatus(){return{schema:SCHEMA,lastSuccessfulSyncAt:0,lastAttemptAt:0,lastError:'',lastResult:'local-only'}}
+function createMockCanonicalAdapter({storage:storageCandidate,now=()=>Date.now()}={}){
+  const storage=safeStorage(storageCandidate);
+  function read(){const x=parse(storage,KEYS.canonical,{schema:1,cases:{},operationAcks:{}});x.schema=1;x.cases=x.cases&&typeof x.cases==='object'?x.cases:{};x.operationAcks=x.operationAcks&&typeof x.operationAcks==='object'?x.operationAcks:{};return x}
+  function save(x){return write(storage,KEYS.canonical,x)}
+  function ensureCase(db,caseId){return db.cases[caseId]||(db.cases[caseId]={caseId,revision:0,records:{},updatedAt:0})}
+  function recordBucket(c,type){c.records[type]=c.records[type]&&typeof c.records[type]==='object'?c.records[type]:{};return c.records[type]}
+  function conflict(op,c,reason,remoteRecord=null){return{operationId:op.operationId,caseId:op.caseId,recordId:op.recordId,recordType:op.recordType,baseRevision:op.baseRevision,canonicalRevision:c.revision,reason,remoteRecord:clone(remoteRecord),localPayload:clone(op.payload)}}
+  async function pushOperations(operations=[]){
+    const db=read(),results=[];
+    for(const raw of operations){
+      const op=clone(raw),prior=db.operationAcks[op.operationId];
+      if(prior){results.push(clone(prior));continue}
+      const c=ensureCase(db,op.caseId),type=normalizeRecordType(op.recordType),bucket=recordBucket(c,type),existing=bucket[op.recordId]||null;
+      const stale=Number(op.baseRevision)!==Number(c.revision);
+      if(stale){
+        let allowAppend=false;
+        if(APPEND_TYPES.has(type)&&!existing)allowAppend=true;
+        if(MEDICATION_TYPES.has(type)&&!existing&&String(op.operation||'upsert')!=='delete')allowAppend=true;
+        if(!allowAppend){
+          const reason=STRICT_TYPES.has(type)?'STRICT_STALE_REVISION':MEDICATION_TYPES.has(type)?'MEDICATION_CONFLICT':REVIEW_TYPES.has(type)?'REVIEW_REQUIRED':'STALE_BASE_REVISION';
+          const result={ok:false,status:'conflict',conflict:conflict(op,c,reason,existing)};db.operationAcks[op.operationId]=result;results.push(clone(result));continue;
+        }
+      }
+      if(String(op.operation||'upsert')==='delete'){
+        if(existing)bucket[op.recordId]={...clone(existing),_syncDeleted:true,_syncDeletedAt:now(),_syncDeleteOperationId:op.operationId};
+        else bucket[op.recordId]={_syncDeleted:true,_syncDeletedAt:now(),_syncDeleteOperationId:op.operationId,recordId:op.recordId};
+      }else{
+        bucket[op.recordId]={payload:clone(op.payload),recordId:op.recordId,recordType:type,modifiedAt:op.modifiedAt,operationId:op.operationId,actorId:op.actorId||'',deviceId:op.deviceId||'',sessionId:op.sessionId||''};
+      }
+      c.revision=Number(c.revision)+1;c.updatedAt=now();
+      const result={ok:true,status:'acknowledged',operationId:op.operationId,caseId:op.caseId,recordId:op.recordId,canonicalRevision:c.revision,mergedStaleAppend:stale};
+      db.operationAcks[op.operationId]=result;results.push(clone(result));
+    }
+    save(db);return results;
+  }
+  async function pullChanges({caseId,sinceRevision=0}={}){const db=read(),c=db.cases[caseId];if(!c)return{caseId,revision:0,changes:[]};if(Number(c.revision)<=Number(sinceRevision))return{caseId,revision:c.revision,changes:[]};const changes=[];for(const [recordType,bucket] of Object.entries(c.records||{}))for(const rec of Object.values(bucket||{}))changes.push({recordType,...clone(rec)});return{caseId,revision:c.revision,changes}}
+  async function getCaseRevision(caseId){const db=read();return Number(db.cases?.[caseId]?.revision||0)}
+  async function acknowledgeOperations(ids=[]){return{acknowledged:[...new Set(ids.map(String))]}}
+  function inspect(caseId=''){const db=read();return caseId?clone(db.cases?.[caseId]||null):clone(db)}
+  function reset(){storage.removeItem(KEYS.canonical)}
+  return Object.freeze({name:'local-mock',pushOperations,pullChanges,getCaseRevision,acknowledgeOperations,inspect,reset});
+}
+function createEngine({storage:storageCandidate,now=()=>Date.now(),uuid=defaultUuid,online=()=>true}={}){
+  const storage=safeStorage(storageCandidate);let coreStorage=null,contextProvider=()=>({}),adapter=createMockCanonicalAdapter({storage,now}),syncPromise=null,renderHook=()=>{};
+  function readConfig(){return{...defaultConfig(),...parse(storage,KEYS.config,defaultConfig())}}
+  function writeConfig(next){const t=now(),prev=readConfig(),x={...prev,...clone(next),schema:SCHEMA,createdAt:prev.createdAt||t,updatedAt:t};write(storage,KEYS.config,x);renderHook();return clone(x)}
+  function readQueue(){
+    const raw=storage.getItem(KEYS.queue);if(raw==null)return[];
+    try{const q=JSON.parse(raw);if(!Array.isArray(q))throw new Error('Queue payload is not an array');return q}
+    catch(e){
+      try{write(storage,KEYS.queueCorrupt,{capturedAt:now(),error:e?.message||String(e),raw:String(raw).slice(0,250000)});const st={...defaultStatus(),...parse(storage,KEYS.status,defaultStatus()),schema:SCHEMA,lastAttemptAt:now(),lastResult:'queue-corrupt',lastError:'Sync queue was unreadable; preserved for recovery and local clinical data was not modified.'};write(storage,KEYS.status,st)}catch(_){}
+      return[];
+    }
+  }
+  function readRevisions(){const r=parse(storage,KEYS.revisions,{});return r&&typeof r==='object'?r:{}}
+  function readConflicts(){const x=parse(storage,KEYS.conflicts,[]);return Array.isArray(x)?x:[]}
+  function readStatus(){return{...defaultStatus(),...parse(storage,KEYS.status,defaultStatus())}}
+  function mirror(key,value){try{const p=coreStorage?.putMeta?.(key,clone(value));if(p?.catch)p.catch(()=>{})}catch(_){}}
+  function writeQueue(q){write(storage,KEYS.queue,q);mirror(META_KEYS.queue,q);renderHook();return q}
+  function patchQueueEntry(operationId,patch){const q=readQueue(),i=q.findIndex(x=>x.operationId===operationId);if(i<0)return null;q[i]={...q[i],...clone(patch)};writeQueue(q);return clone(q[i])}
+  function writeRevisions(r){write(storage,KEYS.revisions,r);mirror(META_KEYS.revisions,r);return r}
+  function writeConflicts(c){write(storage,KEYS.conflicts,c);mirror(META_KEYS.conflicts,c);renderHook();return c}
+  function writeStatus(s){const x={...readStatus(),...clone(s),schema:SCHEMA};write(storage,KEYS.status,x);mirror(META_KEYS.status,x);renderHook();return x}
+  function context(){let x={};try{x=contextProvider?.()||{}}catch(_){x={}}return{deviceId:String(x.deviceId||''),sessionId:String(x.sessionId||''),actorId:String(x.actorId||x.staffId||'')}}
+  function revisionFor(caseId){const r=readRevisions();return{canonicalRevision:0,projectedRevision:0,lastAcknowledgedRevision:0,...(r[caseId]||{})}}
+  function setRevision(caseId,patch){const r=readRevisions(),prev=revisionFor(caseId),next={...prev,...patch,updatedAt:now()};r[caseId]=next;writeRevisions(r);return clone(next)}
+  function payloadHash(payload){try{return fnv1a(JSON.stringify(payload))}catch(_){return ''}}
+  function buildEnvelope({caseId,recordId,recordType='case-document',operation='upsert',payload=null,createdAt=null,modifiedAt=null,baseRevision=null,revision=null,operationId=null,context:ctx=null}={}){
+    if(!caseId)throw new Error('caseId is required');if(!recordId)throw new Error('recordId is required');const t=Number(createdAt)||now(),rv=revisionFor(caseId),c=ctx||context(),base=baseRevision==null?Number(rv.projectedRevision||rv.canonicalRevision||0):Number(baseRevision),next=revision==null?base+1:Number(revision);
+    return{schema:SCHEMA,caseId:String(caseId),recordId:String(recordId),recordType:normalizeRecordType(recordType),operation:String(operation||'upsert'),revision:next,operationId:String(operationId||uuid()),deviceId:String(c.deviceId||''),sessionId:String(c.sessionId||''),actorId:String(c.actorId||''),createdAt:t,modifiedAt:Number(modifiedAt)||t,baseRevision:base,payload:clone(payload),payloadHash:payloadHash(payload)};
+  }
+  function enqueueMutation(spec,{force=false}={}){
+    const cfg=readConfig();if(!cfg.enabled&&!force)return{queued:false,reason:'disabled'};
+    const envelope=buildEnvelope(spec),q=readQueue();
+    if(q.some(x=>x.operationId===envelope.operationId))return{queued:false,reason:'duplicate-operation-id',operation:clone(q.find(x=>x.operationId===envelope.operationId))};
+    const entry={...envelope,status:'pending',attempts:0,lastAttemptAt:0,lastError:'',acknowledgedAt:0,conflictId:''};q.push(entry);writeQueue(q);setRevision(envelope.caseId,{projectedRevision:envelope.revision});
+    if(cfg.enabled&&cfg.autoSync&&online())queueMicrotask(()=>syncNow().catch(()=>{}));
+    return{queued:true,operation:clone(entry)};
+  }
+  function captureCaseSave(caseState,{reason='save'}={}){
+    const cfg=readConfig();if(!cfg.enabled)return{queued:false,reason:'disabled'};if(!caseState?.caseId)return{queued:false,reason:'missing-case-id'};
+    const locked=!!caseState.caseLocked,type=locked?'final-lock':'case-snapshot';
+    return enqueueMutation({caseId:caseState.caseId,recordId:locked?`${caseState.caseId}:final-lock`:caseState.caseId,recordType:type,operation:'upsert',modifiedAt:Number(caseState.lastSavedAt)||now(),payload:{reason:String(reason||'save'),case:clone(caseState)}});
+  }
+  function addConflict(op,c){const list=readConflicts(),id=`conflict-${uuid()}`,entry={id,createdAt:now(),status:'open',operationId:op.operationId,caseId:op.caseId,recordId:op.recordId,recordType:op.recordType,reason:c?.reason||'CONFLICT',baseRevision:op.baseRevision,canonicalRevision:Number(c?.canonicalRevision||0),localPayload:clone(c?.localPayload??op.payload),remoteRecord:clone(c?.remoteRecord??null)};list.push(entry);writeConflicts(list);return entry}
+  async function syncNow(){
+    if(syncPromise)return syncPromise;
+    syncPromise=(async()=>{
+      const cfg=readConfig(),attemptAt=now();writeStatus({lastAttemptAt:attemptAt,lastError:''});
+      if(!cfg.enabled){writeStatus({lastResult:'local-only'});return snapshot()}
+      if(!online()){writeStatus({lastResult:'offline'});return snapshot()}
+      const operationIds=readQueue().filter(x=>x.status==='pending'||x.status==='failed').map(x=>x.operationId);let successful=0;const blockedCases=new Set();
+      for(const operationId of operationIds){
+        const live=readQueue().find(x=>x.operationId===operationId);if(!live||(live.status!=='pending'&&live.status!=='failed'))continue;if(blockedCases.has(live.caseId))continue;
+        const op=patchQueueEntry(operationId,{attempts:Number(live.attempts||0)+1,lastAttemptAt:now(),status:'pending',lastError:''})||live;
+        try{
+          const results=await adapter.pushOperations([clone(op)]),result=results?.[0];
+          if(result?.status==='acknowledged'||result?.ok===true){const canonicalRevision=Number(result.canonicalRevision||0);patchQueueEntry(operationId,{status:'acknowledged',acknowledgedAt:now(),ack:{canonicalRevision,mergedStaleAppend:!!result.mergedStaleAppend},lastError:''});successful++;const rv=revisionFor(op.caseId);setRevision(op.caseId,{canonicalRevision,lastAcknowledgedRevision:canonicalRevision,projectedRevision:Math.max(Number(rv.projectedRevision||0),canonicalRevision)});}
+          else if(result?.status==='conflict'){const cf=addConflict(op,result.conflict||{});patchQueueEntry(operationId,{status:'conflict',conflictId:cf.id,lastError:cf.reason});blockedCases.add(op.caseId);}
+          else{throw new Error('Adapter returned no acknowledgement')}
+        }catch(e){patchQueueEntry(operationId,{status:'failed',lastError:e?.message||String(e)});blockedCases.add(op.caseId)}
+      }
+      const current=readQueue(),hasFailure=current.some(x=>x.status==='failed'),hasConflict=current.some(x=>x.status==='conflict');
+      writeStatus({lastSuccessfulSyncAt:successful?now():readStatus().lastSuccessfulSyncAt,lastResult:hasConflict?'conflict':hasFailure?'error':'synced',lastError:hasFailure?(current.find(x=>x.status==='failed')?.lastError||'Sync failed'):''});
+      return snapshot();
+    })().finally(()=>{syncPromise=null});return syncPromise;
+  }
+  function retryFailed(){const q=readQueue();let n=0;for(const op of q)if(op.status==='failed'){op.status='pending';op.lastError='';n++}if(n)writeQueue(q);return n}
+  function queueCounts(){return readQueue().reduce((a,x)=>(a[x.status]=(a[x.status]||0)+1,a.total++,a),{total:0,pending:0,acknowledged:0,failed:0,conflict:0})}
+  function snapshot(){const cfg=readConfig(),counts=queueCounts(),status=readStatus();return{version:VERSION,schema:SCHEMA,enabled:!!cfg.enabled,adapter:cfg.adapter||'mock',autoSync:cfg.autoSync!==false,online:!!online(),counts,conflictsOpen:readConflicts().filter(x=>x.status==='open').length,lastSuccessfulSyncAt:Number(status.lastSuccessfulSyncAt||0),lastAttemptAt:Number(status.lastAttemptAt||0),lastResult:status.lastResult||'local-only',lastError:status.lastError||'',safetyLabel:'EXPERIMENTAL — local/mock adapter; not production concurrent multi-device editing'}}
+  function inspect(){return{config:readConfig(),queue:clone(readQueue()),revisions:clone(readRevisions()),conflicts:clone(readConflicts()),status:readStatus(),canonical:adapter.inspect?.()||null}}
+  function setEnabled(enabled){return writeConfig({enabled:!!enabled})}
+  function setAutoSync(autoSync){return writeConfig({autoSync:!!autoSync})}
+  function setAdapter(next){if(!next||typeof next.pushOperations!=='function'||typeof next.pullChanges!=='function'||typeof next.getCaseRevision!=='function'||typeof next.acknowledgeOperations!=='function')throw new Error('Invalid canonical adapter interface');adapter=next;return true}
+  function init({coreStorage:cs=null,getContext=null,getOnline=null,onRender=null,canonicalAdapter=null}={}){coreStorage=cs||coreStorage;if(typeof getContext==='function')contextProvider=getContext;if(typeof getOnline==='function')online=getOnline;if(typeof onRender==='function')renderHook=onRender;if(canonicalAdapter)setAdapter(canonicalAdapter);return snapshot()}
+  async function hydrateMirror(){if(!coreStorage?.getMeta)return false;try{const current=readQueue();if(current.length)return false;const q=await coreStorage.getMeta(META_KEYS.queue);if(Array.isArray(q?.value)&&q.value.length){write(storage,KEYS.queue,q.value);const r=await coreStorage.getMeta(META_KEYS.revisions),c=await coreStorage.getMeta(META_KEYS.conflicts),s=await coreStorage.getMeta(META_KEYS.status);if(r?.value)write(storage,KEYS.revisions,r.value);if(c?.value)write(storage,KEYS.conflicts,c.value);if(s?.value)write(storage,KEYS.status,s.value);renderHook();return true}}catch(_){}return false}
+  function resetExperimentalData(){storage.removeItem(KEYS.queue);storage.removeItem(KEYS.revisions);storage.removeItem(KEYS.conflicts);storage.removeItem(KEYS.status);adapter.reset?.();renderHook()}
+  return Object.freeze({version:VERSION,schema:SCHEMA,keys:KEYS,metaKeys:META_KEYS,init,hydrateMirror,buildEnvelope,enqueueMutation,captureCaseSave,syncNow,retryFailed,snapshot,inspect,setEnabled,setAutoSync,setAdapter,resetExperimentalData,createMockCanonicalAdapter:(opts={})=>createMockCanonicalAdapter({storage:opts.storage||storage,now:opts.now||now})});
+}
+const singleton=createEngine({storage:root.localStorage,online:()=>root.navigator?.onLine!==false});
+function injectUi(){
+  if(!root.document||root.document.getElementById('syncFoundationPanel'))return;
+  const settings=root.document.getElementById('settings');if(!settings)return;
+  settings.insertAdjacentHTML('afterbegin',`<section id="syncFoundationPanel" class="panel sync-foundation-panel"><div class="section-heading"><div><small>V17.1 SYNC FOUNDATION</small><h2>Multi-device Foundation <span class="sync-experimental">EXPERIMENTAL</span></h2><p>Local/mock canonical adapter สำหรับทดสอบ queue, revision, idempotency และ conflict detection เท่านั้น — ยังไม่ใช่ production multi-device editing</p></div><span id="syncFoundationBadge" class="status-pill warn">LOCAL ONLY</span></div><div class="sync-foundation-grid"><label class="sync-toggle"><input id="syncFoundationEnabled" type="checkbox"> Enable local/mock sync simulation</label><label class="sync-toggle"><input id="syncFoundationAuto" type="checkbox" checked> Auto-process mock queue</label></div><div class="sync-foundation-stats"><div><span>Pending</span><b id="syncPendingCount">0</b></div><div><span>Synced</span><b id="syncAckCount">0</b></div><div><span>Conflict</span><b id="syncConflictCount">0</b></div><div><span>Failed</span><b id="syncFailedCount">0</b></div></div><div class="button-row"><button id="syncNowBtn" class="btn" type="button">Run local sync</button><button id="syncRetryBtn" class="btn light" type="button">Retry failed</button></div><p id="syncFoundationDetail" class="settings-note"></p><details><summary>Conflict evidence / diagnostics</summary><pre id="syncFoundationDiagnostics" class="sync-diagnostics"></pre></details></section>`);
+  const enabled=root.document.getElementById('syncFoundationEnabled'),auto=root.document.getElementById('syncFoundationAuto');
+  enabled?.addEventListener('change',()=>{singleton.setEnabled(enabled.checked);renderUi()});auto?.addEventListener('change',()=>{singleton.setAutoSync(auto.checked);renderUi()});root.document.getElementById('syncNowBtn')?.addEventListener('click',()=>singleton.syncNow().then(renderUi));root.document.getElementById('syncRetryBtn')?.addEventListener('click',()=>{singleton.retryFailed();singleton.syncNow().then(renderUi)});
+}
+function renderUi(){
+  if(!root.document)return;injectUi();const s=singleton.snapshot(),i=singleton.inspect(),el=id=>root.document.getElementById(id);if(!el('syncFoundationPanel'))return;
+  el('syncFoundationEnabled').checked=s.enabled;el('syncFoundationAuto').checked=s.autoSync;el('syncPendingCount').textContent=String(s.counts.pending||0);el('syncAckCount').textContent=String(s.counts.acknowledged||0);el('syncConflictCount').textContent=String(s.counts.conflict||0);el('syncFailedCount').textContent=String(s.counts.failed||0);
+  const badge=el('syncFoundationBadge');badge.textContent=!s.enabled?'LOCAL ONLY':!s.online?'OFFLINE':s.counts.conflict?'CONFLICT':s.counts.failed?'ERROR':s.counts.pending?'PENDING':'MOCK SYNCED';badge.className=`status-pill ${(!s.enabled||s.counts.conflict||s.counts.failed)?'warn':'good'}`;
+  const last=s.lastSuccessfulSyncAt?new Date(s.lastSuccessfulSyncAt).toLocaleString():'never';el('syncFoundationDetail').textContent=`Adapter: local/mock • Online: ${s.online?'yes':'no'} • Last successful sync: ${last} • DB schema unchanged. Local clinical save remains authoritative.`;
+  el('syncFoundationDiagnostics').textContent=JSON.stringify({status:s,openConflicts:i.conflicts.filter(x=>x.status==='open').slice(-10),recentQueue:i.queue.slice(-10).map(x=>({operationId:x.operationId,caseId:x.caseId,recordType:x.recordType,baseRevision:x.baseRevision,revision:x.revision,status:x.status,attempts:x.attempts,lastError:x.lastError}))},null,2);
+}
+const originalInit=singleton.init;const browserApi=Object.freeze({...singleton,createEngine,createMockCanonicalAdapter,init:(opts={})=>{const out=originalInit({...opts,onRender:()=>{try{opts.onRender?.()}catch(_){}renderUi()}});injectUi();renderUi();root.addEventListener?.('online',renderUi);root.addEventListener?.('offline',renderUi);return out},render:renderUi,constants:Object.freeze({STRICT_TYPES:[...STRICT_TYPES],APPEND_TYPES:[...APPEND_TYPES],MEDICATION_TYPES:[...MEDICATION_TYPES],REVIEW_TYPES:[...REVIEW_TYPES]})});
+root.ANESVET_SYNC_FOUNDATION=browserApi;if(typeof module!=='undefined'&&module.exports)module.exports=browserApi;
+})(typeof globalThis!=='undefined'?globalThis:this);

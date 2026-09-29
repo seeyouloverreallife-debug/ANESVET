@@ -1,0 +1,15 @@
+{
+  "version": "16.19.1",
+  "status": "BLOCKED_PENDING",
+  "command": "chromium --headless --no-sandbox --disable-gpu --disable-dev-shm-usage --dump-dom http://127.0.0.1:8765/",
+  "timeoutSeconds": 20,
+  "exitCode": 124,
+  "domBytes": 0,
+  "stderrBytes": 4545,
+  "observed": [
+    "D-Bus system bus unavailable in sandbox",
+    "Chromium service/process messages",
+    "No DOM output before timeout"
+  ],
+  "interpretation": "Interactive browser smoke cannot be treated as PASS in this environment. Real-device validation remains required."
+}

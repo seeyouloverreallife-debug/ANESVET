@@ -1,0 +1,207 @@
+{
+  "version": "17.0.0",
+  "generatedAt": "2026-09-29T10:56:02.410156+00:00",
+  "overall": true,
+  "passed": 22,
+  "total": 22,
+  "checks": [
+    {
+      "name": "JavaScript syntax",
+      "ok": true,
+      "detail": "53/53 PASS"
+    },
+    {
+      "name": "HTML IDs unique",
+      "ok": true,
+      "detail": "1325/1325 unique"
+    },
+    {
+      "name": "HTML local script/style references",
+      "ok": true,
+      "detail": "80/80 present; missing=[]"
+    },
+    {
+      "name": "Service Worker assets",
+      "ok": true,
+      "detail": "86/86 present; missing=[]"
+    },
+    {
+      "name": "Version alignment 17.0.0",
+      "ok": true,
+      "detail": "app/index/manifest/SW/registry/identity/changed controllers"
+    },
+    {
+      "name": "IndexedDB DB_VERSION remains 2",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Full Backup schema remains 3",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Identity registry schema = 2",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Identity UI contract",
+      "ok": true,
+      "detail": "20/20 required IDs present"
+    },
+    {
+      "name": "Role permission matrix",
+      "ok": true,
+      "detail": "13/13 actions present"
+    },
+    {
+      "name": "V16.21 local registry migration path retained",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Credentials excluded from Full Backup",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Session/device attribution in audit",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Vitals/events carry documenter identity",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Medication RBAC + documenter identity",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Recovery documenter identity",
+      "ok": true,
+      "detail": "3 attribution points"
+    },
+    {
+      "name": "Backup/Restore access gates",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Case Review access gate",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Final sign-off session/device attribution",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Architecture registry includes identity foundation",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Targeted identity/access regressions",
+      "ok": true,
+      "detail": "19/19 PASS"
+    },
+    {
+      "name": "Critical clinical/runtime parity",
+      "ok": true,
+      "detail": "18/18 byte-identical to V16.22.0"
+    }
+  ],
+  "criticalParity": [
+    {
+      "file": "case-runtime.js",
+      "same": true
+    },
+    {
+      "file": "clinical-workflow.js",
+      "same": true
+    },
+    {
+      "file": "drug-dose-reference.js",
+      "same": true
+    },
+    {
+      "file": "protocol-review.js",
+      "same": true
+    },
+    {
+      "file": "medication-reconciliation.js",
+      "same": true
+    },
+    {
+      "file": "finalization.js",
+      "same": true
+    },
+    {
+      "file": "final-archive-assurance.js",
+      "same": true
+    },
+    {
+      "file": "documentation-guardian.js",
+      "same": true
+    },
+    {
+      "file": "problem-response-review.js",
+      "same": true
+    },
+    {
+      "file": "recovery-domain.js",
+      "same": true
+    },
+    {
+      "file": "or-domain.js",
+      "same": true
+    },
+    {
+      "file": "or-record-orchestration.js",
+      "same": true
+    },
+    {
+      "file": "recovery-orchestration.js",
+      "same": true
+    },
+    {
+      "file": "or-speed-hardening.js",
+      "same": true
+    },
+    {
+      "file": "clinical-validation.js",
+      "same": true
+    },
+    {
+      "file": "patient-domain.js",
+      "same": true
+    },
+    {
+      "file": "patient-master-orchestration.js",
+      "same": true
+    },
+    {
+      "file": "recovery-2.css",
+      "same": true
+    }
+  ],
+  "targetedTests": {
+    "V17_0_0_IDENTITY_TEST_RESULTS.json": {
+      "passed": 14,
+      "total": 14
+    },
+    "V17_0_0_ATTRIBUTION_TEST_RESULTS.json": {
+      "passed": 3,
+      "total": 3
+    },
+    "V17_0_0_ACCESS_CONTROL_TEST_RESULTS.json": {
+      "passed": 2,
+      "total": 2
+    }
+  }
+}

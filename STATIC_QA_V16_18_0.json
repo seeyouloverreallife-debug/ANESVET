@@ -1,0 +1,118 @@
+{
+  "version": "16.18.0",
+  "generated_at": "2026-09-29",
+  "javascript_syntax": {
+    "passed": 41,
+    "total": 41,
+    "failures": []
+  },
+  "html_ids": {
+    "total": 1260,
+    "unique": 1260,
+    "duplicates": [],
+    "ok": true
+  },
+  "asset_refs": {
+    "scripts": 40,
+    "styles": 23,
+    "missing": [],
+    "ok": true
+  },
+  "service_worker_assets": {
+    "total": 69,
+    "missing": [],
+    "ok": true
+  },
+  "critical_clinical_parity": {
+    "passed": 18,
+    "total": 18,
+    "changed": []
+  },
+  "architecture_structure": {
+    "passed": 10,
+    "total": 10,
+    "checks": [
+      {
+        "label": "app-shell loaded before app",
+        "ok": true
+      },
+      {
+        "label": "session-controller loaded before app",
+        "ok": true
+      },
+      {
+        "label": "pwa-controller loaded before app",
+        "ok": true
+      },
+      {
+        "label": "dose-reference-controller loaded before app",
+        "ok": true
+      },
+      {
+        "label": "architecture-registry loaded before app",
+        "ok": true
+      },
+      {
+        "label": "legacy sessionMode ownership removed from app",
+        "ok": true
+      },
+      {
+        "label": "legacy PWA deferredPrompt ownership removed from app",
+        "ok": true
+      },
+      {
+        "label": "architecture self-check integrated",
+        "ok": true
+      },
+      {
+        "label": "DB_VERSION unchanged",
+        "ok": true
+      },
+      {
+        "label": "APP_VERSION current",
+        "ok": true
+      }
+    ]
+  },
+  "source_parity": {
+    "from": "16.17.0",
+    "to": "16.18.0",
+    "scope": "all files except CHECKSUM_SHA256.txt and SOURCE_PARITY_V16_18_0.json",
+    "old_file_count": 257,
+    "new_file_count": 271,
+    "unchanged_count": 250,
+    "changed_count": 7,
+    "added_count": 14,
+    "removed_count": 0,
+    "changed_files": [
+      "README_TH.md",
+      "app.js",
+      "index.html",
+      "manifest.webmanifest",
+      "production-pilot.css",
+      "production-pilot.js",
+      "service-worker.js"
+    ],
+    "added_files": [
+      "ARCHITECTURE_V16_18.md",
+      "BROWSER_SMOKE_V16_18_0.json",
+      "KNOWN_LIMITATIONS_V16_18_0.md",
+      "MIGRATION_V16_17_0_TO_V16_18_0.md",
+      "QA_V16_18_0.md",
+      "RELEASE_NOTES_V16_18_0.md",
+      "STATIC_QA_V16_18_0.json",
+      "V16_18_0_CASE_LIFECYCLE_TEST_RESULTS.json",
+      "app-shell.js",
+      "architecture-registry.js",
+      "case-lifecycle.js",
+      "dose-reference-controller.js",
+      "pwa-controller.js",
+      "session-controller.js"
+    ],
+    "removed_files": []
+  },
+  "browser_smoke": {
+    "status": "BLOCKED",
+    "reason": "System Chromium headless timed out after 25 seconds against a reachable local HTTP server; no PASS claimed."
+  }
+}

@@ -114,6 +114,8 @@
     }
     const hint=$('medicationReconciliationHint');
     if(hint)hint.textContent=legacy?'Read-only legacy record • no reconciliation state was added after Final Lock':s.pending?`Reconcile ${s.pending} planned medication${s.pending===1?'':'s'} before Final Lock. Emergency / standby items are not required.`:`${s.given} given • ${s.notGiven} explicitly not given${s.unplanned?` • ${s.unplanned} other actual administration${s.unplanned===1?'':'s'}`:''}`;
+
+    document.dispatchEvent(new CustomEvent('anesvet:medication-reconciliation-rendered'));
   }
   function openDecision(key){
     const state=getState(); if(!state||state.caseLocked)return;

@@ -1,0 +1,38 @@
+{
+  "version": "16.20.0",
+  "total": 6,
+  "passed": 6,
+  "failed": 0,
+  "results": [
+    {
+      "name": "controller version",
+      "ok": true,
+      "detail": "PASS"
+    },
+    {
+      "name": "backup schema unchanged",
+      "ok": true,
+      "detail": "PASS"
+    },
+    {
+      "name": "backup includes protocol governance registry",
+      "ok": true,
+      "detail": "PASS"
+    },
+    {
+      "name": "whole-file manifest still generated",
+      "ok": true,
+      "detail": "PASS"
+    },
+    {
+      "name": "restore key list includes governance key",
+      "ok": true,
+      "detail": "PASS"
+    },
+    {
+      "name": "restore payload restores/removes governance",
+      "ok": true,
+      "detail": "PASS"
+    }
+  ]
+}

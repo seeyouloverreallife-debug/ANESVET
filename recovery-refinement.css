@@ -1,0 +1,89 @@
+/* ANESVET V16.10.0 — Recovery Workflow Refinement
+   Purpose: reduce Recovery clutter, make extubation → Recovery state explicit,
+   and keep the mobile dock contextual without changing clinical data semantics. */
+
+.recovery-transition-strip{
+  grid-column:1/-1;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-top:2px;
+  padding:9px 11px;
+  border:1px solid #d5e2e5;
+  border-radius:12px;
+  background:#fff;
+  color:#315761;
+}
+.recovery-transition-strip>div{min-width:0}
+.recovery-transition-strip span{display:block;font-size:.57rem;font-weight:950;letter-spacing:.08em;color:#73888e}
+.recovery-transition-strip b{display:block;margin-top:2px;font-size:.82rem;color:#244d59}
+.recovery-transition-strip small{max-width:62%;font-size:.69rem;line-height:1.35;color:#71848a;text-align:right}
+.recovery-transition-strip.good{border-color:#b9d7c2;background:#f6fbf7}
+.recovery-transition-strip.good b{color:#23613a}
+.recovery-transition-strip.danger{border-color:#e3b2ad;background:#fff7f6}
+.recovery-transition-strip.danger b{color:#9b302a}
+
+.recovery-handoff-compact-panel{overflow:visible}
+.recovery-handoff-compact{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:8px;
+  margin-top:10px;
+}
+.recovery-handoff-quick{
+  min-width:0;
+  padding:10px 11px;
+  border:1px solid #d6e2e5;
+  border-radius:12px;
+  background:#fbfdfe;
+}
+.recovery-handoff-quick>span{display:block;font-size:.58rem;font-weight:950;letter-spacing:.06em;color:#71858b;text-transform:uppercase}
+.recovery-handoff-quick>b{display:block;margin-top:3px;font-size:.82rem;line-height:1.3;color:#244d59;overflow-wrap:anywhere}
+.recovery-handoff-quick>small{display:block;margin-top:3px;font-size:.65rem;color:#77898e;overflow-wrap:anywhere}
+.recovery-handoff-quick.good{border-color:#c5dec9;background:#f7fcf8}
+.recovery-handoff-quick.good>b{color:#1f643a}
+.recovery-handoff-quick.danger{border-color:#e3b2ad;background:#fff7f6}
+.recovery-handoff-quick.danger>b{color:#a1322c}
+.recovery-handoff-expand{width:100%;margin-top:8px;min-height:40px;border-style:dashed}
+.recovery-handoff-details{margin-top:9px;padding-top:9px;border-top:1px solid #e0e8ea}
+.recovery-handoff-details>summary{cursor:pointer;font-weight:850;color:#315b66;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.recovery-handoff-details>summary small{font-size:.64rem;font-weight:650;color:#788a8f;text-align:right}
+.recovery-handoff-details[open]>summary{margin-bottom:10px}
+
+.recovery-mobile-dock-btn.ready{background:#eaf7ed!important;color:#205f36!important;box-shadow:0 0 0 1px #b8d8c0 inset!important}
+.recovery-mobile-dock-btn:disabled{opacity:.64}
+
+@media(max-width:900px){
+  .recovery-transition-strip{align-items:flex-start;flex-direction:column;gap:4px}
+  .recovery-transition-strip small{max-width:none;text-align:left}
+  .recovery-handoff-compact{grid-template-columns:1fr}
+  .recovery-handoff-details>summary{align-items:flex-start;flex-direction:column}
+  .recovery-handoff-details>summary small{text-align:left}
+}
+
+@media(max-width:1180px), (pointer:coarse) and (max-width:1400px){
+  /* Final dock geometry guard. Keep it inside the viewport even if an earlier
+     stylesheet used left:50% + translateX(-50%). */
+  .recovery-mobile-dock{
+    left:8px!important;
+    right:8px!important;
+    width:auto!important;
+    max-width:none!important;
+    transform:none!important;
+    box-sizing:border-box!important;
+  }
+  body.recovery-mobile-active.recovery-session-active .recovery-efficiency-tools{display:none!important}
+  body.recovery-mobile-active.recovery-session-active #recoveryFocusCompleteBtn{display:none!important}
+  body.recovery-mobile-active.recovery-session-active .recovery-focus-actions{grid-template-columns:1fr!important}
+  body.recovery-mobile-active #recoveryHandoffPanel{margin-top:8px}
+  body.recovery-mobile-active .recovery-handoff-expand{min-height:44px}
+}
+
+@media(max-width:560px){
+  .recovery-transition-strip{padding:8px 9px;border-radius:10px}
+  .recovery-transition-strip b{font-size:.77rem}
+  .recovery-transition-strip small{font-size:.64rem}
+  .recovery-handoff-quick{padding:9px}
+  .recovery-mobile-dock{left:5px!important;right:5px!important}
+}

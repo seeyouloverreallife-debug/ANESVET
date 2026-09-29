@@ -1,0 +1,32 @@
+{
+  "version": "16.8.3",
+  "scope": "Mobile dock geometry hotfix",
+  "javascript": {
+    "files": 29,
+    "syntax_pass": 29,
+    "syntax_fail": []
+  },
+  "html": {
+    "id_count": 1144,
+    "duplicate_ids": []
+  },
+  "service_worker": {
+    "asset_count": 49,
+    "missing_assets": [],
+    "cache_name": true
+  },
+  "version_consistency": {
+    "index.html": true,
+    "app.js": true,
+    "manifest.webmanifest": true,
+    "service-worker.js": true
+  },
+  "dock_fix": {
+    "left_right_inset": true,
+    "width_reset": true,
+    "transform_reset": true,
+    "box_sizing": true
+  },
+  "clinical_logic_changed": false,
+  "data_schema_changed": false
+}

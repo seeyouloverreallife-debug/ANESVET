@@ -1,0 +1,169 @@
+{
+  "version": "16.19.1",
+  "jsSyntax": {
+    "passed": 50,
+    "total": 50,
+    "failed": []
+  },
+  "htmlIds": {
+    "total": 1293,
+    "unique": 1293,
+    "duplicates": [],
+    "ok": true
+  },
+  "htmlReferences": {
+    "total": 78,
+    "missing": [],
+    "ok": true
+  },
+  "serviceWorkerAssets": {
+    "total": 80,
+    "missing": [],
+    "ok": true
+  },
+  "versionAlignment": {
+    "app": true,
+    "manifest": true,
+    "service_worker": true,
+    "architecture": true,
+    "production_pilot": true,
+    "validation_center": true
+  },
+  "clinicalParity": {
+    "passed": 18,
+    "total": 18,
+    "files": [
+      {
+        "file": "case-runtime.js",
+        "identical": true,
+        "sha256": "e29121881fbb9da20ad28854847e6fba40222126a70a42d37564b2147677cc97"
+      },
+      {
+        "file": "core-storage.js",
+        "identical": true,
+        "sha256": "9289d66c56f00add8c2d1569f0c3cddb63999c1ceebcb706d3f41641262b461c"
+      },
+      {
+        "file": "patient-domain.js",
+        "identical": true,
+        "sha256": "7453cd7334d00098f2d72c7c6f5e62aeae5c055516fd690f5566cfcb53c9147b"
+      },
+      {
+        "file": "or-domain.js",
+        "identical": true,
+        "sha256": "8903e70d76988067b420fe2c6d7f80cf1be29d533257df9eb120ad52d7e720d8"
+      },
+      {
+        "file": "recovery-domain.js",
+        "identical": true,
+        "sha256": "7d74d9d1f87ecc7eb702b5eecc11f943c2558a3b36bf69963d206a459e99145f"
+      },
+      {
+        "file": "patient-master-orchestration.js",
+        "identical": true,
+        "sha256": "b656e20bde65d934af50d95c5d8bdf1f50a23cb2b69412cd404d77d9a7350c1e"
+      },
+      {
+        "file": "or-record-orchestration.js",
+        "identical": true,
+        "sha256": "996f2aca18ea9f509f769be8a16a437f42fa0c4e64d89c9d84da829b989c39da"
+      },
+      {
+        "file": "recovery-orchestration.js",
+        "identical": true,
+        "sha256": "e9d17dd79822cf9e226296c83b053ae1e924e963b85c8de409c585008dacb1d9"
+      },
+      {
+        "file": "medication-reconciliation.js",
+        "identical": true,
+        "sha256": "23f3abd9d851561751892f5d30c7fa9d68d2626b1221b06457a2145db58d5043"
+      },
+      {
+        "file": "finalization.js",
+        "identical": true,
+        "sha256": "6b82ceff7849f68763f99f95f2895226ec98b7574f7c9740d9e82c71e82c89dd"
+      },
+      {
+        "file": "final-archive-assurance.js",
+        "identical": true,
+        "sha256": "2045ab497ba39e6347a35a9690d7fd41c0cbb69b7ec9163f5e4214f604ba6f9d"
+      },
+      {
+        "file": "documentation-guardian.js",
+        "identical": true,
+        "sha256": "0f43773a8e677aa19a33296d95db1e559a47dc1400c2b3be36a9b77bd79df9ca"
+      },
+      {
+        "file": "problem-response-review.js",
+        "identical": true,
+        "sha256": "0b7ca9d1590a2d00c19861213870451f460790076bc60aade9ca51f8fa77fac1"
+      },
+      {
+        "file": "procedure-templates.js",
+        "identical": true,
+        "sha256": "6c134ad2c586397ffc2da880fdfb32b9d33caca25c0c28dc19446f1d55e38cb7"
+      },
+      {
+        "file": "or-live-controller.js",
+        "identical": true,
+        "sha256": "1312b075f6e3a6195fab72fc8604d38b391d284ce2964405b8c250312328330d"
+      },
+      {
+        "file": "recovery-controller.js",
+        "identical": true,
+        "sha256": "062fdbd5ff14f40e638a8bfa277f5c0af8b533f1b695aca387baf696d8430488"
+      },
+      {
+        "file": "medication-workspace-controller.js",
+        "identical": true,
+        "sha256": "d959fe913495e348b7a7b8745562be2fe922dc1c873b20de8ee278298d864d00"
+      },
+      {
+        "file": "finalization-archive-controller.js",
+        "identical": true,
+        "sha256": "617644abe68b185d08957b9856d380b6523e3250fd28c61ab3ca9362743952c6"
+      }
+    ]
+  },
+  "dataSafetyParity": {
+    "passed": 3,
+    "total": 3,
+    "files": [
+      {
+        "file": "backup-restore-controller.js",
+        "identical": true,
+        "sha256": "42063deb9f67dceaa67852327a898450c2bbc910b56d1e1778b95366b868a010"
+      },
+      {
+        "file": "data-safety-2.js",
+        "identical": true,
+        "sha256": "e245610c168f60548282ce91b0828950343d7031a512c2d2f28a80efcb2643ca"
+      },
+      {
+        "file": "data-resilience.js",
+        "identical": true,
+        "sha256": "cd5cfb1cea14ed16d7b6de471476398386fe325bbdab8140538eda0a79f54bfd"
+      }
+    ]
+  },
+  "dbVersion": 2,
+  "backupSchema": 3,
+  "validationUi": {
+    "requiredIds": [
+      "validationCenterBadge",
+      "validationEvidenceTarget",
+      "validationDeviceLabel",
+      "validationStartRunBtn",
+      "validationCompleteRunBtn",
+      "validationAbortRunBtn",
+      "validationExportBtn",
+      "validationResetBtn",
+      "validationRunMeta",
+      "validationStepList",
+      "validationHistoryList"
+    ],
+    "missing": [],
+    "ok": true
+  },
+  "overall": true
+}

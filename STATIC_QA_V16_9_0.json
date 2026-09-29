@@ -1,0 +1,146 @@
+{
+  "version": "16.9.0",
+  "jsSyntax": {
+    "passed": 30,
+    "total": 30,
+    "failed": [],
+    "ok": true
+  },
+  "htmlIds": {
+    "total": 1154,
+    "unique": 1154,
+    "duplicates": [],
+    "ok": true
+  },
+  "serviceWorkerAssets": {
+    "total": 51,
+    "missing": [],
+    "ok": true
+  },
+  "semanticGuards": {
+    "procedure_template_module_loaded_before_app": true,
+    "procedure_template_picker_present": true,
+    "active_case_uses_frozen_workflow": true,
+    "snapshot_created_at_case_start": true,
+    "snapshot_audited": true,
+    "undo_captures_snapshot": true,
+    "undo_restores_snapshot": true,
+    "new_case_defaults_custom": true,
+    "db_version_unchanged_2": true,
+    "emergency_template_documentation_only_note": true,
+    "csection_delivery_milestones_preserved": true,
+    "v1684_med_queue_semantics_preserved": true,
+    "mobile_dock_hotfix_preserved": true,
+    "procedure_buttons_directly_bound": true,
+    "version_bumped": true
+  },
+  "procedureTemplateTests": {
+    "version": "16.9.0",
+    "passed": 20,
+    "total": 20,
+    "ok": true,
+    "tests": [
+      {
+        "name": "template count",
+        "ok": true,
+        "detail": "9"
+      },
+      {
+        "name": "ovh workflow",
+        "ok": true,
+        "detail": "routine"
+      },
+      {
+        "name": "castration workflow",
+        "ok": true,
+        "detail": "routine"
+      },
+      {
+        "name": "dental workflow",
+        "ok": true,
+        "detail": "routine"
+      },
+      {
+        "name": "mass workflow",
+        "ok": true,
+        "detail": "routine"
+      },
+      {
+        "name": "exploratory workflow",
+        "ok": true,
+        "detail": "routine"
+      },
+      {
+        "name": "orthopedic workflow",
+        "ok": true,
+        "detail": "routine"
+      },
+      {
+        "name": "csection workflow",
+        "ok": true,
+        "detail": "csection"
+      },
+      {
+        "name": "emergency workflow",
+        "ok": true,
+        "detail": "critical"
+      },
+      {
+        "name": "custom workflow",
+        "ok": true,
+        "detail": "custom"
+      },
+      {
+        "name": "Infer OVH / OHE",
+        "ok": true,
+        "detail": "ovh"
+      },
+      {
+        "name": "Infer Thai dental",
+        "ok": true,
+        "detail": "dental"
+      },
+      {
+        "name": "Infer Thai C-section",
+        "ok": true,
+        "detail": "csection"
+      },
+      {
+        "name": "Infer orthopedic",
+        "ok": true,
+        "detail": "orthopedic"
+      },
+      {
+        "name": "Snapshot schema",
+        "ok": true,
+        "detail": "1"
+      },
+      {
+        "name": "Snapshot scope",
+        "ok": true,
+        "detail": "documentation-only"
+      },
+      {
+        "name": "Snapshot timestamp",
+        "ok": true,
+        "detail": "123"
+      },
+      {
+        "name": "Snapshot retains actual workflow",
+        "ok": true,
+        "detail": "csection"
+      },
+      {
+        "name": "Snapshot delivery milestones",
+        "ok": true,
+        "detail": "[\"First neonate delivered\",\"Last neonate delivered\"]"
+      },
+      {
+        "name": "Unknown resolves custom",
+        "ok": true,
+        "detail": "custom"
+      }
+    ]
+  },
+  "ok": true
+}

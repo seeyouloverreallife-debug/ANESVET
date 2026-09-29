@@ -1,0 +1,169 @@
+{
+  "version": "16.22.0",
+  "status": "PASS",
+  "passed": 16,
+  "total": 16,
+  "checks": [
+    {
+      "name": "JavaScript syntax",
+      "status": "PASS",
+      "detail": "53/53 valid"
+    },
+    {
+      "name": "HTML IDs unique",
+      "status": "PASS",
+      "detail": "1325 IDs / 1325 unique"
+    },
+    {
+      "name": "HTML local script/style references",
+      "status": "PASS",
+      "detail": "84/84 present"
+    },
+    {
+      "name": "Service Worker assets",
+      "status": "PASS",
+      "detail": "86/86 present"
+    },
+    {
+      "name": "Version alignment",
+      "status": "PASS",
+      "detail": "16.22.0 across app/index/manifest/registry/service-worker"
+    },
+    {
+      "name": "IndexedDB DB_VERSION unchanged",
+      "status": "PASS",
+      "detail": "DB_VERSION = 2"
+    },
+    {
+      "name": "Full backup schema unchanged",
+      "status": "PASS",
+      "detail": "backupSchema = 3"
+    },
+    {
+      "name": "Case Review dashboard DOM",
+      "status": "PASS",
+      "detail": "21/21 required IDs present"
+    },
+    {
+      "name": "Case Review module registered",
+      "status": "PASS",
+      "detail": "global read-only dashboard module present"
+    },
+    {
+      "name": "Architecture registry requires Case Review",
+      "status": "PASS",
+      "detail": "registered before app startup"
+    },
+    {
+      "name": "App exposes cloned archive review bridge",
+      "status": "PASS",
+      "detail": "read-only cloned archive accessor"
+    },
+    {
+      "name": "Archive refresh event wired",
+      "status": "PASS",
+      "detail": "dashboard refreshes after archive rendering"
+    },
+    {
+      "name": "Descriptive-only safety language",
+      "status": "PASS",
+      "detail": "no clinician grading / causality inference"
+    },
+    {
+      "name": "Dashboard is read-only",
+      "status": "PASS",
+      "detail": "no clinical write/storage mutation APIs referenced"
+    },
+    {
+      "name": "Case Review regression",
+      "status": "PASS",
+      "detail": "12/12 PASS"
+    },
+    {
+      "name": "Critical clinical/runtime parity",
+      "status": "PASS",
+      "detail": "18/18 byte-identical to V16.21.0"
+    }
+  ],
+  "criticalParity": [
+    {
+      "file": "case-runtime.js",
+      "identical": true
+    },
+    {
+      "file": "clinical-workflow.js",
+      "identical": true
+    },
+    {
+      "file": "drug-dose-reference.js",
+      "identical": true
+    },
+    {
+      "file": "protocol-review.js",
+      "identical": true
+    },
+    {
+      "file": "medication-reconciliation.js",
+      "identical": true
+    },
+    {
+      "file": "finalization.js",
+      "identical": true
+    },
+    {
+      "file": "final-archive-assurance.js",
+      "identical": true
+    },
+    {
+      "file": "documentation-guardian.js",
+      "identical": true
+    },
+    {
+      "file": "problem-response-review.js",
+      "identical": true
+    },
+    {
+      "file": "recovery-domain.js",
+      "identical": true
+    },
+    {
+      "file": "or-domain.js",
+      "identical": true
+    },
+    {
+      "file": "or-record-orchestration.js",
+      "identical": true
+    },
+    {
+      "file": "recovery-orchestration.js",
+      "identical": true
+    },
+    {
+      "file": "or-speed-hardening.js",
+      "identical": true
+    },
+    {
+      "file": "clinical-validation.js",
+      "identical": true
+    },
+    {
+      "file": "patient-domain.js",
+      "identical": true
+    },
+    {
+      "file": "patient-master-orchestration.js",
+      "identical": true
+    },
+    {
+      "file": "recovery-2.css",
+      "identical": true
+    }
+  ],
+  "metrics": {
+    "javascriptFiles": 53,
+    "htmlIds": 1325,
+    "htmlUniqueIds": 1325,
+    "htmlLocalRefs": 84,
+    "serviceWorkerAssets": 86
+  }
+}

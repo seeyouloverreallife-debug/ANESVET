@@ -1,0 +1,143 @@
+{
+  "version": "16.19.0",
+  "passed": 16,
+  "total": 16,
+  "checks": [
+    {
+      "name": "JavaScript syntax",
+      "ok": true,
+      "detail": "49/49 pass"
+    },
+    {
+      "name": "HTML IDs unique",
+      "ok": true,
+      "detail": "1282/1282 unique"
+    },
+    {
+      "name": "HTML local references",
+      "ok": true,
+      "detail": "76 references, missing=[]"
+    },
+    {
+      "name": "Service Worker assets",
+      "ok": true,
+      "detail": "78/78 present"
+    },
+    {
+      "name": "Version alignment",
+      "ok": true,
+      "detail": "app=16.19.0, manifest=ANESVET V16.19.0, cache=anesvet-v16-19-0-data-safety-2"
+    },
+    {
+      "name": "IndexedDB schema unchanged",
+      "ok": true,
+      "detail": "DB_VERSION=2"
+    },
+    {
+      "name": "Backup schema 3",
+      "ok": true,
+      "detail": "backupSchema=3"
+    },
+    {
+      "name": "Data Safety 2.0 DOM",
+      "ok": true,
+      "detail": "21/21 IDs present"
+    },
+    {
+      "name": "Architecture registry Data Safety",
+      "ok": true,
+      "detail": "registry contains backup/restore + data safety"
+    },
+    {
+      "name": "Data Safety bridge APIs",
+      "ok": true,
+      "detail": "6/6 present"
+    },
+    {
+      "name": "Whole-backup SHA-256 manifest",
+      "ok": true,
+      "detail": "payload + clinical digests"
+    },
+    {
+      "name": "Post-restore verification gate",
+      "ok": true,
+      "detail": "verification occurs before success receipt"
+    },
+    {
+      "name": "Legacy backup compatibility",
+      "ok": true,
+      "detail": "schema-2/no-manifest path retained"
+    },
+    {
+      "name": "Backup history/off-device receipts",
+      "ok": true,
+      "detail": "local receipt/history APIs present"
+    },
+    {
+      "name": "Backup controller receives sha256Text",
+      "ok": true,
+      "detail": "case-runtime SHA-256 helper supplied"
+    },
+    {
+      "name": "Critical clinical parity",
+      "ok": true,
+      "detail": "18/18 byte-identical"
+    }
+  ],
+  "sourceParity": {
+    "baseFiles": 337,
+    "outputFiles": 350,
+    "unchanged": 327,
+    "changed": [
+      "CHECKSUM_SHA256.txt",
+      "README_TH.md",
+      "SHA256SUMS.txt",
+      "app.js",
+      "architecture-registry.js",
+      "backup-restore-controller.js",
+      "data-resilience.js",
+      "index.html",
+      "manifest.webmanifest",
+      "service-worker.js"
+    ],
+    "new": [
+      "ARCHITECTURE_V16_19_0.md",
+      "BROWSER_SMOKE_V16_19_0.json",
+      "KNOWN_LIMITATIONS_V16_19_0.md",
+      "MIGRATION_V16_18_6_TO_V16_19_0.md",
+      "PACKAGE_SHA256_VERIFICATION_V16_19_0.json",
+      "QA_V16_19_0.md",
+      "RELEASE_NOTES_V16_19_0.md",
+      "SOURCE_PARITY_V16_19_0.json",
+      "STATIC_QA_V16_19_0.json",
+      "V16_19_0_DATA_SAFETY_TEST_RESULTS.json",
+      "V16_19_0_DATA_SAFETY_UI_TEST_RESULTS.json",
+      "data-safety-2.css",
+      "data-safety-2.js"
+    ],
+    "removed": []
+  },
+  "criticalParity": {
+    "files": [
+      "case-runtime.js",
+      "core-storage.js",
+      "patient-domain.js",
+      "or-domain.js",
+      "recovery-domain.js",
+      "clinical-workflow.js",
+      "or-record-orchestration.js",
+      "recovery-orchestration.js",
+      "patient-master-orchestration.js",
+      "medication-reconciliation.js",
+      "finalization.js",
+      "final-archive-assurance.js",
+      "documentation-guardian.js",
+      "problem-response-review.js",
+      "procedure-templates.js",
+      "or-live-controller.js",
+      "recovery-controller.js",
+      "medication-workspace-controller.js"
+    ],
+    "changed": []
+  }
+}

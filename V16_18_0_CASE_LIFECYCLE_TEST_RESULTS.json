@@ -1,0 +1,119 @@
+{
+  "version": "16.18.0",
+  "passed": 8,
+  "total": 8,
+  "tests": [
+    {
+      "name": "blank inactive",
+      "ok": true,
+      "got": {
+        "active": false,
+        "sealed": false,
+        "reloadUnsafe": false
+      },
+      "expected": {
+        "active": false,
+        "sealed": false,
+        "reloadUnsafe": false
+      }
+    },
+    {
+      "name": "patient saved",
+      "ok": true,
+      "got": {
+        "active": true,
+        "sealed": false,
+        "reloadUnsafe": true
+      },
+      "expected": {
+        "active": true,
+        "sealed": false,
+        "reloadUnsafe": true
+      }
+    },
+    {
+      "name": "timer running",
+      "ok": true,
+      "got": {
+        "active": true,
+        "sealed": false,
+        "reloadUnsafe": true
+      },
+      "expected": {
+        "active": true,
+        "sealed": false,
+        "reloadUnsafe": true
+      }
+    },
+    {
+      "name": "elapsed timer",
+      "ok": true,
+      "got": {
+        "active": true,
+        "sealed": false,
+        "reloadUnsafe": true
+      },
+      "expected": {
+        "active": true,
+        "sealed": false,
+        "reloadUnsafe": true
+      }
+    },
+    {
+      "name": "vital record",
+      "ok": true,
+      "got": {
+        "active": true,
+        "sealed": false,
+        "reloadUnsafe": true
+      },
+      "expected": {
+        "active": true,
+        "sealed": false,
+        "reloadUnsafe": true
+      }
+    },
+    {
+      "name": "recovery transfer",
+      "ok": true,
+      "got": {
+        "active": true,
+        "sealed": false,
+        "reloadUnsafe": true
+      },
+      "expected": {
+        "active": true,
+        "sealed": false,
+        "reloadUnsafe": true
+      }
+    },
+    {
+      "name": "sealed final",
+      "ok": true,
+      "got": {
+        "active": true,
+        "sealed": true,
+        "reloadUnsafe": false
+      },
+      "expected": {
+        "active": true,
+        "sealed": true,
+        "reloadUnsafe": false
+      }
+    },
+    {
+      "name": "locked without checksum",
+      "ok": true,
+      "got": {
+        "active": true,
+        "sealed": false,
+        "reloadUnsafe": true
+      },
+      "expected": {
+        "active": true,
+        "sealed": false,
+        "reloadUnsafe": true
+      }
+    }
+  ]
+}
