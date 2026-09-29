@@ -1,0 +1,76 @@
+{
+  "version": "17.1.0",
+  "suite": "sync-foundation",
+  "passed": 17,
+  "total": 17,
+  "tests": [
+    {
+      "name": "disabled by default",
+      "pass": true
+    },
+    {
+      "name": "envelope carries required sync identifiers",
+      "pass": true
+    },
+    {
+      "name": "queue survives engine recreation",
+      "pass": true
+    },
+    {
+      "name": "idempotent repeated delivery returns same canonical revision",
+      "pass": true
+    },
+    {
+      "name": "out-of-order stale append-only vital merges by stable recordId",
+      "pass": true
+    },
+    {
+      "name": "stale edit to same vital conflicts and preserves both evidence",
+      "pass": true
+    },
+    {
+      "name": "medication stale edit never auto-collapses",
+      "pass": true
+    },
+    {
+      "name": "distinct stale medication record is preserved as append",
+      "pass": true
+    },
+    {
+      "name": "Final Lock stale revision is strict conflict",
+      "pass": true
+    },
+    {
+      "name": "patient concurrent change requires review",
+      "pass": true
+    },
+    {
+      "name": "engine records conflict and blocks dependent same-case operations",
+      "pass": true
+    },
+    {
+      "name": "offline leaves pending queue intact",
+      "pass": true
+    },
+    {
+      "name": "ACK loss retry remains idempotent at canonical adapter",
+      "pass": true
+    },
+    {
+      "name": "enqueue during an active sync is not lost",
+      "pass": true
+    },
+    {
+      "name": "queue corruption is preserved as evidence instead of touching clinical data",
+      "pass": true
+    },
+    {
+      "name": "case snapshot save is not queued when foundation disabled",
+      "pass": true
+    },
+    {
+      "name": "locked case snapshot is typed final-lock",
+      "pass": true
+    }
+  ]
+}

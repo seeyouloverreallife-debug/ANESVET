@@ -1,3 +1,22 @@
+# ANESVET V17.2.2 — Mobile Active-case Rescue Hotfix
+
+รุ่นนี้เป็น hotfix บนฐาน V17.2 สำหรับปัญหา **มือถือ/PWA ค้างอยู่กับ active case, update ถูกเลื่อนเพราะมีเคสอยู่ และกลับ OR LIVE ไม่ได้**
+
+จุดสำคัญของ V17.2.2:
+- ไม่ต้อง Reset current case เพื่ออัปเดต
+- ไม่ต้อง Clear App Data / ลบ site data / ถอนการติดตั้ง
+- update ที่เริ่มจากรุ่นนี้จะ verify local save + safety checkpoint ก่อน reload
+- เคสที่เริ่มวางยาแล้วจะ resume กลับ OR LIVE โดยตรงหลังเปิดใหม่
+- stale multi-tab lock สามารถคืน control อัตโนมัติเมื่อ owner เดิมหาย
+- service worker รุ่น rescue ใช้เพื่อออกจาก waiting-update deadlock ของรุ่นเก่า
+
+อ่านก่อนทดสอบบนมือถือ:
+- `RELEASE_NOTES_V17_2_2.md`
+- `MIGRATION_V17_2_1_TO_V17_2_2.md`
+- `QA_V17_2_2.md`
+
+---
+
 # ANESVET V17.2.0 — Backend-ready Sync & Conflict Review
 
 รุ่นนี้ต่อจาก V17.1.0 โดยเน้นทำให้ sync architecture พร้อมต่อ backend จริงมากขึ้น แต่ยัง **ไม่เปิด concurrent multi-device editing เป็น production feature**

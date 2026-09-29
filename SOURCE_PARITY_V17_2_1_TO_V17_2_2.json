@@ -1,0 +1,49 @@
+{
+  "version": "17.2.2",
+  "baseline": "17.2.1",
+  "changedCount": 7,
+  "changes": [
+    {
+      "file": "QA_MOBILE_RESCUE_V17_2_2.js",
+      "status": "added",
+      "baseline_sha256": null,
+      "current_sha256": "5f1e9bc91992e9429403a3bf9a94e37f4072f2407370712689dfd750b75ab1bf"
+    },
+    {
+      "file": "app.js",
+      "status": "changed",
+      "baseline_sha256": "c97b0ece6ae530a3af033c90ef7c0b063df5837165e6f417a3596e222f96f2f0",
+      "current_sha256": "74a76d8004e3be20a3888278a80b562adb9d765ed58ec5e25ac20fd2ae8312d9"
+    },
+    {
+      "file": "index.html",
+      "status": "changed",
+      "baseline_sha256": "98341aa50ed08f74b94b6c6f97a4771b385e19328d8e2bdb15d2f92b44986829",
+      "current_sha256": "d44adedd88a75830230643c81fd1430e499c70f39be6493e387e143bc4496b64"
+    },
+    {
+      "file": "manifest.webmanifest",
+      "status": "changed",
+      "baseline_sha256": "7209f86b91c87a9c10a6faf7a21f92c632ebeab93c12c4566049ed0e69d677bd",
+      "current_sha256": "8b5df02bce4e5ff2f86cd6c0fd028a168540a67d0d93b142072471eb46f0570b"
+    },
+    {
+      "file": "pwa-controller.js",
+      "status": "changed",
+      "baseline_sha256": "86c7e7e317d5383ca6c4198ddefc1fa324ca00d3784bfaa497f081f529459146",
+      "current_sha256": "e1e1069e0580af23cc0970ceaee2bbae06569e5acb60e2a83e9be7c322b4f307"
+    },
+    {
+      "file": "service-worker.js",
+      "status": "changed",
+      "baseline_sha256": "27ee16dc73f8aeabf4fd58de0eb51c6218aefa32064d507b2518c10c55b68321",
+      "current_sha256": "c917bddd55a48bd3bd2c4a911a97096fc521fd8865b7b5eae84414a43d16c190"
+    },
+    {
+      "file": "session-controller.js",
+      "status": "changed",
+      "baseline_sha256": "812a0214abbca40c70644cacbfa6262fe2eb04e03e51a129f613c871dab482db",
+      "current_sha256": "c6988101cc938f9e82177773c136efa28b43716ed771f484150e7e67d19b909e"
+    }
+  ]
+}

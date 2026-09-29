@@ -1,8 +1,8 @@
 {
-  "name": "ANESVET V17.2.1 — Backend-ready Sync & Conflict Review",
-  "short_name": "ANESVET V17.2.1",
+  "name": "ANESVET V17.2.2 — Mobile Active-case Rescue",
+  "short_name": "ANESVET V17.2.2",
   "description": "Local-first veterinary anesthesia workflow with a unified case timeline, anesthesia record, recovery handoff, medication safety, clinical validation, reporting, and audit-ready record integrity",
-  "start_url": "./?v=17.2.1",
+  "start_url": "./?v=17.2.2",
   "scope": "./",
   "display": "standalone",
   "background_color": "#f5f7f7",

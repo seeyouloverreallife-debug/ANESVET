@@ -25,7 +25,7 @@ const SESSION_TTL_MS=30000;
 const SESSION_HEARTBEAT_MS=5000;
 const DB_NAME='ANESVET_DB';
 const DB_VERSION=2;
-const APP_VERSION='17.2.1';
+const APP_VERSION='17.2.2';
 const SECURITY=window.ANESVET_SECURITY_BASELINE||null;
 const SYNC_FOUNDATION=window.ANESVET_SYNC_FOUNDATION||null;
 const DOSE_REF=window.ANESVET_DOSE_REFERENCE||null;
@@ -70,6 +70,8 @@ let timerHandle = null;
 let dueReminderToken = null;
 // Prevent unload/visibility autosave from writing stale DOM values back over a fresh reset.
 let resetInProgress = false;
+let versionUpdateReloadInProgress = false;
+const SAFE_UPDATE_KEY='anesvet_safe_update_resume_v1';
 
 const DOSE_REFERENCE_CONTROLLER=window.ANESVET_DOSE_REFERENCE_CONTROLLER?.create?.({
   doseReference:DOSE_REF,
@@ -1686,7 +1688,7 @@ function renderMobileQuickBar(id){
 function openMobileWorkflowDialog(){const d=$('mobileWorkflowDialog');if(!d)return;syncMobileWorkflowLocks();try{if(typeof d.showModal==='function')d.showModal();else d.setAttribute('open','')}catch(e){d.setAttribute('open','')}}
 function closeMobileWorkflowDialog(){const d=$('mobileWorkflowDialog');if(!d)return;try{if(d.open&&typeof d.close==='function')d.close();else d.removeAttribute('open')}catch(e){d.removeAttribute('open')}}
 
-// V17.2.1 interaction recovery: a modal left in the browser top-layer can make the
+// V17.2.2 interaction recovery: a modal left in the browser top-layer can make the
 // underlying clinical page look normal while swallowing every tap. Always close
 // navigation-only dialogs before a real page transition, and recover only dialogs
 // that are open but no longer render a usable surface.
@@ -3774,12 +3776,41 @@ dataFields.forEach(id=>{
   el.addEventListener(eventName,()=>{if(id==='weight'&&!state.caseStartedAt&&state.caseDrugPlanReviewedAt){state.caseDrugPlanReviewedAt=null;state.caseDrugPlanReviewedBy='';if(state.caseDrugPlanInitialized)renderCaseDrugPlan()}updateDashboard({persist:false});if(discrete)save({reason:`field:${id}`});else scheduleAutosave(`field:${id}`)});
 });
 
-window.addEventListener('beforeunload',e=>{if(resetInProgress)return;if(sessionActive()&&state.timer.running){flushPendingSave('beforeunload');e.preventDefault();e.returnValue=''}});
+async function prepareForVersionUpdate(){
+  const active=versionReloadUnsafe();
+  if(!active){versionUpdateReloadInProgress=true;return {ok:true,active:false}}
+  const preferredTab=state.casePhase==='recovery'?'recovery':(state.caseStartedAt||state.timer?.running||(state.timer?.elapsedMs||0)>0)?'orlive':(document.querySelector('.tabpage.active')?.id||localStorage.getItem(TAB_KEY)||'patient');
+  if(sessionActive()){
+    if(!save({reason:'version-update'}))return {ok:false,reason:'Current case could not be saved locally'};
+  }
+  let persisted=null;try{persisted=JSON.parse(localStorage.getItem(CURRENT_KEY)||'null')}catch(_){ }
+  if(!persisted||persisted.caseId!==state.caseId)return {ok:false,reason:'Verified current-case copy is unavailable'};
+  const payload=JSON.stringify(persisted);
+  if(!writeSafetyCheckpoint(payload))return {ok:false,reason:'Safety checkpoint verification failed'};
+  try{await idbPutMeta('current',persisted)}catch(_){ }
+  try{
+    localStorage.setItem(TAB_KEY,preferredTab);
+    localStorage.setItem(SAFE_UPDATE_KEY,JSON.stringify({caseId:persisted.caseId,resumeTab:preferredTab,preparedAt:Date.now(),fromVersion:APP_VERSION}));
+  }catch(_){ }
+  versionUpdateReloadInProgress=true;
+  return {ok:true,active:true,resumeTab:preferredTab};
+}
+window.addEventListener('beforeunload',e=>{
+  if(resetInProgress)return;
+  if(versionUpdateReloadInProgress){if(sessionActive())flushPendingSave('version-update-unload');return;}
+  if(sessionActive()&&state.timer.running){flushPendingSave('beforeunload');e.preventDefault();e.returnValue=''}
+});
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden'){if(!resetInProgress&&sessionActive())flushPendingSave('visibility-hidden')}else{if(sessionActive())writeSessionLock();if(sessionActive()&&(state.timer.running||state.casePhase==='recovery')&&autoWakeEnabled())requestScreenWakeLock(true)}});
-window.addEventListener('pagehide',e=>{if(!resetInProgress&&sessionActive())flushPendingSave('pagehide');if(!e.persisted)releaseSessionLock()});
+window.addEventListener('pagehide',e=>{if(!resetInProgress&&sessionActive())flushPendingSave(versionUpdateReloadInProgress?'version-update-pagehide':'pagehide');if(!e.persisted)releaseSessionLock()});
 window.addEventListener('online',renderConnectivityState);window.addEventListener('offline',renderConnectivityState);
 renderConnectivityState();startActiveCheckpoint();
-const PWA_CONTROLLER=window.ANESVET_PWA_CONTROLLER?.create?.({isReloadUnsafe:()=>versionReloadUnsafe(),toast,serviceWorkerUrl:'./service-worker.js'});
+const PWA_CONTROLLER=window.ANESVET_PWA_CONTROLLER?.create?.({
+  isReloadUnsafe:()=>versionReloadUnsafe(),
+  prepareForUpdate:()=>prepareForVersionUpdate(),
+  onReloadStarting:()=>{versionUpdateReloadInProgress=true},
+  toast,
+  serviceWorkerUrl:`./service-worker.js?v=${APP_VERSION}`
+});
 if(!PWA_CONTROLLER)throw new Error('ANESVET pwa-controller.js failed to load');
 PWA_CONTROLLER.bind();
 
@@ -4069,8 +4100,12 @@ loadSettings();applyHospitalDefaultsToFreshCaseUi();hospitalDrugLibrary=loadDrug
 syncAsaCards();updatePatientSaveStatus();
 let storedTab=localStorage.getItem(TAB_KEY)||'casesummary';
 // dashboard remains a supported legacy route under Advanced.
-const initialTab=state.patientSaved?(state.casePhase==='complete'?'endcase':state.casePhase==='recovery'?'recovery':((state.timer.running||(state.timer.elapsedMs||0)>0)?'orlive':storedTab)):'patient';
-setTab(initialTab);
+let safeUpdateResume=null;try{safeUpdateResume=JSON.parse(localStorage.getItem(SAFE_UPDATE_KEY)||'null')}catch(_){ }
+if(safeUpdateResume?.caseId===state.caseId&&safeUpdateResume?.resumeTab)storedTab=safeUpdateResume.resumeTab;
+const initialTab=state.patientSaved?(state.casePhase==='complete'?'endcase':state.casePhase==='recovery'?'recovery':((state.timer.running||(state.timer.elapsedMs||0)>0||state.caseStartedAt)?'orlive':storedTab)):'patient';
+const resumeClinicalTab=(initialTab==='orlive'&&!!(state.caseStartedAt||state.timer?.running||(state.timer?.elapsedMs||0)>0))||(initialTab==='recovery'&&!!state.recoveryStartedAt);
+setTab(initialTab,{force:resumeClinicalTab});
+if(safeUpdateResume?.caseId===state.caseId){try{localStorage.removeItem(SAFE_UPDATE_KEY)}catch(_){ }}
 if(sessionActive())writeSessionLock();renderPatientRiskBanner();renderPreopRisk();renderSessionMode();renderAirwayPanel();renderFavoriteDrugButtons();renderQuickPresetSettings();renderQuickPresetSummary();renderOrFluidPanel();renderCaseSummary();renderCasePhase();renderOrPhaseTracker();renderRecoveryRecords();renderWorkflowLocks();renderAlertFeedbackState();renderProtocolGovernance();renderStorageStatus();renderFinalSignoff();renderBackupHealth();renderLinkedPatient();renderPatientMaster();
 updateDashboard();renderDoseReferenceChips();renderStartupRecoveryNotice();renderPreop();renderPreopExam();renderRecords();renderCorrections();renderEvents();renderComplications();renderDrugAdministrationAudit();renderTrends();renderProcedureTimeline();renderRecovery();renderRecoveryState();renderRecoveryScores();renderArchives();updateDue();renderTimerState();updateDoseSpotlights();renderEndCase();renderOrLive();renderSaveState();
 setTimeout(()=>{try{renderPilotFeedbackStatus();runReliabilitySelfCheck()}catch(e){recordRuntimeError(e?.message||String(e),'startup-self-check',0,0,e?.stack||'')}},1200);
