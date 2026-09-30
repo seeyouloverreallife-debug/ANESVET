@@ -1,0 +1,101 @@
+/* ANESVET R22 Clinical Simplicity: reorder routine screens without
+   hiding clinically important alerts, medication confirmations or checklist items. */
+
+/* Provide a one-tap exit from mobile focused workspaces. The original
+   controller-owned navigation is invoked, so this does not end a case. */
+.ux-r22-case-return{display:none!important}
+@media(max-width:1180px), (pointer:coarse) and (max-width:1400px){
+  body.or-mobile-active .topbar .ux-r22-case-return,
+  body.recovery-mobile-active .topbar .ux-r22-case-return{
+    display:inline-flex!important;align-items:center;justify-content:center;
+    margin-right:auto!important;min-height:34px!important;flex:0 0 auto;
+    padding:5px 10px!important;border:1px solid rgba(181,205,210,.8)!important;
+    border-radius:9px!important;background:#f0f7f8!important;
+    color:#174955!important;font-size:.78rem!important;font-weight:740!important;
+    white-space:nowrap;
+  }
+  body.or-mobile-active .topbar .top-actions,
+  body.recovery-mobile-active .topbar .top-actions{gap:6px!important}
+  /* Avoid a second full-size save action when intraoperative focus already
+     owns Record Vitals; hidden original stays in the DOM for its click API. */
+  #orlive:has(#orVitalsFocus:not([hidden]))>.or-status-row{display:none!important}
+  #orlive>.or-vital-grid{scroll-margin-top:55px}
+}
+
+/* Mobile recovery regression fix: before R22, un-ordered sibling panels
+   implicitly had order:0, placing optional support panels *above* the
+   Recovery focus workspace even though the source order said otherwise. */
+@media(max-width:1180px), (pointer:coarse) and (max-width:1400px){
+  body.recovery-mobile-active #recovery.active{display:flex!important;flex-direction:column!important}
+  body.recovery-mobile-active #recovery.active>*{order:20}
+  body.recovery-mobile-active #recovery>.recovery-command{order:0}
+  body.recovery-mobile-active #recovery>#recoveryFocus{order:1}
+  body.recovery-mobile-active #recovery>.dashboard-grid{order:2}
+  body.recovery-mobile-active #recovery>#recoveryProblemsPanel{order:3}
+  body.recovery-mobile-active #recovery>#recoveryDocumentationGuardian{order:4}
+  body.recovery-mobile-active #recovery>#recoveryPostopMedicationPanel{order:5}
+  body.recovery-mobile-active #recovery>.recovery-efficiency-tools{order:6}
+  body.recovery-mobile-active #recovery>#recoveryHandoffPanel{order:7}
+  body.recovery-mobile-active #recovery>#recoveryScorePanel{order:8}
+  body.recovery-mobile-active #recovery>#recoveryTrendPanel{order:9}
+  body.recovery-mobile-active #recovery>#recoveryRecordPanel{order:10}
+  body.recovery-mobile-active #recovery>#recoveryTransferPanel{order:11}
+  body.recovery-mobile-active #recovery>#recoveryMobileDock{order:12}
+  /* Minimize empty instructional chrome, not data or safety messages. */
+  body.recovery-mobile-active .recovery-focus-kicker{letter-spacing:0!important}
+  body.recovery-mobile-active .recovery-focus h2{font-size:1.04rem!important}
+  body.recovery-mobile-active .recovery-focus-head>div:first-child p{font-size:.76rem!important}
+  body.recovery-mobile-active #recovery>.dashboard-grid{width:100%;min-width:0}
+  body.recovery-mobile-active #recovery>.dashboard-grid>*{min-width:0}
+}
+
+/* Clearer hierarchy for the first two OR actions: current step, then actual
+   values. Do not disable/obscure data entry or important abnormal signals. */
+@media(max-width:1180px){
+  body.or-mobile-active #orlive>.or-primary-flow{margin-top:7px!important;margin-bottom:6px!important}
+  body.or-mobile-active #orlive>.or-vital-grid{margin-top:2px!important;gap:8px!important}
+  body.or-mobile-active #orlive>.or-vital-grid .or-vital-card{min-height:0!important}
+  body.or-mobile-active #orlive>.or-vital-grid .or-vital-card.priority{padding-block:9px!important}
+  body.or-mobile-active #orlive>.or-vital-grid .or-vital-card input{font-size:1.9rem!important}
+  body.or-mobile-active #orlive>.or-secondary-grid{margin-top:8px!important}
+}
+/* On desktop, the dashboard uses explicit grid-row positions; keep the
+   existing two-column layout until that view receives hands-on E2E testing. */
+@media print{
+  .ux-r22-case-return{display:none!important}
+  body.recovery-mobile-active #recovery.active>*{order:initial!important}
+}
+
+
+/* R23 Silent Bug Center: only developer/runtime problems are tucked here.
+   Clinical patient alerts, case freshness, and safety-recovery banners are unchanged. */
+#pilotFeedbackBtn{display:none!important}
+#bootDiagnosticBtn.anesvet-issue-trigger{position:relative;display:inline-flex!important;align-items:center;justify-content:center;min-width:34px!important;width:36px!important;height:36px!important;min-height:36px!important;flex:0 0 36px!important;padding:4px!important;border-radius:10px!important;font-size:18px!important;line-height:1!important}
+#bootDiagnosticBtn.has-issues{border-color:#ca9345!important}
+#anesvetIssueBadge:not([hidden]){display:flex!important;position:absolute;top:-6px;right:-6px;align-items:center;justify-content:center;min-width:17px;height:17px;padding:0 3px;border-radius:9px;background:#b84232;color:#fff;font:700 10px/1 system-ui,sans-serif;box-shadow:0 1px 4px #3333;pointer-events:none}
+#anesvetIssueBadge[hidden]{display:none!important}
+#anesvetBootDiagnosticPanel[hidden]{display:none!important}
+.anesvet-issue-center{position:fixed;z-index:2147483646;right:max(10px,env(safe-area-inset-right));top:max(60px,env(safe-area-inset-top));width:min(440px,calc(100vw - 20px));max-height:min(76vh,720px);background:#fff;color:#1a333a;border:1px solid #a9c5c9;border-radius:14px;box-shadow:0 14px 44px #102e3752;display:flex;flex-direction:column;gap:10px;padding:13px;font:13px/1.42 system-ui,sans-serif;text-align:left;overflow:auto}
+.anesvet-issue-head{display:flex;gap:12px;justify-content:space-between;align-items:flex-start}
+.anesvet-issue-head>div{min-width:0;flex:1}
+.anesvet-issue-head b{display:block;font-size:15px}
+.anesvet-issue-head small,.anesvet-issue-row small,.anesvet-issue-note{display:block;font-size:11px;color:#60777f;margin-top:4px}
+.anesvet-issue-head button{flex-shrink:0;min-width:32px}
+.anesvet-issue-list{min-height:56px;max-height:31vh;overflow:auto;display:flex;flex-direction:column;gap:5px}
+.anesvet-issue-row{display:block;text-align:left;width:100%;padding:9px 10px;background:#f7fbfb;color:#193b45;border:1px solid #dae8e9;border-radius:9px;cursor:pointer;font:inherit;overflow-wrap:anywhere}
+.anesvet-issue-row.selected{border-color:#268496;background:#eff8fa}
+.anesvet-issue-row strong{display:block;font-size:12px}
+.anesvet-issue-detail{border:1px solid #dae8e9;border-radius:9px;background:#f8fbfc;padding:8px}
+.anesvet-issue-detail summary{cursor:pointer;font-weight:650}
+.anesvet-issue-detail pre{white-space:pre-wrap;overflow-wrap:anywhere;max-height:23vh;overflow:auto;font:11px/1.4 ui-monospace,monospace}
+.anesvet-issue-actions{display:flex;flex-wrap:wrap;gap:6px}
+.anesvet-issue-actions .btn{font-size:12px;padding:7px 9px}
+@media(max-width:600px){.anesvet-issue-center{left:max(7px,env(safe-area-inset-left));right:max(7px,env(safe-area-inset-right));top:max(50px,env(safe-area-inset-top));width:auto;max-height:74dvh;padding:11px}}
+@media print{#anesvetBootDiagnosticPanel,#bootDiagnosticBtn{display:none!important}}
+
+/* In native OR fullscreen the header is hidden. Only show a small issue icon
+   when a new software issue exists; never cover charting with a debug overlay. */
+#anesvetIssueFloatingBtn[hidden],#anesvetIssueFloatingBtn{display:none!important}
+body.or-fullscreen #anesvetIssueFloatingBtn:not([hidden]){display:inline-flex!important;align-items:center;justify-content:center;position:fixed;top:max(6px,env(safe-area-inset-top));right:max(6px,env(safe-area-inset-right));z-index:100000;min-width:36px;min-height:36px;padding:4px 7px;border:1px solid #bad0d5;border-radius:10px;background:#f7fbfb;color:#173c47;box-shadow:0 2px 12px #0003;font-size:19px;cursor:pointer}
+#anesvetIssueFloatingBadge{position:absolute;top:-5px;right:-5px;min-width:17px;height:17px;padding:1px 3px;border-radius:10px;background:#b84232;color:white;font:bold 10px/15px system-ui,sans-serif}
+@media print{#anesvetIssueFloatingBtn{display:none!important}}

@@ -39,7 +39,7 @@ const SESSION_TTL_MS=30000;
 const SESSION_HEARTBEAT_MS=5000;
 const DB_NAME='ANESVET_DB';
 const DB_VERSION=2;
-const APP_VERSION='17.2.25';
+const APP_VERSION='17.2.27';
 const SECURITY=window.ANESVET_SECURITY_BASELINE||null;
 const SYNC_FOUNDATION=window.ANESVET_SYNC_FOUNDATION||null;
 const DOSE_REF=window.ANESVET_DOSE_REFERENCE||null;
@@ -3748,7 +3748,7 @@ function anonymizedCaseContext(){const elapsed=Math.round(currentElapsed()/1000)
 function pilotDeviceContext(){let standalone=false;try{standalone=window.matchMedia?.('(display-mode: standalone)')?.matches||navigator.standalone===true}catch(e){}return{userAgent:navigator.userAgent||'',platform:navigator.userAgentData?.platform||navigator.platform||'',language:navigator.language||'',viewport:`${window.innerWidth}x${window.innerHeight}`,screen:`${screen.width}x${screen.height}`,pixelRatio:window.devicePixelRatio||1,online:navigator.onLine!==false,standalone,touchPoints:navigator.maxTouchPoints||0,timezone:Intl.DateTimeFormat().resolvedOptions().timeZone||''}}
 function pilotDiagnostics(){const cfg=currentSettingsObject();return{orMenuProfile:cfg.orMoreProfile||'minimal',orFocusMode:cfg.orFocusMode!==false,defaultReport:cfg.defaultReport||'summary',saveState:$('saveState')?.textContent||'',connectivityState:$('connectivityState')?.textContent||'',visibility:document.visibilityState||'',fullscreen:!!document.fullscreenElement}}
 function getRuntimeErrorLog(){try{const x=JSON.parse(localStorage.getItem(RUNTIME_ERROR_KEY)||'[]');return Array.isArray(x)?x:[]}catch(e){return[]}}
-function recordRuntimeError(message,source='',line=0,column=0,stack=''){try{const arr=getRuntimeErrorLog();arr.push({epoch:Date.now(),message:String(message||'Unknown error').slice(0,1000),source:String(source||'').slice(0,300),line:Number(line)||0,column:Number(column)||0,stack:String(stack||'').slice(0,2000)});localStorage.setItem(RUNTIME_ERROR_KEY,JSON.stringify(arr.slice(-RUNTIME_ERROR_MAX)))}catch(e){}}
+function recordRuntimeError(message,source='',line=0,column=0,stack=''){try{const arr=getRuntimeErrorLog();arr.push({epoch:Date.now(),message:String(message||'Unknown error').slice(0,1000),source:String(source||'').slice(0,300),line:Number(line)||0,column:Number(column)||0,stack:String(stack||'').slice(0,2000)});localStorage.setItem(RUNTIME_ERROR_KEY,JSON.stringify(arr.slice(-RUNTIME_ERROR_MAX)))}catch(e){}try{BOOT?.issue?.('runtime',String(message||'Unknown error'),`${source||'unknown source'}:${line||0}:${column||0} • ${String(stack||'').slice(0,1000)}`)}catch(_){/* Never block clinical entry for diagnostics. */}}
 window.addEventListener('error',e=>recordRuntimeError(e.message,e.filename,e.lineno,e.colno,e.error?.stack||''));
 window.addEventListener('unhandledrejection',e=>recordRuntimeError(e.reason?.message||String(e.reason||'Unhandled promise rejection'),'promise',0,0,e.reason?.stack||''));
 function renderPilotFeedbackStatus(){

@@ -1,8 +1,8 @@
 {
-  "name": "ANESVET V17.2.25 — R21 Critical Boot Bridges",
-  "short_name": "ANESVET V17.2.25",
+  "name": "ANESVET V17.2.27 — Silent Bug Center R23",
+  "short_name": "ANESVET V17.2.27",
   "description": "Local-first veterinary anesthesia workflow with a unified case timeline, anesthesia record, recovery handoff, medication safety, clinical validation, reporting, and audit-ready record integrity",
-  "start_url": "./?v=17.2.25",
+  "start_url": "./?v=17.2.27",
   "scope": "./",
   "display": "standalone",
   "background_color": "#f5f7f7",
