@@ -204,7 +204,7 @@ ${name}`))return;
     $('archiveCaseBtn')?.addEventListener('click',()=>archiveSnapshot());
   }
 
-  return Object.freeze({version:VERSION,bind,renderFinalSignoff,renderEndCase,focusMedicationReconciliation,plannedMedicationReconciliationItems,medicationReconciliationComplete,finalizeCase,archiveSnapshot,getArchive,verifyFinalArchive,retryFinalArchive,renderArchives,archiveFilteredList,verifyArchivedIntegrity,voidArchive,loadArchive,deleteArchive,openAmendmentDialog,closeAmendmentDialog});
+  return Object.freeze({version:VERSION,bind,renderDefaultReportPreference,renderFinalSignoff,renderEndCase,focusMedicationReconciliation,plannedMedicationReconciliationItems,medicationReconciliationComplete,finalizeCase,archiveSnapshot,getArchive,verifyFinalArchive,retryFinalArchive,renderArchives,archiveFilteredList,verifyArchivedIntegrity,voidArchive,loadArchive,deleteArchive,openAmendmentDialog,closeAmendmentDialog});
 }
 const api=Object.freeze({version:VERSION,create});root.ANESVET_FINALIZATION_ARCHIVE_CONTROLLER=api;if(typeof module!=='undefined'&&module.exports)module.exports=api;
 })(typeof globalThis!=='undefined'?globalThis:this);

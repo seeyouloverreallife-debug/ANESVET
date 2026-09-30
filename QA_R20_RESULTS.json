@@ -1,0 +1,146 @@
+{
+  "version": "17.2.24",
+  "checkpoint": "R20",
+  "suitePassed": 25,
+  "suiteTotal": 25,
+  "jsSyntaxPassed": 156,
+  "jsSyntaxTotal": 156,
+  "syntaxErrors": [],
+  "htmlIds": 1336,
+  "duplicateIds": [],
+  "cachedAssets": 90,
+  "missingAssets": [],
+  "versionConsistency": true,
+  "suites": [
+    {
+      "file": "QA_R20_BOOT_REPORT_PREFERENCE.js",
+      "passed": true,
+      "error": ""
+    },
+    {
+      "file": "QA_R19_TRANSACTION_JOURNAL.js",
+      "passed": true,
+      "error": ""
+    },
+    {
+      "file": "QA_R18_RESTORE_SESSION_RACE.js",
+      "passed": true,
+      "error": ""
+    },
+    {
+      "file": "QA_R17_RESTORE_ROLLBACK_SAFETY.js",
+      "passed": true,
+      "error": ""
+    },
+    {
+      "file": "QA_R16_WORKING_COPY_COMMIT.js",
+      "passed": true,
+      "error": ""
+    },
+    {
+      "file": "QA_R19_COMPAT_CURRENT_MIRROR_INTEGRITY.js",
+      "passed": true,
+      "error": ""
+    },
+    {
+      "file": "QA_R19_COMPAT_R14_STARTUP_REGRESSION.js",
+      "passed": true,
+      "error": ""
+    },
+    {
+      "file": "QA_R19_COMPAT_R13_FRESHNESS_REGRESSION.js",
+      "passed": true,
+      "error": ""
+    },
+    {
+      "file": "QA_R19_COMPAT_R12_WAKE_REGRESSION.js",
+      "passed": true,
+      "error": ""
+    },
+    {
+      "file": "QA_R19_COMPAT_R11_STORAGE_REGRESSION.js",
+      "passed": true,
+      "error": ""
+    },
+    {
+      "file": "QA_R10_SESSION_MODAL_GUARD.js",
+      "passed": true,
+      "error": ""
+    },
+    {
+      "file": "QA_R09_PATIENT_SETUP_DIRTY.js",
+      "passed": true,
+      "error": ""
+    },
+    {
+      "file": "QA_R08_MODAL_NAVIGATION.js",
+      "passed": true,
+      "error": ""
+    },
+    {
+      "file": "QA_R07_SHORTCUT_TAP_ORIGIN.js",
+      "passed": true,
+      "error": ""
+    },
+    {
+      "file": "QA_R06_TOUCH_OVERLAY_GUARD.js",
+      "passed": true,
+      "error": ""
+    },
+    {
+      "file": "QA_R20_NAVIGATION_REGRESSION.js",
+      "passed": true,
+      "error": ""
+    },
+    {
+      "file": "QA_R20_ASA_TRACE_REGRESSION.js",
+      "passed": true,
+      "error": ""
+    },
+    {
+      "file": "QA_BOOT_RUNTIME_V17_2_24.js",
+      "passed": true,
+      "error": ""
+    },
+    {
+      "file": "QA_R04_PATIENT_ASA_INTERACTION.js",
+      "passed": true,
+      "error": ""
+    },
+    {
+      "file": "QA_R01_PATIENT_ASA_BINDING.js",
+      "passed": true,
+      "error": ""
+    },
+    {
+      "file": "QA_INTERACTION_GATE_V17_2_4.js",
+      "passed": true,
+      "error": ""
+    },
+    {
+      "file": "QA_ACTIVE_CASE_RESCUE_V17_2_3.js",
+      "passed": true,
+      "error": ""
+    },
+    {
+      "file": "QA_MOBILE_RESCUE_V17_2_2.js",
+      "passed": true,
+      "error": ""
+    },
+    {
+      "file": "QA_SYNC_FOUNDATION_V17_1_0.js",
+      "passed": true,
+      "error": ""
+    },
+    {
+      "file": "QA_SYNC_SAFETY_V17_2_0.js",
+      "passed": true,
+      "error": ""
+    }
+  ],
+  "limitations": [
+    "localStorage + IndexedDB cannot be a single atomic transaction",
+    "No real browser E2E or physical Android/iPad verified",
+    "Incomplete clinical store reconciliation must be handled by supervised recovery; manual REVIEW does not merge records"
+  ]
+}

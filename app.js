@@ -39,7 +39,7 @@ const SESSION_TTL_MS=30000;
 const SESSION_HEARTBEAT_MS=5000;
 const DB_NAME='ANESVET_DB';
 const DB_VERSION=2;
-const APP_VERSION='17.2.23';
+const APP_VERSION='17.2.24';
 const SECURITY=window.ANESVET_SECURITY_BASELINE||null;
 const SYNC_FOUNDATION=window.ANESVET_SYNC_FOUNDATION||null;
 const DOSE_REF=window.ANESVET_DOSE_REFERENCE||null;
@@ -735,6 +735,8 @@ FINALIZATION_ARCHIVE_CONTROLLER.bind();
 BOOT?.mark?.('finalization-archive-bound');
 function renderFinalSignoff(){return FINALIZATION_ARCHIVE_CONTROLLER.renderFinalSignoff()}
 function renderEndCase(){return FINALIZATION_ARCHIVE_CONTROLLER.renderEndCase()}
+// R20: bridge the controller-owned preference renderer used by startup loadSettings().
+function renderDefaultReportPreference(){return FINALIZATION_ARCHIVE_CONTROLLER.renderDefaultReportPreference()}
 function focusMedicationReconciliation(){return FINALIZATION_ARCHIVE_CONTROLLER.focusMedicationReconciliation()}
 function archiveSnapshot(){return FINALIZATION_ARCHIVE_CONTROLLER.archiveSnapshot()}
 function getArchive(){return FINALIZATION_ARCHIVE_CONTROLLER.getArchive()}
