@@ -1,0 +1,3 @@
+ANESVET 17.2.25 PATCH ONLY — ใช้เฉพาะ repo ที่ติดตั้ง V17.2.24 อยู่แล้ว
+แตก zip และ Upload ไฟล์ทั้ง 6 ตัวลง root ของ GitHub repo โดยแทนที่ไฟล์เดิมทั้งหมด (อย่าใส่ในโฟลเดอร์ย่อย)
+Commit แล้วตรวจ version/Device Diagnostic. ห้ามล้าง Chrome Site Data ของเคสจริงเพื่อล้างแคช.

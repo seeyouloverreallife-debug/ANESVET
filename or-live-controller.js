@@ -524,7 +524,7 @@ $$('.or-milestone').forEach(btn=>btn.addEventListener('click',()=>{markMilestone
 $('orFullscreenBtn')?.addEventListener('click',async()=>{try{if(!document.fullscreenElement){if(document.documentElement.requestFullscreen)await document.documentElement.requestFullscreen();document.body.classList.add('or-fullscreen');$('orFullscreenBtn').textContent='Exit full screen'}else{if(document.exitFullscreen)await document.exitFullscreen();document.body.classList.remove('or-fullscreen');$('orFullscreenBtn').textContent='⛶ Full screen'}}catch(e){document.body.classList.toggle('or-fullscreen')}});document.addEventListener('fullscreenchange',()=>{if(!document.fullscreenElement){document.body.classList.remove('or-fullscreen');if($('orFullscreenBtn'))$('orFullscreenBtn').textContent='⛶ Full screen'}});
   function bind(){return true}
   return Object.freeze({
-    version:VERSION,bind,
+    version:VERSION,bind,closeOrMoreDialog,
     syncOrFromMain,syncMainFromOr,workflowProfileInfo,activeWorkflowProfile,hasProcedureMilestone,procedureMilestoneEvent,workflowEvent,templateQuickDrugCandidates,renderTemplateQuickActions,renderWorkflowContext,
     inductionMedicationRecords,normalizeMedicationIdentity,plannedRoutineMedicationRows,reviewNowPlannedMedicationRows,laterPlannedMedicationRows,medicationQueueSummary,renderOrMedicationQueue,inductionMedicationComplete,
     renderOrPrimaryFlow,renderOrUndoControls,handleOrWorkflowAction,startCaseFromOr,undoLastOrWorkflowStep,renderAirwayPanel,renderOrLive,renderOrWorkspacePreferences,renderOrRecent,renderOrTimerState

@@ -39,7 +39,7 @@ const SESSION_TTL_MS=30000;
 const SESSION_HEARTBEAT_MS=5000;
 const DB_NAME='ANESVET_DB';
 const DB_VERSION=2;
-const APP_VERSION='17.2.24';
+const APP_VERSION='17.2.25';
 const SECURITY=window.ANESVET_SECURITY_BASELINE||null;
 const SYNC_FOUNDATION=window.ANESVET_SYNC_FOUNDATION||null;
 const DOSE_REF=window.ANESVET_DOSE_REFERENCE||null;
@@ -1586,6 +1586,8 @@ function renderOrUndoControls(){return OR_LIVE_CONTROLLER.renderOrUndoControls()
 function handleOrWorkflowAction(action,options={}){return OR_LIVE_CONTROLLER.handleOrWorkflowAction(action,options)}
 function renderAirwayPanel(){return OR_LIVE_CONTROLLER.renderAirwayPanel()}
 function renderOrLive(){return OR_LIVE_CONTROLLER.renderOrLive()}
+// R21: OR dialog operations are owned by the OR controller; do not call private symbols.
+function closeOrMoreDialog(){return OR_LIVE_CONTROLLER.closeOrMoreDialog()}
 function renderOrWorkspacePreferences(){return OR_LIVE_CONTROLLER.renderOrWorkspacePreferences()}
 function renderOrRecent(){return OR_LIVE_CONTROLLER.renderOrRecent()}
 MEDICATION_WORKSPACE_CONTROLLER=window.ANESVET_MEDICATION_WORKSPACE_CONTROLLER?.create?.({
@@ -2985,6 +2987,9 @@ function copyLastRecoveryVitalsToCurrent(){return RECOVERY_CONTROLLER.copyLastVi
 function renderRecovery2Trends(){return RECOVERY_CONTROLLER.renderTrends()}
 function renderRecoveryPostopMedication(){return RECOVERY_CONTROLLER.renderPostopMedication()}
 function renderRecoveryTransfer(){return RECOVERY_CONTROLLER.renderTransfer()}
+// R21: explicitly bridge controller-owned Recovery operations referenced by startup/navigation.
+function closeRecoveryMoreDialog(){return RECOVERY_CONTROLLER.closeMoreDialog()}
+function recoveryTransferLatest(){return RECOVERY_CONTROLLER.transferLatest()}
 function captureRecoveryTransfer(){return RECOVERY_CONTROLLER.captureTransfer()}
 function renderRecovery2(){return RECOVERY_CONTROLLER.renderRecovery2()}
 function renderRecovery(){return RECOVERY_CONTROLLER.render()}
