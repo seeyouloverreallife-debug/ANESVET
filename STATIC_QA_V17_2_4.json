@@ -1,0 +1,98 @@
+{
+  "version": "17.2.4",
+  "suite": "static-interaction-release",
+  "passed": 18,
+  "total": 18,
+  "checks": [
+    {
+      "name": "APP_VERSION is 17.2.4",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "visible index version is V17.2.4",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "manifest short_name V17.2.4",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "service worker cache bumped",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "DB_VERSION retained at 2",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "backup schema retained at 3",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "session init occurs before interaction bind",
+      "pass": true,
+      "detail": "init=8186, bind=8213"
+    },
+    {
+      "name": "readonly surface only for explicit view mode",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "click gate only blocks explicit view mode",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "beforeinput guarded in view mode",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "session init is idempotent",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "failed init can recover local active control",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "HTML IDs unique",
+      "pass": true,
+      "detail": "1325 ids"
+    },
+    {
+      "name": "all index local refs present",
+      "pass": true,
+      "detail": "88 refs"
+    },
+    {
+      "name": "all service-worker assets present",
+      "pass": true,
+      "detail": "90 assets"
+    },
+    {
+      "name": "critical clinical parity retained",
+      "pass": true,
+      "detail": "18/18 identical"
+    },
+    {
+      "name": "expected runtime shell files changed",
+      "pass": true,
+      "detail": "app.js, session-controller.js, pwa-controller.js, index.html, manifest.webmanifest, service-worker.js"
+    },
+    {
+      "name": "no unexpected runtime/source changes",
+      "pass": true,
+      "detail": "[]"
+    }
+  ]
+}

@@ -1,5 +1,6 @@
-/* ANESVET V17.2.2 — Session Controller
-   UI/session ownership boundary with stale-lock self-recovery. */
+/* ANESVET V17.2.4 — Session Controller
+   UI/session ownership boundary with stale-lock self-recovery.
+   Interaction safety rule: only an explicit VIEW mode may block controls; INITIALIZING must never freeze the UI. */
 (function(root){
 'use strict';
 function create({getCaseInfo=()=>({}),toast=()=>{},onMode=()=>{},appVersion='',lockKey,tabKey,ttlMs=30000,heartbeatMs=5000,channelName='anesvet-session-v14'}={}){
@@ -12,7 +13,7 @@ function create({getCaseInfo=()=>({}),toast=()=>{},onMode=()=>{},appVersion='',l
   function release(){coordinator?.release?.()}
   function safeTarget(target){return !!target?.closest?.('.session-safe,[data-tab],[data-more-tab],#moreMenuBtn,.archive-pdf,.archive-summary-pdf,.verify-integrity')}
   function render(){
-    const view=mode!=='active',banner=$('sessionBanner');document.body.classList.toggle('session-readonly',view);if(banner)banner.hidden=!view;
+    const view=mode==='view',banner=$('sessionBanner');document.body.classList.toggle('session-readonly',view);if(banner)banner.hidden=!view;
     if(view){const lock=readLock(),detail=lock?.patientName?`Active tab: ${lock.patientName}`:'Another ANESVET tab currently owns the clinical session';if($('sessionBannerText'))$('sessionBannerText').textContent=`${detail}. This tab will not save or modify clinical records.`}
     else if($('sessionBannerText'))$('sessionBannerText').textContent='This tab has control of the ANESVET clinical session.';
   }
@@ -32,7 +33,18 @@ function create({getCaseInfo=()=>({}),toast=()=>{},onMode=()=>{},appVersion='',l
     if(mode==='active')return false;const lock=readLock();if(isFresh(lock))return false;
     coordinator.takeControl(announce?'Previous ANESVET session expired — control restored to this screen':'');return true;
   }
-  function init(){const next=coordinator.init();if(next==='view')renderConflict(readLock());return next}
+  function init(){
+    if(mode!=='initializing')return mode;
+    try{
+      const next=coordinator.init();if(next==='view')renderConflict(readLock());return next;
+    }catch(err){
+      // Never leave the app in a silent interaction-dead state. If there is no fresh competing writer,
+      // restore local control; otherwise remain explicitly view-only and surface the conflict.
+      const lock=readLock();
+      if(isFresh(lock)){mode='view';render();renderConflict(lock,'Session coordination could not initialize cleanly while another active session lock exists. Take control only if the other screen should stop recording.');return mode}
+      mode='active';render();toast('Session coordination recovered — local control restored');return mode;
+    }
+  }
   function isActive(){return mode==='active'}
   function bind(){
     root.addEventListener?.('pageshow',()=>{recoverOrphanedSession(false);render()});
@@ -40,10 +52,14 @@ function create({getCaseInfo=()=>({}),toast=()=>{},onMode=()=>{},appVersion='',l
     if(!recoveryTimer)recoveryTimer=setInterval(()=>recoverOrphanedSession(false),Math.max(2000,Math.min(heartbeatMs,5000)));
     $('sessionViewOnlyBtn')?.addEventListener('click',()=>{try{$('sessionDialog')?.close()}catch(_){ }setMode('view');toast('Opened in VIEW ONLY mode')});
     $('sessionDialogTakeControlBtn')?.addEventListener('click',()=>takeControl());$('sessionTakeControlBtn')?.addEventListener('click',()=>takeControl());$('sessionRefreshBtn')?.addEventListener('click',refresh);
-    document.addEventListener('click',e=>{if(isActive()||safeTarget(e.target))return;const actionable=e.target.closest?.('button,input,select,textarea,label');if(actionable&&actionable.closest?.('.tabpage')){e.preventDefault();e.stopImmediatePropagation();toast('VIEW ONLY — Take control before editing')}},true);
-    document.addEventListener('input',e=>{if(isActive()||safeTarget(e.target))return;if(e.target.closest?.('.tabpage')){e.preventDefault();e.stopImmediatePropagation()}},true);
+    const blockViewOnly=e=>{if(mode!=='view'||safeTarget(e.target))return;const actionable=e.target.closest?.('button,input,select,textarea,label');if(actionable&&actionable.closest?.('.tabpage')){if(e.cancelable)e.preventDefault();e.stopImmediatePropagation();if(e.type==='click')toast('VIEW ONLY — Take control before editing')}};
+    // Block only explicit VIEW mode. `initializing` is transitional and must never become a global click shield.
+    document.addEventListener('click',blockViewOnly,true);
+    document.addEventListener('beforeinput',blockViewOnly,true);
+    document.addEventListener('change',blockViewOnly,true);
+    document.addEventListener('keydown',e=>{if(mode!=='view'||safeTarget(e.target))return;const actionable=e.target.closest?.('input,select,textarea');if(actionable&&actionable.closest?.('.tabpage')){if(e.cancelable)e.preventDefault();e.stopImmediatePropagation()}},true);
   }
-  return Object.freeze({init,bind,render,renderConflict,readLock,isFresh,writeLock,release,setMode,takeControl,showConflict,refresh,recoverOrphanedSession,isActive,getMode:()=>mode});
+  return Object.freeze({init,bind,render,renderConflict,readLock,isFresh,writeLock,release,setMode,takeControl,showConflict,refresh,recoverOrphanedSession,isActive,isViewOnly:()=>mode==='view',getMode:()=>mode});
 }
 root.ANESVET_SESSION_CONTROLLER=Object.freeze({create});
 if(typeof module!=='undefined'&&module.exports)module.exports={create};

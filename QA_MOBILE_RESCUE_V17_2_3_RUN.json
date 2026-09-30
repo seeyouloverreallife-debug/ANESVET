@@ -1,0 +1,20 @@
+{
+  "version": "17.2.2",
+  "suite": "mobile-active-case-rescue",
+  "passed": 3,
+  "total": 3,
+  "tests": [
+    {
+      "name": "stale view-only lock is reclaimed without clearing case data",
+      "pass": true
+    },
+    {
+      "name": "active case update remains actionable and prepares checkpoint before activation",
+      "pass": true
+    },
+    {
+      "name": "failed checkpoint prevents service-worker activation",
+      "pass": true
+    }
+  ]
+}

@@ -25,7 +25,7 @@ const SESSION_TTL_MS=30000;
 const SESSION_HEARTBEAT_MS=5000;
 const DB_NAME='ANESVET_DB';
 const DB_VERSION=2;
-const APP_VERSION='17.2.2';
+const APP_VERSION='17.2.4';
 const SECURITY=window.ANESVET_SECURITY_BASELINE||null;
 const SYNC_FOUNDATION=window.ANESVET_SYNC_FOUNDATION||null;
 const DOSE_REF=window.ANESVET_DOSE_REFERENCE||null;
@@ -52,6 +52,8 @@ const PATIENT_MASTER_ORCH=window.ANESVET_PATIENT_MASTER_ORCHESTRATION;
 const OR_RECORD_ORCH=window.ANESVET_OR_RECORD_ORCHESTRATION;
 const RECOVERY_ORCH=window.ANESVET_RECOVERY_ORCHESTRATION;
 const PROCEDURE_TEMPLATES=window.ANESVET_PROCEDURE_TEMPLATES;
+const ACTIVE_CASE_RESCUE=window.ANESVET_ACTIVE_CASE_RESCUE;
+if(!ACTIVE_CASE_RESCUE)throw new Error('ANESVET active-case-rescue.js failed to load');
 const PREOP_RISK_FLAGS=window.ANESVET_PREOP_CONTROLLER?.riskFlags||[];
 if(!PATIENT_DOMAIN||!OR_DOMAIN||!RECOVERY_DOMAIN||!PATIENT_MASTER_ORCH||!OR_RECORD_ORCH||!RECOVERY_ORCH)throw new Error('ANESVET domain/orchestration modules failed to load');
 if(!PROCEDURE_TEMPLATES)throw new Error('ANESVET procedure-templates.js failed to load');
@@ -96,6 +98,10 @@ const SESSION_CONTROLLER=window.ANESVET_SESSION_CONTROLLER?.create?.({
   }
 });
 if(!SESSION_CONTROLLER)throw new Error('ANESVET session-controller.js failed to load');
+// V17.2.4: establish session ownership BEFORE installing the global interaction guard.
+// Previously bind() ran while mode was still `initializing`; any startup exception before the late init call
+// could leave every button/select trapped behind the capture handler while text fields appeared editable.
+SESSION_CONTROLLER.init();
 SESSION_CONTROLLER.bind();
 const sessionActive=()=>SESSION_CONTROLLER.isActive();
 const readSessionLock=()=>SESSION_CONTROLLER.readLock();
@@ -891,6 +897,14 @@ function load(){
       else if(state.recoveryStartedAt)state.casePhase='recovery';
       else if(state.caseStartedAt)state.casePhase='intraop';
       else state.casePhase='setup';
+    }
+    // V17.2.3: repair contradictory active-case runtime metadata carried across PWA updates.
+    // Example: caseStartedAt exists but casePhase remained 'setup'. Do not mark setup saved.
+    const activeCaseRepair=ACTIVE_CASE_RESCUE.normalizeState(state,{mutate:true});
+    if(activeCaseRepair.changed){
+      if(!Array.isArray(state.auditTrail))state.auditTrail=[];
+      state.auditTrail.push({id:crypto.randomUUID?crypto.randomUUID():String(Date.now()+Math.random()),epoch:Date.now(),clock:formatClock(),elapsedMs:Number(state.timer?.elapsedMs)||0,action:'ACTIVE_CASE_RUNTIME_STATE_REPAIRED',detail:activeCaseRepair.changes.join(' • '),actor:'System'});
+      try{localStorage.setItem(CURRENT_KEY,JSON.stringify(state))}catch(_){ }
     }
     if(!('caseLocked' in state))state.caseLocked=false;
     if(!Array.isArray(state.recoveryRecords))state.recoveryRecords=[];
@@ -1756,16 +1770,55 @@ function closeDialogSafe(id){
   const d=$(id);if(!d)return;
   try{if(d.open&&typeof d.close==='function')d.close();else d.removeAttribute('open')}catch(e){try{d.removeAttribute('open')}catch(_){}}
 }
-function forceActivateOrLiveUI(){
-  const id='orlive',page=$(id);if(!page)return false;
-  closeMoreMenu();closeRecoveryMoreDialog();exitOrFullscreenForNavigation(id);
+function recoverInteractionSurfaceForClinicalResume(){
+  const securityLocked=!!(SECURITY?.enabled?.()&&SECURITY?.locked?.());
+  // If Identity is not actually locked, stale inert attributes must never strand an active case.
+  if(!securityLocked){
+    for(const el of [...document.body.children]){if(el.id!=='securityLockOverlay')el.removeAttribute('inert')}
+    document.body.classList.remove('security-locked');
+  }
+  // A restored native dialog can remain in the browser top layer and swallow taps even when its UI is not visible.
+  document.querySelectorAll('dialog[open]').forEach(d=>{
+    if(securityLocked&&d.id?.startsWith('security'))return;
+    safeCloseOpenDialog(d);
+  });
+}
+function forceActivateClinicalUI(id){
+  const page=$(id);if(!page)return false;
+  recoverInteractionSurfaceForClinicalResume();closeMoreMenu();closeRecoveryMoreDialog();exitOrFullscreenForNavigation(id);
   $$('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===id));
   $$('.tabpage').forEach(p=>p.classList.toggle('active',p.id===id));
-  document.body.classList.toggle('or-mobile-active',currentSettingsObject().orFocusMode!==false);
-  document.body.classList.remove('recovery-mobile-active');
+  document.body.classList.toggle('or-mobile-active',id==='orlive'&&currentSettingsObject().orFocusMode!==false);
+  document.body.classList.toggle('recovery-mobile-active',id==='recovery');
   try{localStorage.setItem(TAB_KEY,id)}catch(e){}
-  renderOrLive();renderAirwayPanel();renderWorkflowLocks();renderMobileQuickBar('orlive');scrollAppTop();
+  if(id==='orlive'){renderOrLive();renderAirwayPanel()}
+  else if(id==='recovery'){renderRecovery();renderRecoveryRecords();updateRecoveryDue()}
+  else if(id==='endcase')renderEndCase();
+  renderWorkflowLocks();renderMobileQuickBar(id);scrollAppTop();
   return page.classList.contains('active');
+}
+function forceActivateOrLiveUI(){return forceActivateClinicalUI('orlive')}
+function persistRuntimeRepair(repair,source='resume'){
+  if(!repair?.changed)return true;
+  if(!Array.isArray(state.auditTrail))state.auditTrail=[];
+  state.auditTrail.push({id:crypto.randomUUID?crypto.randomUUID():String(Date.now()+Math.random()),epoch:Date.now(),clock:formatClock(),elapsedMs:currentElapsed(),action:'ACTIVE_CASE_RUNTIME_STATE_REPAIRED',detail:`${source} • ${repair.changes.join(' • ')}`,actor:'System'});
+  try{localStorage.setItem(CURRENT_KEY,JSON.stringify(state));writeSafetyCheckpoint(JSON.stringify(state));return true}catch(_){return false}
+}
+function resumeActiveClinicalWorkspace(options={}){
+  const source=options.source||'manual-resume';
+  const repair=ACTIVE_CASE_RESCUE.normalizeState(state,{mutate:true});
+  persistRuntimeRepair(repair,source);
+  const target=ACTIVE_CASE_RESCUE.targetForState(state);
+  if(!target){toast('ยังไม่พบ active anesthesia case สำหรับกลับไปทำต่อ');return false}
+  if(SECURITY?.enabled?.()&&SECURITY?.locked?.()){toast('กรุณา Unlock Identity ก่อนกลับเข้าสู่เคส');return false}
+  recoverInteractionSurfaceForClinicalResume();
+  setTab(target,{force:true});
+  let opened=!!$(target)?.classList.contains('active');
+  if(!opened)opened=forceActivateClinicalUI(target);
+  // Android/PWA fallback: verify again on the next frame after any restored top-layer state settles.
+  requestAnimationFrame(()=>{if(!$(target)?.classList.contains('active'))forceActivateClinicalUI(target)});
+  if(opened&&target==='orlive')toast('กลับเข้าสู่ OR LIVE แล้ว');
+  return opened;
 }
 function openOrLiveAfterBriefingReview(){
   const by=$('preOrBriefingBy')?.value.trim()||'';
@@ -4049,6 +4102,7 @@ window.AnesvetApp=Object.freeze({
   audit:(action,detail,actor='')=>addAudit(action,detail,actor),
   escapeHtml:(value)=>escapeHtml(value),
   setTab:(id,options)=>setTab(id,options),
+  resumeActiveCase:(options={})=>resumeActiveClinicalWorkspace(options),
   resetCurrent:()=>resetCurrent(),
   exportPdfReport:()=>exportPdfReport(),
   exportPdfSummary:()=>exportPdfSummary(),
@@ -4102,8 +4156,11 @@ let storedTab=localStorage.getItem(TAB_KEY)||'casesummary';
 // dashboard remains a supported legacy route under Advanced.
 let safeUpdateResume=null;try{safeUpdateResume=JSON.parse(localStorage.getItem(SAFE_UPDATE_KEY)||'null')}catch(_){ }
 if(safeUpdateResume?.caseId===state.caseId&&safeUpdateResume?.resumeTab)storedTab=safeUpdateResume.resumeTab;
-const initialTab=state.patientSaved?(state.casePhase==='complete'?'endcase':state.casePhase==='recovery'?'recovery':((state.timer.running||(state.timer.elapsedMs||0)>0||state.caseStartedAt)?'orlive':storedTab)):'patient';
-const resumeClinicalTab=(initialTab==='orlive'&&!!(state.caseStartedAt||state.timer?.running||(state.timer?.elapsedMs||0)>0))||(initialTab==='recovery'&&!!state.recoveryStartedAt);
+const activeCaseTarget=ACTIVE_CASE_RESCUE.targetForState(state);
+// V17.2.3: an already-started case must resume its clinical workspace even if Patient Setup later became NOT SAVED.
+// NOT SAVED remains visible and must still be reviewed; it no longer traps a progressed anesthesia case on Patient.
+const initialTab=activeCaseTarget||(state.patientSaved?storedTab:'patient');
+const resumeClinicalTab=['orlive','recovery','endcase'].includes(initialTab)&&!!activeCaseTarget;
 setTab(initialTab,{force:resumeClinicalTab});
 if(safeUpdateResume?.caseId===state.caseId){try{localStorage.removeItem(SAFE_UPDATE_KEY)}catch(_){ }}
 if(sessionActive())writeSessionLock();renderPatientRiskBanner();renderPreopRisk();renderSessionMode();renderAirwayPanel();renderFavoriteDrugButtons();renderQuickPresetSettings();renderQuickPresetSummary();renderOrFluidPanel();renderCaseSummary();renderCasePhase();renderOrPhaseTracker();renderRecoveryRecords();renderWorkflowLocks();renderAlertFeedbackState();renderProtocolGovernance();renderStorageStatus();renderFinalSignoff();renderBackupHealth();renderLinkedPatient();renderPatientMaster();

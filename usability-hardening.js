@@ -127,11 +127,21 @@
     const el=$('uxSaveAssist');if(el)el.hidden=true;
   }
 
+  let lastResumePointerAt=0;
+  function resumeActiveCase(source='shortcut'){
+    const a=api();if(!a)return false;
+    if(typeof a.resumeActiveCase==='function')return a.resumeActiveCase({source});
+    const s=a.getState?.()||{},target=s.casePhase==='recovery'?'recovery':'orlive';a.setTab?.(target,{force:true});return true;
+  }
   function ensureReturnShortcut(){
     if($('uxReturnCase'))return $('uxReturnCase');
-    const btn=document.createElement('button');btn.id='uxReturnCase';btn.type='button';btn.className='ux-return-case session-safe';btn.hidden=true;
-    btn.addEventListener('click',()=>{const s=api()?.getState?.()||{};const target=s.casePhase==='recovery'?'recovery':'orlive';api()?.setTab?.(target,{force:true});});
+    const btn=document.createElement('button');btn.id='uxReturnCase';btn.type='button';btn.className='ux-return-case session-safe';btn.dataset.resumeActiveCase='1';btn.hidden=true;
+    btn.addEventListener('click',e=>{if(Date.now()-lastResumePointerAt<650)return;e.preventDefault();e.stopPropagation();resumeActiveCase('shortcut-click')});
     document.body.appendChild(btn);return btn;
+  }
+  function pointerInsideReturnShortcut(e){
+    const btn=$('uxReturnCase');if(!btn||btn.hidden)return false;let r;try{r=btn.getBoundingClientRect()}catch(_){return false}
+    return e.clientX>=r.left&&e.clientX<=r.right&&e.clientY>=r.top&&e.clientY<=r.bottom;
   }
   function updateReturnShortcut(){
     const btn=ensureReturnShortcut(),s=api()?.getState?.()||{},page=activePage();
@@ -156,6 +166,9 @@
     qa('.tabpage').forEach(el=>new MutationObserver(schedule).observe(el,{attributes:true,attributeFilter:['class']}));
     window.addEventListener('online',schedule);window.addEventListener('offline',schedule);window.addEventListener('resize',schedule,{passive:true});
     document.addEventListener('click',e=>{if(e.target.closest?.('.workflow-tabs,.mobile-workflow-dialog,.mobile-quick-bar,#preOrReadinessDialog,#endcase'))schedule();},true);
+    // Android/PWA rescue: native top-layer/backdrop bugs can retarget the tap away from the visible fixed button.
+    // Capture by coordinates so the explicit Resume button remains usable without making the whole page bypass safety gates.
+    document.addEventListener('pointerup',e=>{if(!pointerInsideReturnShortcut(e))return;lastResumePointerAt=Date.now();e.preventDefault();e.stopImmediatePropagation();resumeActiveCase('shortcut-pointer-fallback');},true);
     refresh();
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
