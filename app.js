@@ -1,5 +1,7 @@
 (async() => {
 'use strict';
+const BOOT=window.ANESVET_BOOT_DIAGNOSTIC||null;
+BOOT?.mark?.('app-enter');
 
 const APP_SHELL=window.ANESVET_APP_SHELL;
 if(!APP_SHELL)throw new Error('ANESVET app-shell.js failed to load');
@@ -17,6 +19,18 @@ const PROTOCOL_GOVERNANCE_KEY='anesvet_v16_20_protocol_registry';
 const LAST_BACKUP_KEY='anesvet_v14_3_last_backup';
 const BACKUP_RECEIPT_KEY='anesvet_v16_7_last_backup_receipt';
 const LAST_RESTORE_KEY='anesvet_v16_7_last_restore_receipt';
+// R19: a Restore journal is a fail-closed sentinel across interrupted app restarts.
+const RESTORE_JOURNAL_KEY='anesvet_restore_journal_r19';
+function restoreJournalNeedsReview(){
+  if(window.ANESVET_RESTORE_RECOVERY_BLOCKED===true)return true;
+  try{
+    const raw=localStorage.getItem(RESTORE_JOURNAL_KEY);
+    if(!raw)return false;
+    const record=JSON.parse(raw);
+    return !['completed','rolled-back','reviewed'].includes(record?.state);
+  }catch(_){return true}
+}
+
 const BREED_ALIAS_KEY='anesvet_v14_3_breed_aliases';
 const PATIENT_FALLBACK_KEY='anesvet_v14_3_patients_fallback';
 const SESSION_LOCK_KEY='anesvet_v14_3_active_session';
@@ -25,7 +39,7 @@ const SESSION_TTL_MS=30000;
 const SESSION_HEARTBEAT_MS=5000;
 const DB_NAME='ANESVET_DB';
 const DB_VERSION=2;
-const APP_VERSION='17.2.4';
+const APP_VERSION='17.2.23';
 const SECURITY=window.ANESVET_SECURITY_BASELINE||null;
 const SYNC_FOUNDATION=window.ANESVET_SYNC_FOUNDATION||null;
 const DOSE_REF=window.ANESVET_DOSE_REFERENCE||null;
@@ -57,6 +71,7 @@ if(!ACTIVE_CASE_RESCUE)throw new Error('ANESVET active-case-rescue.js failed to 
 const PREOP_RISK_FLAGS=window.ANESVET_PREOP_CONTROLLER?.riskFlags||[];
 if(!PATIENT_DOMAIN||!OR_DOMAIN||!RECOVERY_DOMAIN||!PATIENT_MASTER_ORCH||!OR_RECORD_ORCH||!RECOVERY_ORCH)throw new Error('ANESVET domain/orchestration modules failed to load');
 if(!PROCEDURE_TEMPLATES)throw new Error('ANESVET procedure-templates.js failed to load');
+BOOT?.mark?.('core-modules-validated');
 
 
 const numericFields = ['weight','preopHR','preopRR','preopTemp','hr','rr','sap','map','dap','spo2','etco2','temp','vaporizer','o2flow','fluidRateInput','fluidTotal','recHR','recRR','recMAP','recSpO2','recTemp'];
@@ -67,6 +82,49 @@ const dataFields = [
   'recordNote','recHR','recRR','recMAP','recSpO2','recTemp','recExtubation','recOxygen','recMentation','recPain','recPainScale','recPainScore','recDysphoria','recNausea','recAmbulation','recDestination','recHandoffTo','recTransferNote','recHandoffNote','recNaReason','recRecordInterval','recScoreAirway','recScoreOxygen','recScoreTemp','recScoreMentation','recScoreComfort','recScoreNote','planPremed','planInduction','planMaintenance','planAnalgesia','planAntibiotic','planNSAID','planBlock','planNote','actualDiazepamMl','actualPropofolMl','actualTramadolMl','balanceCrystalloid','balanceBolus','balanceBloodIn','balanceBloodLoss','balanceUrine','fluidActualTotal','airwayEttSize','airwayEttDepth','airwayCuff','airwayDifficulty','airwayCircuit','airwayVentMode','airwayVt','airwayPip','airwayPeep','airwayVentRr','diazepamConc','propofolConc','tramadolConc','rimadylConc','metacamConc','adrenalineConc','atropineConc','atropineMode','dopamineDose','dopamineConc'
 ];
 
+// R13: the session lock confirms *who* may write, but not *which revision* of
+// the current case that tab has loaded. A resumed tab must never blindly save
+// its stale in-memory copy after another tab made newer clinical entries.
+let freshnessReloadInProgress=false;
+// R14: startup must never write a recovered clinical case from a VIEW ONLY tab,
+// overwrite an unreadable primary case, or replace a revision that changed
+// since hydration began. An uncommitted recovery is read-only until reviewed.
+let startupPrimaryRaw=null;
+let startupPrimaryUnreadable=false;
+let startupRecoveredOnlyInMemory=false;
+function guardedStartupCurrentWrite(payload,source='startup'){
+  if(restoreJournalNeedsReview() || startupPrimaryUnreadable || !sessionActive() || !SESSION_CONTROLLER.verifyOwnership()){
+    BOOT?.mark?.('startup-current-write-blocked',source+':permission-or-corrupt');return false;
+  }
+  try{
+    if(localStorage.getItem(CURRENT_KEY)!==startupPrimaryRaw){
+      BOOT?.mark?.('startup-current-write-blocked',source+':revision-changed');return false;
+    }
+    localStorage.setItem(CURRENT_KEY,payload);
+    if(localStorage.getItem(CURRENT_KEY)!==payload)throw new Error('Startup recovery write verification failed');
+    startupPrimaryRaw=payload;
+    return true;
+  }catch(_){BOOT?.mark?.('startup-current-write-blocked',source+':storage-error');return false}
+}
+
+const CASE_FRESHNESS=window.ANESVET_ACTIVE_CASE_FRESHNESS?.create?.({
+  read:()=>localStorage.getItem(CURRENT_KEY),
+  onBlocked:(reason)=>{
+    cancelPendingPersistence();
+    const banner=$('caseFreshnessBanner');if(banner)banner.hidden=false;
+    const label=$('caseFreshnessText');
+    if(label)label.textContent=reason==='storage-unavailable'
+      ? 'Cannot read saved case. Do not reload or continue recording on this tab; preserve a backup and check browser storage.'
+      : reason==='startup-primary-unreadable'
+        ? 'Saved Current Case is unreadable or storage access failed. The original was preserved. Do not start saving a new case in this tab; export and verify a backup before repairing browser storage.'
+        : reason==='startup-recovery-unpersisted'
+        ? 'Recovered case is in memory only; the stored original was not replaced (VIEW ONLY, corrupt original, or concurrent change). Clinical saves are blocked. Export/verify a backup and resolve the original case before continuing.'
+        : 'Another tab or workflow changed the saved current case. This screen is out of date. Clinical saves are blocked. Reload the latest locally saved case before continuing.';
+    const reload=$('caseFreshnessReloadBtn');if(reload)reload.disabled=reason==='storage-unavailable'||reason==='startup-primary-unreadable'||reason==='startup-recovery-unpersisted';
+    try{BOOT?.mark?.('current-case-stale-blocked',reason)}catch(_){ }
+  }
+});
+if(!CASE_FRESHNESS)throw new Error('ANESVET active-case-freshness.js failed to load');
 let state = CASE_RUNTIME.createState();
 let timerHandle = null;
 let dueReminderToken = null;
@@ -93,16 +151,18 @@ const SESSION_CONTROLLER=window.ANESVET_SESSION_CONTROLLER?.create?.({
   getCaseInfo:()=>({caseId:state?.caseId||'',patientName:state?.patientName||''}),
   toast,
   onMode:(mode,reason)=>{
-    if(mode==='active'){if(reason){} }
+    if(mode==='active'){if(CASE_FRESHNESS.isEstablished())CASE_FRESHNESS.verify()} 
     else{clearInterval(timerHandle);timerHandle=null;if(state?.timer?.running)renderTimerState()}
   }
 });
 if(!SESSION_CONTROLLER)throw new Error('ANESVET session-controller.js failed to load');
-// V17.2.4: establish session ownership BEFORE installing the global interaction guard.
+// V17.2.5: establish session ownership BEFORE installing the global interaction guard.
 // Previously bind() ran while mode was still `initializing`; any startup exception before the late init call
 // could leave every button/select trapped behind the capture handler while text fields appeared editable.
 SESSION_CONTROLLER.init();
+BOOT?.mark?.('session-initialized',SESSION_CONTROLLER.getMode?.()||'');
 SESSION_CONTROLLER.bind();
+BOOT?.mark?.('session-bound');
 const sessionActive=()=>SESSION_CONTROLLER.isActive();
 const readSessionLock=()=>SESSION_CONTROLLER.readLock();
 const sessionLockIsFresh=(lock)=>SESSION_CONTROLLER.isFresh(lock);
@@ -117,7 +177,8 @@ const initSessionCoordination=()=>SESSION_CONTROLLER.init();
 
 let alertAudioContext=null;
 let alertAudioReady=false;
-let alertFeedbackEnabled=localStorage.getItem(ALERT_PREF_KEY)!=='off';
+function safeStartupPreference(key){try{return localStorage.getItem(key)}catch(_){BOOT?.mark?.('startup-storage-preference-unavailable',key);return null}}
+let alertFeedbackEnabled=safeStartupPreference(ALERT_PREF_KEY)!=='off';
 let criticalAlertLatch={map:false,spo2:false};
 let currentClinicalGuideKey='';
 let currentClinicalGuideAuto=false;
@@ -637,10 +698,13 @@ const BACKUP_RESTORE_CONTROLLER=window.ANESVET_BACKUP_RESTORE_CONTROLLER?.create
   patientFromCase,patientIdentityKey,coreStorage:CORE_STORAGE,idbPutMeta,idbGetMeta,readSafetyCheckpoint,caseActivityEpoch,saveFallbackPatients,
   keys:{current:CURRENT_KEY,archive:ARCHIVE_KEY,settings:SETTINGS_KEY,drugLibrary:DRUG_LIBRARY_KEY,quickPreset:QUICK_PRESET_KEY,protocolAudit:PROTOCOL_AUDIT_KEY,protocolGovernance:PROTOCOL_GOVERNANCE_KEY,lastBackup:LAST_BACKUP_KEY,backupReceipt:BACKUP_RECEIPT_KEY,lastRestore:LAST_RESTORE_KEY,breedAlias:BREED_ALIAS_KEY,patientFallback:PATIENT_FALLBACK_KEY,pilotFeedback:PILOT_FEEDBACK_KEY},
   authorizeAction:(action,opts)=>SECURITY?.authorizeAction?.(action,opts)||Promise.resolve({ok:true,identity:null}),
+  canWriteCurrent:()=>!restoreJournalNeedsReview()&&!startupPrimaryUnreadable&&sessionActive()&&SESSION_CONTROLLER.verifyOwnership()&&CASE_FRESHNESS.verify(),
+  canRestoreWrite:()=>!startupPrimaryUnreadable&&sessionActive()&&SESSION_CONTROLLER.verifyOwnership(),
   restartAtAppRoot,renderArchives:()=>renderArchives(),hasMutableActiveCase:()=>versionReloadUnsafe(),getLegacyArchiveSeed,runClinicalValidation:(announce=false)=>runClinicalValidation({announce})
 });
 if(!BACKUP_RESTORE_CONTROLLER)throw new Error('ANESVET backup-restore-controller.js failed to load');
 BACKUP_RESTORE_CONTROLLER.bind();
+BOOT?.mark?.('backup-restore-bound');
 BACKUP_RESTORE_CONTROLLER.installBridge();
 function renderBackupHealth(){return BACKUP_RESTORE_CONTROLLER.renderBackupHealth()}
 function backupAllData(options){return BACKUP_RESTORE_CONTROLLER.backupAllData(options)}
@@ -662,12 +726,13 @@ const FINALIZATION_ARCHIVE_CONTROLLER=window.ANESVET_FINALIZATION_ARCHIVE_CONTRO
   initArchiveDb,idbPutCase,idbDeleteCase,getArchiveBackend:()=>archiveBackend,getArchiveCache:()=>archiveCache,setArchiveCache:(rows)=>{archiveCache=rows||[]},
   getLegacyArchiveSeed,persistArchiveFallback:(rows)=>localStorage.setItem(ARCHIVE_KEY,JSON.stringify(rows||archiveCache)),renderStorageStatus,renderBackupHealth,
   backupAllData,exportPdfReport,exportPdfSummary,exportArchivedPdfSummary,exportArchivedPdf,
-  replaceState:(next)=>{state=next},persistCurrentState:(next)=>localStorage.setItem(CURRENT_KEY,JSON.stringify(next)),queueCurrentMirror,restartAtAppRoot,
+  replaceState:(next)=>{state=next},persistCurrentState:(next)=>{if(!sessionActive()||!SESSION_CONTROLLER.verifyOwnership()||!CASE_FRESHNESS.verify())return false;try{const payload=JSON.stringify(next);localStorage.setItem(CURRENT_KEY,payload);if(localStorage.getItem(CURRENT_KEY)!==payload)return false;CASE_FRESHNESS.committed(payload);queueCurrentMirror(payload);return true}catch(_){return false}},queueCurrentMirror,restartAtAppRoot,
   confirm:(msg)=>confirm(msg),prompt:(msg,def='')=>prompt(msg,def),
   securityEnabled:()=>!!SECURITY?.enabled?.(),authenticateForAction:(action,opts)=>SECURITY?.authenticateForAction?.(action,opts)
 });
 if(!FINALIZATION_ARCHIVE_CONTROLLER)throw new Error('ANESVET finalization-archive-controller.js failed to load');
 FINALIZATION_ARCHIVE_CONTROLLER.bind();
+BOOT?.mark?.('finalization-archive-bound');
 function renderFinalSignoff(){return FINALIZATION_ARCHIVE_CONTROLLER.renderFinalSignoff()}
 function renderEndCase(){return FINALIZATION_ARCHIVE_CONTROLLER.renderEndCase()}
 function focusMedicationReconciliation(){return FINALIZATION_ARCHIVE_CONTROLLER.focusMedicationReconciliation()}
@@ -680,7 +745,7 @@ function renderArchives(){const out=FINALIZATION_ARCHIVE_CONTROLLER.renderArchiv
 function clearSafetyCheckpoint(){try{localStorage.removeItem(SAFETY_CHECKPOINT_KEY)}catch(e){}}
 function readSafetyCheckpoint(){try{const cp=JSON.parse(localStorage.getItem(SAFETY_CHECKPOINT_KEY)||'null');if(!cp||cp.format!==SAFETY_CHECKPOINT_FORMAT||!cp.caseId||!cp.state||cp.state.caseId!==cp.caseId)return null;return cp}catch(e){return null}}
 function writeSafetyCheckpoint(payload){if(state.caseLocked||!hasActiveCaseData()){clearSafetyCheckpoint();return true}try{const copy=JSON.parse(payload||JSON.stringify(state)),cp={format:SAFETY_CHECKPOINT_FORMAT,version:APP_VERSION,caseId:copy.caseId,lastSavedAt:Number(copy.lastSavedAt)||Date.now(),verifiedAt:Date.now(),patientName:copy.patientName||'',state:copy};localStorage.setItem(SAFETY_CHECKPOINT_KEY,JSON.stringify(cp));const verify=JSON.parse(localStorage.getItem(SAFETY_CHECKPOINT_KEY)||'null');if(!verify||verify.format!==SAFETY_CHECKPOINT_FORMAT||verify.caseId!==copy.caseId||Number(verify.lastSavedAt)!==Number(cp.lastSavedAt))throw new Error('Safety checkpoint verification failed');return true}catch(e){console.error('ANESVET safety checkpoint failed',e);return false}}
-function recoverFromSafetyCheckpoint(raw,currentCorrupt=false){const cp=readSafetyCheckpoint();if(!cp)return raw;const c=cp.state;if(c.caseLocked||c.casePhase==='complete'||(!c.patientSaved&&!c.caseStartedAt&&!((c.records||[]).length||(c.events||[]).length||(c.drugAdministrations||[]).length)))return raw;const ct=caseActivityEpoch(c),rt=caseActivityEpoch(raw),same=!raw||raw.caseId===c.caseId;if(!(currentCorrupt||!raw||(same&&ct>rt+250)))return raw;const reason=currentCorrupt?'Current save was unreadable':'Safety checkpoint was newer than current save';startupRecoveryNotice={patientName:c.patientName||'Unnamed',savedAt:c.lastSavedAt||cp.verifiedAt,reason};const restored=JSON.parse(JSON.stringify(c));restored.auditTrail=Array.isArray(restored.auditTrail)?restored.auditTrail:[];restored.auditTrail.push({id:crypto.randomUUID?crypto.randomUUID():String(Date.now()+Math.random()),epoch:Date.now(),clock:formatClock(),elapsedMs:restored.timer?.elapsedMs||0,action:'SAFETY_CHECKPOINT_RECOVERED',detail:reason,actor:'System'});try{localStorage.setItem(CURRENT_KEY,JSON.stringify(restored))}catch(e){}return restored}
+function recoverFromSafetyCheckpoint(raw,currentCorrupt=false){const cp=readSafetyCheckpoint();if(!cp)return raw;const c=cp.state;if(c.caseLocked||c.casePhase==='complete'||(!c.patientSaved&&!c.caseStartedAt&&!((c.records||[]).length||(c.events||[]).length||(c.drugAdministrations||[]).length)))return raw;const ct=caseActivityEpoch(c),rt=caseActivityEpoch(raw),same=!raw||raw.caseId===c.caseId;if(!(currentCorrupt||!raw||(same&&ct>rt+250)))return raw;const reason=currentCorrupt?'Current save was unreadable':'Safety checkpoint was newer than current save';startupRecoveryNotice={patientName:c.patientName||'Unnamed',savedAt:c.lastSavedAt||cp.verifiedAt,reason};const restored=JSON.parse(JSON.stringify(c));restored.auditTrail=Array.isArray(restored.auditTrail)?restored.auditTrail:[];restored.auditTrail.push({id:crypto.randomUUID?crypto.randomUUID():String(Date.now()+Math.random()),epoch:Date.now(),clock:formatClock(),elapsedMs:restored.timer?.elapsedMs||0,action:'SAFETY_CHECKPOINT_RECOVERED',detail:reason,actor:'System'});const persisted=guardedStartupCurrentWrite(JSON.stringify(restored),'safety-checkpoint');if(!persisted){startupRecoveredOnlyInMemory=true;startupRecoveryNotice.reason+=' • Loaded in memory only; primary data preserved. Backup and review before saving.'}return restored}
 function renderStartupRecoveryNotice(){const box=$('safetyRecoveryBanner');if(!box)return;if(!startupRecoveryNotice){box.hidden=true;return}box.hidden=false;if($('safetyRecoveryText'))$('safetyRecoveryText').textContent=`${startupRecoveryNotice.patientName} • ${startupRecoveryNotice.reason} • ${startupRecoveryNotice.savedAt?new Date(startupRecoveryNotice.savedAt).toLocaleString():''}`}
 
 function loadFallbackPatients(){try{const p=JSON.parse(localStorage.getItem(PATIENT_FALLBACK_KEY)||'[]');return Array.isArray(p)?p:[]}catch(e){return[]}}
@@ -707,7 +772,7 @@ function getPatients(){return patientCache||[]}
 
 async function reconcileCurrentFromMirror(){
   // Only the active writer tab may reconcile shared current-case state.
-  if(!sessionActive())return false;
+  if(!sessionActive()||startupPrimaryUnreadable)return false;
   const rec=await idbGetMeta('current'),mirror=rec?.value;if(!mirror||typeof mirror!=='object')return false;
   let local=null;try{local=JSON.parse(localStorage.getItem(CURRENT_KEY)||'null')}catch(e){}
   const mt=caseActivityEpoch(mirror),lt=caseActivityEpoch(local);
@@ -717,10 +782,34 @@ async function reconcileCurrentFromMirror(){
   const stamp=mirror.lastSavedAt||mt||rec.updatedAt;
   const ok=confirm(`ANESVET found a newer current-case mirror in IndexedDB.\n\nPatient: ${mirror.patientName||'Unnamed'}\nLast saved: ${stamp?new Date(stamp).toLocaleString():'unknown'}\n\nRestore this newer clinical state?`);
   if(!ok)return false;
-  localStorage.setItem(CURRENT_KEY,JSON.stringify(mirror));
+  // R15: an unreadable primary is forensic evidence. Never overwrite it with a
+  // mirror, even after the operator accepts the restore prompt.
+  if(startupPrimaryUnreadable||!sessionActive()||!SESSION_CONTROLLER.verifyOwnership()||!CASE_FRESHNESS.verify())return false;
+  const payload=JSON.stringify(mirror);
+  if(!guardedStartupCurrentWrite(payload,'indexeddb-mirror')){
+    CASE_FRESHNESS.verify();
+    BOOT?.mark?.('current-mirror-restore-write-failed');
+    startupRecoveryNotice={patientName:mirror.patientName||'Unnamed',savedAt:stamp,reason:'IndexedDB restore could not be verified. The original saved case was preserved; check session ownership and storage before editing.'};
+    return false;
+  }
+  CASE_FRESHNESS.committed(payload);
   return true;
 }
-function queueCurrentMirror(){if(resetInProgress)return;clearTimeout(currentMirrorTimer);const copy=JSON.parse(JSON.stringify(state));currentMirrorTimer=setTimeout(()=>{currentMirrorTimer=null;if(resetInProgress)return;idbPutMeta('current',copy)},180)}
+function queueCurrentMirror(verifiedPayload){
+  // R15: a mirror is a copy of the *verified local save*, never a snapshot of
+  // still-uncommitted form edits in the in-memory state object.
+  if(resetInProgress||typeof verifiedPayload!=='string')return false;
+  let copy;try{copy=JSON.parse(verifiedPayload)}catch(_){return false}
+  if(!copy||typeof copy!=='object'||!copy.caseId)return false;
+  clearTimeout(currentMirrorTimer);
+  currentMirrorTimer=setTimeout(()=>{currentMirrorTimer=null;
+    if(resetInProgress||!sessionActive()||!SESSION_CONTROLLER.verifyOwnership()||!CASE_FRESHNESS.verify())return;
+    // A newer local save (or a concurrent tab) invalidates this queued mirror.
+    try{if(localStorage.getItem(CURRENT_KEY)!==verifiedPayload){CASE_FRESHNESS.verify();return}}catch(_){CASE_FRESHNESS.block('storage-unavailable');return}
+    try{Promise.resolve(idbPutMeta('current',copy)).then(ok=>{if(ok===false)BOOT?.mark?.('current-mirror-write-failed')}).catch(_=>BOOT?.mark?.('current-mirror-write-failed'))}catch(_){BOOT?.mark?.('current-mirror-write-failed')}
+  },180);
+  return true;
+}
 function getLegacyArchiveSeed(){
   const keys=[ARCHIVE_KEY,'anesvet_v14_2_archive_legacy','anesvet_v14_1_archive_legacy','anesvet_v14_archive_legacy','anesvet_v13_4_archive','anesvet_v13_3_archive','anesvet_v13_2_archive','anesvet_v13_1_archive','anesvet_v13_archive','anesvet_v12_1_archive','anesvet_v12_archive','anesvet_v11_archive','anesvet_v10_archive','anesvet_v9_archive','anesvet_v8_archive','anesvet_v7_archive','anesvet_v6_1_archive','anesvet_v6_archive','anesvet_v5_archive','anesvet_v4_archive','anesvet_v3_archive'];
   for(const key of keys){try{const a=JSON.parse(localStorage.getItem(key)||'null');if(Array.isArray(a)&&a.length)return a.map(c=>{const x=JSON.parse(JSON.stringify(c));if(!x.caseId)x.caseId=crypto.randomUUID?crypto.randomUUID():String((x.createdAt||Date.now())+Math.random());if(!x.humanRecordId)x.humanRecordId=makeHumanRecordId(x.createdAt||Date.now());if(!Array.isArray(x.auditTrail))x.auditTrail=[];if(!Array.isArray(x.amendments))x.amendments=[];if(!x.finalSignoff)x.finalSignoff={anesthetist:null,surgeon:null};if(!('voidedAt' in x))x.voidedAt=null;return x})}catch(e){}}
@@ -758,12 +847,16 @@ function syncCaptureAfterLocalSave(reason='manual'){
 }
 function save({persistLocked=false,reason='manual'}={}){
   if(resetInProgress){cancelPendingPersistence();return false}
+  if(restoreJournalNeedsReview()){renderSaveState('error');toast('Restore interruption must be reviewed before saving clinical data');return false}
   if(autosaveTimer){clearTimeout(autosaveTimer);autosaveTimer=null}
   if(!sessionActive()){renderSaveState('saved');return false}
+  // R12: check ownership immediately before persisting, not just on heartbeat.
+  if(!SESSION_CONTROLLER.verifyOwnership()){renderSessionMode();return false}
+  if(!CASE_FRESHNESS.verify()){renderSaveState('error');return false}
   // Only the final-lock transaction may persist the sealed payload; never resample UI fields.
   if(state.caseLocked){
     if(!persistLocked){renderSaveState('saved');return false}
-    try{localStorage.setItem(CURRENT_KEY,JSON.stringify(state));queueCurrentMirror();renderSaveState('saved');syncCaptureAfterLocalSave(reason==='manual'?'final-lock':reason);return true}catch(e){renderSaveState('error');return false}
+    try{const payload=JSON.stringify(state);localStorage.setItem(CURRENT_KEY,payload);if(localStorage.getItem(CURRENT_KEY)!==payload)throw new Error('Final save read-back failed');CASE_FRESHNESS.committed(payload);queueCurrentMirror(payload);renderSaveState('saved');syncCaptureAfterLocalSave(reason==='manual'?'final-lock':reason);return true}catch(e){renderSaveState('error');return false}
   }
   renderSaveState('saving');
   try{
@@ -782,7 +875,8 @@ function save({persistLocked=false,reason='manual'}={}){
     localStorage.setItem(CURRENT_KEY,payload);
     const verify=JSON.parse(localStorage.getItem(CURRENT_KEY)||'null');
     if(!verify||verify.caseId!==state.caseId||Number(verify.lastSavedAt)!==Number(state.lastSavedAt))throw new Error('Local save verification failed');
-    queueCurrentMirror();
+    CASE_FRESHNESS.committed(payload);
+    queueCurrentMirror(payload);
     if(!writeSafetyCheckpoint(payload))throw new Error('Verified safety checkpoint failed');
     renderSaveState('saved');
     // Synchronization is strictly secondary: enqueue only after the verified local save/checkpoint succeeded.
@@ -824,63 +918,67 @@ function migrateV3Case(raw){
   x.migratedFromV3=true;
   return x;
 }
+// R11: isolate each legacy key: one malformed JSON/denied read must not hide later snapshots.
+// This function does not write, remove or overwrite any browser data.
+function readLegacyCurrentCase(storage,migrateV3){
+  const versions=[
+    'anesvet_v14_2_current','anesvet_v14_1_current','anesvet_v14_current',
+    'anesvet_v13_4_current','anesvet_v13_3_current','anesvet_v13_2_current',
+    'anesvet_v13_1_current','anesvet_v13_current','anesvet_v12_1_current',
+    'anesvet_v12_current','anesvet_v11_current','anesvet_v10_current',
+    'anesvet_v9_current','anesvet_v8_current','anesvet_v7_current',
+    'anesvet_v6_1_current','anesvet_v6_current','anesvet_v5_current',
+    'anesvet_v4_current','anesvet_v3_current'
+  ];
+  for(const key of versions){
+    let raw=null;
+    try{raw=JSON.parse(storage.getItem(key)||'null')}catch(_){continue}
+    if(!raw||typeof raw!=='object'||Array.isArray(raw))continue;
+    let next;
+    try{
+      next=JSON.parse(JSON.stringify(raw));
+      if(key==='anesvet_v3_current')next=migrateV3(next);
+      else if(key==='anesvet_v9_current'){
+        if(!Array.isArray(next.responses))next.responses=[];
+        if(!Array.isArray(next.corrections))next.corrections=[];
+        if(!next.casePhase)next.casePhase='intraop';
+      }else if(key==='anesvet_v8_current'||key==='anesvet_v7_current'){
+        if(!Array.isArray(next.responses))next.responses=[];
+      }else if(key==='anesvet_v6_1_current'){
+        if(!next.preopChecks)next.preopChecks={};
+        if(!('caseStartedAt' in next))next.caseStartedAt=null;
+      }else if(key==='anesvet_v5_current'||key==='anesvet_v4_current'){
+        if(!('breed' in next))next.breed='';
+        if(!('bcs' in next))next.bcs='5';
+        next.patientSaved=!!next.patientName;
+      }
+      if(!next||typeof next!=='object'||Array.isArray(next))continue;
+      return {caseData:next,sourceKey:key};
+    }catch(_){continue}
+  }
+  return null;
+}
 function load(){
   try{
-    let raw=null,currentCorrupt=false;try{raw=JSON.parse(localStorage.getItem(CURRENT_KEY)||'null')}catch(e){currentCorrupt=true;raw=null}
+    let raw=null,currentCorrupt=false;
+    try{startupPrimaryRaw=localStorage.getItem(CURRENT_KEY);raw=JSON.parse(startupPrimaryRaw||'null')}
+    catch(e){currentCorrupt=true;startupPrimaryUnreadable=true;raw=null;startupRecoveryNotice={patientName:'Unknown',savedAt:0,reason:'Saved Current Case is unreadable or browser storage is unavailable. Original data was not overwritten. Verify/export a backup before attempting repair.'};BOOT?.mark?.('startup-current-unreadable')}
     raw=recoverFromSafetyCheckpoint(raw,currentCorrupt);
-    if(!raw){const p143=JSON.parse(localStorage.getItem('anesvet_v14_2_current')||'null');if(p143){raw=p143;localStorage.setItem(CURRENT_KEY,JSON.stringify(raw));}}
-    if(!raw){const p142=JSON.parse(localStorage.getItem('anesvet_v14_1_current')||'null');if(p142){raw=p142;localStorage.setItem(CURRENT_KEY,JSON.stringify(raw));}}
-    if(!raw){const p141=JSON.parse(localStorage.getItem('anesvet_v14_current')||'null');if(p141){raw=p141;localStorage.setItem(CURRENT_KEY,JSON.stringify(raw));}}
-    if(!raw){const prev134=JSON.parse(localStorage.getItem('anesvet_v13_4_current')||'null');if(prev134){raw=prev134;localStorage.setItem(CURRENT_KEY,JSON.stringify(raw));}}
-    if(!raw){const prev133=JSON.parse(localStorage.getItem('anesvet_v13_3_current')||'null');if(prev133){raw=prev133;localStorage.setItem(CURRENT_KEY,JSON.stringify(raw));}}
-    if(!raw){const prev132=JSON.parse(localStorage.getItem('anesvet_v13_2_current')||'null');if(prev132){raw=prev132;localStorage.setItem(CURRENT_KEY,JSON.stringify(raw));}}
-    if(!raw){const prev131=JSON.parse(localStorage.getItem('anesvet_v13_1_current')||'null');if(prev131){raw=prev131;localStorage.setItem(CURRENT_KEY,JSON.stringify(raw));}}
-    if(!raw){const prev13=JSON.parse(localStorage.getItem('anesvet_v13_current')||'null');if(prev13){raw=prev13;localStorage.setItem(CURRENT_KEY,JSON.stringify(raw));}}
-    if(!raw){const prev121=JSON.parse(localStorage.getItem('anesvet_v12_1_current')||'null');if(prev121){raw=prev121;localStorage.setItem(CURRENT_KEY,JSON.stringify(raw));}}
-    if(!raw){const prev12=JSON.parse(localStorage.getItem('anesvet_v12_current')||'null');if(prev12){raw=prev12;localStorage.setItem(CURRENT_KEY,JSON.stringify(raw));}}
     if(!raw){
-      const v11=JSON.parse(localStorage.getItem('anesvet_v11_current')||'null');
-      const v10=JSON.parse(localStorage.getItem('anesvet_v10_current')||'null');
-      const v9=JSON.parse(localStorage.getItem('anesvet_v9_current')||'null');
-      const v8=JSON.parse(localStorage.getItem('anesvet_v8_current')||'null');
-      const v7=JSON.parse(localStorage.getItem('anesvet_v7_current')||'null');
-      const v61=JSON.parse(localStorage.getItem('anesvet_v6_1_current')||'null');
-      const v6=JSON.parse(localStorage.getItem('anesvet_v6_current')||'null');
-      const v5=JSON.parse(localStorage.getItem('anesvet_v5_current')||'null');
-      const v4=JSON.parse(localStorage.getItem('anesvet_v4_current')||'null');
-      if(v11){raw=v11;localStorage.setItem(CURRENT_KEY,JSON.stringify(raw));
-      }else if(v10){raw=v10;localStorage.setItem(CURRENT_KEY,JSON.stringify(raw));
-      }else if(v9){
-        raw=v9;if(!Array.isArray(raw.responses))raw.responses=[];if(!Array.isArray(raw.corrections))raw.corrections=[];if(!raw.casePhase)raw.casePhase='intraop';localStorage.setItem(CURRENT_KEY,JSON.stringify(raw));
-      }else if(v8){
-        raw=v8;if(!Array.isArray(raw.responses))raw.responses=[];localStorage.setItem(CURRENT_KEY,JSON.stringify(raw));
-      }else if(v7){
-        raw=v7;if(!Array.isArray(raw.responses))raw.responses=[];localStorage.setItem(CURRENT_KEY,JSON.stringify(raw));
-      }else if(v61){
-        raw=v61;
-        if(!raw.preopChecks) raw.preopChecks={};
-        if(!('caseStartedAt' in raw)) raw.caseStartedAt=null;
-        localStorage.setItem(CURRENT_KEY,JSON.stringify(raw));
-      }else if(v6){
-        raw=v6;
-        localStorage.setItem(CURRENT_KEY,JSON.stringify(raw));
-      }else if(v5){
-        raw=v5;
-        if(!('breed' in raw)) raw.breed='';
-        if(!('bcs' in raw)) raw.bcs='5';
-        raw.patientSaved=!!raw.patientName;
-        localStorage.setItem(CURRENT_KEY,JSON.stringify(raw));
-      }else if(v4){
-        raw=v4;
-        if(!('breed' in raw)) raw.breed='';
-        if(!('bcs' in raw)) raw.bcs='5';
-        raw.patientSaved=!!raw.patientName;
-        localStorage.setItem(CURRENT_KEY,JSON.stringify(raw));
-      }else{
-        const old=JSON.parse(localStorage.getItem('anesvet_v3_current')||'null');
-        if(old){
-          raw=migrateV3Case(old);
-          localStorage.setItem(CURRENT_KEY,JSON.stringify(raw));
+      const legacy=readLegacyCurrentCase(localStorage,migrateV3Case);
+      if(legacy){
+        raw=legacy.caseData;
+        let persisted=false;
+        // Preserve an unreadable primary case for forensic recovery and manual backup.
+        // Never overwrite it automatically with a potentially older legacy record.
+        if(!currentCorrupt)persisted=guardedStartupCurrentWrite(JSON.stringify(raw),'legacy-restore');
+        if(currentCorrupt||!persisted){
+          startupRecoveredOnlyInMemory=true;
+          startupRecoveryNotice={patientName:raw.patientName||'Unnamed',savedAt:raw.lastSavedAt||0,
+            reason:currentCorrupt?'Current save unreadable; previous-version case loaded in memory only. Backup and review before saving.':'Previous-version case loaded in memory only (VIEW ONLY, newer revision, or storage error). Export/verify a backup and reload with write control before continuing.'};
+          BOOT?.mark?.('legacy-current-restore-not-persisted',currentCorrupt?'primary-corrupt':'storage-write-failed');
+        }else{
+          BOOT?.mark?.('legacy-current-restored',legacy.sourceKey);
         }
       }
     }
@@ -904,7 +1002,10 @@ function load(){
     if(activeCaseRepair.changed){
       if(!Array.isArray(state.auditTrail))state.auditTrail=[];
       state.auditTrail.push({id:crypto.randomUUID?crypto.randomUUID():String(Date.now()+Math.random()),epoch:Date.now(),clock:formatClock(),elapsedMs:Number(state.timer?.elapsedMs)||0,action:'ACTIVE_CASE_RUNTIME_STATE_REPAIRED',detail:activeCaseRepair.changes.join(' • '),actor:'System'});
-      try{localStorage.setItem(CURRENT_KEY,JSON.stringify(state))}catch(_){ }
+      if(!guardedStartupCurrentWrite(JSON.stringify(state),'runtime-metadata-repair')){
+        startupRecoveredOnlyInMemory=true;
+        if(!startupRecoveryNotice)startupRecoveryNotice={patientName:state.patientName||'Unnamed',savedAt:state.lastSavedAt||0,reason:'Runtime metadata repaired in memory only; original saved data preserved. Review before saving.'};
+      }
     }
     if(!('caseLocked' in state))state.caseLocked=false;
     if(!Array.isArray(state.recoveryRecords))state.recoveryRecords=[];
@@ -1255,6 +1356,7 @@ const PATIENT_MASTER_CONTROLLER=window.ANESVET_PATIENT_MASTER_CONTROLLER?.create
   formatAgeThai:(parts,estimated)=>formatAgeThai(parts,estimated),
   renderAgeUI:()=>renderAgeUI(),
   updateDashboard:(options)=>updateDashboard(options),
+  invalidatePreOrOverride:()=>invalidatePreOrOverride(),
   loadSettings:()=>loadSettings(),
   fmtDose:(value)=>fmtDose(value),
   tempTextF:(value)=>tempTextF(value),
@@ -1262,6 +1364,7 @@ const PATIENT_MASTER_CONTROLLER=window.ANESVET_PATIENT_MASTER_CONTROLLER?.create
 });
 if(!PATIENT_MASTER_CONTROLLER)throw new Error('ANESVET patient-master-controller.js failed to load');
 PATIENT_MASTER_CONTROLLER.bind();
+BOOT?.mark?.('patient-master-bound');
 const renderLinkedPatient=()=>PATIENT_MASTER_CONTROLLER.renderLinkedPatient();
 const renderPatientMaster=()=>PATIENT_MASTER_CONTROLLER.renderPatientMaster();
 const upsertPatientMasterFromCurrent=()=>PATIENT_MASTER_CONTROLLER.upsertPatientMasterFromCurrent();
@@ -1378,7 +1481,15 @@ function syncCaseProcedureToPatient(){
   if($('patientProcedure') && $('patientProcedure').value!==v) $('patientProcedure').value=v;
 }
 $('patientProcedure')?.addEventListener('input',()=>{syncPatientProcedureToCase();state.patientSaved=false;updatePatientSaveStatus();renderProcedureTemplatePicker();updateDashboard({persist:false})});
-$('procedure')?.addEventListener('input',()=>{syncCaseProcedureToPatient();updateDashboard({persist:false})});
+// R09: the secondary Procedure editor updates Patient Setup too. An unsaved
+// procedure change must invalidate the prior Patient Save and any pre-OR override.
+$('procedure')?.addEventListener('input',()=>{
+  syncCaseProcedureToPatient();
+  state.patientSaved=false;
+  invalidatePreOrOverride();
+  updatePatientSaveStatus();
+  updateDashboard({persist:false});
+});
 
 function currentCaseIdentityFromForm(){return {patientMasterId:$('patientMasterId')?.value||state.patientMasterId||'',patientName:$('patientName')?.value.trim()||'',hospitalId:$('hospitalId')?.value.trim()||'',visitId:$('visitId')?.value.trim()||'',species:$('species')?.value||'',microchip:$('microchip')?.value.trim()||'',weight:Number($('weight')?.value)||null}}
 function caseIdentityChanges(next){const base=state.caseIdentitySnapshot;if(!state.caseStartedAt||!base)return [];const labels={patientMasterId:'Patient link',patientName:'Patient name',hospitalId:'HN',visitId:'Visit ID',species:'Species',microchip:'Microchip',weight:'Current BW'};return Object.keys(labels).flatMap(k=>{const a=k==='weight'?Number(base[k]):String(base[k]??''),b=k==='weight'?Number(next[k]):String(next[k]??'');const same=k==='weight'?(Number.isFinite(a)&&Number.isFinite(b)?Math.abs(a-b)<1e-9:a===b):a===b;return same?[]:[`${labels[k]}: ${base[k]??'—'} → ${next[k]??'—'}`]})}
@@ -1429,6 +1540,7 @@ const PREOP_CONTROLLER=window.ANESVET_PREOP_CONTROLLER?.create?.({
 });
 if(!PREOP_CONTROLLER)throw new Error('ANESVET preop-controller.js failed to load');
 PREOP_CONTROLLER.bind();
+BOOT?.mark?.('preop-bound');
 const renderPreopExam=()=>PREOP_CONTROLLER.renderPreopExam();
 const preopExamReportHtml=()=>PREOP_CONTROLLER.preopExamReportHtml();
 const preopRiskSummaryLabels=(options)=>PREOP_CONTROLLER.preopRiskSummaryLabels(options);
@@ -1452,6 +1564,7 @@ const OR_LIVE_CONTROLLER=window.ANESVET_OR_LIVE_CONTROLLER?.create?.({
 });
 if(!OR_LIVE_CONTROLLER)throw new Error('ANESVET or-live-controller.js failed to load');
 OR_LIVE_CONTROLLER.bind();
+BOOT?.mark?.('or-live-bound');
 function syncOrFromMain(){return OR_LIVE_CONTROLLER.syncOrFromMain()}
 function workflowProfileInfo(){return OR_LIVE_CONTROLLER.workflowProfileInfo()}
 function activeWorkflowProfile(){return OR_LIVE_CONTROLLER.activeWorkflowProfile()}
@@ -1483,6 +1596,7 @@ MEDICATION_WORKSPACE_CONTROLLER=window.ANESVET_MEDICATION_WORKSPACE_CONTROLLER?.
 });
 if(!MEDICATION_WORKSPACE_CONTROLLER)throw new Error('ANESVET medication-workspace-controller.js failed to load');
 MEDICATION_WORKSPACE_CONTROLLER.bind();
+BOOT?.mark?.('medication-workspace-bound');
 function renderBuiltInProtocolChips(cfg=currentSettingsObject()){
   const source=state?.protocolSnapshot?.builtInProtocol?activeBuiltInProtocol():cfg;
   const n=(k,f)=>Number(source?.[k]??f);
@@ -1699,8 +1813,15 @@ function renderMobileQuickBar(id){
   if(label)label.textContent=MOBILE_STEP_LABELS[id]||'ANESVET';
   syncMobileWorkflowLocks();
 }
-function openMobileWorkflowDialog(){const d=$('mobileWorkflowDialog');if(!d)return;syncMobileWorkflowLocks();try{if(typeof d.showModal==='function')d.showModal();else d.setAttribute('open','')}catch(e){d.setAttribute('open','')}}
-function closeMobileWorkflowDialog(){const d=$('mobileWorkflowDialog');if(!d)return;try{if(d.open&&typeof d.close==='function')d.close();else d.removeAttribute('open')}catch(e){d.removeAttribute('open')}}
+// R08: repeated mobile-menu taps must not call showModal() on an already open dialog.
+function openMobileWorkflowDialog(){
+  const d=$('mobileWorkflowDialog');if(!d)return;
+  syncMobileWorkflowLocks();
+  if(d.open)return; // Avoid InvalidStateError / accidental non-modal fallback.
+  try{if(typeof d.showModal==='function')d.showModal();else d.setAttribute('open','')}
+  catch(e){BOOT?.mark?.('mobile-workflow-open-failed',e?.message||String(e));if(!d.open)d.setAttribute('open','')}
+}
+function closeMobileWorkflowDialog(){return safeCloseOpenDialog($('mobileWorkflowDialog'))}
 
 // V17.2.2 interaction recovery: a modal left in the browser top-layer can make the
 // underlying clinical page look normal while swallowing every tap. Always close
@@ -1727,37 +1848,52 @@ window.addEventListener('pageshow',()=>setTimeout(recoverInvisibleModalBlockers,
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')setTimeout(recoverInvisibleModalBlockers,0)});
 
 function setTab(id,opts={}){
-  if(!id || !document.getElementById(id)) return;
+  // R05: a bad route is not a page; do not hide every real tab by activating it.
+  const target=document.getElementById(id);
+  if(!id || !target?.classList?.contains('tabpage')){BOOT?.nav?.('invalid-target',id);return;}
   if(id==='orlive' && orLiveLockedByRecovery() && !opts.force){
+    BOOT?.nav?.('blocked-recovery',id);
     toast('Recovery active — OR LIVE ถูกล็อก หากฉุกเฉินให้กด Emergency return to OR LIVE');
     renderWorkflowLocks();scrollAppTop();return;
   }
-  if(id==='orlive'&&!opts.force&&!requestOrLiveAccess(opts)){renderWorkflowLocks();scrollAppTop();return;}
+  if(id==='orlive'&&!opts.force&&!requestOrLiveAccess(opts)){
+    BOOT?.nav?.('blocked-readiness',id,'OR access / briefing gate');
+    renderWorkflowLocks();scrollAppTop();return;
+  }
   if(id==='recovery'&&!opts.force&&!recoveryAccessAllowed()){
+    BOOT?.nav?.('blocked-recovery',id);
     const msg=!state.caseStartedAt?'Recovery ยังไม่เปิด — เริ่มเคสและดำเนิน workflow ก่อน':'Recovery จะเปิดหลัง Extubation / Begin Recovery';
     toast(msg);renderWorkflowLocks();scrollAppTop();return;
   }
-  closeTransientNavigationDialogs();
-  recoverInvisibleModalBlockers();
-  exitOrFullscreenForNavigation(id);
-  closeMoreMenu();closeRecoveryMoreDialog();
-  $$('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===id));
-  $$('.tabpage').forEach(p=>p.classList.toggle('active',p.id===id));
-  document.body.classList.toggle('or-mobile-active',id==='orlive'&&currentSettingsObject().orFocusMode!==false);
-  document.body.classList.toggle('recovery-mobile-active',id==='recovery');
-  localStorage.setItem(TAB_KEY,id);
-  if(id==='trends') renderTrends();
-  if(id==='timeline') renderProcedureTimeline();
-  if(id==='cases'){renderArchives();renderBackupHealth();}
-  if(id==='casesummary') renderCaseSummary();
-  if(id==='orlive'){renderOrLive();renderAirwayPanel();}
-  if(id==='drugs'){updateDoseSpotlights();syncQuickConcentrations();renderCaseDrugPlan();}
-  if(id==='recovery'){renderRecovery();renderRecoveryRecords();updateRecoveryDue();}
-  if(id==='endcase') renderEndCase();
-  if(id==='settings'){renderAlertProtocolStatus();renderDrugLibrarySettings();renderQuickPresetSettings();renderBreedAliasSettings();setTimeout(()=>{renderProtocolGovernance();renderProtocolDoseReview()},0);}
-  renderWorkflowLocks();
-  renderMobileQuickBar(id);
-  scrollAppTop();
+  try{
+    closeTransientNavigationDialogs();
+    recoverInvisibleModalBlockers();
+    exitOrFullscreenForNavigation(id);
+    closeMoreMenu();closeRecoveryMoreDialog();
+    $$('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===id));
+    $$('.tabpage').forEach(p=>p.classList.toggle('active',p.id===id));
+    document.body.classList.toggle('or-mobile-active',id==='orlive'&&currentSettingsObject().orFocusMode!==false);
+    document.body.classList.toggle('recovery-mobile-active',id==='recovery');
+    // Tab location is a UI preference, not clinical storage. A write failure
+    // must not interrupt the actual page transition or remaining UI updates.
+    try{localStorage.setItem(TAB_KEY,id)}catch(e){BOOT?.mark?.('navigation-tab-preference-unavailable')}
+    if(id==='trends') renderTrends();
+    if(id==='timeline') renderProcedureTimeline();
+    if(id==='cases'){renderArchives();renderBackupHealth();}
+    if(id==='casesummary') renderCaseSummary();
+    if(id==='orlive'){renderOrLive();renderAirwayPanel();}
+    if(id==='drugs'){updateDoseSpotlights();syncQuickConcentrations();renderCaseDrugPlan();}
+    if(id==='recovery'){renderRecovery();renderRecoveryRecords();updateRecoveryDue();}
+    if(id==='endcase') renderEndCase();
+    if(id==='settings'){renderAlertProtocolStatus();renderDrugLibrarySettings();renderQuickPresetSettings();renderBreedAliasSettings();setTimeout(()=>{renderProtocolGovernance();renderProtocolDoseReview()},0);}
+    renderWorkflowLocks();
+    renderMobileQuickBar(id);
+    scrollAppTop();
+    BOOT?.nav?.('rendered',id);
+  }catch(e){
+    BOOT?.nav?.('render-error',id,e?.message||String(e));
+    throw e; // Never suppress a failed clinical screen render.
+  }
 }
 $$('.tab[data-tab]').forEach(b=>b.addEventListener('click',()=>setTab(b.dataset.tab)));
 $('preOrReadinessCloseBtn')?.addEventListener('click',()=>{try{$('preOrReadinessDialog')?.close()}catch(e){}});
@@ -1800,9 +1936,10 @@ function forceActivateClinicalUI(id){
 function forceActivateOrLiveUI(){return forceActivateClinicalUI('orlive')}
 function persistRuntimeRepair(repair,source='resume'){
   if(!repair?.changed)return true;
+  if(!sessionActive()||!SESSION_CONTROLLER.verifyOwnership()||!CASE_FRESHNESS.verify())return false;
   if(!Array.isArray(state.auditTrail))state.auditTrail=[];
   state.auditTrail.push({id:crypto.randomUUID?crypto.randomUUID():String(Date.now()+Math.random()),epoch:Date.now(),clock:formatClock(),elapsedMs:currentElapsed(),action:'ACTIVE_CASE_RUNTIME_STATE_REPAIRED',detail:`${source} • ${repair.changes.join(' • ')}`,actor:'System'});
-  try{localStorage.setItem(CURRENT_KEY,JSON.stringify(state));writeSafetyCheckpoint(JSON.stringify(state));return true}catch(_){return false}
+  try{const payload=JSON.stringify(state);localStorage.setItem(CURRENT_KEY,payload);CASE_FRESHNESS.committed(localStorage.getItem(CURRENT_KEY));writeSafetyCheckpoint(payload);return true}catch(_){return false}
 }
 function resumeActiveClinicalWorkspace(options={}){
   const source=options.source||'manual-resume';
@@ -2832,6 +2969,7 @@ const RECOVERY_CONTROLLER=window.ANESVET_RECOVERY_CONTROLLER?.create?.({
 });
 if(!RECOVERY_CONTROLLER)throw new Error('ANESVET recovery-controller.js failed to load');
 RECOVERY_CONTROLLER.bind();
+BOOT?.mark?.('recovery-bound');
 function seedRecoveryVitalsFromCurrent(){return RECOVERY_CONTROLLER.seedVitalsFromCurrent()}
 function enterRecoveryAfterExtubation(){return RECOVERY_CONTROLLER.enterAfterExtubation()}
 function emergencyReturnToOr(){return RECOVERY_CONTROLLER.emergencyReturnToOr()}
@@ -3779,6 +3917,7 @@ function freshState(){
   };
 }
 function resetCurrent(){
+  if(!sessionActive()||!SESSION_CONTROLLER.verifyOwnership()||!CASE_FRESHNESS.verify()){toast('Case changed elsewhere — reload latest case before starting a new case');return}
   // Set this BEFORE navigation. Otherwise pagehide/visibilitychange can autosave
   // the old on-screen fields and resurrect the case we just cleared.
   resetInProgress=true;criticalAlertLatch={map:false,spo2:false};
@@ -3788,6 +3927,7 @@ function resetCurrent(){
   state=freshState();
   clearSafetyCheckpoint();
   localStorage.setItem(CURRENT_KEY,JSON.stringify(state));
+  CASE_FRESHNESS.committed(localStorage.getItem(CURRENT_KEY));
   idbPutMeta('current',state);
   localStorage.setItem(TAB_KEY,'patient');
   releaseScreenWakeLock(true);
@@ -3849,12 +3989,14 @@ async function prepareForVersionUpdate(){
   return {ok:true,active:true,resumeTab:preferredTab};
 }
 window.addEventListener('beforeunload',e=>{
-  if(resetInProgress)return;
+  if(resetInProgress||freshnessReloadInProgress)return;
   if(versionUpdateReloadInProgress){if(sessionActive())flushPendingSave('version-update-unload');return;}
   if(sessionActive()&&state.timer.running){flushPendingSave('beforeunload');e.preventDefault();e.returnValue=''}
 });
+window.addEventListener('storage',e=>{if(e.key===CURRENT_KEY&&CASE_FRESHNESS.isEstablished())CASE_FRESHNESS.verify()});
+$('caseFreshnessReloadBtn')?.addEventListener('click',()=>{if(!CASE_FRESHNESS.isBlocked()||CASE_FRESHNESS.reason()==='storage-unavailable')return;freshnessReloadInProgress=true;cancelPendingPersistence();restartAtAppRoot()});
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden'){if(!resetInProgress&&sessionActive())flushPendingSave('visibility-hidden')}else{if(sessionActive())writeSessionLock();if(sessionActive()&&(state.timer.running||state.casePhase==='recovery')&&autoWakeEnabled())requestScreenWakeLock(true)}});
-window.addEventListener('pagehide',e=>{if(!resetInProgress&&sessionActive())flushPendingSave(versionUpdateReloadInProgress?'version-update-pagehide':'pagehide');if(!e.persisted)releaseSessionLock()});
+window.addEventListener('pagehide',e=>{if(!resetInProgress&&!freshnessReloadInProgress&&sessionActive())flushPendingSave(versionUpdateReloadInProgress?'version-update-pagehide':'pagehide');if(!e.persisted)releaseSessionLock()});
 window.addEventListener('online',renderConnectivityState);window.addEventListener('offline',renderConnectivityState);
 renderConnectivityState();startActiveCheckpoint();
 const PWA_CONTROLLER=window.ANESVET_PWA_CONTROLLER?.create?.({
@@ -3866,13 +4008,14 @@ const PWA_CONTROLLER=window.ANESVET_PWA_CONTROLLER?.create?.({
 });
 if(!PWA_CONTROLLER)throw new Error('ANESVET pwa-controller.js failed to load');
 PWA_CONTROLLER.bind();
+BOOT?.mark?.('pwa-bound');
 
 // V15.2.0 OR LIVE phase confirmation / undo / intraoperative vitals priority on top of V15.1.0 navigation focus.
 const WF=globalThis.AnesvetWorkflow;
 const ALERT_KEYS={map:'hypotension',spo2:'hypoxemia',etco2:'ventilation',temp:'hypothermia'};
 let alertProtocolEditScope='hospital',pendingProblem=null,orQuickOptions=[],orQuickBasis=null,orQuickContext=null;
 const alertObservationRevision={};
-function clinicalWriteAllowed(){if(SECURITY?.enabled?.()&&SECURITY?.locked?.()){toast('SECURITY LOCKED — unlock with staff PIN before editing');return false}if(SECURITY?.enabled?.()&&!SECURITY?.can?.('clinical-write')){toast('Current staff role cannot document clinical changes');return false}if(!sessionActive()||state.caseLocked){toast(state.caseLocked?'LOCKED FINAL — clinical changes are disabled':'VIEW ONLY — take control before editing');return false}return true}
+function clinicalWriteAllowed(){if(restoreJournalNeedsReview()){toast('Interrupted Restore: review data before editing');return false}if(!CASE_FRESHNESS.verify()){toast('Saved case changed elsewhere — reload latest case before editing');return false}if(SECURITY?.enabled?.()&&SECURITY?.locked?.()){toast('SECURITY LOCKED — unlock with staff PIN before editing');return false}if(SECURITY?.enabled?.()&&!SECURITY?.can?.('clinical-write')){toast('Current staff role cannot document clinical changes');return false}if(!sessionActive()||!SESSION_CONTROLLER.verifyOwnership()||state.caseLocked){toast(state.caseLocked?'LOCKED FINAL — clinical changes are disabled':'VIEW ONLY — take control before editing');return false}return true}
 function activeAlertProtocol(){return WF.effectiveAlertProtocol(state,currentSettingsObject().alertProtocol)}
 function alertProtocolSource(){return state.alertProtocolOverride?'CASE OVERRIDE':state.protocolSnapshot?.alertProtocol?'FROZEN HOSPITAL':state.caseStartedAt?'LEGACY V14.6.4':'HOSPITAL DEFAULT'}
 function thresholdSummary(key,p=activeAlertProtocol()){
@@ -4090,12 +4233,19 @@ $('clearCaseAlertOverrideBtn')?.addEventListener('click',()=>saveAlertProtocolEd
 $('saveProblemActionBtn')?.addEventListener('click',saveProblemAction);
 // Medication workspace event bindings are owned by medication-workspace-controller.js
 
-$$('[data-close-dialog]').forEach(b=>b.addEventListener('click',()=>$(b.dataset.closeDialog)?.close()));
+// R08: Medication uses its controller-owned close path to clear transient drug
+// selection/batch context. Generic dialogs use the guarded close helper.
+$$('[data-close-dialog]').forEach(b=>b.addEventListener('click',()=>{
+  const id=b.dataset.closeDialog;
+  if(id==='orQuickDrugDialog')closeOrQuickDrugWorkspace();
+  else closeDialogSafe(id);
+}));
 for(const id of ['orProblemPanel','recoveryProblemPanel'])$(id)?.addEventListener('click',e=>{const b=e.target.closest('[data-problem-action]');if(b)openProblemAction(b.dataset.kind,b.dataset.id,b.dataset.problemAction)});
 for(const id of ['map','spo2','etco2','temp','orMap','orSpo2','orEtco2','orTemp'])$(id)?.addEventListener('blur',()=>setTimeout(()=>{maybeShowCriticalClinicalAlert();save()},0));
 $('orStickyRecordBtn')?.addEventListener('click',()=>$('orRecordNowBtn')?.click());
 $('dismissSafetyRecoveryBtn')?.addEventListener('click',()=>{startupRecoveryNotice=null;renderStartupRecoveryNotice()});
 
+BOOT?.mark?.('public-api-publishing');
 window.AnesvetApp=Object.freeze({
   getState:()=>state,
   save:(options)=>save(options),
@@ -4124,6 +4274,7 @@ window.AnesvetApp=Object.freeze({
   caseLifecycle:Object.freeze({hasActive:()=>hasActiveCaseData(),isFinalSealed:(caseObj)=>finalCaseIsSealed(caseObj),reloadUnsafe:(caseObj)=>versionReloadUnsafe(caseObj)})
 });
 
+BOOT?.mark?.('public-api-published');
 try{
   SECURITY?.init?.({
     toast:(message)=>toast(message),
@@ -4140,10 +4291,19 @@ try{
       return{actorId:identity?.id||'',sessionId:session?.sessionId||'',deviceId:device?.deviceId||''};
     }
   });
+  BOOT?.mark?.('sync-hydrate-start');
   await SYNC_FOUNDATION?.hydrateMirror?.();
+  BOOT?.mark?.('sync-hydrate-complete');
 }catch(e){recordRuntimeError(e?.message||String(e),'sync-foundation-init',0,0,e?.stack||'')}
 initSessionCoordination();
+BOOT?.mark?.('session-reconciled',SESSION_CONTROLLER.getMode?.()||'');
 load();
+CASE_FRESHNESS.establish();
+// Fail closed even if no valid safety checkpoint / legacy case exists.
+if(startupPrimaryUnreadable)CASE_FRESHNESS.block('startup-primary-unreadable');
+if(startupRecoveredOnlyInMemory)CASE_FRESHNESS.block('startup-recovery-unpersisted');
+if(restoreJournalNeedsReview())CASE_FRESHNESS.block('interrupted-restore-requires-review');
+BOOT?.mark?.('current-case-loaded');
 for(const key of WF.metrics)alertObservationRevision[key]=Math.max(0,...(state.alertEpisodes||[]).filter(a=>alertMetricForEpisode(a)===key).map(a=>a.observationRevision||0));
 const restoredFromMirror=await reconcileCurrentFromMirror();if(restoredFromMirror){restartAtAppRoot();return}
 migrateLegacyAgeUi();
@@ -4152,7 +4312,7 @@ syncPatientProcedureToCase();
 breedAliases=loadBreedAliases();renderBreedAliasSettings();
 loadSettings();applyHospitalDefaultsToFreshCaseUi();hospitalDrugLibrary=loadDrugLibraryData();renderDrugLibrarySettings();renderPhaseDrugSelectors();initHospitalProtocolGovernance();setTimeout(()=>{renderProtocolGovernance();renderProtocolDoseReview();PROTOCOL_GOVERNANCE?.render?.()},0);
 syncAsaCards();updatePatientSaveStatus();
-let storedTab=localStorage.getItem(TAB_KEY)||'casesummary';
+let storedTab=safeStartupPreference(TAB_KEY)||'casesummary';
 // dashboard remains a supported legacy route under Advanced.
 let safeUpdateResume=null;try{safeUpdateResume=JSON.parse(localStorage.getItem(SAFE_UPDATE_KEY)||'null')}catch(_){ }
 if(safeUpdateResume?.caseId===state.caseId&&safeUpdateResume?.resumeTab)storedTab=safeUpdateResume.resumeTab;
@@ -4162,6 +4322,13 @@ const activeCaseTarget=ACTIVE_CASE_RESCUE.targetForState(state);
 const initialTab=activeCaseTarget||(state.patientSaved?storedTab:'patient');
 const resumeClinicalTab=['orlive','recovery','endcase'].includes(initialTab)&&!!activeCaseTarget;
 setTab(initialTab,{force:resumeClinicalTab});
+// A valid progressed case must still display OR LIVE/Recovery after a PWA reload;
+// the fallback runs only if normal navigation failed to activate the expected page.
+if(resumeClinicalTab&&!$(initialTab)?.classList.contains('active')){
+  BOOT?.mark?.('startup-active-route-repair',initialTab);
+  forceActivateClinicalUI(initialTab);
+}
+BOOT?.mark?.('initial-tab-rendered',initialTab);
 if(safeUpdateResume?.caseId===state.caseId){try{localStorage.removeItem(SAFE_UPDATE_KEY)}catch(_){ }}
 if(sessionActive())writeSessionLock();renderPatientRiskBanner();renderPreopRisk();renderSessionMode();renderAirwayPanel();renderFavoriteDrugButtons();renderQuickPresetSettings();renderQuickPresetSummary();renderOrFluidPanel();renderCaseSummary();renderCasePhase();renderOrPhaseTracker();renderRecoveryRecords();renderWorkflowLocks();renderAlertFeedbackState();renderProtocolGovernance();renderStorageStatus();renderFinalSignoff();renderBackupHealth();renderLinkedPatient();renderPatientMaster();
 updateDashboard();renderDoseReferenceChips();renderStartupRecoveryNotice();renderPreop();renderPreopExam();renderRecords();renderCorrections();renderEvents();renderComplications();renderDrugAdministrationAudit();renderTrends();renderProcedureTimeline();renderRecovery();renderRecoveryState();renderRecoveryScores();renderArchives();updateDue();renderTimerState();updateDoseSpotlights();renderEndCase();renderOrLive();renderSaveState();
@@ -4185,4 +4352,8 @@ try{
   });
 }catch(e){recordRuntimeError(e?.message||String(e),'validation-center-init',0,0,e?.stack||'')}
 if(state.timer.running && state.timer.startedEpoch && sessionActive()) startTimerLoop();
-})();
+BOOT?.ready?.('startup-complete');
+})().catch(err=>{
+  try{window.ANESVET_BOOT_DIAGNOSTIC?.fail?.(err,{stage:'app-unhandled',source:'app.js',reason:'app startup failed'})}catch(_){ }
+  try{console.error('ANESVET boot failed',err)}catch(_){ }
+});

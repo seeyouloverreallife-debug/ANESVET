@@ -153,8 +153,19 @@ function create(ctx={}){
   }
   function bind(){
     $('viewPatientHistoryBtn')?.addEventListener('click',openPatientHistoryInArchive);$('patientMasterSearch')?.addEventListener('input',renderPatientMaster);$('showRetiredPatients')?.addEventListener('change',renderPatientMaster);$('newPatientMasterBtn')?.addEventListener('click',clearPatientRegistration);
-    $('unlinkPatientBtn')?.addEventListener('click',()=>{setPatientField('patientMasterId','');state.patientMasterId='';renderLinkedPatient();toast('Unlinked from Patient Master')});
-    $$('.asa-card').forEach(card=>card.addEventListener('click',()=>{$('asa').value=card.dataset.asa;state.patientSaved=false;ctx.loadSettings?.();syncAsaCards();updatePatientSaveStatus();ctx.updateDashboard?.()}));
+    // R09: unlink changes the patient identity relationship. Do not allow this
+    // silently during an active/recorded case, or leave old SAVED readiness intact.
+    $('unlinkPatientBtn')?.addEventListener('click',()=>{
+      if(state.caseStartedAt||state.timer?.running||(state.timer?.elapsedMs||0)>0||(state.records||[]).length){
+        toast('Current case started or recorded — cannot unlink Patient Master');return;
+      }
+      setPatientField('patientMasterId','');state.patientMasterId='';
+      state.patientSaved=false;ctx.invalidatePreOrOverride?.();
+      updatePatientSaveStatus();renderLinkedPatient();ctx.updateDashboard?.({persist:false});
+      toast('Unlinked from Patient Master — Save Patient & Case Setup again');
+    });
+    // R04: ASA selection must not reapply all hospital settings before its UI state is synchronized.
+    $$('.asa-card').forEach(card=>card.addEventListener('click',()=>{const input=$('asa');if(!input)return;input.value=card.dataset.asa;state.patientSaved=false;syncAsaCards();updatePatientSaveStatus();ctx.updateDashboard?.()}));
     $('editRiskBtn')?.addEventListener('click',()=>ctx.setTab?.('patient'));$('reviewAnestheticRiskBtn')?.addEventListener('click',()=>ctx.setTab?.('preop'));
   }
 

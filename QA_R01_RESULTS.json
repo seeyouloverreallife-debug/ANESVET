@@ -1,0 +1,54 @@
+{
+  "checkpoint": "R01",
+  "runtime_version": "17.2.5",
+  "runtime_source_changed": false,
+  "original_file_count": 506,
+  "source_parity": 506,
+  "tests": [
+    {
+      "name": "ASA",
+      "passed": 3,
+      "total": 3
+    },
+    {
+      "name": "Boot Runtime",
+      "passed": 13,
+      "total": 13
+    },
+    {
+      "name": "Interaction Gate",
+      "passed": 6,
+      "total": 6
+    },
+    {
+      "name": "Active Case Rescue",
+      "passed": 7,
+      "total": 7
+    },
+    {
+      "name": "Mobile Rescue",
+      "passed": 3,
+      "total": 3
+    },
+    {
+      "name": "Sync Foundation",
+      "passed": 17,
+      "total": 17
+    },
+    {
+      "name": "Sync Safety",
+      "passed": 19,
+      "total": 19
+    },
+    {
+      "name": "JS syntax",
+      "passed": 63,
+      "total": 63
+    }
+  ],
+  "test_count": 131,
+  "passed": 131,
+  "real_device_verified": false,
+  "incident_resolved": false,
+  "notes": "Browser automation blocked by policy: ERR_BLOCKED_BY_ADMINISTRATOR; needs real Android/iPad evidence."
+}

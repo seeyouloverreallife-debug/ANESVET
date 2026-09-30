@@ -1,0 +1,98 @@
+{
+  "version": "17.2.5",
+  "baseline": "17.2.4",
+  "total": 18,
+  "identical": 18,
+  "rows": [
+    {
+      "file": "case-runtime.js",
+      "same": true,
+      "sha256": "e29121881fbb9da20ad28854847e6fba40222126a70a42d37564b2147677cc97"
+    },
+    {
+      "file": "clinical-workflow.js",
+      "same": true,
+      "sha256": "6ac11b5973d23fd50eee3cd53d8de10a0506fc158b326d004691072c2ae04656"
+    },
+    {
+      "file": "drug-dose-reference.js",
+      "same": true,
+      "sha256": "04dce01b30b8e751eb4c46d516d533987ac18dc3c2a2ad5c504437c4e75879e4"
+    },
+    {
+      "file": "protocol-review.js",
+      "same": true,
+      "sha256": "e7355c90da71171fb414b402406baa9786a469ecca3223068ff7174a263b0826"
+    },
+    {
+      "file": "medication-reconciliation.js",
+      "same": true,
+      "sha256": "23f3abd9d851561751892f5d30c7fa9d68d2626b1221b06457a2145db58d5043"
+    },
+    {
+      "file": "finalization.js",
+      "same": true,
+      "sha256": "6b82ceff7849f68763f99f95f2895226ec98b7574f7c9740d9e82c71e82c89dd"
+    },
+    {
+      "file": "final-archive-assurance.js",
+      "same": true,
+      "sha256": "2045ab497ba39e6347a35a9690d7fd41c0cbb69b7ec9163f5e4214f604ba6f9d"
+    },
+    {
+      "file": "documentation-guardian.js",
+      "same": true,
+      "sha256": "0f43773a8e677aa19a33296d95db1e559a47dc1400c2b3be36a9b77bd79df9ca"
+    },
+    {
+      "file": "problem-response-review.js",
+      "same": true,
+      "sha256": "0b7ca9d1590a2d00c19861213870451f460790076bc60aade9ca51f8fa77fac1"
+    },
+    {
+      "file": "recovery-domain.js",
+      "same": true,
+      "sha256": "7d74d9d1f87ecc7eb702b5eecc11f943c2558a3b36bf69963d206a459e99145f"
+    },
+    {
+      "file": "or-domain.js",
+      "same": true,
+      "sha256": "8903e70d76988067b420fe2c6d7f80cf1be29d533257df9eb120ad52d7e720d8"
+    },
+    {
+      "file": "or-record-orchestration.js",
+      "same": true,
+      "sha256": "996f2aca18ea9f509f769be8a16a437f42fa0c4e64d89c9d84da829b989c39da"
+    },
+    {
+      "file": "recovery-orchestration.js",
+      "same": true,
+      "sha256": "e9d17dd79822cf9e226296c83b053ae1e924e963b85c8de409c585008dacb1d9"
+    },
+    {
+      "file": "or-speed-hardening.js",
+      "same": true,
+      "sha256": "cd1b50618403477199ced54b4307c9ffc10475b59df9cefe8f6cf0a6f1f5be68"
+    },
+    {
+      "file": "clinical-validation.js",
+      "same": true,
+      "sha256": "a718f845a41fd589b7abe0776961016843465caafa75cd1df42b4d5a8e35f7b8"
+    },
+    {
+      "file": "patient-domain.js",
+      "same": true,
+      "sha256": "7453cd7334d00098f2d72c7c6f5e62aeae5c055516fd690f5566cfcb53c9147b"
+    },
+    {
+      "file": "patient-master-orchestration.js",
+      "same": true,
+      "sha256": "b656e20bde65d934af50d95c5d8bdf1f50a23cb2b69412cd404d77d9a7350c1e"
+    },
+    {
+      "file": "recovery-2.css",
+      "same": true,
+      "sha256": "cb77a2691780f769aa80d731338921b616d9b5a56a7e6fa02ccca9c492ea8254"
+    }
+  ]
+}

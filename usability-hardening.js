@@ -128,6 +128,8 @@
   }
 
   let lastResumePointerAt=0;
+  let shortcutPress=null;
+  let rejectShortcutPointerClickUntil=0;
   function resumeActiveCase(source='shortcut'){
     const a=api();if(!a)return false;
     if(typeof a.resumeActiveCase==='function')return a.resumeActiveCase({source});
@@ -136,12 +138,65 @@
   function ensureReturnShortcut(){
     if($('uxReturnCase'))return $('uxReturnCase');
     const btn=document.createElement('button');btn.id='uxReturnCase';btn.type='button';btn.className='ux-return-case session-safe';btn.dataset.resumeActiveCase='1';btn.hidden=true;
-    btn.addEventListener('click',e=>{if(Date.now()-lastResumePointerAt<650)return;e.preventDefault();e.stopPropagation();resumeActiveCase('shortcut-click')});
+    btn.addEventListener('click',e=>{if(!returnShortcutAvailable()||Date.now()-lastResumePointerAt<650||(e.detail>0&&Date.now()<rejectShortcutPointerClickUntil))return;e.preventDefault();e.stopPropagation();resumeActiveCase('shortcut-click')});
     document.body.appendChild(btn);return btn;
+  }
+  // R06: never allow the global pointer fallback to reach through a real modal,
+  // a security lock, a view-only session, or an inert/hidden shortcut.
+  function returnShortcutAvailable(){
+    const btn=$('uxReturnCase');
+    if(!btn||btn.hidden||btn.inert||btn.closest?.('[inert]'))return false;
+    if(document.body?.classList?.contains('security-locked')||document.body?.classList?.contains('session-readonly'))return false;
+    if($('securityLockOverlay')?.hidden===false||document.querySelector('dialog[open]'))return false;
+    return true;
   }
   function pointerInsideReturnShortcut(e){
     const btn=$('uxReturnCase');if(!btn||btn.hidden)return false;let r;try{r=btn.getBoundingClientRect()}catch(_){return false}
     return e.clientX>=r.left&&e.clientX<=r.right&&e.clientY>=r.top&&e.clientY<=r.bottom;
+  }
+  function returnShortcutPointerEligible(e){
+    if(!returnShortcutAvailable()||e.isPrimary===false||('button' in e&&e.button!==0))return false;
+    if(!pointerInsideReturnShortcut(e))return false;
+    const btn=$('uxReturnCase');
+    // Coordinates alone are insufficient: an overlay or native dialog can
+    // receive the pointer at the exact same screen position as the shortcut.
+    if(!(e.target===btn||btn.contains(e.target)))return false;
+    const topmost=document.elementFromPoint?.(e.clientX,e.clientY);
+    return !!topmost&&(topmost===btn||btn.contains(topmost));
+  }
+  // R07: pointerup coordinates alone can accept a finger that started on an
+  // unrelated control and ended over this floating shortcut (e.g. a swipe).
+  // Record a genuine primary press on the *visible* shortcut before accepting
+  // the document-level pointerup fallback. Native keyboard clicks still work.
+  function rememberShortcutPress(e){
+    shortcutPress=null;
+    if(!returnShortcutAvailable()||e.isPrimary===false||('button' in e&&e.button!==0))return;
+    if(!pointerInsideReturnShortcut(e))return;
+    const btn=$('uxReturnCase'),hit=document.elementFromPoint?.(e.clientX,e.clientY);
+    if(!(e.target===btn||btn.contains(e.target)))return;
+    if(!hit||!(hit===btn||btn.contains(hit)))return;
+    shortcutPress={pointerId:e.pointerId,x:e.clientX,y:e.clientY,startedAt:Date.now()};
+  }
+  function returnShortcutTapEligible(e){
+    const start=shortcutPress;
+    shortcutPress=null;
+    if(!start||start.pointerId!==e.pointerId)return false;
+    if(Date.now()-start.startedAt>1500)return false;
+    // A scroll/drag is not a tap, even if it ends inside the same button.
+    if(Math.hypot(e.clientX-start.x,e.clientY-start.y)>14)return false;
+    return returnShortcutPointerEligible(e);
+  }
+  function handleShortcutPointerEnd(e){
+    if(!returnShortcutTapEligible(e)){
+      // Browser click synthesis can follow a rejected press; never turn a drag
+      // into a resume. Keyboard-triggered click (detail=0) remains unaffected.
+      rejectShortcutPointerClickUntil=Date.now()+700;
+      return;
+    }
+    lastResumePointerAt=Date.now();
+    if(e.cancelable)e.preventDefault();
+    e.stopImmediatePropagation();
+    resumeActiveCase('shortcut-pointer-fallback');
   }
   function updateReturnShortcut(){
     const btn=ensureReturnShortcut(),s=api()?.getState?.()||{},page=activePage();
@@ -166,9 +221,11 @@
     qa('.tabpage').forEach(el=>new MutationObserver(schedule).observe(el,{attributes:true,attributeFilter:['class']}));
     window.addEventListener('online',schedule);window.addEventListener('offline',schedule);window.addEventListener('resize',schedule,{passive:true});
     document.addEventListener('click',e=>{if(e.target.closest?.('.workflow-tabs,.mobile-workflow-dialog,.mobile-quick-bar,#preOrReadinessDialog,#endcase'))schedule();},true);
-    // Android/PWA rescue: native top-layer/backdrop bugs can retarget the tap away from the visible fixed button.
-    // Capture by coordinates so the explicit Resume button remains usable without making the whole page bypass safety gates.
-    document.addEventListener('pointerup',e=>{if(!pointerInsideReturnShortcut(e))return;lastResumePointerAt=Date.now();e.preventDefault();e.stopImmediatePropagation();resumeActiveCase('shortcut-pointer-fallback');},true);
+    // Android/PWA rescue: allow pointer fallback only when the real shortcut is the topmost tap target.
+    // Never capture another control by coordinates or bypass the lock, modal, or view-only safeguards.
+    document.addEventListener('pointerdown',rememberShortcutPress,true);
+    document.addEventListener('pointercancel',()=>{shortcutPress=null;rejectShortcutPointerClickUntil=Date.now()+700;},true);
+    document.addEventListener('pointerup',handleShortcutPointerEnd,true);
     refresh();
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();

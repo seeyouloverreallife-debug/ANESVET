@@ -1,0 +1,31 @@
+{
+  "checkpoint": "R13",
+  "from": "17.2.16",
+  "to": "17.2.17",
+  "parent_zip": "ANESVET_V17_2_16_CHECKPOINT_R12_WAKE_SESSION_OWNERSHIP.zip",
+  "previous_file_count": 608,
+  "unchanged_existing_files": 604,
+  "changed_existing_files": [
+    "app.js",
+    "index.html",
+    "manifest.webmanifest",
+    "service-worker.js"
+  ],
+  "removed_existing_files": [],
+  "new_files_pre_documentation": [
+    "QA_BOOT_RUNTIME_V17_2_17.js",
+    "QA_R13_ASA_TRACE_REGRESSION.js",
+    "QA_R13_CURRENT_CASE_FRESHNESS.js",
+    "QA_R13_NAVIGATION_REGRESSION.js",
+    "QA_R13_R12_WAKE_REGRESSION.js",
+    "QA_R13_RESULTS.json",
+    "RUN_R13_QA.js",
+    "active-case-freshness.js"
+  ],
+  "clinical_controllers_unchanged": true,
+  "notes": [
+    "Original prior QA reports retained byte-for-byte",
+    "Archive/medication/OR clinical module source not modified",
+    "R13 guard compares the exact last loaded/committed current-case serialized payload with the present localStorage copy."
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "base": "V17.2.19 R15",
+  "target": "V17.2.20 R16",
+  "original_file_count": 647,
+  "unchanged": 642,
+  "modified": [
+    "app.js",
+    "finalization-archive-controller.js",
+    "index.html",
+    "manifest.webmanifest",
+    "service-worker.js"
+  ],
+  "added": [
+    "00_START_HERE_R16_TH.md",
+    "QA_BOOT_RUNTIME_V17_2_20.js",
+    "QA_R16_ASA_TRACE_REGRESSION.js",
+    "QA_R16_NAVIGATION_REGRESSION.js",
+    "QA_R16_RESULTS.json",
+    "QA_R16_WORKING_COPY_COMMIT.js",
+    "R16_CHANGELOG.md",
+    "R16_DEVICE_TEST_STEPS_TH.md",
+    "RUN_R16_QA.js"
+  ],
+  "removed": []
+}

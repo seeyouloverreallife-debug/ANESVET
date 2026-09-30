@@ -1,4 +1,4 @@
-/* ANESVET V17.2.4 — PWA Controller
+/* ANESVET V17.2.5 — PWA Controller
    Safe update lifecycle with active-case checkpointing. */
 (function(root){
 'use strict';

@@ -1,8 +1,8 @@
 {
-  "name": "ANESVET V17.2.4 — Global Interaction Gate Repair",
-  "short_name": "ANESVET V17.2.4",
+  "name": "ANESVET V17.2.23 — R18 Restore Session Guard",
+  "short_name": "ANESVET V17.2.23",
   "description": "Local-first veterinary anesthesia workflow with a unified case timeline, anesthesia record, recovery handoff, medication safety, clinical validation, reporting, and audit-ready record integrity",
-  "start_url": "./?v=17.2.4",
+  "start_url": "./?v=17.2.23",
   "scope": "./",
   "display": "standalone",
   "background_color": "#f5f7f7",

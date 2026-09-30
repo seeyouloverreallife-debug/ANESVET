@@ -1,0 +1,27 @@
+PASS QA_R07_SHORTCUT_TAP_ORIGIN.js
+PASS QA_R06_TOUCH_OVERLAY_GUARD.js
+PASS QA_R06_NAVIGATION.js
+PASS QA_R06_ASA_CLICK_TRACE.js
+PASS QA_BOOT_RUNTIME_V17_2_11.js
+PASS QA_R04_PATIENT_ASA_INTERACTION.js
+PASS QA_R01_PATIENT_ASA_BINDING.js
+PASS QA_INTERACTION_GATE_V17_2_4.js
+PASS QA_ACTIVE_CASE_RESCUE_V17_2_3.js
+PASS QA_MOBILE_RESCUE_V17_2_2.js
+PASS QA_SYNC_FOUNDATION_V17_1_0.js
+PASS QA_SYNC_SAFETY_V17_2_0.js
+{
+  "version": "17.2.11",
+  "checkpoint": "R07",
+  "suitePassed": 12,
+  "suiteTotal": 12,
+  "jsSyntaxPassed": 83,
+  "htmlIds": 1326,
+  "duplicatedIds": 0,
+  "cachedAssets": 90,
+  "missingAssets": 0,
+  "versionConsistency": true,
+  "errors": 0
+}
+
+STDERR:

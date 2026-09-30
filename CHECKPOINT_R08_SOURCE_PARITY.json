@@ -1,0 +1,38 @@
+{
+  "checkpoint": "R08",
+  "version": "17.2.12",
+  "basedOn": "ANESVET V17.2.11 R07 immutable zip",
+  "runtimeChanged": [
+    "app.js",
+    "index.html",
+    "manifest.webmanifest",
+    "medication-workspace-controller.js",
+    "service-worker.js"
+  ],
+  "historicalQAFixturesUpdated": [
+    "QA_R06_ASA_CLICK_TRACE.js",
+    "QA_R06_NAVIGATION.js"
+  ],
+  "unchangedOldFiles": 554,
+  "totalPreviousFiles": 561,
+  "modifiedExistingFiles": [
+    "QA_R06_ASA_CLICK_TRACE.js",
+    "QA_R06_NAVIGATION.js",
+    "app.js",
+    "index.html",
+    "manifest.webmanifest",
+    "medication-workspace-controller.js",
+    "service-worker.js"
+  ],
+  "addedFilesBeforeReport": [
+    "QA_BOOT_RUNTIME_V17_2_12.js",
+    "QA_R08_MODAL_NAVIGATION.js",
+    "QA_R08_RESULTS.json",
+    "RUN_R08_QA.js"
+  ],
+  "deletedFiles": [],
+  "storageKeyChange": false,
+  "clinicalSchemaChange": false,
+  "browserE2E": "not run; prior R07 browser attempt blocked",
+  "androidIpad": "not tested on user device"
+}

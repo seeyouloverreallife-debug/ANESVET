@@ -162,7 +162,32 @@ ${name}`))return;
   }
   async function verifyArchivedIntegrity(i,button=null){const c=getArchive()[i];if(!c||!c.finalChecksum){toast('No final checksum available');return}const now=await ctx.computeCaseChecksum?.(c),ok=now===c.finalChecksum;if(button){button.textContent=ok?'✓ Integrity OK':'⚠ Integrity mismatch';button.classList.toggle('danger-outline',!ok)}toast(ok?'Record integrity verified':'⚠ Record integrity mismatch — review record')}
   async function voidArchive(i){const c=getArchive()[i];if(!c||!c.caseLocked||c.voidedAt)return;const reason=prompt('Reason for VOID\nOriginal record จะยังคงอยู่ใน archive');if(!reason?.trim()){toast('Void cancelled');return}const by=prompt('Voided by',$('anesthetist')?.value.trim()||$('surgeon')?.value.trim()||'');if(!by?.trim()){toast('Void cancelled');return}const code=prompt('พิมพ์ VOID เพื่อยืนยัน');if(code!=='VOID'){toast('Void cancelled');return}c.voidedAt=Date.now();c.voidedBy=by.trim();c.voidReason=reason.trim();c.auditTrail=c.auditTrail||[];c.auditTrail.push({id:root.crypto?.randomUUID?root.crypto.randomUUID():String(Date.now()),epoch:Date.now(),clock:formatClock(),elapsedMs:c.timer?.elapsedMs||0,action:'RECORD_VOIDED',detail:c.voidReason,actor:c.voidedBy});try{if(getBackend()==='IndexedDB')await ctx.idbPutCase?.(c);else persistFallback();renderArchives();toast('Final record marked VOID — original retained')}catch(e){toast('Void failed')}}
-  function loadArchive(i){const c=getArchive()[i];if(!c)return;if(c.caseLocked){toast('Locked final record แก้ตรง ๆ ไม่ได้ — ใช้ Add amendment');return}if(!confirm(`Load working copy "${c.patientName||'Unnamed'}" แทน current case?`))return;const next=JSON.parse(JSON.stringify(c));next.timer={running:false,startedEpoch:null,elapsedMs:next.timer?.elapsedMs||0};ctx.replaceState?.(next);ctx.persistCurrentState?.(next);ctx.queueCurrentMirror?.();ctx.restartAtAppRoot?.()}
+  function loadArchive(i){
+    const c=getArchive()[i];if(!c)return false;
+    if(c.caseLocked){toast('Locked final record แก้ตรง ๆ ไม่ได้ — ใช้ Add amendment');return false}
+    if(!confirm(`Load working copy "${c.patientName||'Unnamed'}" แทน current case?`))return false;
+    // R16: never swap the visible case before the session/freshness-guarded,
+    // read-back-verified current-case write succeeds. The persistence bridge
+    // queues the matching IndexedDB mirror only after a successful write.
+    try{
+      if(typeof ctx.persistCurrentState!=='function'||typeof ctx.replaceState!=='function'){
+        toast('Cannot load working copy — current-case storage is unavailable');return false;
+      }
+      const next=JSON.parse(JSON.stringify(c));
+      next.timer={running:false,startedEpoch:null,elapsedMs:next.timer?.elapsedMs||0};
+      if(ctx.persistCurrentState(next)!==true){
+        toast('Working copy NOT loaded — save was blocked or could not be verified. Check VIEW ONLY / storage and retry.');
+        return false;
+      }
+      ctx.replaceState(next);
+      ctx.restartAtAppRoot?.();
+      return true;
+    }catch(e){
+      console.error('Working copy load failed',e);
+      toast('Working copy load failed — check the latest saved case before retrying');
+      return false;
+    }
+  }
   async function deleteArchive(i){const c=getArchive()[i];if(!c)return;if(c.caseLocked){toast('Final record ลบไม่ได้ — ใช้ Void record');return}if(!confirm(`Delete working copy "${c.patientName||'Unnamed'}"?`))return;try{await ctx.initArchiveDb?.();if(getBackend()==='IndexedDB')await ctx.idbDeleteCase?.(c.caseId);setCache(getCache().filter(x=>x.caseId!==c.caseId));if(getBackend()!=='IndexedDB')persistFallback();renderArchives();toast('Working copy deleted')}catch(e){toast('Delete failed')}}
 
   function bind(){

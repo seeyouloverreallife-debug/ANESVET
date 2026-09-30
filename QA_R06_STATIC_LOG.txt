@@ -1,0 +1,7 @@
+html_ids 1327 duplicates 0
+html_assets 84 sw_assets 90 missing 0
+base_files 542 unchanged 536 modified 6 added 9
+modified: app.js, index.html, manifest.webmanifest, service-worker.js, usability-hardening.css, usability-hardening.js
+added: BUGFIX_CHECKPOINT_R06_TH.md, DEVICE_R06_TEST_STEPS_TH.md, QA_BOOT_RUNTIME_V17_2_10.js, QA_R06_ASA_CLICK_TRACE.js, QA_R06_NAVIGATION.js, QA_R06_RUN_LOG.txt, QA_R06_STATIC_LOG.txt, QA_R06_TOUCH_OVERLAY_GUARD.js, RUN_R06_QA.js
+manifest ./?v=17.2.10
+PASS R06 static and base-preservation validation

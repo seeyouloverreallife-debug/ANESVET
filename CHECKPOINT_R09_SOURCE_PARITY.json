@@ -1,0 +1,37 @@
+{
+  "version": "17.2.13",
+  "checkpoint": "R09",
+  "basedOn": "ANESVET_V17_2_12_CHECKPOINT_R08_MODAL_NAVIGATION.zip",
+  "originalFileCount": 568,
+  "unchangedOldFiles": 561,
+  "modifiedExistingFiles": [
+    "QA_R06_ASA_CLICK_TRACE.js",
+    "QA_R06_NAVIGATION.js",
+    "app.js",
+    "index.html",
+    "manifest.webmanifest",
+    "patient-master-controller.js",
+    "service-worker.js"
+  ],
+  "newFilesBeforeReleaseDocs": [
+    "QA_BOOT_RUNTIME_V17_2_13.js",
+    "QA_R09_PATIENT_SETUP_DIRTY.js",
+    "QA_R09_RESULTS.json",
+    "RUN_R09_QA.js"
+  ],
+  "deletedFiles": [],
+  "clinicalRuntimeChanged": [
+    "app.js",
+    "patient-master-controller.js"
+  ],
+  "versionCacheChanged": [
+    "index.html",
+    "service-worker.js",
+    "manifest.webmanifest"
+  ],
+  "medicationCalculationChanged": false,
+  "databaseSchemaChanged": false,
+  "storageKeyChange": false,
+  "browserE2E": "attempted; headless Chromium timed out without DOM output",
+  "androidIpadTesting": "not conducted"
+}

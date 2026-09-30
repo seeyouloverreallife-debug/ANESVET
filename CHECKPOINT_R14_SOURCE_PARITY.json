@@ -1,0 +1,31 @@
+{
+  "checkpoint": "R14",
+  "from": "17.2.17",
+  "to": "17.2.18",
+  "parent_zip": "ANESVET_V17_2_17_CHECKPOINT_R13_CURRENT_CASE_FRESHNESS.zip",
+  "previous_file_count": 619,
+  "unchanged_existing_files": 614,
+  "changed_existing_files": [
+    "active-case-freshness.js",
+    "app.js",
+    "index.html",
+    "manifest.webmanifest",
+    "service-worker.js"
+  ],
+  "removed_existing_files": [],
+  "new_files_before_docs": [
+    "QA_BOOT_RUNTIME_V17_2_18.js",
+    "QA_R14_ASA_TRACE_REGRESSION.js",
+    "QA_R14_NAVIGATION_REGRESSION.js",
+    "QA_R14_R11_STORAGE_REGRESSION.js",
+    "QA_R14_RESULTS.json",
+    "QA_R14_STARTUP_RECOVERY_GUARD.js",
+    "RUN_R14_QA.js"
+  ],
+  "clinical_controllers_unchanged": true,
+  "notes": [
+    "R14 guards automatic current-case startup writes and fails closed when recovered case is only in memory.",
+    "Original R13 QA reports and prior-version notes are retained.",
+    "Chromium browser E2E and real Android/iPad validation NOT completed."
+  ]
+}

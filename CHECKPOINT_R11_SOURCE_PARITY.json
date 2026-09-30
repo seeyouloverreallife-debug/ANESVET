@@ -1,0 +1,24 @@
+{
+  "base_zip": "ANESVET_V17_2_14_R10_SESSION_MODAL_GUARD_CHECKPOINT.zip",
+  "new_version": "17.2.15",
+  "checkpoint": "R11",
+  "original_file_count": 586,
+  "unchanged_original_files": 582,
+  "modified_original_files": [
+    "app.js",
+    "index.html",
+    "manifest.webmanifest",
+    "service-worker.js"
+  ],
+  "new_files": [
+    "QA_BOOT_RUNTIME_V17_2_15.js",
+    "QA_R11_ASA_TRACE_REGRESSION.js",
+    "QA_R11_NAVIGATION_REGRESSION.js",
+    "QA_R11_RESULTS.json",
+    "QA_R11_STORAGE_SAFE_STARTUP.js",
+    "RUN_R11_QA.js"
+  ],
+  "missing_original_files": [],
+  "clinical_core_modified": false,
+  "sha256_source_base": "d9f9b584dfb793504642fcac1c57b54fdc14a86fb19eb0149568180d5b7bc82a"
+}

@@ -1,0 +1,87 @@
+{
+  "version": "17.2.9",
+  "checkpoint": "R05",
+  "base": "ANESVET V17.2.8 R04",
+  "runtime_files_modified": [
+    "app.js",
+    "index.html",
+    "manifest.webmanifest",
+    "service-worker.js"
+  ],
+  "unchanged_files_from_R04": 530,
+  "existing_files_in_R04": 534,
+  "qa_suites": [
+    {
+      "suite": "QA_R05_NAVIGATION.js",
+      "status": "PASS",
+      "passed": 12,
+      "total": 12
+    },
+    {
+      "suite": "QA_R05_ASA_CLICK_TRACE.js",
+      "status": "PASS",
+      "passed": 25,
+      "total": 25
+    },
+    {
+      "suite": "QA_BOOT_RUNTIME_V17_2_9.js",
+      "status": "PASS",
+      "passed": 13,
+      "total": 13
+    },
+    {
+      "suite": "QA_R04_PATIENT_ASA_INTERACTION.js",
+      "status": "PASS",
+      "passed": 4,
+      "total": 4
+    },
+    {
+      "suite": "QA_R01_PATIENT_ASA_BINDING.js",
+      "status": "PASS",
+      "passed": 3,
+      "total": 3
+    },
+    {
+      "suite": "QA_INTERACTION_GATE_V17_2_4.js",
+      "status": "PASS",
+      "passed": null,
+      "total": null
+    },
+    {
+      "suite": "QA_ACTIVE_CASE_RESCUE_V17_2_3.js",
+      "status": "PASS",
+      "passed": 7,
+      "total": 7
+    },
+    {
+      "suite": "QA_MOBILE_RESCUE_V17_2_2.js",
+      "status": "PASS",
+      "passed": 3,
+      "total": 3
+    },
+    {
+      "suite": "QA_SYNC_FOUNDATION_V17_1_0.js",
+      "status": "PASS",
+      "passed": 17,
+      "total": 17
+    },
+    {
+      "suite": "QA_SYNC_SAFETY_V17_2_0.js",
+      "status": "PASS",
+      "passed": 19,
+      "total": 19
+    }
+  ],
+  "qa_count_explicit": 103,
+  "qa_total_explicit": 103,
+  "qa_suite_counts_not_extracted": [
+    "QA_INTERACTION_GATE_V17_2_4.js"
+  ],
+  "javascript_syntax_passed": 75,
+  "unique_html_ids": 1327,
+  "duplicate_ids": [],
+  "local_html_resources_valid": 87,
+  "cached_assets_valid": 90,
+  "browser_e2e": "NOT_TESTED: localhost blocked by administrator",
+  "physical_android_ipad": "NOT_TESTED"
+}

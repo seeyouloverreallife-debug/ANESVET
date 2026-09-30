@@ -5,10 +5,40 @@ function create({lockKey,tabKey,ttlMs=30000,heartbeatMs=5000,channelName='anesve
   const tabId=(()=>{try{let id=sessionStorage.getItem(tabKey);if(!id){id=crypto.randomUUID?crypto.randomUUID():String(Date.now()+Math.random());sessionStorage.setItem(tabKey,id)}return id}catch(e){return crypto.randomUUID?crypto.randomUUID():String(Date.now()+Math.random())}})();
   function readLock(){try{const x=JSON.parse(localStorage.getItem(lockKey)||'null');return x&&x.tabId?x:null}catch(e){return null}}
   function isFresh(lock){return !!(lock&&lock.tabId&&Number(lock.heartbeatAt)>0&&(Date.now()-Number(lock.heartbeatAt))<ttlMs)}
-  function writeLock(){if(mode!=='active')return false;const info=getCaseInfo()||{},lock={tabId,heartbeatAt:Date.now(),caseId:info.caseId||'',patientName:info.patientName||'',version:appVersion};try{localStorage.setItem(lockKey,JSON.stringify(lock))}catch(e){return false}try{channel?.postMessage({type:'HEARTBEAT',...lock})}catch(e){}return true}
+  // R12: a suspended tab may wake after another tab has become the active writer.
+  // Re-check the shared owner before EVERY lock heartbeat / clinical persistence.
+  function verifyOwnership(){
+    if(mode!=='active')return false;
+    const lock=readLock();
+    if(lock?.tabId&&lock.tabId!==tabId&&isFresh(lock)){
+      emitMode('view','Another tab took control while this screen was inactive. This tab is now view-only.',lock);
+      return false;
+    }
+    return true;
+  }
+  function writeLock({force=false}={}){
+    if(mode!=='active'||(!force&&!verifyOwnership()))return false;
+    const info=getCaseInfo()||{},lock={tabId,heartbeatAt:Date.now(),caseId:info.caseId||'',patientName:info.patientName||'',version:appVersion};
+    try{localStorage.setItem(lockKey,JSON.stringify(lock))}catch(e){return false}
+    try{channel?.postMessage({type:'HEARTBEAT',...lock})}catch(e){}return true;
+  }
   function release(){const lock=readLock();if(lock?.tabId===tabId){try{localStorage.removeItem(lockKey)}catch(e){};try{channel?.postMessage({type:'RELEASE',tabId})}catch(e){}}}
-  function emitMode(next,reason='',lock=null){mode=next;if(heartbeat){clearInterval(heartbeat);heartbeat=null}if(next==='active'){writeLock();heartbeat=setInterval(writeLock,heartbeatMs)}try{onMode(next,reason,lock)}catch(e){}return next}
-  function takeControl(reason='Control transferred to this tab'){emitMode('active',reason);try{channel?.postMessage({type:'TAKE_CONTROL',tabId,heartbeatAt:Date.now()})}catch(e){}}
+  function emitMode(next,reason='',lock=null,{force=false}={}){
+    mode=next;if(heartbeat){clearInterval(heartbeat);heartbeat=null}
+    if(next==='active'){
+      const wrote=writeLock({force});
+      // writeLock can demote a stale suspended writer. Never restart its heartbeat.
+      if(mode==='active'&&wrote)heartbeat=setInterval(writeLock,heartbeatMs);
+    }
+    if(mode===next)try{onMode(next,reason,lock)}catch(e){}
+    return mode;
+  }
+  function takeControl(reason='Control transferred to this tab'){
+    // An intentional takeover is the ONLY path allowed to replace another fresh owner.
+    const next=emitMode('active',reason,null,{force:true});
+    if(next==='active')try{channel?.postMessage({type:'TAKE_CONTROL',tabId,heartbeatAt:Date.now()})}catch(e){}
+    return next;
+  }
   function refresh(){const lock=readLock();if(!isFresh(lock)||lock.tabId===tabId){takeControl();return {mode:'active',lock}}emitMode('view','',lock);return {mode:'view',lock}}
   function init(){
     try{if('BroadcastChannel' in window){channel=new BroadcastChannel(channelName);channel.onmessage=e=>{const m=e.data||{};if(m.tabId===tabId)return;if(m.type==='TAKE_CONTROL'&&mode==='active')emitMode('view','Another tab took control. This tab is now view-only.',m);try{onMessage(m,mode)}catch(err){}}}}
@@ -20,7 +50,7 @@ function create({lockKey,tabKey,ttlMs=30000,heartbeatMs=5000,channelName='anesve
   function setMode(next,reason=''){return emitMode(next,reason,readLock())}
   function getMode(){return mode}
   function broadcast(type,payload={}){try{channel?.postMessage({type,tabId,...payload});return true}catch(e){return false}}
-  return Object.freeze({tabId,readLock,isFresh,writeLock,release,takeControl,refresh,init,setMode,getMode,broadcast});
+  return Object.freeze({tabId,readLock,isFresh,verifyOwnership,writeLock,release,takeControl,refresh,init,setMode,getMode,broadcast});
 }
 window.ANESVET_SESSION_COORDINATION=Object.freeze({create});
 })();
