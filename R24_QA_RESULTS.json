@@ -1,0 +1,54 @@
+{
+  "browserMode": "isolated component integration (full navigation blocked by environment)",
+  "passed": 9,
+  "total": 9,
+  "results": [
+    {
+      "name": "Recovery completed mobile CTA is End Case and enabled",
+      "passed": true
+    },
+    {
+      "name": "Top Recovery → End Case link visible",
+      "passed": true
+    },
+    {
+      "name": "Mobile End Case button routes to End Case",
+      "passed": true
+    },
+    {
+      "name": "End Case next action delegates to existing guided button",
+      "passed": true
+    },
+    {
+      "name": "Top Recovery CTA navigates without case locking",
+      "passed": true
+    },
+    {
+      "name": "Finalization CTA presents a pending path",
+      "passed": true
+    },
+    {
+      "name": "Incomplete Recovery card says clinical lock stays gated",
+      "passed": true
+    },
+    {
+      "name": "Preview End Case before complete is possible",
+      "passed": true
+    },
+    {
+      "name": "No implicit Recovery completion / Final Lock",
+      "passed": true
+    }
+  ],
+  "full_app_e2e": "not run; local URL and file URL were blocked by browser policy",
+  "release": "ANESVET V17.2.28 R24",
+  "nodeSyntaxFilesChecked": 173,
+  "nodeSyntaxErrors": 0,
+  "uniqueHtmlIds": 1352,
+  "duplicateHtmlIds": 0,
+  "pwaAssetsChecked": 94,
+  "pwaMissingAssets": 0,
+  "r23BugCenterRegression": "PASS with release version/cache expectation updated",
+  "caseCurrentStorageKeyUnchanged": true,
+  "clinicalFinalizationGuardsUnmodified": true
+}

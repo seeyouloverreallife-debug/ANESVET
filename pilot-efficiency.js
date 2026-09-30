@@ -161,6 +161,7 @@
   }
 
   function firstRecoveryMissingTarget(s){
+    if(s.complete) return byId('recoveryToEndCaseBtn');
     if(!s.active && !s.complete) return byId('beginRecoveryBtn');
     if(!s.observation.rr) return byId('recRR');
     if(!s.observation.spo) return byId('recSpO2') || q('.recovery-observation-na-btn[data-key="spo2"]');
@@ -179,7 +180,7 @@
   }
 
   function recoveryNextLabel(s){
-    if(s.complete) return '✓ Recovery complete';
+    if(s.complete) return '→ ไป End Case';
     if(!s.active) return '▶ Begin recovery';
     if(!s.obsComplete) return '↓ เติม Recovery observations';
     if(!s.records) return '＋ Record first vitals';
@@ -197,7 +198,7 @@
     summary.className=`recovery-efficiency-summary ${s.ready||s.complete?'complete':''}`;
     summary.textContent=s.complete?'✓ COMPLETE':`Vitals ${s.records} • Checklist ${s.reviewed}/${s.total} • Score ${s.scores}${s.ready?' • READY':''}`;
     btn.textContent=recoveryNextLabel(s);
-    btn.disabled=s.complete;
+    btn.disabled=false;
     btn.dataset.ready=s.ready?'1':'0';
   }
 
@@ -205,7 +206,7 @@
     const s=recoveryUiState();
     const target=firstRecoveryMissingTarget(s);
     if(!target) return;
-    if(target===byId('beginRecoveryBtn') || target===byId('recordRecoveryVitalsBtn') || target===byId('recoveryFocusCompleteBtn')){
+    if(target===byId('beginRecoveryBtn') || target===byId('recordRecoveryVitalsBtn') || target===byId('recoveryFocusCompleteBtn') || target===byId('recoveryToEndCaseBtn')){
       target.click();
       return;
     }

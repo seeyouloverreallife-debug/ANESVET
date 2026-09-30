@@ -1,0 +1,47 @@
+/* R24 | Recovery → End Case: a single clear next step. No clinical gates changed. */
+#recoveryExitCard{display:flex;align-items:center;justify-content:space-between;gap:15px;padding:15px 18px;
+  margin:8px 0 12px;background:linear-gradient(105deg,#f0f8f7,#fcfefd);border:1px solid #c7dddd;
+  border-left:4px solid #247f77;border-radius:15px;min-width:0}
+.r24-step-label{display:block;color:#3b797a;font-weight:850;font-size:.68rem;letter-spacing:.07em;text-transform:uppercase}
+.r24-exit-copy,#endCaseFastFinish>div{display:flex;flex-direction:column;gap:4px;min-width:0}
+.r24-exit-copy b,#endCaseFastFinishTitle{font-size:1.07rem;color:#183f49;line-height:1.3}
+.r24-exit-copy small,#endCaseFastFinishNote{color:#566b73;line-height:1.4;font-size:.78rem}
+#recoveryToEndCaseBtn{flex:0 0 auto;min-height:48px;padding:10px 18px!important;font-weight:850;font-size:.92rem}
+#recoveryExitCard.r24-recovery-done{background:linear-gradient(105deg,#e5f6ec,#f7fcfa);border-color:#a7d6b7;border-left-color:#23895e}
+#recoveryExitCard.r24-recovery-done .r24-step-label{color:#21714b}
+#endCaseFastFinish{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:13px 16px;
+  margin:10px 0 18px;border:1px solid #d4e5e7;background:#f5fafb;border-radius:14px;min-width:0}
+#endCaseFastFinishBtn{flex:0 0 auto;min-width:176px;min-height:44px;font-weight:800}
+#endCaseFastFinish.r24-ready{background:#ecf9f1;border-color:#acd6bc}
+/* Recovery desktop grid uses explicit rows; pin the exit step above observations. */
+@media(min-width:1180px){#recovery.tabpage.active>#recoveryExitCard{grid-column:1/-1;grid-row:3}}
+/* R22 mobile ordering places its focus at 1, observations at 2. Exit shares row 1
+   and comes after focus in DOM, remaining above the long observation form. */
+@media(max-width:1180px),(pointer:coarse) and (max-width:1400px){
+  body.recovery-mobile-active #recovery.active>#recoveryExitCard{order:1!important;width:100%;box-sizing:border-box}
+  #recoveryExitCard{padding:12px 13px}
+  #endCaseFastFinish{margin-block:10px 13px}
+}
+@media(max-width:680px){
+  #recoveryExitCard,#endCaseFastFinish{display:flex;flex-direction:column;align-items:stretch;gap:10px}
+  #recoveryToEndCaseBtn,#endCaseFastFinishBtn{width:100%;min-width:0;min-height:49px}
+  /* Distinguish the Next Case navigation from active patient recording. */
+  body.recovery-mobile-active #recoveryExitCard{padding-bottom:12px}
+  #endCaseFastFinish .r24-step-label{font-size:.66rem}
+}
+@media print{#recoveryExitCard,#endCaseFastFinish{display:none!important}}
+
+/* End Case is a work queue, not a wall of archived metadata. Keep the 12-field
+   summary present in DOM and expandable while retaining live safety gates. */
+#endCaseRecordDetails{margin:9px 0 16px;background:#fff;border:1px solid #d7e5e8;border-radius:12px;padding:4px 12px}
+#endCaseRecordDetails>summary{padding:10px 3px;cursor:pointer;color:#28525a;font-size:.80rem;font-weight:750;min-height:40px;align-content:center}
+#endCaseRecordDetails .end-case-summary{margin:9px 0 12px}
+#endCaseQuickIdentity{font-size:.76rem!important;color:#386a72!important;font-weight:700}
+/* Archive verification appears when relevant, after Final Lock; before that it
+   reports only WAITING and made the page unnecessarily long. */
+#endcase.r24-case-unlocked #finalArchiveAssurancePanel{display:none!important}
+@media(max-width:1180px),(pointer:coarse) and (max-width:1400px){
+  body.recovery-mobile-active.r24-recovery-finished #beginRecoveryBtn,
+  body.recovery-mobile-active.r24-recovery-finished #completeRecoveryBtn,
+  body.recovery-mobile-active.r24-recovery-finished #recoveryFocusCompleteBtn{display:none!important}
+}
