@@ -1,0 +1,176 @@
+{
+  "release": "ANESVET 17.2.29 R25",
+  "source": "Exact R24 full ZIP",
+  "checks": [
+    {
+      "name": "Source ZIP is present",
+      "passed": true
+    },
+    {
+      "name": "Core app change limited to version string",
+      "passed": true
+    },
+    {
+      "name": "or-live-controller.js core unchanged",
+      "passed": true
+    },
+    {
+      "name": "recovery-controller.js core unchanged",
+      "passed": true
+    },
+    {
+      "name": "finalization-archive-controller.js core unchanged",
+      "passed": true
+    },
+    {
+      "name": "finalization.js core unchanged",
+      "passed": true
+    },
+    {
+      "name": "medication-reconciliation.js core unchanged",
+      "passed": true
+    },
+    {
+      "name": "case-lifecycle.js core unchanged",
+      "passed": true
+    },
+    {
+      "name": "active-case-rescue.js core unchanged",
+      "passed": true
+    },
+    {
+      "name": "clinical-workflow.js core unchanged",
+      "passed": true
+    },
+    {
+      "name": "clinical-validation.js core unchanged",
+      "passed": true
+    },
+    {
+      "name": "clinical-simplicity.js core unchanged",
+      "passed": true
+    },
+    {
+      "name": "recovery-endcase-ux.js core unchanged",
+      "passed": true
+    },
+    {
+      "name": "Core persistence key constants unchanged",
+      "passed": true
+    },
+    {
+      "name": "Unique HTML IDs",
+      "passed": true
+    },
+    {
+      "name": "repeat-use-ux.css included in index",
+      "passed": true
+    },
+    {
+      "name": "repeat-use-ux.js included in index",
+      "passed": true
+    },
+    {
+      "name": "recovery-endcase-ux.css included in index",
+      "passed": true
+    },
+    {
+      "name": "clinical-simplicity.css included in index",
+      "passed": true
+    },
+    {
+      "name": "JavaScript syntax 174 files",
+      "passed": true
+    },
+    {
+      "name": "PWA assets all present (97)",
+      "passed": true
+    },
+    {
+      "name": "New repeat-use assets precached",
+      "passed": true
+    },
+    {
+      "name": "New cache namespace",
+      "passed": true
+    },
+    {
+      "name": "Original silent bug center intact",
+      "passed": true
+    },
+    {
+      "name": "Clinical alert panels still present",
+      "passed": true
+    },
+    {
+      "name": "Resume buttons visible on 3 overview pages",
+      "passed": true
+    },
+    {
+      "name": "Resume indicates Recovery phase",
+      "passed": true
+    },
+    {
+      "name": "Resume calls native rescue once",
+      "passed": true
+    },
+    {
+      "name": "Resume does not mutate clinical state",
+      "passed": true
+    },
+    {
+      "name": "Only one End Case primary card initially visible",
+      "passed": true
+    },
+    {
+      "name": "End Case detailed checklist accessible under disclosure",
+      "passed": true
+    },
+    {
+      "name": "Blockers remain visible outside collapsed disclosure",
+      "passed": true
+    },
+    {
+      "name": "Medication and guardian and sign-off stay visible",
+      "passed": true
+    },
+    {
+      "name": "Primary CTA delegates native guided handler",
+      "passed": true
+    },
+    {
+      "name": "Legacy Next Task remains reachable",
+      "passed": true
+    },
+    {
+      "name": "Summary advanced options grouped",
+      "passed": true
+    },
+    {
+      "name": "Before Recovery complete, End Case shown as secondary",
+      "passed": true
+    },
+    {
+      "name": "After complete, resume label becomes End Case",
+      "passed": true
+    },
+    {
+      "name": "Completed locked cases no longer show Resume",
+      "passed": true
+    },
+    {
+      "name": "No duplicate dynamic markup after repeated updates",
+      "passed": true
+    }
+  ],
+  "passed": 40,
+  "total": 40,
+  "jsFiles": 174,
+  "jsSyntaxErrors": [],
+  "htmlIds": 1343,
+  "htmlIdDuplicates": 0,
+  "pwaAssets": 97,
+  "pwaMissingAssets": [],
+  "fullAppE2E": "not run; isolated browser integration only",
+  "clinicalCore": "unchanged except app.js version string"
+}

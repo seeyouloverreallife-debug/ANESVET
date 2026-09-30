@@ -1,0 +1,10 @@
+/* ANESVET R26 — A single clear next-case action; no extra chrome while case active. */
+.r26-next-case[hidden]{display:none!important}
+.r26-next-case{display:flex;align-items:center;justify-content:space-between;gap:14px;border:1px solid #bcdccd;background:#f2fbf6;border-radius:14px;margin:10px 0 15px;padding:14px 16px}
+.r26-next-case>div{display:grid;gap:3px;min-width:0}
+.r26-next-case b{font-size:.94rem;color:#215744}
+.r26-next-case small{color:#476f5f;font-size:.76rem;line-height:1.4}
+.r26-next-case button{min-height:44px;flex-shrink:0;touch-action:manipulation}
+.r26-next-case button:focus-visible{outline:3px solid #166c80;outline-offset:3px}
+@media(max-width:580px){.r26-next-case{flex-direction:column;align-items:stretch;padding:12px}.r26-next-case button{width:100%}}
+@media print{.r26-next-case{display:none!important}}

@@ -1,0 +1,109 @@
+{
+  "version": "17.2.31",
+  "checkpoint": "R27",
+  "scope": "Static validation + isolated mobile JS behavior; NOT real-device E2E",
+  "passed": 25,
+  "total": 25,
+  "checks": [
+    {
+      "name": "HTML IDs unique",
+      "passed": true
+    },
+    {
+      "name": "R27 stylesheet last in the CSS stack",
+      "passed": true
+    },
+    {
+      "name": "R27 controller after R26 controller",
+      "passed": true
+    },
+    {
+      "name": "Version coherent in HTML, runtime and manifest",
+      "passed": true
+    },
+    {
+      "name": "PWA precache assets all exist",
+      "passed": true
+    },
+    {
+      "name": "PWA precache includes new responsive assets",
+      "passed": true
+    },
+    {
+      "name": "Identity retains existing controller",
+      "passed": true
+    },
+    {
+      "name": "Identity does not directly change security or PIN values",
+      "passed": true
+    },
+    {
+      "name": "Save state not removed from header on mobile",
+      "passed": true
+    },
+    {
+      "name": "Clinical alert elements still present",
+      "passed": true
+    },
+    {
+      "name": "Silent bug center remains available",
+      "passed": true
+    },
+    {
+      "name": "Recovery and Final lock handlers still loaded",
+      "passed": true
+    },
+    {
+      "name": "Mobile buttons meet 44px minimum CSS target",
+      "passed": true
+    },
+    {
+      "name": "Mobile form fields avoid iOS input zoom",
+      "passed": true
+    },
+    {
+      "name": "Mobile 320px fallback",
+      "passed": true
+    },
+    {
+      "name": "Mobile bottom sheet dynamic viewport-safe",
+      "passed": true
+    },
+    {
+      "name": "Keyboard changes only mobile dock visibility",
+      "passed": true
+    },
+    {
+      "name": "Clinical core untouched in new controller",
+      "passed": true
+    },
+    {
+      "name": "No JS syntax errors (full file set)",
+      "passed": true
+    },
+    {
+      "name": "Mobile Identity appears as one navigational action",
+      "passed": true
+    },
+    {
+      "name": "Identity action closes workflow sheet and forwards to real controller",
+      "passed": true
+    },
+    {
+      "name": "Local Identity-off status communicated",
+      "passed": true
+    },
+    {
+      "name": "Active user displays current staff identity",
+      "passed": true
+    },
+    {
+      "name": "Locked state indicated clearly without automatic unlock",
+      "passed": true
+    },
+    {
+      "name": "Virtual keyboard hides docks only while editing",
+      "passed": true
+    }
+  ]
+}

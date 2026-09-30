@@ -1,0 +1,77 @@
+/* ANESVET R27 — mobile-first interaction layer.
+   UI only: preserve clinical alarms, gates, medication rules, and persistence. */
+@media (max-width:720px){
+  html,body{max-width:100%;overflow-x:clip}
+  body{min-width:320px;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+  main{min-width:0;padding-inline:10px!important;padding-bottom:calc(106px + env(safe-area-inset-bottom))!important}
+  .tabpage,.tabpage>.panel,.patient-entry-panel,.patient-master-panel{min-width:0;max-width:100%}
+  .topbar{display:flex!important;flex-direction:row!important;align-items:center!important;justify-content:space-between!important;gap:7px!important;min-height:54px!important;padding:calc(7px + env(safe-area-inset-top)) 9px 7px!important}
+  .topbar .brand{flex:0 1 auto;min-width:0;gap:7px!important}
+  .topbar .brand>div{min-width:0}
+  .topbar .brand h1{font-size:1.02rem!important;line-height:1.1;white-space:nowrap}
+  .topbar .brand h1 span{font-size:.48rem!important}
+  .topbar .brand-logo{width:32px!important;height:32px!important;flex:0 0 32px}
+  .topbar .app-hospital-name{max-width:115px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.65rem}
+  .topbar .top-actions,body.or-mobile-active .topbar .top-actions,body.recovery-mobile-active .topbar .top-actions{display:flex!important;flex-flow:row nowrap!important;width:auto!important;max-width:100%;margin-left:auto;align-items:center!important;justify-content:flex-end!important;gap:4px!important;min-width:0}
+  .topbar .timer-status-wrap{display:flex!important;flex-flow:row nowrap!important;align-items:center!important;gap:4px!important;flex:0 1 auto;min-width:0}
+  .topbar #timerStateBadge,.topbar #connectivityState{display:none!important}
+  .topbar #caseClock,body.or-mobile-active .topbar #caseClock,body.recovery-mobile-active .topbar #caseClock{display:inline-flex!important;align-items:center!important;font-size:.76rem!important;line-height:1!important;padding:7px 5px!important;white-space:nowrap!important;min-height:36px!important;font-variant-numeric:tabular-nums!important}
+  .topbar #saveState{display:inline-flex!important;align-items:center!important;justify-content:center!important;width:25px!important;min-width:25px!important;max-width:25px!important;height:36px!important;min-height:36px!important;padding:0!important;margin:0!important;font-size:0!important;overflow:hidden!important;white-space:nowrap!important;border-radius:8px!important}
+  .topbar #saveState::before{content:'✓';font-size:16px;line-height:1;font-weight:900}
+  .topbar #saveState:not(.saved)::before{content:'…'}
+  .topbar #saveState.error::before,.topbar #saveState.failed::before{content:'!'}
+  #bootDiagnosticBtn.anesvet-issue-trigger{height:42px!important;width:42px!important;min-height:42px!important;min-width:42px!important;flex:0 0 42px!important}
+  #securityIdentityChip.security-identity-chip{display:inline-flex!important;position:relative;align-items:center!important;justify-content:center!important;order:3;flex:0 0 42px!important;min-width:42px!important;max-width:42px!important;width:42px!important;height:42px!important;min-height:42px!important;border-radius:11px!important;font-size:0!important;text-indent:-9999px;overflow:hidden!important;padding:0!important;white-space:nowrap!important;touch-action:manipulation!important}
+  #securityIdentityChip.security-identity-chip::before{content:'👤';font-size:19px!important;line-height:1;text-indent:0;position:absolute;inset:0;display:grid;place-items:center}
+  #securityIdentityChip[data-security-state='off']::before{content:'🔓'}
+  #securityIdentityChip[data-security-state='locked']::before{content:'🔒'}
+  #securityIdentityChip[hidden]{display:none!important}
+  body.or-mobile-active .topbar,body.recovery-mobile-active .topbar{min-height:48px!important;padding:calc(4px + env(safe-area-inset-top)) 9px 4px!important}
+  body.or-mobile-active .topbar .top-actions,body.recovery-mobile-active .topbar .top-actions{margin-left:auto!important}
+  .case-strip,.case-summary,.case-strip-status{min-width:0!important;max-width:100%!important}
+  .panel{padding:12px!important}
+  .section-heading{min-width:0;gap:8px!important}
+  .section-heading>div{min-width:0}
+  :where(button,.btn,.tab,.context-help-btn,.mobile-quick-btn,.mobile-workflow-secondary button){touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+  :where(.tabpage .btn,.tabpage button.btn,.context-help-btn,.page-help-actions button,.mobile-workflow-secondary button){min-height:44px}
+  .context-help-btn{min-width:44px!important;width:44px!important;height:44px!important}
+  :where(.tabpage input:not([type=checkbox]):not([type=radio]):not([type=hidden]),.tabpage select,.tabpage textarea,dialog input:not([type=checkbox]):not([type=radio]):not([type=hidden]),dialog select,dialog textarea){font-size:16px!important;max-width:100%;min-width:0}
+  :where(.patient-form-grid,.form-grid,.form-grid.three,.event-form,.case-form) > *{min-width:0}
+  .patient-form-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important}
+  .patient-form-grid>label:first-child,.patient-form-grid>.breed-autocomplete,.patient-form-grid>.age-entry-field{grid-column:1 / -1!important}
+  .patient-form-grid>label small{overflow-wrap:anywhere}
+  :where(.form-grid,.case-form,.event-form) .span2,:where(.form-grid,.case-form,.event-form) .span3{grid-column:1/-1!important}
+  .patient-master-search-row input{min-width:0;width:100%}
+  .patient-master-heading-actions{display:flex;flex-wrap:wrap;gap:6px}
+  .button-row{flex-wrap:wrap;max-width:100%}
+  .button-row>*{max-width:100%}
+  .button-row button,.section-heading button{white-space:normal;overflow-wrap:anywhere}
+  .mobile-quick-bar:not([hidden]),.or-mobile-dock,.recovery-mobile-dock{max-width:calc(100vw - 12px)!important;box-sizing:border-box}
+  .mobile-workflow-dialog{width:calc(100vw - 12px)!important;max-width:620px!important;max-height:calc(100dvh - 18px - env(safe-area-inset-top) - env(safe-area-inset-bottom))!important;overflow:auto!important;overscroll-behavior:contain;bottom:max(6px,env(safe-area-inset-bottom))!important;scrollbar-width:thin}
+  .mobile-workflow-sheet{padding:12px!important}
+  .mobile-workflow-secondary{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  .mobile-workflow-secondary button{font-size:.75rem!important;min-height:46px!important;padding:7px!important}
+  #mobileIdentityBtn{grid-column:1/-1!important;display:flex!important;align-items:center;justify-content:flex-start;gap:10px;text-align:left;padding:8px 12px!important;border-color:#b7d0d6!important;background:#f4fafb!important}
+  #mobileIdentityBtn .r27-identity-icon{font-size:21px;flex:0 0 auto}
+  #mobileIdentityBtn .r27-identity-info{display:grid;gap:2px;min-width:0}
+  #mobileIdentityBtn .r27-identity-info b{font-size:.83rem}
+  #mobileIdentityBtn .r27-identity-info small{font-size:.68rem;color:#536d74;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:240px}
+  dialog:not(.mobile-workflow-dialog):not(.security-lock-overlay){max-width:calc(100vw - 16px);max-height:calc(100dvh - 20px - env(safe-area-inset-top) - env(safe-area-inset-bottom));overflow:auto;overscroll-behavior:contain}
+  :where(.workflow-dialog-body,.readiness-sheet,.recovery-more-dialog,.or-more-dialog,.security-action-card){max-width:100%;box-sizing:border-box}
+  :where(.record-table-wrap,.case-review-table-wrap,.archive-table-wrap){max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .tabpage :where(input,select,textarea):focus-visible,dialog :where(input,select,textarea):focus-visible{outline:2px solid #16768a;outline-offset:2px}
+  body.r27-keyboard-open .mobile-quick-bar,body.r27-keyboard-open .or-mobile-dock,body.r27-keyboard-open .recovery-mobile-dock{display:none!important}
+  body.r27-keyboard-open main{padding-bottom:calc(16px + env(safe-area-inset-bottom))!important}
+}
+@media (max-width:360px){
+  .topbar .brand-logo{width:27px!important;height:27px!important;flex-basis:27px}
+  .topbar .brand h1{font-size:.91rem!important}
+  .topbar .brand h1 span{display:none}
+  .topbar #caseClock{font-size:.68rem!important}
+  #bootDiagnosticBtn.anesvet-issue-trigger,#securityIdentityChip.security-identity-chip{width:40px!important;min-width:40px!important;max-width:40px!important;flex-basis:40px!important}
+  .patient-form-grid{grid-template-columns:1fr!important}
+  .mobile-workflow-grid button{padding:6px!important;gap:5px!important}
+}
+@media print{
+  #mobileIdentityBtn{display:none!important}
+}

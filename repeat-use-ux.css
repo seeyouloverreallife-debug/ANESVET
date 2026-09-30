@@ -1,0 +1,43 @@
+/* ANESVET R25 | less chrome, clearer repeat-use pathways. Never hide patient alerts. */
+:root{--r25-ink:#173944;--r25-border:#d5e4e6;--r25-focus:#277d8b}
+.r25-resume-action:not([hidden]){display:inline-flex!important;align-items:center;justify-content:center;min-height:44px!important;min-width:0;gap:6px;padding:9px 14px!important;border:1px solid #b8d5d7!important;border-radius:12px!important;background:#e8f5f2!important;color:#175e58!important;font-weight:800!important;white-space:normal;text-wrap:balance}
+.r25-resume-action[hidden]{display:none!important}
+.r25-resume-action:focus-visible,.r25-summary-extras summary:focus-visible,.r25-review-details summary:focus-visible{outline:3px solid var(--r25-focus);outline-offset:3px}
+/* Don't show two competing primary End Case cards at once. The legacy one is an expandable detail. */
+#r25FinalReviewDetails{margin:0 0 15px;max-width:100%;border:1px solid var(--r25-border);border-radius:12px;background:#fff}
+#r25FinalReviewDetails>summary{list-style:auto;cursor:pointer;min-height:42px;display:list-item;align-content:center;padding:9px 15px;color:#42606b;font-size:.81rem;font-weight:700}
+#r25FinalReviewDetails>summary:hover{background:#f3f8f8}
+#r25FinalReviewDetails #endCaseEfficiencyCard{margin:6px 10px 12px;box-shadow:none}
+#endCaseBlockers.r25-visible-blockers{display:flex;flex-wrap:wrap;gap:6px;margin:-7px 0 14px;max-width:100%;min-height:0}
+#endCaseFastFinish{margin-top:4px;margin-bottom:14px!important}
+#endCaseFastFinish.r25-case-locked{border-color:#bddbc9;background:#f1faf4}
+/* Recovery is a recording workspace. Don't advertise End Case as the primary action until done. */
+#recoveryExitCard:not(.r24-recovery-done){background:#f7fafb;border:1px solid #d9e5e9;border-left:3px solid #b1c9d1;box-shadow:none}
+#recoveryExitCard:not(.r24-recovery-done) #recoveryToEndCaseBtn{background:#fff!important;color:#365f69!important;border:1px solid #c5d9dc!important;box-shadow:none!important}
+#recoveryExitCard:not(.r24-recovery-done) #recoveryExitTitle{font-size:.91rem;color:#365b65}
+#recoveryExitCard:not(.r24-recovery-done) .r24-step-label{color:#6b818a}
+/* Case summary: 2 lesser-used routes inside one readable disclosure. */
+#r25CaseSummaryExtras{position:relative;max-width:100%;align-self:center;border:1px solid var(--r25-border);border-radius:10px;background:#fff}
+#r25CaseSummaryExtras>summary{display:list-item;min-height:42px;align-content:center;cursor:pointer;font-weight:650;color:#45616a;padding:8px 13px;font-size:.81rem}
+#r25CaseSummaryExtras[open]{min-width:min(100%,220px)}
+.r25-extras-tools{display:flex;flex-direction:column;gap:6px;padding:0 10px 10px}
+.r25-extras-tools .btn{width:100%;text-align:left;min-height:42px}
+/* Keep interaction feedback focused and consistent across mouse + touch. */
+#endCaseFastFinishBtn,#recoveryToEndCaseBtn,#recoveryFocusRecordBtn,.r25-resume-action{touch-action:manipulation}
+@media(max-width:1180px),(pointer:coarse) and (max-width:1400px){
+  #recoveryExitCard:not(.r24-recovery-done){padding:10px 11px!important;gap:8px}
+  #endCaseFastFinish{padding:13px!important}
+  /* Native mobile focus already owns these actions, but emergency return remains available in the recovery More menu. */
+  body.recovery-mobile-active.recovery-session-active #recovery>.recovery-command #recoveryMedicationBtn,
+  body.recovery-mobile-active.recovery-session-active #recovery>.recovery-command #completeRecoveryBtn{display:none!important}
+}
+@media(max-width:680px){
+  #r25FinalReviewDetails>summary{font-size:.78rem}
+  #endCaseBlockers.r25-visible-blockers{margin-top:-5px}
+  #recoveryExitCard:not(.r24-recovery-done) .r24-exit-copy small{display:none}
+  #recoveryExitCard:not(.r24-recovery-done) #recoveryToEndCaseBtn{min-height:42px!important;font-size:.79rem!important}
+  #casesummary .section-heading .button-row{align-items:stretch;gap:7px}
+  #casesummary .section-heading .button-row .r25-resume-action:not([hidden]){width:100%}
+  #patient .patient-hero .page-help-actions .r25-resume-action:not([hidden]){font-size:.79rem}
+}
+@media print{.r25-resume-action,#r25CaseSummaryExtras{display:none!important}#r25FinalReviewDetails{border:0!important}#r25FinalReviewDetails>summary{display:none}#r25FinalReviewDetails #endCaseEfficiencyCard{display:block!important}}

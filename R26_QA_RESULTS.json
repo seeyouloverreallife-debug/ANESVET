@@ -1,0 +1,168 @@
+{
+  "version": "17.2.30 R26",
+  "source": "R25 Full Source",
+  "checks": [
+    {
+      "name": "Exact R25 full source available",
+      "passed": true
+    },
+    {
+      "name": "Clinical/legacy case-lifecycle.js unchanged",
+      "passed": true
+    },
+    {
+      "name": "Clinical/legacy or-live-controller.js unchanged",
+      "passed": true
+    },
+    {
+      "name": "Clinical/legacy recovery-controller.js unchanged",
+      "passed": true
+    },
+    {
+      "name": "Clinical/legacy finalization-archive-controller.js unchanged",
+      "passed": true
+    },
+    {
+      "name": "Clinical/legacy medication-reconciliation.js unchanged",
+      "passed": true
+    },
+    {
+      "name": "Clinical/legacy active-case-rescue.js unchanged",
+      "passed": true
+    },
+    {
+      "name": "Clinical/legacy clinical-validation.js unchanged",
+      "passed": true
+    },
+    {
+      "name": "Clinical/legacy final-archive-assurance.js unchanged",
+      "passed": true
+    },
+    {
+      "name": "Clinical/legacy or-speed-hardening.js unchanged",
+      "passed": true
+    },
+    {
+      "name": "Clinical/legacy repeat-use-ux.js unchanged",
+      "passed": true
+    },
+    {
+      "name": "Clinical/legacy repeat-use-ux.css unchanged",
+      "passed": true
+    },
+    {
+      "name": "Clinical/legacy recovery-endcase-ux.js unchanged",
+      "passed": true
+    },
+    {
+      "name": "app.js change only version",
+      "passed": true
+    },
+    {
+      "name": "core storage keys unchanged",
+      "passed": true
+    },
+    {
+      "name": "Unique HTML IDs",
+      "passed": true
+    },
+    {
+      "name": "R26 UX JS/CSS load on page",
+      "passed": true
+    },
+    {
+      "name": "Clinical warnings and silent diagnostics remain",
+      "passed": true
+    },
+    {
+      "name": "JS syntax 175 files",
+      "passed": true
+    },
+    {
+      "name": "PWA assets all present 99",
+      "passed": true
+    },
+    {
+      "name": "R26 files in PWA",
+      "passed": true
+    },
+    {
+      "name": "Cache version isolated",
+      "passed": true
+    },
+    {
+      "name": "No new clinical data inputs in R26 JS",
+      "passed": true
+    },
+    {
+      "name": "New Case link created once",
+      "passed": true
+    },
+    {
+      "name": "New Case not shown before lock",
+      "passed": true
+    },
+    {
+      "name": "New Case appears after Final Lock",
+      "passed": true
+    },
+    {
+      "name": "New Case delegates once to native button",
+      "passed": true
+    },
+    {
+      "name": "New Case does not mutate clinical state",
+      "passed": true
+    },
+    {
+      "name": "Returning to unlocked hides New Case",
+      "passed": true
+    },
+    {
+      "name": "Recovery Enter HR -> RR",
+      "passed": true
+    },
+    {
+      "name": "Recovery Enter RR -> MAP",
+      "passed": true
+    },
+    {
+      "name": "Recovery Enter MAP -> SpO2",
+      "passed": true
+    },
+    {
+      "name": "Recovery Enter SpO2 -> Temp",
+      "passed": true
+    },
+    {
+      "name": "Recovery Enter Temp -> Mentation",
+      "passed": true
+    },
+    {
+      "name": "Recovery Enter Mentation -> Save button",
+      "passed": true
+    },
+    {
+      "name": "No automatic Recovery recording after Enter",
+      "passed": true
+    },
+    {
+      "name": "Native explicit Recovery record still works",
+      "passed": true
+    },
+    {
+      "name": "Recovery navigation preserves entered value",
+      "passed": true
+    }
+  ],
+  "passed": 38,
+  "total": 38,
+  "jsFiles": 175,
+  "syntaxIssues": [],
+  "pwaAssets": 99,
+  "missingAssets": [],
+  "ids": 1343,
+  "duplicateIds": 0,
+  "fullAppBrowserE2E": "blocked: sandbox administrator blocks file:// and 127.0.0.1; isolated integration executed",
+  "realDeviceTest": "pending"
+}
