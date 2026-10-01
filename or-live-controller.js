@@ -17,6 +17,7 @@ function create(ctx={}){
   const tempStoredFToDisplay=ctx.tempStoredFToDisplay||((v)=>v),tempTextF=ctx.tempTextF||((v)=>String(v??'—'));
   const currentElapsed=ctx.currentElapsed||(()=>0),clinicalWriteAllowed=ctx.clinicalWriteAllowed||(()=>true),save=ctx.save||(()=>{}),scheduleAutosave=ctx.scheduleAutosave||(()=>{});
   const addAudit=ctx.addAudit||(()=>{}),addEvent=ctx.addEvent||(()=>{}),addRecord=ctx.addRecord||(()=>{}),setTab=ctx.setTab||(()=>{});
+  const maybeShowCriticalClinicalAlert=ctx.maybeShowCriticalClinicalAlert||(()=>{});
   const activeProcedureTemplate=ctx.activeProcedureTemplate||(()=>({})),frozenQuickDrugs=ctx.frozenQuickDrugs||(()=>[]),openOrQuickDrug=ctx.openOrQuickDrug||(()=>{});
   const caseDrugPlanPhaseLabel=ctx.caseDrugPlanPhaseLabel||((v)=>String(v||'')),fmtDose=ctx.fmtDose||((v)=>String(v??''));
   const renderProcedureTimeline=ctx.renderProcedureTimeline||(()=>{}),renderProcedureTemplatePicker=ctx.renderProcedureTemplatePicker||(()=>{}),renderEvents=ctx.renderEvents||(()=>{});

@@ -1,12 +1,12 @@
 {
-  "name": "ANESVET V17.2.31 — Mobile-first UX R27",
-  "short_name": "ANESVET V17.2.31",
+  "name": "ANESVET V17.5.1",
+  "short_name": "ANESVET",
   "description": "Local-first veterinary anesthesia workflow with a unified case timeline, anesthesia record, recovery handoff, medication safety, clinical validation, reporting, and audit-ready record integrity",
-  "start_url": "./?v=17.2.31",
+  "start_url": "./?v=17.5.1",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#f5f7f7",
-  "theme_color": "#123f48",
+  "background_color": "#0b2d31",
+  "theme_color": "#0b2d31",
   "lang": "th",
   "icons": [
     {

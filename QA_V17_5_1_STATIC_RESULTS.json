@@ -1,0 +1,421 @@
+{
+  "version": "17.5.1",
+  "retained_ids": 1379,
+  "missing_ids": [],
+  "duplicate_ids": [],
+  "missing_refs": [],
+  "precache_count": 140,
+  "missing_precache": [],
+  "syntax": [
+    {
+      "file": "documentation-guardian.js",
+      "ok": true
+    },
+    {
+      "file": "adaptive-workspace.js",
+      "ok": true
+    },
+    {
+      "file": "progressive-clinical-flow.js",
+      "ok": true
+    },
+    {
+      "file": "RUN_R10_QA.js",
+      "ok": true
+    },
+    {
+      "file": "recovery-controller.js",
+      "ok": true
+    },
+    {
+      "file": "or-knowledge.js",
+      "ok": true
+    },
+    {
+      "file": "or-domain.js",
+      "ok": true
+    },
+    {
+      "file": "core-storage.js",
+      "ok": true
+    },
+    {
+      "file": "security-baseline.js",
+      "ok": true
+    },
+    {
+      "file": "preop-controller.js",
+      "ok": true
+    },
+    {
+      "file": "data-resilience.js",
+      "ok": true
+    },
+    {
+      "file": "RUN_R09_QA.js",
+      "ok": true
+    },
+    {
+      "file": "support.js",
+      "ok": true
+    },
+    {
+      "file": "clinical-validation.js",
+      "ok": true
+    },
+    {
+      "file": "clinical-knowledge-data.js",
+      "ok": true
+    },
+    {
+      "file": "progressive-disclosure.js",
+      "ok": true
+    },
+    {
+      "file": "validation-center.js",
+      "ok": true
+    },
+    {
+      "file": "special-patient-knowledge.js",
+      "ok": true
+    },
+    {
+      "file": "clinical-workflow.js",
+      "ok": true
+    },
+    {
+      "file": "dose-reference-controller.js",
+      "ok": true
+    },
+    {
+      "file": "or-record-orchestration.js",
+      "ok": true
+    },
+    {
+      "file": "medication-reconciliation.js",
+      "ok": true
+    },
+    {
+      "file": "repeat-use-ux.js",
+      "ok": true
+    },
+    {
+      "file": "RUN_R15_QA.js",
+      "ok": true
+    },
+    {
+      "file": "RUN_R07_QA.js",
+      "ok": true
+    },
+    {
+      "file": "help.js",
+      "ok": true
+    },
+    {
+      "file": "app.js",
+      "ok": true
+    },
+    {
+      "file": "session-controller.js",
+      "ok": true
+    },
+    {
+      "file": "ui-refinement.js",
+      "ok": true
+    },
+    {
+      "file": "usability-hardening.js",
+      "ok": true
+    },
+    {
+      "file": "protocol-review.js",
+      "ok": true
+    },
+    {
+      "file": "app-shell.js",
+      "ok": true
+    },
+    {
+      "file": "finalization.js",
+      "ok": true
+    },
+    {
+      "file": "recovery-endcase-ux.js",
+      "ok": true
+    },
+    {
+      "file": "case-review-dashboard.js",
+      "ok": true
+    },
+    {
+      "file": "patient-master-orchestration.js",
+      "ok": true
+    },
+    {
+      "file": "sync-transport.js",
+      "ok": true
+    },
+    {
+      "file": "QA_V17_5_1_MOBILE.js",
+      "ok": true
+    },
+    {
+      "file": "reliability.js",
+      "ok": true
+    },
+    {
+      "file": "pwa-controller.js",
+      "ok": true
+    },
+    {
+      "file": "case-lifecycle.js",
+      "ok": true
+    },
+    {
+      "file": "RUN_R08_QA.js",
+      "ok": true
+    },
+    {
+      "file": "problem-response-review.js",
+      "ok": true
+    },
+    {
+      "file": "mobile-design.js",
+      "ok": true
+    },
+    {
+      "file": "RUN_R05_QA.js",
+      "ok": true
+    },
+    {
+      "file": "recovery-domain.js",
+      "ok": true
+    },
+    {
+      "file": "active-case-freshness.js",
+      "ok": true
+    },
+    {
+      "file": "case-runtime.js",
+      "ok": true
+    },
+    {
+      "file": "RUN_R11_QA.js",
+      "ok": true
+    },
+    {
+      "file": "or-speed-hardening.js",
+      "ok": true
+    },
+    {
+      "file": "clinical-simplicity.js",
+      "ok": true
+    },
+    {
+      "file": "QA_V17_5_1_PWA.js",
+      "ok": true
+    },
+    {
+      "file": "final-archive-assurance.js",
+      "ok": true
+    },
+    {
+      "file": "procedure-templates.js",
+      "ok": true
+    },
+    {
+      "file": "RUN_R16_QA.js",
+      "ok": true
+    },
+    {
+      "file": "repeat-use-r26.js",
+      "ok": true
+    },
+    {
+      "file": "ecg-educational-rules.js",
+      "ok": true
+    },
+    {
+      "file": "hospital-protocol-governance.js",
+      "ok": true
+    },
+    {
+      "file": "focused-workspace.js",
+      "ok": true
+    },
+    {
+      "file": "sync-foundation.js",
+      "ok": true
+    },
+    {
+      "file": "simulation-mode.js",
+      "ok": true
+    },
+    {
+      "file": "branding.js",
+      "ok": true
+    },
+    {
+      "file": "data-safety-2.js",
+      "ok": true
+    },
+    {
+      "file": "or-live-controller.js",
+      "ok": true
+    },
+    {
+      "file": "comorbidity-knowledge.js",
+      "ok": true
+    },
+    {
+      "file": "drug-dose-reference.js",
+      "ok": true
+    },
+    {
+      "file": "clinical-knowledge-ui.js",
+      "ok": true
+    },
+    {
+      "file": "backup-restore-controller.js",
+      "ok": true
+    },
+    {
+      "file": "mobile-first-r27.js",
+      "ok": true
+    },
+    {
+      "file": "RUN_R17_QA.js",
+      "ok": true
+    },
+    {
+      "file": "patient-master-controller.js",
+      "ok": true
+    },
+    {
+      "file": "RUN_R14_QA.js",
+      "ok": true
+    },
+    {
+      "file": "session-coordination.js",
+      "ok": true
+    },
+    {
+      "file": "recovery-orchestration.js",
+      "ok": true
+    },
+    {
+      "file": "ecg-visual-atlas.js",
+      "ok": true
+    },
+    {
+      "file": "finalization-archive-controller.js",
+      "ok": true
+    },
+    {
+      "file": "architecture-registry.js",
+      "ok": true
+    },
+    {
+      "file": "RUN_R12_QA.js",
+      "ok": true
+    },
+    {
+      "file": "ecg-visual-atlas-data.js",
+      "ok": true
+    },
+    {
+      "file": "RUN_R06_QA.js",
+      "ok": true
+    },
+    {
+      "file": "patient-domain.js",
+      "ok": true
+    },
+    {
+      "file": "production-pilot.js",
+      "ok": true
+    },
+    {
+      "file": "pilot-efficiency.js",
+      "ok": true
+    },
+    {
+      "file": "RUN_R04_QA.js",
+      "ok": true
+    },
+    {
+      "file": "QA_V17_5_1_KNOWLEDGE_BROWSER.js",
+      "ok": true
+    },
+    {
+      "file": "service-worker.js",
+      "ok": true
+    },
+    {
+      "file": "active-case-rescue.js",
+      "ok": true
+    },
+    {
+      "file": "RUN_R13_QA.js",
+      "ok": true
+    },
+    {
+      "file": "medication-workspace-controller.js",
+      "ok": true
+    }
+  ],
+  "clinical_modules": [
+    {
+      "file": "clinical-workflow.js",
+      "unchanged": true
+    },
+    {
+      "file": "drug-dose-reference.js",
+      "unchanged": true
+    },
+    {
+      "file": "protocol-review.js",
+      "unchanged": true
+    },
+    {
+      "file": "or-domain.js",
+      "unchanged": true
+    },
+    {
+      "file": "recovery-domain.js",
+      "unchanged": true
+    },
+    {
+      "file": "or-record-orchestration.js",
+      "unchanged": true
+    },
+    {
+      "file": "recovery-orchestration.js",
+      "unchanged": true
+    },
+    {
+      "file": "or-live-controller.js",
+      "unchanged": true
+    },
+    {
+      "file": "recovery-controller.js",
+      "unchanged": true
+    },
+    {
+      "file": "clinical-knowledge-data.js",
+      "unchanged": true
+    },
+    {
+      "file": "special-patient-knowledge.js",
+      "unchanged": true
+    },
+    {
+      "file": "comorbidity-knowledge.js",
+      "unchanged": true
+    },
+    {
+      "file": "ecg-educational-rules.js",
+      "unchanged": true
+    }
+  ]
+}

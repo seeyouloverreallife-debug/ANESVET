@@ -1,0 +1,67 @@
+@font-face{font-family:"ANESVET Thai";font-style:normal;font-weight:400;font-display:swap;src:url("./assets/fonts/noto-sans-thai-thai-400-normal.woff2") format("woff2");unicode-range:U+0E01-0E5B,U+200C-200D,U+25CC}
+@font-face{font-family:"ANESVET Thai";font-style:normal;font-weight:700;font-display:swap;src:url("./assets/fonts/noto-sans-thai-thai-700-normal.woff2") format("woff2");unicode-range:U+0E01-0E5B,U+200C-200D,U+25CC}
+/* Knowledge is modal/read-only. No new OR LIVE toolbar control. */
+.ck-dialog,.ck-quick-dialog{font-family:"ANESVET Thai",system-ui,-apple-system,"Noto Sans Thai",Tahoma,sans-serif;box-sizing:border-box;color:#183c45;background:#f7fafb;border:1px solid #ccdce0;border-radius:18px;padding:0;max-width:calc(100vw - 24px);width:880px;max-height:92vh;max-height:92dvh;overflow:auto;overscroll-behavior:contain;}
+.ck-dialog::backdrop,.ck-quick-dialog::backdrop{background:rgb(8 30 37 / .58)}
+.ck-dialog[open],.ck-quick-dialog[open]{display:block}
+.ck-quick-dialog{width:560px}
+.ck-header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:18px 18px 12px;background:#123f48;color:#fff;}
+.ck-header small{letter-spacing:.08em;font-size:10px;color:#bce1dc}
+.ck-header h2{margin:4px 0 0;font-size:21px;line-height:1.4;outline:none}
+.ck-header .btn{background:#fff;color:#123f48;flex-shrink:0;min-width:44px;min-height:44px}
+.ck-chrome{position:sticky;top:0;z-index:3}.ck-quick-dialog>.ck-header{position:sticky;top:0;z-index:3}
+.ck-tabs{display:flex;gap:6px;padding:10px 14px;background:#eff5f6;border-bottom:1px solid #d2e0e4}
+.ck-tabs button,.ck-filters button{font:inherit;min-height:44px;border:1px solid #cadbdf;border-radius:10px;background:#fff;padding:8px 12px;color:#214952;cursor:pointer}
+.ck-tabs button{flex:1;min-width:0;font-weight:700}
+.ck-tabs button.active,.ck-filters button.active{background:#17645f;color:#fff;border-color:#17645f}
+.ck-body{padding:18px;line-height:1.65;overflow-wrap:anywhere}
+.ck-body h3{margin:14px 0;font-size:23px}.ck-body h4{margin:16px 0 6px;font-size:16px}
+.ck-body p{margin:8px 0}.ck-body li{margin:8px 0}.ck-body ul,.ck-body ol{padding-left:22px}
+.ck-note{padding:12px;border-radius:10px;background:#eaf2f3;font-size:13px;color:#405c66;border-left:3px solid #6ba4a0;}
+.ck-meta{font-size:12px;color:#5b757d}.ck-trigger{font-weight:600}
+.ck-search-label,.ck-form-grid label{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600}
+.ck-search-label input,.ck-form-grid input,.ck-form-grid select{font:inherit;font-size:16px;width:100%;box-sizing:border-box;min-width:0;min-height:46px;padding:10px 12px;border:1px solid #b7cdd2;border-radius:10px;background:white;color:#173e46}
+.ck-filters{display:flex;gap:6px;flex-wrap:wrap;margin:12px 0}.ck-filters button{font-size:12px}
+.ck-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.ck-list-item{display:flex;align-items:flex-start;gap:4px;flex-direction:column;text-align:left;font:inherit;color:#234851;background:#fff;border:1px solid #d1e0e4;border-radius:12px;padding:15px;cursor:pointer;min-width:0;overflow-wrap:anywhere;}
+.ck-list-item strong{font-size:17px}.ck-list-item>span{font-size:12px;color:#567b80}.ck-list-item small{font-size:13px}.ck-list-item .ck-open{color:#17645f;font-weight:700;margin-top:6px}
+.ck-field,.ck-entry{margin:10px 0;padding:12px 14px;background:#fff;border:1px solid #d0e0e4;border-radius:12px}
+.ck-field>summary,.ck-entry>summary{cursor:pointer;font-weight:700;min-height:44px;line-height:1.6;padding:4px 0}
+.ck-field>summary:focus-visible,.ck-entry>summary:focus-visible,.ck-evidence>summary:focus-visible,.ck-dialog button:focus-visible,.ck-quick-dialog button:focus-visible{outline:3px solid #dd9b2b;outline-offset:3px}
+.ck-evidence{font-size:12px;color:#58727b;margin:5px 0 8px}.ck-evidence summary{cursor:pointer;padding:6px 0;min-height:44px}.ck-evidence li{padding:6px;background:#f2f7f7;border-radius:8px}.ck-evidence a{color:#17645f}
+.ck-tree{border:2px solid #6fa5a0;border-radius:14px;margin:18px 0;padding:14px;background:#eff8f6}
+.ck-tree-head{display:flex;align-items:center;justify-content:space-between;gap:8px}.ck-tree-head b{font-size:13px}.ck-tree-head .btn{font-size:12px;min-height:44px}
+.ck-branches{display:grid;gap:8px;margin-top:12px}.ck-branches button{min-height:48px;border:1px solid #96c0b8;background:#fff;border-radius:10px;color:#185b55;font:inherit;padding:12px;text-align:left;cursor:pointer}
+.ck-path{font-size:13px;margin:12px 0}.ck-path>summary{min-height:44px;cursor:pointer}
+.ck-form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:18px}
+.ck-actions,.ck-related{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0}
+.ck-actions{padding:0 18px 12px}.ck-ecg-form .ck-actions{padding:0}
+.ck-actions .btn,.ck-related .btn{min-height:44px}
+.ck-result{margin-top:18px;border:2px solid #a6c4cb;border-radius:14px;padding:14px;background:#fff}.ck-result.urgent{border-color:#d4972d}.ck-result.immediate{border-color:#b54545;background:#fff4f4}
+.ck-result article{padding:6px 0;border-top:1px solid #dae5e8}
+.ck-footer{font-size:11px;color:#5d757a;padding:12px 18px calc(12px + env(safe-area-inset-bottom));border-top:1px solid #d6e3e7;}
+.ck-hash{font-size:11px;overflow-wrap:anywhere}
+.ck-drug-link{display:inline-block;border:1px solid #bad4d1;border-radius:9px;font:inherit;font-size:12px;padding:8px 12px;min-height:44px;background:#eef7f5;color:#165d55;margin:6px 0;cursor:pointer}
+@media(max-width:600px){.ck-dialog{width:100%;max-width:100%;height:100%;max-height:100vh;max-height:100dvh;margin:0;border:0;border-radius:0}.ck-quick-dialog{width:calc(100% - 16px);max-width:calc(100% - 16px);max-height:94dvh}.ck-header{padding:14px 14px 10px}.ck-header h2{font-size:18px}.ck-body{padding:14px}.ck-list,.ck-form-grid{grid-template-columns:1fr}.ck-tabs{padding:8px;gap:4px}.ck-tabs button{padding:8px 5px;font-size:12px}.ck-tree-head{align-items:flex-start}.ck-dialog .ck-actions .btn{flex:1}.ck-form-grid label{font-size:13px}.ck-body h3{font-size:21px}}
+@media(prefers-reduced-motion:reduce){.ck-dialog *,.ck-quick-dialog *{scroll-behavior:auto!important}}
+/* Keep added links reachable in existing reference/alert modals on small screens. */
+#clinicalGuideDialog,#doseReferenceDialog{max-height:92vh;max-height:92dvh;overflow:auto}
+#clinicalGuideDialog .dialog-actions,#doseReferenceDialog .dialog-actions{flex-wrap:wrap}
+#clinicalGuideDialog .dialog-actions>.btn,#doseReferenceDialog .dialog-actions>.btn{min-height:44px;white-space:normal}
+@media(max-width:600px){#clinicalGuideDialog .dialog-actions>.btn,#doseReferenceDialog .dialog-actions>.btn{flex:1 1 160px}#clinicalGuideDialog .clinical-guide-head>.btn{min-width:44px;min-height:44px}}
+
+/* Textbook ECG teaching images: read-only and confined to the Knowledge dialog. */
+.ck-ecg-figure{margin:12px 0;min-width:0}.ck-ecg-figure figcaption{line-height:1.5}
+.ck-strip-viewport{width:100%;max-width:100%;overflow:auto;border:1px solid #b9ccd0;border-radius:8px;background:white;overscroll-behavior-x:contain;}
+.ck-strip-inner{width:100%;position:relative;min-width:0}.ck-strip-inner img{display:block;width:100%;height:auto;max-width:none}
+.ck-ecg-expanded .ck-strip-inner{width:1200px;max-width:none}
+.ck-ecg-schematic{width:100%;height:auto;max-width:780px;display:block;margin:12px auto}
+.ck-ecg-controls{display:flex;gap:8px;flex-wrap:wrap}.ck-ecg-controls button{min-height:44px;white-space:normal}
+.ck-ecg-marker{position:absolute;transform:translate(-50%,-50%);background:#fff0b0;border:2px solid #8a5700;color:#372700;font-size:12px;font-weight:700;border-radius:50%;width:22px;height:22px;text-align:center;line-height:22px;box-shadow:0 1px 3px #ffffff;pointer-events:none}
+.ck-hide-markers .ck-ecg-marker{display:none}.ck-marker-key{font-size:13px}
+.ck-ecg-atlas,.ck-ecg-example{min-width:0;box-sizing:border-box}.ck-ecg-example>summary{font-size:15px}
+@media(max-width:600px){.ck-ecg-atlas{padding:10px}.ck-ecg-example{padding:10px}.ck-ecg-marker{width:18px;height:18px;line-height:18px;font-size:11px}.ck-ecg-controls .btn{flex:1}.ck-ecg-atlas .ck-note{padding:10px}}
+
+/* Special-patient phase navigation stays within the knowledge dialog. */
+.ck-phase-nav{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0}.ck-phase-nav .btn{min-height:44px;white-space:normal}.ck-phase{scroll-margin-top:150px}
+@media(max-width:600px){.ck-phase-nav .btn{flex:1 1 120px}}

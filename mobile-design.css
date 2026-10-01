@@ -1,0 +1,185 @@
+/* Figma mobile release. All clinical inputs, controllers and evidence retain their original IDs. */
+@font-face{font-family:Inter;font-style:normal;font-weight:600;font-display:swap;src:url('./assets/fonts/inter-600.ttf') format('truetype')}
+@font-face{font-family:Inter;font-style:normal;font-weight:700;font-display:swap;src:url('./assets/fonts/inter-700.ttf') format('truetype')}
+:root{--av-brand:#164d46;--av-aqua:#7ce9e5;--av-text:#f4fbfa;--av-muted:#a7c1c1;--av-card:rgba(13,52,56,.72);--av-border:rgba(58,203,199,.23);--av-radius:16px;--av-footer:84px;--primary:#164d46;--primary2:#16716a;--primary-soft:#eaf2ee;--line:#d9e3dd;--muted:#596d6b;--ink:#182b2d;--shadow:none}
+html{background:#031317;font-family:"ANESVET Thai",Inter,system-ui,-apple-system,Tahoma,sans-serif;color:var(--av-text)}
+body{background:linear-gradient(180deg,#0b2d31 0%,#061c20 50%,#031317 100%);background-attachment:fixed;min-height:100vh;min-height:100dvh;font-size:16px;line-height:1.625}
+button,input,select,textarea{font-family:inherit}
+button{touch-action:manipulation;cursor:pointer}
+button:disabled{cursor:default}
+.av-card[hidden],.av-button[hidden],.av-bottom-context[hidden],.av-home-content>[hidden]{display:none!important}
+button:focus-visible,a:focus-visible,summary:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid #20a89e!important;outline-offset:3px}
+:where(button.btn,.tabpage button,.tabpage summary,dialog button,dialog summary){min-height:48px;font-size:14px}
+:where(input:not([type=checkbox]):not([type=radio]),select,textarea){font-size:16px!important;border-radius:10px;min-height:48px;color:var(--ink);background:#fff;accent-color:var(--av-brand)}
+:where(label,.section-heading p,.panel p,.hint){font-size:14px}
+h2{font-size:20px;line-height:1.5}h3{font-size:18px}
+.btn{border-radius:10px;box-shadow:none;font-weight:600}.btn.primary{background:var(--av-brand);color:#fff;border-color:var(--av-brand)}
+.btn.light{color:var(--av-brand);background:#fff;border-color:var(--line)}
+main{max-width:1180px;padding:16px 20px calc(var(--av-footer) + 24px + env(safe-area-inset-bottom));margin:auto}
+.panel,.summary-card,.chart-card{border-radius:var(--av-radius);box-shadow:none;border-color:var(--line);color:var(--ink);background:#fff}
+.tabpage{color:var(--ink)}
+.tabpage>.section-heading,.tabpage>.page-heading{color:var(--av-text)}
+.topbar{background:transparent;color:var(--av-text);box-shadow:none;border-bottom:1px solid var(--av-border)}
+.topbar .brand h1{font-size:20px}.topbar .brand h1 span{color:var(--av-muted);font-size:12px}.topbar .eyebrow{display:none}
+.brand-logo{border-radius:50%}.topbar .top-actions{gap:8px}.case-clock{color:var(--av-aqua)}
+.case-strip{background:var(--av-card);color:var(--av-text);border:1px solid var(--av-border);border-radius:16px;box-shadow:none}
+.case-strip .label{color:var(--av-muted)}
+.workflow-tabs{background:transparent;border:0;box-shadow:none;gap:6px}.workflow-tabs .tab{border-radius:10px;background:#fff;color:var(--av-brand);min-height:48px}.workflow-tabs .tab.active{background:#eaf2ee;color:var(--av-brand);box-shadow:inset 0 -3px 0 var(--av-brand)}
+.av-bar{display:flex;align-items:center;gap:12px;padding:16px;min-height:80px;color:var(--av-text)}
+.av-bar img{width:36px;height:36px;border-radius:50%;flex:none}.av-bar-copy{flex:1;min-width:0}.av-bar h2{margin:0;font-size:20px;font-weight:700}.av-bar small{display:block;color:var(--av-muted);font-size:12px;line-height:20px}
+.av-bar .av-save-status{color:var(--av-aqua)}.av-bar .av-save-error{color:#ffd999}
+.av-square{width:48px;min-width:48px;height:48px;border-radius:10px;border:1px solid var(--line);background:#fff;color:var(--av-brand);font:inherit}
+.av-home{color:var(--av-text);max-width:560px;margin:0 auto;min-height:calc(100dvh - 32px);position:relative}
+.av-home.active{display:flex;flex-direction:column}
+.av-home-content{padding:12px 16px 24px;display:grid;gap:16px;flex:1;align-content:start}
+.av-home h1{margin:0;font-size:28px;line-height:40px}.av-home p{margin:0;color:var(--av-muted);font-size:16px;line-height:26px}
+.av-card{border:1px solid var(--av-border);border-radius:16px;background:var(--av-card);padding:16px;color:var(--av-text);display:grid;gap:12px;min-width:0}
+.av-card .av-kicker{color:var(--av-aqua);font-size:14px;line-height:22px;font-weight:600}
+.av-card h2{margin:0;font-size:28px;line-height:40px;overflow-wrap:anywhere}.av-card small{font-size:12px;line-height:20px;color:var(--av-muted)}
+.av-card-title{font-size:14px;line-height:22px;margin:0}.av-case-phase{display:flex;justify-content:space-between;gap:12px;font-size:14px;color:var(--av-aqua);flex-wrap:wrap}
+.av-button{display:flex;align-items:center;justify-content:center;min-height:52px;padding:12px 16px;text-align:center;background:#fff;color:var(--av-brand);border:1px solid var(--line);border-radius:10px;font:inherit;font-size:14px;font-weight:600;line-height:22px;text-decoration:none}
+.av-button-primary{background:var(--av-aqua);color:var(--av-brand);border-color:var(--av-aqua)}
+.av-button:disabled{background:#dce7e6;border-color:#dce7e6;color:#556c69;opacity:1}
+.av-home-actions{position:sticky;bottom:0;display:grid;gap:12px;padding:12px 16px calc(24px + env(safe-area-inset-bottom));background:linear-gradient(180deg,transparent,#031317 20%);z-index:4}
+.av-action-pair{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.av-menu-list{display:grid;gap:12px}.av-menu-item{display:flex;align-items:center;gap:12px;justify-content:space-between;min-height:80px;width:100%;padding:16px;text-align:left;border-radius:16px;border:1px solid var(--av-border);background:var(--av-card);color:var(--av-text);font:inherit}
+.av-menu-item span{display:grid;gap:4px;min-width:0}.av-menu-item b{font-size:14px;line-height:22px;font-weight:600}.av-menu-item small{color:var(--av-muted);font-size:12px;line-height:20px}.av-menu-item>i{font-style:normal;color:var(--av-aqua);font-size:24px}
+.av-hub,.av-more{max-width:760px;margin:0 auto;color:var(--av-text)}.av-hub h2,.av-more h2{margin-top:0}
+.av-workspace-header{display:none}.av-bottom{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:760px;z-index:18;padding:12px 16px calc(20px + env(safe-area-inset-bottom));border-top:1px solid var(--av-border);background:#061c20;display:grid;gap:12px}
+.av-mobile-design #mobileQuickBar,.av-mobile-design #orMobileDock,.av-mobile-design #recoveryMobileDock{display:none!important}
+.av-bottom[hidden]{display:none}.av-nav{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px}.av-nav button{border:0;background:#fff;color:var(--av-brand);border-radius:10px;min-height:56px;min-width:0;font:inherit;font-size:14px;font-weight:600;padding:6px 2px}.av-nav button[aria-current=page]{background:#eaf2ee;box-shadow:inset 0 -3px var(--av-brand)}
+.av-bottom-context{display:grid;grid-template-columns:minmax(0,1fr) 100px;gap:12px}.av-bottom-context[hidden]{display:none}.av-bottom-context .av-button{min-height:48px;background:var(--av-brand);color:#fff;border-color:var(--av-brand)}.av-bottom-context .av-button+button{background:white;color:var(--av-brand);border-color:var(--line)}
+.av-boot{position:fixed;inset:0;z-index:100;background:linear-gradient(#0b2d31,#061c20 50%,#031317);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center;color:var(--av-text)}
+.av-boot[hidden]{display:none}.av-boot img{width:220px;height:220px;max-width:60vw;object-fit:contain;border-radius:50%}.av-boot h1{font-size:42px;font-weight:700;letter-spacing:.02em;margin:20px 0 8px}.av-boot p{color:var(--av-muted);font-size:14px}.av-boot .av-progress{width:120px;height:3px;background:var(--av-border);border-radius:3px;margin:16px}.av-progress:after{content:"";display:block;height:3px;width:40px;border-radius:3px;background:var(--av-aqua);animation:av-progress 1s ease-in-out infinite alternate}.av-boot .av-button{min-width:220px;margin-top:12px}
+@keyframes av-progress{to{transform:translateX(80px)}}
+.av-home-open>.topbar,.av-home-open>main>.case-strip,.av-home-open>main>.workflow-tabs,.av-home-open>main>.workflow-more-wrap,.av-home-open #mobileQuickBar,.av-home-open>.footer-note{display:none!important}
+.av-home-open>main{padding:0 0 12px}
+.av-home-open #patientRiskBanner{margin:12px 16px}
+.av-home-open #anesvetIssueFloatingBtn{bottom:150px}
+.av-booting>main,.av-booting>.topbar{visibility:hidden}
+.av-boot-error>.topbar,.av-boot-error>.footer-note{display:none!important}
+.av-boot-error>main>*:not(.session-banner){display:none!important}
+.av-boot-error #caseFreshnessBanner{display:block!important}
+.av-boot-error .av-boot{position:relative;min-height:100dvh;z-index:auto}
+.av-boot-error .av-boot img{width:80px;height:80px}.av-boot-error .av-boot h1{font-size:28px}.av-boot-error .av-progress{display:none}
+.av-boot-error main{visibility:visible;padding-bottom:24px}
+.av-boot-error #avBottom{display:none}
+.av-page-tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.av-page-tools .av-button{min-height:48px}
+.av-native-heading{margin:0 0 16px;color:var(--av-text);display:flex;align-items:center;justify-content:space-between;gap:12px}.av-native-heading h2{margin:0}.av-native-heading small{color:var(--av-muted);font-size:12px}
+.or-vital-card{background:#fff;color:var(--ink);border-radius:16px;box-shadow:none;border:1px solid var(--line)}
+.or-vital-card input{color:var(--ink);font-family:Inter,system-ui,sans-serif;font-variant-numeric:tabular-nums;font-size:28px!important;font-weight:600;line-height:34px}
+.or-command-bar{background:var(--av-card);border:1px solid var(--av-border);border-radius:16px;color:var(--av-text);box-shadow:none}.or-command-bar .or-patient-block :is(.or-patient-line h2,.or-procedure-line){color:var(--av-text)}.or-command-bar :is(.or-patient-line>span:not(.status-pill),.or-team-line,.eyebrow){color:var(--av-muted)}
+.or-primary-flow,.or-status-row,.or-recent-panel{border-radius:16px;box-shadow:none}
+.toast{border-radius:12px;bottom:calc(var(--av-footer) + 12px + env(safe-area-inset-bottom));font-size:14px;background:#182b2d}
+@media(max-width:767px){
+  body.av-mobile-design main{padding:16px 16px calc(var(--av-footer) + 24px + env(safe-area-inset-bottom))!important}
+  body.av-home-open main{padding:0!important}
+  body.av-mobile-design>.topbar{display:none!important}
+  body.av-mobile-design main>.workflow-tabs,body.av-mobile-design main>.workflow-more-wrap,body.av-mobile-design #mobileQuickBar,body.av-mobile-design #orMobileDock,body.av-mobile-design #recoveryMobileDock{display:none!important}
+  .av-workspace-header{display:block;position:sticky;top:0;z-index:19;background:#0b2d31;color:var(--av-text);border-bottom:1px solid var(--av-border);padding-top:env(safe-area-inset-top)}
+  .av-workspace-header .av-bar{min-height:76px;padding:10px 16px;gap:12px}
+  .av-workspace-header .av-utility{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;min-height:48px;font-size:12px;color:var(--av-muted)}
+  .av-utility button{display:flex;align-items:center;gap:10px;background:none;border:0;color:inherit;font:inherit;padding:0;min-height:24px}
+  .av-utility img{width:7px;height:7px}
+  .av-home-open .av-workspace-header{display:none}
+  .av-mobile-design .case-strip{display:none!important}
+  .av-mobile-design .tabpage{min-width:0}
+  .av-mobile-design .panel{padding:16px;overflow-wrap:anywhere}
+  .av-mobile-design :is(.section-heading,.patient-section-heading){gap:12px;flex-wrap:wrap}
+  .av-mobile-design .tabpage>.section-heading h2,.av-mobile-design .tabpage>.patient-hero h2{color:var(--av-text)!important}
+  .av-mobile-design .tabpage>.section-heading p,.av-mobile-design .tabpage>.patient-hero p{color:var(--av-muted)!important}
+  .av-mobile-design .section-heading p{font-size:14px}
+  .av-mobile-design :is(.patient-form-grid,.form-grid,.settings-grid,.case-form,.case-team-grid,.plan-grid){gap:12px!important}
+  .av-mobile-design .patient-form-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  .av-mobile-design .patient-form-grid label{font-size:14px}
+  .av-mobile-design :is(.form-grid,.settings-grid,.plan-grid){grid-template-columns:repeat(2,minmax(0,1fr))}
+  .av-mobile-design :is(.form-grid,.settings-grid,.plan-grid)>*{min-width:0}
+  body.av-mobile-design #orlive{display:none}
+  body.av-mobile-design #orlive.active{display:flex!important;flex-direction:column;gap:16px}
+  body.av-mobile-design #orlive.active>*{order:20}
+  body.av-mobile-design #orlive>.or-command-bar{order:0}
+  body.av-mobile-design #orlive>.or-vital-grid{order:2;gap:12px!important}
+  body.av-mobile-design #orlive>.or-primary-flow{order:4}
+  body.av-mobile-design.av-or-ready #orlive>.or-primary-flow{order:1}
+  body.av-mobile-design #orlive>#orVitalsFocus{order:3}
+  body.av-mobile-design #orlive>.or-status-row{order:5}
+  body.av-mobile-design #orlive>#orMedicationQueue{order:6}
+  body.av-mobile-design #orlive>#orDocumentationGuardian{order:7}
+  body.av-mobile-design #orlive>.or-secondary-grid{order:8}
+  body.av-mobile-design #orlive>#orFluidPanelDetails{order:9}
+  body.av-mobile-design #orlive>#orAirwayPanelDetails{order:10}
+  body.av-mobile-design #orlive>.or-lower-grid{order:11}
+  body.av-mobile-design #orlive>#orCaseContextPanel{order:12}
+  body.av-mobile-design #orlive>.or-phase-tracker-panel{order:13}
+  body.av-mobile-design #orlive .or-vital-card{padding:12px!important;min-height:108px!important;border-radius:16px!important}
+  body.av-mobile-design #orlive .or-vital-card input{font-size:28px!important;font-weight:600!important;letter-spacing:normal!important;margin:0!important;min-height:38px!important;height:38px!important}
+  body.av-mobile-design #orlive .or-vital-card footer{min-height:0!important;font-weight:500!important}
+  body.av-mobile-design #orlive:before{content:"";position:absolute;pointer-events:none;width:390px;height:640px;background:url('./assets/visual-glow.svg') no-repeat;top:0;left:50%;transform:translateX(-50%);z-index:-1}
+  .av-mobile-design .or-command-bar{order:0;display:block!important;padding:12px!important;margin:0!important;position:static!important}
+  .av-mobile-design .or-patient-line{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .av-mobile-design #orPatientName{font-size:14px;line-height:22px;margin:0;flex:1}
+  .av-mobile-design #orPatientMeta{font-size:12px;line-height:20px;flex-basis:100%;order:4}
+  .av-mobile-design #orProcedureLine{font-size:12px;margin-top:4px}
+  .av-mobile-design .or-timer-block{display:flex!important;align-items:center;gap:8px;flex-wrap:wrap;margin-top:12px;padding:0;background:none;border:0}
+  .av-mobile-design .or-case-clock{font-size:28px!important;line-height:34px;color:#22aaa6!important;margin-left:auto}
+  .av-mobile-design .or-timer-block{margin-top:4px}
+  .av-mobile-design #orTeamLine,.av-mobile-design #orStickyMini,.av-mobile-design .or-command-bar .eyebrow,.av-mobile-design #orWorkflowBadge,.av-mobile-design #orPhaseBadge{display:none!important}
+  .av-mobile-design .or-vital-grid{order:2;display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:12px!important;margin:0!important}
+  .av-mobile-design .or-vital-card{padding:12px!important;min-height:108px!important;margin:0!important}
+  .av-mobile-design .or-vital-card[data-vital=temp]{order:5}.av-mobile-design .or-vital-card[data-vital=rr]{order:6}
+  .av-mobile-design .or-vital-card input{min-height:38px!important;height:38px!important;padding:0!important;border:0!important;background:none!important;border-radius:0}
+  .av-mobile-design .or-vital-card :is(small,footer){font-size:12px!important;line-height:20px}
+  .av-mobile-design #orVitalsFocus{order:3;margin:0!important;padding:12px!important;border-radius:16px!important}
+  .av-mobile-design .or-primary-flow{order:4;margin:0!important;display:flex!important;flex-direction:column;gap:12px;padding:16px!important}
+  .av-mobile-design .or-primary-buttons{display:flex;flex-wrap:wrap;gap:8px}.av-mobile-design .or-primary-buttons>button{flex:1;min-height:48px}
+  .av-mobile-design .or-status-row{order:5;margin:0!important;background:var(--av-card);border:1px solid var(--av-border);color:var(--av-text);padding:12px!important}
+  .av-mobile-design .or-status-box span,.av-mobile-design #orLastRecord,.av-mobile-design #orNextDue{color:var(--av-muted)}
+  .av-mobile-design #orMedicationQueue{order:6}.av-mobile-design #orDocumentationGuardian{order:7}.av-mobile-design .or-secondary-grid{order:8}.av-mobile-design #orFluidPanelDetails{order:9}.av-mobile-design #orAirwayPanelDetails{order:10}.av-mobile-design .or-recent-panel{order:11}.av-mobile-design #orCaseContextPanel{order:12}.av-mobile-design .or-phase-tracker-panel{order:13}
+  .av-mobile-design .or-secondary-grid{display:grid!important;gap:16px}
+  .av-mobile-design :is(.or-bp-panel,.or-workflow-problems,.or-alert-panel){display:block!important}
+  .av-mobile-design #orlive>:is(section,details){max-width:100%;min-width:0}
+  .av-mobile-design .or-vitals-focus-head{display:none!important}
+  .av-mobile-design .or-vitals-focus-actions{display:flex!important;flex-wrap:wrap;gap:8px}
+  .av-mobile-design .or-vitals-focus-actions>button{flex:1;min-height:48px}
+  .av-mobile-design :is(.or-vital-change-summary,.or-vital-save-feedback){width:100%;font-size:12px}
+  .av-mobile-design #orVitalsFocus .or-quick-med-strip{display:none!important}
+  .av-mobile-design .recovery-command-bar{border-radius:16px;box-shadow:none}
+  .av-mobile-design dialog:not(.security-lock-overlay){max-width:calc(100vw - 16px);max-height:calc(100dvh - 16px);overflow:auto}
+  .av-mobile-design .ck-dialog{max-width:100vw;max-height:100dvh}
+  .av-mobile-design dialog :is(.btn,button){font-size:14px;min-height:48px}
+  .av-mobile-design .footer-note{color:var(--av-muted);font-size:12px;padding-bottom:calc(var(--av-footer) + 20px)}
+  .av-native-heading{display:none}
+  body.r27-keyboard-open #avBottom,body.r27-keyboard-open .av-home-actions{display:none!important}
+  body.r27-keyboard-open main{padding-bottom:24px!important}
+  .av-boot-error main{padding:16px!important}
+}
+@media(min-width:768px){.av-bottom{max-width:560px;border-radius:16px 16px 0 0}.av-home-actions{bottom:0}.av-native-heading{padding-top:8px}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+@media print{.av-bottom,.av-workspace-header,.av-boot,.av-home-actions{display:none!important}body,html{background:white;color:black}main{padding:0!important}.av-home-open>.topbar{display:block!important}}
+/* Compact OR workspace; abnormal threshold messages remain fully visible. */
+.av-measurement-status{color:#f4fbfa!important}
+.av-measurement-status[hidden]{display:none!important}
+.av-threshold-details{margin-top:12px;padding:8px 12px;border:1px solid var(--line);border-radius:12px;background:white;color:var(--ink)}
+.av-threshold-details summary{display:flex;align-items:center;min-height:48px;cursor:pointer;font-size:14px}
+.av-threshold-details p{font-size:14px;line-height:1.6;overflow-wrap:anywhere}
+@media(max-width:767px){
+  body.av-mobile-design[data-av-page=orlive] main{padding-top:10px!important}
+  body[data-av-page=orlive] .av-workspace-header .av-utility{display:none}
+  body[data-av-page=orlive] .av-workspace-header .av-bar{padding:8px 16px;min-height:80px}
+  body[data-av-page=orlive] #avWorkspaceTitle{font-size:18px;line-height:24px}
+  body[data-av-page=orlive] #avWorkspaceCase{display:none}
+  body[data-av-page=orlive] .av-bottom{padding-top:8px;padding-bottom:calc(12px + env(safe-area-inset-bottom));gap:8px}
+  body[data-av-page=orlive] .av-nav button{min-height:48px}
+  body.av-mobile-design #orlive.active{gap:10px}
+  body.av-mobile-design #orlive .or-command-bar{padding:8px 12px!important}
+  body.av-mobile-design #orlive #orPatientMeta{flex-basis:auto;order:0}
+  body.av-mobile-design #orlive #orProcedureLine{margin:0;line-height:18px}
+  body.av-mobile-design #orlive .or-timer-block{margin-top:2px;gap:6px}
+  body.av-mobile-design #orlive .or-case-clock{font-size:24px!important;line-height:28px}
+  body.av-mobile-design #orlive>.or-vital-grid{gap:8px!important}
+  body.av-mobile-design #orlive .or-vital-card{padding:8px 10px!important;min-height:104px!important}
+  body.av-mobile-design #orlive .or-vital-card input{min-height:48px!important;height:48px!important;font-size:28px!important}
+  body.av-mobile-design #orlive .or-vital-card :is(small,.or-vital-delta){line-height:18px;font-size:12px!important}
+  body.av-mobile-design #orlive .or-vital-card:is(.good,.neutral) footer{display:none}
+  body.av-mobile-design #orlive .or-vital-card:is(.warn,.danger) footer{display:block;white-space:normal;overflow:visible;line-height:20px}
+}

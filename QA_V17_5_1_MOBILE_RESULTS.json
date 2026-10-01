@@ -1,0 +1,88 @@
+{
+  "version": "17.5.1",
+  "passed": 19,
+  "total": 19,
+  "errors": [],
+  "tests": [
+    {
+      "name": "Empty startup uses live storage, blank BW, no onboarding obstruction",
+      "pass": true
+    },
+    {
+      "name": "Primary action reaches original patient fields",
+      "pass": true
+    },
+    {
+      "name": "OR and Recovery tabs retain readiness gates",
+      "pass": true
+    },
+    {
+      "name": "Real patient setup save confirms measured BW and survives reload",
+      "pass": true
+    },
+    {
+      "name": "Case hub and every More route remain reachable without mutating clinical state",
+      "pass": true
+    },
+    {
+      "name": "Knowledge and BOAS/cardiac/pancreatitis/liver/kidney/ECG stay read only",
+      "pass": true
+    },
+    {
+      "name": "Progressed case resumes directly into OR with six real inputs",
+      "pass": true
+    },
+    {
+      "name": "Vitals save records actual fields and survives reload",
+      "pass": true
+    },
+    {
+      "name": "Six measured inputs fit above footer at 360x780; threshold details preserve native text",
+      "pass": true
+    },
+    {
+      "name": "Draft change is distinguished from saved record; critical hints remain visible",
+      "pass": true
+    },
+    {
+      "name": "Downloaded worker waits for explicit update and restores actual case after promotion",
+      "pass": true
+    },
+    {
+      "name": "Footer Meds opens actual medication editor, no automatic administration",
+      "pass": true
+    },
+    {
+      "name": "Actual medication validates fields, respects cancel, saves once and persists",
+      "pass": true
+    },
+    {
+      "name": "OR tools retain native timer/wake/fullscreen and close correctly",
+      "pass": true
+    },
+    {
+      "name": "Layout works at 360, 393, 768 and 1280 without page overflow",
+      "pass": true
+    },
+    {
+      "name": "PWA reload is offline-ready with all new assets and local fonts",
+      "pass": true
+    },
+    {
+      "name": "Recovery resumes, records real observations, OR remains locked",
+      "pass": true
+    },
+    {
+      "name": "Unreadable storage fails closed with retry and review, original bytes preserved",
+      "pass": true
+    },
+    {
+      "name": "No uncaught runtime errors",
+      "pass": true
+    }
+  ],
+  "limits": [
+    "Chromium mobile emulation; physical iOS/Android not tested.",
+    "Clinical knowledge and dose rules are inherited, not independently clinically approved by this UI test."
+  ]
+}

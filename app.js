@@ -39,7 +39,7 @@ const SESSION_TTL_MS=30000;
 const SESSION_HEARTBEAT_MS=5000;
 const DB_NAME='ANESVET_DB';
 const DB_VERSION=2;
-const APP_VERSION='17.2.31';
+const APP_VERSION='17.5.1';
 const SECURITY=window.ANESVET_SECURITY_BASELINE||null;
 const SYNC_FOUNDATION=window.ANESVET_SYNC_FOUNDATION||null;
 const DOSE_REF=window.ANESVET_DOSE_REFERENCE||null;
@@ -1010,6 +1010,11 @@ function load(){
       }
     }
     if(!('caseLocked' in state))state.caseLocked=false;
+    if(!('simulationMode' in state))state.simulationMode=false;
+    if(!('simulationScenario' in state))state.simulationScenario='';
+    if(!('simulationLabel' in state))state.simulationLabel='';
+    if(!('simulationStartedAt' in state))state.simulationStartedAt=null;
+    if(!('simulationVersion' in state))state.simulationVersion='';
     if(!Array.isArray(state.recoveryRecords))state.recoveryRecords=[];
     if(!Array.isArray(state.recoveryNA))state.recoveryNA=[false,false,false,false,false,false];
     if(!state.recoveryObservationNA||typeof state.recoveryObservationNA!=='object')state.recoveryObservationNA={spo2:false,temp:false,extubation:false};
@@ -1503,14 +1508,16 @@ $('savePatientBtn').addEventListener('click',async()=>{
   if(!Number.isFinite(weight)||weight<=0){toast('กรุณาใส่น้ำหนักที่ถูกต้อง');$('weight').focus();return}
   const identityNext=currentCaseIdentityFromForm(),identityDiff=caseIdentityChanges(identityNext);let identityCorrection=null;
   if(identityDiff.length){const reason=prompt(`⚠ Active case identity / BW change\n\n${identityDiff.join('\n')}\n\nReason for correction (required):`,'');if(!reason?.trim()){toast('Identity/BW correction cancelled');return}const actor=prompt('Corrected by',$('anesthetist')?.value.trim()||'');if(!actor?.trim())return;if(!confirm(`Apply correction to active case?\n\n${identityDiff.join('\n')}\n\nReason: ${reason.trim()}\nBy: ${actor.trim()}`))return;identityCorrection={reason:reason.trim(),actor:actor.trim(),changes:identityDiff}}
-  syncPatientProcedureToCase();state.procedureTemplateId=$('procedureTemplateId')?.value||state.procedureTemplateId||'custom';state.caseWorkflowProfile=$('caseWorkflowProfile')?.value||state.caseWorkflowProfile||'routine';const master=await upsertPatientMasterFromCurrent();if(master===false)return;state.patientSaved=true;
+  syncPatientProcedureToCase();state.procedureTemplateId=$('procedureTemplateId')?.value||state.procedureTemplateId||'custom';state.caseWorkflowProfile=$('caseWorkflowProfile')?.value||state.caseWorkflowProfile||'routine';
+  if(!state.simulationMode){const master=await upsertPatientMasterFromCurrent();if(master===false)return}else{state.patientMasterId='';if($('patientMasterId'))$('patientMasterId').value=''}
+  state.patientSaved=true;
   if(identityCorrection){state.caseIdentitySnapshot={...identityNext,capturedAt:Date.now()};addAudit('CASE_IDENTITY_BW_CORRECTED',`${identityCorrection.changes.join(' • ')} • Reason: ${identityCorrection.reason}`,identityCorrection.actor)}
   save();syncAsaCards();updatePatientSaveStatus();
   // V14.6.4: current-weight dependent UI was calculated while patientSaved=false during typing.
   // Recalculate immediately after Save so a NEW patient's confirmed BW propagates to Drug/Fluid/Plan views
   // without requiring a reload, another field edit, or re-selecting the patient.
   updateDashboard();
-  toast('บันทึก Patient Master + Case Setup แล้ว');renderWorkflowLocks();setTab('preop');
+  toast(state.simulationMode?'Simulation: บันทึก Demo Case Setup แล้ว • ไม่สร้าง Patient Master':'บันทึก Patient Master + Case Setup แล้ว');renderWorkflowLocks();setTab('preop');
 });
 $('editPatientBtn').addEventListener('click',()=>setTab('patient'));
 ['patientName','hospitalId','visitId','species','sex','reproductiveStatus','microchip','breed','birthDate','approxAgeYears','approxAgeMonths','approxAgeWeeks','weight','bcs','emergency','patientProcedure','patientAllergies','patientComorbidities','patientPrecautions','caseWorkflowProfile','surgeon','anesthetist','surgicalAssistant'].forEach(id=>{
@@ -1556,7 +1563,7 @@ let wakeLock=null;
 const OR_LIVE_CONTROLLER=window.ANESVET_OR_LIVE_CONTROLLER?.create?.({
   $,$$,escapeHtml,formatClock,formatElapsed,formatShortElapsed,pad,toast,getState:()=>state,
   orSync:OR_SYNC,workflow:globalThis.AnesvetWorkflow,procedureTemplates:PROCEDURE_TEMPLATES,getTempDisplayUnit:()=>activeTempDisplayUnit,tempStoredFToDisplay,tempTextF,
-  currentElapsed,clinicalWriteAllowed,save,scheduleAutosave,addAudit,addEvent,addRecord,setTab,
+  currentElapsed,clinicalWriteAllowed,save,scheduleAutosave,addAudit,addEvent,addRecord,setTab,maybeShowCriticalClinicalAlert,
   activeProcedureTemplate,frozenQuickDrugs,openOrQuickDrug,caseDrugPlanPhaseLabel,fmtDose,renderProcedureTimeline,renderProcedureTemplatePicker,renderEvents,
   renderOrPhaseTracker,thresholds,getVal,phaseLabel,phaseClass,preopRiskSummaryLabels,latestRecord,vitalRecordSummary,renderOrVitalChangeState,renderOrQuickMedStrip,
   alertThresholdHint,withAlertAdvice,getSmartAlerts,renderOrFluidPanel,renderSaveState,renderRecoveryState,renderComplications,renderAlertProtocolStatus,renderActiveProblems,
@@ -2165,10 +2172,14 @@ function openClinicalGuide(key,{auto=false}={}){
   if(metric&&$('clinicalGuideNote'))$('clinicalGuideNote').textContent=thresholdSummary(metric,protocol)+' • Verify monitor data and use clinical judgment / hospital protocol.';
   currentClinicalGuideHigh=!!(metric&&['map','spo2','temp'].includes(metric)&&protocol[metric].warningHigh!==null&&liveAlertValues()[metric]>protocol[metric].warningHigh);
   if(currentClinicalGuideHigh){$('clinicalGuideTitle').textContent=WF.labels[metric]+' above configured threshold';$('clinicalGuideSteps').innerHTML='<li>Verify the measurement, sensor and patient condition.</li><li>Reassess the patient and follow the case / hospital protocol.</li>';$('clinicalGuideNote').textContent='Custom upper threshold; individualized clinical assessment required.';}
-  const d=$('clinicalGuideDialog');try{if(d&&!d.open)d.showModal()}catch(e){d?.setAttribute('open','')}
+  const d=$('clinicalGuideDialog');
+  // Read-only knowledge routing reuses the existing configured direction; no alert mutation.
+  if(d)d.dataset.ckGuideTopic=(metric?knowledgeTopicForAlertEpisode({metric,value:liveAlertValues()[metric]}):({hypotension:'hypotension',hypoxemia:'hypoxemia',bradycardia:'bradycardia',hypothermia:'hypothermia'}[key]||''));
+  try{if(d&&!d.open)d.showModal()}catch(e){d?.setAttribute('open','')}
   if(auto){playDueTone('test');vibrateDue('anesthesia')}
 }
 function closeClinicalGuide(){try{$('clinicalGuideDialog')?.close()}catch(e){$('clinicalGuideDialog')?.removeAttribute('open')}}
+window.openClinicalGuide=openClinicalGuide;window.openComplicationDialog=openComplicationDialog;
 function maybeShowCriticalClinicalAlert(){syncAlertEpisodes();if(!sessionActive()||state.caseLocked||!state.caseStartedAt||['recovery','complete'].includes(state.casePhase))return;if(currentSettingsObject().criticalPopupEnabled===false||document.querySelector('dialog[open]'))return;const ep=(state.alertEpisodes||[]).find(a=>!a.resolvedAt&&!a.acknowledgedAt&&!a.popupShownAt&&(a.level||'danger')==='danger');if(!ep)return;ep.popupShownAt=Date.now();openClinicalGuide(ep.key,{auto:true});save();}
 function renderSapDapVisibility(){
   const cfg=currentSettingsObject(),show=cfg.showSapDap!==false;
@@ -3571,7 +3582,7 @@ function renderDrugLibrarySettings(){
       <label>Concentration unit<select data-field="concUnit"><option value="mg/mL" ${d.concUnit==='mg/mL'?'selected':''}>mg/mL</option><option value="μg/mL" ${d.concUnit==='μg/mL'?'selected':''}>μg/mL</option></select></label>
       <label>Route<input data-field="route" type="text" value="${escapeHtml(d.route||'')}"></label>
       <label class="favorite-cell">Favorite <input data-field="favorite" type="checkbox" ${d.favorite?'checked':''}></label>
-      <div class="drug-library-reference">${doseReferenceBrief(d.name)?doseReferenceButtonHtml(d.name,currentDoseReferenceSpecies(),'Reference range'):'<span>No loaded reference — verify source / hospital protocol</span>'}</div>
+      <div class="drug-library-reference"><button class="ck-drug-link session-safe" type="button" data-ck-drug="${escapeHtml(d.name)}">Drug knowledge ↗</button>${doseReferenceBrief(d.name)?doseReferenceButtonHtml(d.name,currentDoseReferenceSpecies(),'Reference range'):'<span>No loaded reference — verify source / hospital protocol</span>'}</div>
       <button class="remove-drug-row" type="button" data-remove="${i}" title="Remove">×</button>
     </div>`).join('');
 }
@@ -3897,6 +3908,7 @@ function freshState(){
     caseId:crypto.randomUUID?crypto.randomUUID():String(Date.now()),
     humanRecordId:makeHumanRecordId(Date.now()),
     createdAt:Date.now(),
+    simulationMode:false,simulationScenario:'',simulationLabel:'',simulationStartedAt:null,simulationVersion:'',
     timer:{running:false,startedEpoch:null,elapsedMs:0},
     records:[],events:[],responses:[],corrections:[],complications:[],drugAdministrations:[],alertEpisodes:[],recoveryScores:[],recoveryRecords:[],recoveryTransfers:[],fluidRateHistory:[],
     alertProtocolOverride:null,alertProtocolHistory:[],recoveryHandoffs:[],inductionDocumentationMode:'',inductionMedicationReviewCompletedAt:null,
@@ -3938,13 +3950,24 @@ function resetCurrent(){
   idbPutMeta('current',state);
   localStorage.setItem(TAB_KEY,'patient');
   releaseScreenWakeLock(true);
+  try{sessionStorage.setItem('anesvet_ui_next_page','patient')}catch(_){}
   restartAtAppRoot();
 }
 const hasActiveCaseData=()=>CASE_LIFECYCLE.hasActiveCaseData(state);
 const finalCaseIsSealed=(caseObj=state)=>CASE_LIFECYCLE.finalCaseIsSealed(caseObj);
 const versionReloadUnsafe=(caseObj=state)=>CASE_LIFECYCLE.versionReloadUnsafe(caseObj);
+function startSimulationCase({id='routine_dog',label='Simulation',seed={},replace=false}={}){
+  if(hasActiveCaseData()&&!state.simulationMode)return {ok:false,reason:'active-real-case'};
+  if(state.simulationMode&&hasActiveCaseData()&&!replace)return {ok:false,reason:'simulation-active'};
+  resetInProgress=true;criticalAlertLatch={map:false,spo2:false};cancelPendingPersistence();clearInterval(timerHandle);timerHandle=null;dueReminderToken=null;RECOVERY_CONTROLLER.resetDueReminder();
+  const next=freshState();Object.assign(next,JSON.parse(JSON.stringify(seed||{})));
+  next.simulationMode=true;next.simulationScenario=String(id||'routine_dog');next.simulationLabel=String(label||'Simulation');next.simulationStartedAt=Date.now();next.simulationVersion=APP_VERSION;next.patientMasterId='';next.patientSaved=false;next.casePhase='setup';
+  next.auditTrail=[{id:crypto.randomUUID?crypto.randomUUID():String(Date.now()+Math.random()),epoch:Date.now(),clock:formatClock(),elapsedMs:0,action:'SIMULATION_STARTED',detail:`${next.simulationLabel} • sandbox only • no Patient Master / real Archive`,actor:'System'}];
+  state=next;clearSafetyCheckpoint();const payload=JSON.stringify(state);localStorage.setItem(CURRENT_KEY,payload);CASE_FRESHNESS.committed(payload);idbPutMeta('current',state);localStorage.setItem(TAB_KEY,'patient');releaseScreenWakeLock(true);restartAtAppRoot();return {ok:true};
+}
+function exitSimulationCase(){if(!state.simulationMode)return {ok:false,reason:'not-simulation'};resetCurrent();return {ok:true}}
 $('newCaseBtn').addEventListener('click',async()=>{
-  if(state.caseLocked){const assurance=await verifyFinalArchive(state);try{document.dispatchEvent(new CustomEvent('anesvet:final-archive-status',{detail:assurance}))}catch(e){}if(!assurance.ok){toast('Final record is locked but archive verification has not passed — retry archive before starting a new case');setTab('endcase',{force:true});return;}}
+  if(state.caseLocked&&!state.simulationMode){const assurance=await verifyFinalArchive(state);try{document.dispatchEvent(new CustomEvent('anesvet:final-archive-status',{detail:assurance}))}catch(e){}if(!assurance.ok){toast('Final record is locked but archive verification has not passed — retry archive before starting a new case');setTab('endcase',{force:true});return;}}
   if(hasActiveCaseData()&&!confirm('Current case มีข้อมูลอยู่\n\nแนะนำ Archive หรือ Backup ก่อนเริ่มเคสใหม่\n\nต้องการเริ่ม New case ต่อหรือไม่?'))return;
   if(state.timer.running&&!confirm('Case timer กำลัง RUNNING — ยืนยันอีกครั้งว่าจะจบ current case และเริ่มใหม่?'))return;resetCurrent();
 });
@@ -3978,7 +4001,7 @@ dataFields.forEach(id=>{
 
 async function prepareForVersionUpdate(){
   const active=versionReloadUnsafe();
-  if(!active){versionUpdateReloadInProgress=true;return {ok:true,active:false}}
+  if(!active)return {ok:true,active:false};
   const preferredTab=state.casePhase==='recovery'?'recovery':(state.caseStartedAt||state.timer?.running||(state.timer?.elapsedMs||0)>0)?'orlive':(document.querySelector('.tabpage.active')?.id||localStorage.getItem(TAB_KEY)||'patient');
   if(sessionActive()){
     if(!save({reason:'version-update'}))return {ok:false,reason:'Current case could not be saved locally'};
@@ -3992,7 +4015,6 @@ async function prepareForVersionUpdate(){
     localStorage.setItem(TAB_KEY,preferredTab);
     localStorage.setItem(SAFE_UPDATE_KEY,JSON.stringify({caseId:persisted.caseId,resumeTab:preferredTab,preparedAt:Date.now(),fromVersion:APP_VERSION}));
   }catch(_){ }
-  versionUpdateReloadInProgress=true;
   return {ok:true,active:true,resumeTab:preferredTab};
 }
 window.addEventListener('beforeunload',e=>{
@@ -4086,10 +4108,20 @@ function syncAlertEpisodes(values=liveAlertValues(),{force=false,context='anesth
     ep.observationRevision=alertObservationRevision[metric]||0;ep.lastObservedAt=Date.now();ep.observationContext=context;
   }renderActiveProblems();
 }
+function knowledgeTopicForAlertEpisode(a){
+  const metric=alertMetricForEpisode(a),value=WF.numeric(a?.latestValue??a?.value),p=activeAlertProtocol();
+  if(!metric||value===null||!p?.[metric])return '';
+  const t=p[metric],isHigh=(t.criticalHigh!==null&&value>t.criticalHigh)||(t.warningHigh!==null&&value>t.warningHigh),isLow=(t.criticalLow!==null&&value<t.criticalLow)||(t.warningLow!==null&&value<t.warningLow);
+  if(metric==='map')return isHigh?'hypertension':isLow?'hypotension':'';
+  if(metric==='spo2')return isLow?'hypoxemia':'';
+  if(metric==='etco2')return isHigh?'hypercapnia':isLow?'lowetco2':'';
+  if(metric==='temp')return isLow?'hypothermia':'';
+  return '';
+}
 function renderActiveProblems(){
   const alerts=(state.alertEpisodes||[]).filter(a=>!a.resolvedAt).sort((a,b)=>(a.level==='warn'?1:0)-(b.level==='warn'?1:0)),problems=(state.complications||[]).filter(c=>c.status!=='resolved');
-  const rows=alerts.map(a=>({id:a.id,kind:'alert',title:a.label||a.key,level:a.level||'danger',started:a.clock,ack:a.acknowledgedAt,note:`${a.trigger||''} • Latest: ${alertMetricForEpisode(a)==='temp'?tempTextF(a.latestValue??a.value):(a.latestValue??a.value??'not recorded')}`,latest:(a.interventions||[]).at(-1)?.note})).concat(problems.map(c=>({id:c.id,kind:'problem',title:c.type,level:c.severity==='emergency'?'danger':'warn',started:c.clock,ack:c.acknowledgedAt,note:c.assessment||c.note,latest:(c.responses||[]).at(-1)?.note||c.intervention})));
-  for(const id of ['orProblemPanel','recoveryProblemPanel']){const box=$(id);if(!box)continue;box.innerHTML=rows.length?rows.map(r=>`<article class="active-problem ${r.level}" data-problem-id="${escapeHtml(r.id)}"><div><b>${escapeHtml(r.title)}</b> <span>${r.kind==='alert'?(r.level==='danger'?'CRITICAL':'WARNING'):'PROBLEM'} • ${escapeHtml(r.started||'')}</span></div><p>${escapeHtml(r.note||'')}</p>${r.latest?`<p>Latest intervention: ${escapeHtml(r.latest)}</p>`:''}<div class="problem-actions"><button class="btn" data-problem-action="ack" data-kind="${r.kind}" data-id="${escapeHtml(r.id)}" ${r.ack?'disabled':''}>${r.ack?'✓ Acknowledged':'Acknowledge'}</button><button class="btn" data-problem-action="intervention" data-kind="${r.kind}" data-id="${escapeHtml(r.id)}">Intervention</button><button class="btn" data-problem-action="resolve" data-kind="${r.kind}" data-id="${escapeHtml(r.id)}">Resolve / outcome</button></div></article>`).join(''):'<p class="empty-state compact">No unresolved alerts / problems</p>'}
+  const rows=alerts.map(a=>({id:a.id,kind:'alert',title:a.label||a.key,level:a.level||'danger',started:a.clock,ack:a.acknowledgedAt,note:`${a.trigger||''} • Latest: ${alertMetricForEpisode(a)==='temp'?tempTextF(a.latestValue??a.value):(a.latestValue??a.value??'not recorded')}`,latest:(a.interventions||[]).at(-1)?.note,knowledgeTopic:knowledgeTopicForAlertEpisode(a)})).concat(problems.map(c=>({id:c.id,kind:'problem',title:c.type,level:c.severity==='emergency'?'danger':'warn',started:c.clock,ack:c.acknowledgedAt,note:c.assessment||c.note,latest:(c.responses||[]).at(-1)?.note||c.intervention,knowledgeTopic:''})));
+  for(const id of ['orProblemPanel','recoveryProblemPanel']){const box=$(id);if(!box)continue;box.innerHTML=rows.length?rows.map(r=>`<article class="active-problem ${r.level}" data-problem-id="${escapeHtml(r.id)}"><div class="active-problem-heading"><div><b>${escapeHtml(r.title)}</b> <span>${r.kind==='alert'?(r.level==='danger'?'CRITICAL':'WARNING'):'PROBLEM'} • ${escapeHtml(r.started||'')}</span></div>${r.knowledgeTopic?`<button class="alert-knowledge-link" type="button" data-knowledge-topic="${escapeHtml(r.knowledgeTopic)}" aria-label="Open related OR knowledge" title="Why? What should I check?">?</button>`:''}</div><p>${escapeHtml(r.note||'')}</p>${r.latest?`<p>Latest intervention: ${escapeHtml(r.latest)}</p>`:''}<div class="problem-actions"><button class="btn" data-problem-action="ack" data-kind="${r.kind}" data-id="${escapeHtml(r.id)}" ${r.ack?'disabled':''}>${r.ack?'✓ Acknowledged':'Acknowledge'}</button><button class="btn" data-problem-action="intervention" data-kind="${r.kind}" data-id="${escapeHtml(r.id)}">Intervention</button><button class="btn" data-problem-action="resolve" data-kind="${r.kind}" data-id="${escapeHtml(r.id)}">Resolve / outcome</button></div></article>`).join(''):'<p class="empty-state compact">No unresolved alerts / problems</p>'}
   if($('orProblemCount'))$('orProblemCount').textContent=`${rows.length} OPEN`;window.ANESVET_PROBLEM_RESPONSE_REVIEW?.refresh?.();
 }
 function openProblemAction(kind,id,action){
@@ -4255,6 +4287,7 @@ $('dismissSafetyRecoveryBtn')?.addEventListener('click',()=>{startupRecoveryNoti
 BOOT?.mark?.('public-api-publishing');
 window.AnesvetApp=Object.freeze({
   getState:()=>state,
+  startupStatus:()=>({primaryUnreadable:startupPrimaryUnreadable,recoveredOnlyInMemory:startupRecoveredOnlyInMemory,restoreReview:restoreJournalNeedsReview(),freshnessBlocked:CASE_FRESHNESS.isBlocked(),freshnessReason:CASE_FRESHNESS.reason(),sessionActive:sessionActive()}),
   save:(options)=>save(options),
   audit:(action,detail,actor='')=>addAudit(action,detail,actor),
   escapeHtml:(value)=>escapeHtml(value),
@@ -4278,7 +4311,8 @@ window.AnesvetApp=Object.freeze({
   caseReview:Object.freeze({archives:()=>JSON.parse(JSON.stringify(getArchive()||[])),current:()=>JSON.parse(JSON.stringify(state||{}))}),
   architecture:Object.freeze({health:()=>window.ANESVET_ARCHITECTURE_REGISTRY?.summarize?.()||null}),
   syncFoundation:Object.freeze({snapshot:()=>SYNC_FOUNDATION?.snapshot?.()||null,inspect:()=>SYNC_FOUNDATION?.inspect?.()||null,syncNow:()=>SYNC_FOUNDATION?.syncNow?.()||Promise.resolve(null),probe:()=>SYNC_FOUNDATION?.probeAdapter?.()||Promise.resolve(null),previewRemote:(caseId,options)=>SYNC_FOUNDATION?.previewRemoteChanges?.(caseId,options)||Promise.resolve(null),reviewConflict:(id,options)=>SYNC_FOUNDATION?.reviewConflict?.(id,options)||null,exportConflictEvidence:(id)=>SYNC_FOUNDATION?.exportConflictEvidence?.(id)||null}),
-  caseLifecycle:Object.freeze({hasActive:()=>hasActiveCaseData(),isFinalSealed:(caseObj)=>finalCaseIsSealed(caseObj),reloadUnsafe:(caseObj)=>versionReloadUnsafe(caseObj)})
+  caseLifecycle:Object.freeze({hasActive:()=>hasActiveCaseData(),isFinalSealed:(caseObj)=>finalCaseIsSealed(caseObj),reloadUnsafe:(caseObj)=>versionReloadUnsafe(caseObj)}),
+  simulation:Object.freeze({active:()=>!!state.simulationMode,start:(options)=>startSimulationCase(options),exit:()=>exitSimulationCase()})
 });
 
 BOOT?.mark?.('public-api-published');

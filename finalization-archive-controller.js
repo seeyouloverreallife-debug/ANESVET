@@ -97,11 +97,18 @@ ${name}`))return;
     const activeComplications=(state.complications||[]).filter(x=>x.status!=='resolved').length;if(activeComplications){toast(`ยังมี ${activeComplications} active complication — resolve/document outcome ก่อน Lock`);return}
     if(!medicationReconciliationComplete()){toast('Reconcile planned medications: document each item as Given or Not given before Final Lock');focusMedicationReconciliation();return}
     const ready=renderFinalSignoff()&&['endConfirmRecovery','endConfirmRecord','endConfirmDrugs','endConfirmPdf'].every(id=>!!$(id)?.checked);if(!ready){toast('กรุณาตรวจ checklist และ Final Sign-off ก่อน End Case');return}
-    if(!confirm('End, LOCK & Archive this anesthesia case? หลัง archive เคสนี้จะถือเป็น final record'))return;
+    const simulation=!!state.simulationMode;
+    if(!confirm(simulation?'Complete this simulation?\n\nDemo data will NOT be added to Patient Master or Cases / Archive.':'End, LOCK & Archive this anesthesia case? หลัง archive เคสนี้จะถือเป็น final record'))return;
     if(state.timer?.running)ctx.pauseTimer?.();
-    state.casePhase='complete';state.caseLocked=true;state.lockedAt=Date.now();ctx.addAudit?.('CASE_LOCKED','Final clinical record locked');
+    state.casePhase='complete';state.caseLocked=true;state.lockedAt=Date.now();ctx.addAudit?.(simulation?'SIMULATION_COMPLETED':'CASE_LOCKED',simulation?'Simulation completed • no real archive created':'Final clinical record locked');
     state.finalChecksum=await ctx.computeCaseChecksum?.(ctx.getState());state.checksumAlgorithm='SHA-256';state.checksumCreatedAt=Date.now();
     ctx.renderCasePhase?.();ctx.save?.({persistLocked:true});await ctx.releaseScreenWakeLock?.(true);
+    if(simulation){
+      try{document.dispatchEvent(new CustomEvent('anesvet:simulation-complete',{detail:{caseId:state.caseId,scenario:state.simulationScenario||''}}))}catch(e){}
+      toast('Simulation complete • no real Archive record created');
+      if(typeof root.showCaseFinalizedDialog==='function')root.showCaseFinalizedDialog();
+      return;
+    }
     const archiveWriteOk=await archiveSnapshot(),assurance=await verifyFinalArchive(ctx.getState());
     try{document.dispatchEvent(new CustomEvent('anesvet:final-archive-status',{detail:{...assurance,archiveWriteOk}}))}catch(e){}
     if(!archiveWriteOk)toast('Final record is LOCKED but archive copy could not be verified — retry archive before starting a new case');
@@ -109,6 +116,7 @@ ${name}`))return;
   }
 
   async function archiveSnapshot(){
+    if(state.simulationMode){toast('Simulation Mode: Demo case is not written to Cases / Archive');return false}
     ctx.save?.();ctx.addAudit?.('CASE_ARCHIVED',state.caseLocked?'Locked final record archived':'Working copy archived');ctx.save?.();
     const snap=JSON.parse(JSON.stringify(ctx.getState()));if(!snap.humanRecordId)snap.humanRecordId=ctx.makeHumanRecordId?.(snap.createdAt||Date.now());if(snap.caseLocked&&!snap.finalChecksum){snap.finalChecksum=await ctx.computeCaseChecksum?.(snap);snap.checksumAlgorithm='SHA-256';snap.checksumCreatedAt=Date.now()}snap.archivedAt=Date.now();if(snap.caseLocked&&!snap.lockedAt)snap.lockedAt=Date.now();if(!Array.isArray(snap.amendments))snap.amendments=[];if(!Array.isArray(snap.auditTrail))snap.auditTrail=[];
     try{await ctx.initArchiveDb?.();if(getBackend()==='IndexedDB')await ctx.idbPutCase?.(snap);let rows=getCache().filter(c=>c.caseId!==snap.caseId);rows.unshift(snap);setCache(rows);if(getBackend()!=='IndexedDB')persistFallback();renderArchives();ctx.renderStorageStatus?.();if(snap.caseLocked)ctx.clearSafetyCheckpoint?.();toast('Archived current case');return true}catch(e){console.error(e);toast('Archive failed');return false}
@@ -116,7 +124,8 @@ ${name}`))return;
   function legacyFnv1aClinicalChecksum(caseObj){const text=JSON.stringify(ctx.originalClinicalPayload?.(caseObj)),prefix='FNV1A-';let h=2166136261;for(let i=0;i<text.length;i++){h^=text.charCodeAt(i);h=Math.imul(h,16777619)}return `${prefix}${(h>>>0).toString(16).padStart(8,'0').toUpperCase()}`}
   async function computeChecksumForStored(caseObj,storedChecksum){return String(storedChecksum||'').toUpperCase().startsWith('FNV1A-')?legacyFnv1aClinicalChecksum(caseObj):await ctx.computeCaseChecksum?.(caseObj)}
   async function verifyFinalArchive(caseObj=ctx.getState()){
-    const src=caseObj||ctx.getState();if(!src?.caseLocked)return {ok:false,code:'NOT_LOCKED',message:'Current record is not Final Locked'};
+    const src=caseObj||ctx.getState();if(src?.simulationMode&&src?.caseLocked)return {ok:true,code:'SIMULATION',message:'Simulation complete; no real archive is created',caseId:src.caseId,recordId:src.humanRecordId||'',backend:'Simulation sandbox',expectedChecksum:src.finalChecksum||''};
+    if(!src?.caseLocked)return {ok:false,code:'NOT_LOCKED',message:'Current record is not Final Locked'};
     if(!src.finalChecksum)return {ok:false,code:'NO_CHECKSUM',message:'Final Locked record has no checksum'};
     await ctx.initArchiveDb?.();
     const archived=getArchive().find(c=>c?.caseId===src.caseId);
@@ -128,6 +137,7 @@ ${name}`))return;
     return {ok,code:ok?'VERIFIED':(!currentMatches?'CURRENT_CHECKSUM_MISMATCH':!archiveMatches?'ARCHIVE_CHECKSUM_MISMATCH':'CHECKSUM_DIVERGENCE'),message:ok?'Locked current record and archived copy match the final checksum':'Final archive verification failed',caseId:src.caseId,recordId:src.humanRecordId||'',backend:getBackend(),lockedAt:src.lockedAt||0,archivedAt:archived.archivedAt||0,expectedChecksum:src.finalChecksum,archiveChecksum:archived.finalChecksum,currentComputed,archiveComputed,algorithm:expected.startsWith('FNV1A-')?'FNV1A-legacy':String(src.checksumAlgorithm||'SHA-256'),counts:{records:(archived.records||[]).length,recoveryRecords:(archived.recoveryRecords||[]).length,events:(archived.events||[]).length,drugAdministrations:(archived.drugAdministrations||[]).length,complications:(archived.complications||[]).length,audit:(archived.auditTrail||[]).length,amendments:(archived.amendments||[]).length}};
   }
   async function retryFinalArchive(){
+    if(state?.simulationMode)return {ok:true,code:'SIMULATION',message:'Simulation does not create a real archive',backend:'Simulation sandbox'};
     if(!state?.caseLocked)return {ok:false,code:'NOT_LOCKED',message:'Current record is not Final Locked'};
     const writeOk=await archiveSnapshot(),result=await verifyFinalArchive(ctx.getState());
     try{document.dispatchEvent(new CustomEvent('anesvet:final-archive-status',{detail:{...result,archiveWriteOk:writeOk,retry:true}}))}catch(e){}

@@ -138,7 +138,8 @@ function init(){
   $('onboardingBackBtn')?.addEventListener('click',walkthroughBack);
   $('onboardingNextBtn')?.addEventListener('click',walkthroughNext);
   $('onboardingDialog')?.addEventListener('click',e=>{if(e.target===$('onboardingDialog'))dismissWalkthrough()});
-  maybeAutoOnboard();
+  // The new home is the first-use entry; the full walkthrough remains in Help.
+  if(!document.getElementById('avHomeTitle'))maybeAutoOnboard();
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 window.AnesvetHelp=Object.freeze({open:openHelp,walkthrough:()=>openWalkthrough({replay:true})});
