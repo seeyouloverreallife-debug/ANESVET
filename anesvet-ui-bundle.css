@@ -3760,7 +3760,7 @@ body.av-mobile-design #orlive #orPrimaryActionBtn:disabled{background:#dce7e6!im
 }
 
 
-/* ANESVET V17.10.10 — workflow/IME feedback hardening */
+/* ANESVET V17.10.11 — workflow/IME feedback hardening */
 body.av-mobile-design .toast{
   z-index:80!important;
   bottom:calc(var(--av-footer,96px) + 16px + env(safe-area-inset-bottom))!important;
@@ -3774,7 +3774,7 @@ body[data-av-page="orlive"] #avContextWorkflow[data-native-target="orSecondaryPh
   font-weight:800;
 }
 
-/* V17.10.10 — calculated amount is the OR default; editing is opt-in */
+/* V17.10.11 — calculated amount is the OR default; editing is opt-in */
 .quick-drug-actual-card{display:grid;gap:.65rem;padding:.8rem;border:1px solid var(--line,#d7e1e3);border-radius:14px;background:var(--surface-soft,#f7fafb)}
 .quick-drug-default-dose{display:grid;gap:.12rem}
 .quick-drug-default-dose small{font-size:.7rem;font-weight:800;letter-spacing:.08em;opacity:.68}
@@ -3784,7 +3784,7 @@ body[data-av-page="orlive"] #avContextWorkflow[data-native-target="orSecondaryPh
 .quick-drug-change-toggle input{width:1.1rem;height:1.1rem;flex:0 0 auto}
 #orQuickDrugActualEditWrap[hidden]{display:none!important}
 
-/* V17.10.10 — OR LIVE core-first hierarchy */
+/* V17.10.11 — OR LIVE core-first hierarchy */
 .or-core-safety{display:flex;align-items:center;justify-content:space-between;gap:.75rem;padding:.72rem .9rem;border:1px solid var(--line,#d7e1e3);border-radius:14px;background:var(--surface,#fff);margin:.65rem 0}
 .or-core-safety-head{display:flex;align-items:center;gap:.75rem;min-width:0}
 .or-core-safety-head>div{display:grid;gap:.05rem}.or-core-safety-head span{font-size:.68rem;font-weight:800;letter-spacing:.08em;opacity:.62}.or-core-safety-head b{font-size:.96rem}
@@ -3798,7 +3798,7 @@ body[data-av-page="orlive"] #avContextWorkflow[data-native-target="orSecondaryPh
 .or-secondary-details-body>.or-context-panel,.or-secondary-details-body>.or-phase-tracker-panel,.or-secondary-details-body>.or-secondary-grid,.or-secondary-details-body>.or-collapsible-panel,.or-secondary-details-body>.complication-watch-panel,.or-secondary-details-body>.or-lower-grid{margin-top:0!important;margin-bottom:0!important}
 @media(max-width:720px){.or-core-safety{align-items:flex-start;flex-wrap:wrap}.or-core-safety-summary{order:3;width:100%;margin-left:0}.or-secondary-details>summary{padding:.72rem .8rem}}
 
-/* V17.10.10 — Recovery core-first hierarchy */
+/* V17.10.11 — Recovery core-first hierarchy */
 .recovery-secondary-details{margin:.8rem 0;border:1px solid var(--line,#d7e1e3);border-radius:16px;background:var(--surface,#fff);overflow:hidden}
 .recovery-secondary-details>summary{list-style:none;display:flex;justify-content:space-between;align-items:center;gap:.8rem;padding:.85rem 1rem;cursor:pointer}
 .recovery-secondary-details>summary::-webkit-details-marker{display:none}.recovery-secondary-details>summary>span:first-child{display:grid;gap:.08rem}.recovery-secondary-details>summary small{font-size:.76rem;opacity:.66}
@@ -3808,13 +3808,13 @@ body[data-av-page="orlive"] #avContextWorkflow[data-native-target="orSecondaryPh
 .recovery-handoff-compact-panel .recovery-handoff-details:not([open]){margin-bottom:0}
 #recoveryProblemsPanel{margin-top:.7rem!important;margin-bottom:.7rem!important}
 @media(max-width:720px){.recovery-secondary-details>summary{padding:.72rem .8rem}.recovery-secondary-state{white-space:nowrap}.recovery-handoff-compact-panel .section-heading p{display:none}}
-/* V17.10.10 — one obvious next action for the current case */
+/* V17.10.11 — one obvious next action for the current case */
 .clinical-next-step-card{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin:.75rem 0 1rem;padding:1rem 1.05rem;border:1px solid var(--line,#d7e1e3);border-radius:18px;background:var(--surface,#fff)}
 .clinical-next-step-card>div{display:grid;gap:.18rem}.clinical-next-step-card b{font-size:1.05rem}.clinical-next-step-card small{opacity:.72;line-height:1.35}.clinical-next-step-card .btn{flex:0 0 auto;min-width:170px}
 @media(max-width:720px){.clinical-next-step-card{align-items:stretch;flex-direction:column;padding:.85rem}.clinical-next-step-card .btn{width:100%;min-width:0}}
 
 
-/* V17.10.10 Patient + Pre-op simplification */
+/* V17.10.11 Patient + Pre-op simplification */
 .patient-setup-focus,.preop-quick-state{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px 16px;margin-bottom:12px;border:1px solid var(--line,#d7e2e3);border-radius:16px;background:var(--surface-soft,#f7fbfb)}
 .patient-setup-focus>div,.preop-quick-state>div{display:grid;gap:3px}.patient-setup-focus b,.preop-quick-state b{font-size:1.05rem}.patient-setup-focus small,.preop-quick-state small{color:var(--muted,#64777a)}
 .patient-required-summary{margin:0 0 14px;padding:9px 12px;border-radius:12px;background:#fff7e8;border:1px solid #efd59a;font-weight:700}.patient-required-summary.ready{background:#eef9f2;border-color:#b8dec6}
@@ -3823,21 +3823,21 @@ body[data-av-page="orlive"] #avContextWorkflow[data-native-target="orSecondaryPh
 @media(max-width:720px){.patient-setup-focus,.preop-quick-state{align-items:stretch;flex-direction:column}.patient-setup-focus .btn,.preop-quick-state .btn{width:100%}}
 
 
-/* V17.10.10 Drug Plan + Start Case simplification */
+/* V17.10.11 Drug Plan + Start Case simplification */
 .drug-workflow-focus{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:15px 17px;margin:0 0 14px;border:1px solid var(--line,#d7e2e3);border-radius:17px;background:var(--surface-soft,#f7fbfb)}
 .drug-workflow-focus[data-tone="good"]{border-color:#b8dec6;background:#f1faf4}.drug-workflow-focus-copy{display:grid;gap:4px}.drug-workflow-focus-copy b{font-size:1.08rem}.drug-workflow-focus-copy small{color:var(--muted,#64777a)}
 .drug-workflow-focus-status{display:flex;align-items:center;justify-content:flex-end;gap:8px;flex-wrap:wrap}
 @media(max-width:720px){.drug-workflow-focus{align-items:stretch;flex-direction:column}.drug-workflow-focus-status{justify-content:stretch}.drug-workflow-focus-status .btn{width:100%;order:3}.drug-workflow-focus-status .status-pill{flex:1;text-align:center}}
 
 
-/* V17.10.10 OR LIVE workflow refinement */
+/* V17.10.11 OR LIVE workflow refinement */
 .or-core-phase-strip{display:flex;align-items:center;gap:7px;margin:0 0 10px;padding:8px 10px;border-radius:13px;background:var(--surface-soft,#f7fbfb);border:1px solid var(--line,#d7e2e3);overflow-x:auto;scrollbar-width:none}
 .or-core-phase-strip::-webkit-scrollbar{display:none}.or-core-phase-strip span{white-space:nowrap;font-size:.76rem;font-weight:700;color:var(--muted,#64777a);padding:5px 7px;border-radius:9px}.or-core-phase-strip span.done{opacity:.7}.or-core-phase-strip span.done::before{content:"✓ ";}.or-core-phase-strip span.active{background:rgba(20,112,116,.12);color:var(--ink,#17383b)}.or-core-phase-strip i{font-style:normal;opacity:.35}
 #orMobileNextBtn.workflow-secondary{opacity:.92}#orMobileNextBtn.workflow-secondary.danger{opacity:1}
 @media(max-width:720px){.or-core-phase-strip{margin-inline:-2px}.or-core-phase-strip span{font-size:.72rem;padding:5px 6px}}
 
 
-/* V17.10.10 Recovery → End Case refinement */
+/* V17.10.11 Recovery → End Case refinement */
 .recovery-core-phase-strip{display:flex;align-items:center;gap:7px;margin:0 0 10px;padding:8px 10px;border:1px solid var(--line,#d7e2e3);border-radius:13px;background:var(--surface-soft,#f7fbfb);overflow-x:auto;scrollbar-width:none}
 .recovery-core-phase-strip::-webkit-scrollbar{display:none}.recovery-core-phase-strip span{white-space:nowrap;font-size:.76rem;font-weight:700;color:var(--muted,#64777a);padding:5px 7px;border-radius:9px}.recovery-core-phase-strip span.done{opacity:.7}.recovery-core-phase-strip span.done::before{content:"✓ "}.recovery-core-phase-strip span.active{background:rgba(20,112,116,.12);color:var(--ink,#17383b)}.recovery-core-phase-strip i{font-style:normal;opacity:.35}
 #recoveryExitCard:not(.recovery-exit-ready){display:none!important}
@@ -3845,7 +3845,7 @@ body[data-av-page="orlive"] #avContextWorkflow[data-native-target="orSecondaryPh
 @media(max-width:720px){.recovery-core-phase-strip span{font-size:.72rem;padding:5px 6px}}
 
 
-/* V17.10.10 — mobile clinical workflow fixes */
+/* V17.10.11 — mobile clinical workflow fixes */
 .or-airway-setup-dialog{width:min(760px,calc(100vw - 20px));max-height:92dvh;border:0;border-radius:20px;padding:0;background:transparent}
 .or-airway-setup-dialog::backdrop{background:rgba(5,25,29,.62)}
 .or-airway-setup-sheet{background:#f7faf9;color:#173f43;border-radius:20px;overflow:auto;max-height:92dvh}
@@ -3864,7 +3864,7 @@ body[data-av-page="orlive"] #avContextWorkflow[data-native-target="orSecondaryPh
 }
 
 
-/* V17.10.10 — tactile anesthesia hardware controls */
+/* V17.10.11 — tactile anesthesia hardware controls */
 .anesthesia-hardware-controls{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
 .vaporizer-control,.oxygen-flow-control{min-width:0;border:1px solid #cbdcda;border-radius:16px;padding:12px;background:linear-gradient(180deg,#f8fbfa,#edf4f3)}
 .hardware-label{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:10px}.hardware-label small{color:#647b7d;font-size:.72rem}
@@ -3882,3 +3882,27 @@ body[data-av-page="orlive"] #avContextWorkflow[data-native-target="orSecondaryPh
 .ventilation-settings{margin-top:4px}
 @media(max-width:600px){.anesthesia-hardware-controls{grid-template-columns:1fr 1fr;gap:8px}.vaporizer-control,.oxygen-flow-control{padding:9px}.vaporizer-dial-wrap{width:126px;height:126px}.vaporizer-knob{width:94px;height:94px}.vaporizer-knob:before{height:22px;transform-origin:2px 42px}.flowmeter{height:126px}.flowmeter-tube{height:118px}.flowmeter-scale{height:123px}.hardware-label{display:grid;gap:1px}.hardware-stepper{grid-template-columns:40px minmax(0,1fr) 40px;gap:4px}.hardware-stepper button{min-height:44px}}
 @media(max-width:360px){.anesthesia-hardware-controls{grid-template-columns:1fr}.vaporizer-dial-wrap,.flowmeter{margin-bottom:6px}}
+
+
+/* V17.10.11 — deterministic mobile sheet + non-blocking feedback */
+.or-airway-setup-dialog[hidden]{display:none!important}
+.or-airway-setup-dialog.is-open{display:flex!important;position:fixed!important;inset:0!important;z-index:10000!important;width:auto!important;height:auto!important;max-width:none!important;max-height:none!important;margin:0!important;padding:0!important;align-items:flex-end!important;justify-content:center!important;background:rgba(4,25,28,.62)!important;border:0!important;border-radius:0!important;box-sizing:border-box!important}
+.or-airway-setup-dialog.is-open .or-airway-setup-sheet{position:relative!important;width:min(760px,100%)!important;height:auto!important;max-height:min(88dvh,900px)!important;margin:0!important;border-radius:20px 20px 0 0!important;overflow:auto!important;overscroll-behavior:contain;background:#f7faf9!important}
+body.airway-setup-open{overflow:hidden!important}
+body.av-mobile-design .toast,
+body.av-mobile-design.or-mobile-active .toast,
+body.av-mobile-design.recovery-mobile-active .toast,
+body.av-mobile-design.av-editing .toast,
+body.av-mobile-design.anesvet-soft-keyboard .toast{
+  left:50%!important;right:auto!important;top:calc(env(safe-area-inset-top) + 72px)!important;bottom:auto!important;
+  width:max-content!important;max-width:min(420px,calc(100vw - 28px))!important;
+  height:auto!important;min-height:0!important;max-height:120px!important;
+  padding:9px 13px!important;margin:0!important;overflow:hidden!important;
+  line-height:1.35!important;white-space:normal!important;border-radius:11px!important;
+  transform:translateX(-50%)!important;box-sizing:border-box!important;z-index:11000!important;
+  pointer-events:none!important;
+}
+@media(max-width:600px){
+ .or-airway-setup-dialog.is-open .or-airway-setup-sheet{width:100%!important;max-height:90dvh!important;border-radius:18px 18px 0 0!important}
+ body.av-mobile-design .toast,body.av-mobile-design.or-mobile-active .toast,body.av-mobile-design.recovery-mobile-active .toast{font-size:13px!important;max-height:96px!important}
+}

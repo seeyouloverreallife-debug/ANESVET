@@ -1,4 +1,4 @@
-# ANESVET V17.10.10 — Mobile OR Workflow Fix
+# ANESVET V17.10.11 — Mobile OR Workflow Fix
 
 Based on physical-device screenshots:
 - Clinical Knowledge is forced to the full mobile visual viewport.

@@ -1,4 +1,4 @@
-# ANESVET V17.10.10 — Tactile Anesthesia Controls
+# ANESVET V17.10.11 — Tactile Anesthesia Controls
 - Vaporizer control now visually behaves like a rotary anesthesia vaporizer dial (0–5%, 0.1 step).
 - O2 flow now uses a vertical flowmeter-style slider (0–10 L/min, 0.1 step).
 - Both retain numeric input and +/- controls for precision/accessibility.

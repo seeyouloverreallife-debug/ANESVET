@@ -1,4 +1,4 @@
-/* ANESVET V17.10.10 workflow source-contract regression */
+/* ANESVET V17.10.11 workflow source-contract regression */
 'use strict';const fs=require('fs'),p=require('path'),R=__dirname,read=f=>fs.readFileSync(p.join(R,f),'utf8');
 const h=read('index.html'),n=read('clinical-next-step-controller.js');
 const tests=[

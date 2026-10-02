@@ -1,7 +1,7 @@
-/* ANESVET V17.10.10 — single workspace disclosure/focus coordinator. */
+/* ANESVET V17.10.11 — single workspace disclosure/focus coordinator. */
 (function(root){
 'use strict';
-const VERSION='17.10.10';
+const VERSION='17.10.11';
 function openForElement(el,{persist=true,scroll=false}={}){
  if(!el)return false;
  try{if(el.closest?.('.patient-secondary-field'))root.ANESVET_PATIENT_PREOP_SIMPLIFICATION?.setDetails?.(true,persist)}catch(_){}

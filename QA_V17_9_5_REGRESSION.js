@@ -1,4 +1,4 @@
-/* ANESVET V17.10.10 source-contract regression harness. Run: node QA_V17_9_5_REGRESSION.js */
+/* ANESVET V17.10.11 source-contract regression harness. Run: node QA_V17_9_5_REGRESSION.js */
 'use strict';
 const fs=require('fs'),path=require('path'),R=__dirname;
 const read=f=>fs.readFileSync(path.join(R,f),'utf8');

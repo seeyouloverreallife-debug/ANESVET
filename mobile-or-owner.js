@@ -1,7 +1,7 @@
-/* ANESVET V17.10.10 — shared mobile/OR viewport + editing presentation owner. */
+/* ANESVET V17.10.11 — shared mobile/OR viewport + editing presentation owner. */
 (function(root){
 'use strict';
-const VERSION='17.10.10';
+const VERSION='17.10.11';
 const EDIT='input:not([type=checkbox]):not([type=radio]):not([type=button]):not([type=submit]):not([type=hidden]),textarea,select,[contenteditable="true"]';
 const subs=new Set();let last={editing:false,keyboardOpen:false,offset:0,height:0};
 function editing(el=document.activeElement){return !!el?.matches?.(EDIT)}
