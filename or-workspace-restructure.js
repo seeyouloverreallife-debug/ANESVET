@@ -1,9 +1,9 @@
-/* ANESVET V17.11.3 — OR LIVE workspace restructure.
+/* ANESVET V17.11.4 — OR LIVE mobile compact strip + quick gas controls.
  * Presentation/navigation only. Existing clinical fields remain authoritative.
  * Moves existing DOM controls into four task-based workspaces without cloning state. */
 (function(root){
 'use strict';
-const VERSION='17.11.3';
+const VERSION='17.11.4';
 const $=id=>document.getElementById(id);
 const q=(sel,scope=document)=>scope?.querySelector?.(sel)||null;
 const qa=(sel,scope=document)=>[...(scope?.querySelectorAll?.(sel)||[])];
@@ -28,29 +28,62 @@ function dispatchInput(el){
 function safeNumber(v,fallback=0){const n=Number(v);return Number.isFinite(n)?n:fallback}
 function clamp(v,min,max){return Math.min(max,Math.max(min,v))}
 
+function choiceStrip(values,kind){
+  return values.map(v=>`<button type="button" class="or-choice-chip" data-${kind}-value="${v}">${v===0?(kind==='vap'?'0 • OFF':'0'):(Number.isInteger(v)?String(v):v.toFixed(1))}</button>`).join('');
+}
+function setControlValue(kind,value){
+  const el=$(kind==='vap'?'orVaporizer':'orO2');if(!el)return;
+  const max=kind==='vap'?5:10;
+  const next=clamp(safeNumber(value,0),0,max);
+  el.value=next.toFixed(1);dispatchInput(el);renderHardware();
+}
 function renderHardware(){
-  const vap=$('orVaporizer'),o2=$('orO2'),vr=$('orMonitorVaporizerRange'),fr=$('orMonitorO2Range');
-  const vv=safeNumber(vap?.value,0),ov=safeNumber(o2?.value,0);
-  if(vr)vr.value=String(clamp(vv,0,5));
-  if(fr)fr.value=String(clamp(ov,0,10));
+  const vap=$('orVaporizer'),o2=$('orO2');
+  const vv=clamp(safeNumber(vap?.value,0),0,5),ov=clamp(safeNumber(o2?.value,0),0,10);
   const read=$('orMonitorVaporizerReadout');if(read)read.textContent=vv<=0?'OFF':`${vv.toFixed(1)}%`;
-  const knob=$('orMonitorVaporizerKnob');if(knob)knob.style.setProperty('--or-vap-angle',`${-135+(clamp(vv,0,5)/5)*270}deg`);
-  const flow=$('orMonitorO2Float');if(flow)flow.style.setProperty('--or-o2-level',`${(clamp(ov,0,10)/10)*100}%`);
-  const flowRead=$('orMonitorO2Readout');if(flowRead)flowRead.textContent=`${ov.toFixed(1)} L/min`;
+  const flowRead=$('orMonitorO2Readout');if(flowRead)flowRead.textContent=ov<=0?'Room air / off':`${ov.toFixed(1)} L/min`;
+  qa('[data-vap-value]').forEach(b=>b.classList.toggle('active',Math.abs(safeNumber(b.dataset.vapValue)-vv)<0.051));
+  qa('[data-o2-value]').forEach(b=>b.classList.toggle('active',Math.abs(safeNumber(b.dataset.o2Value)-ov)<0.051));
 }
 function bindHardware(){
-  const vap=$('orVaporizer'),o2=$('orO2'),vr=$('orMonitorVaporizerRange'),fr=$('orMonitorO2Range');
-  vr?.addEventListener('input',()=>{if(!vap)return;vap.value=Number(vr.value).toFixed(1);dispatchInput(vap);renderHardware()});
-  fr?.addEventListener('input',()=>{if(!o2)return;o2.value=Number(fr.value).toFixed(1);dispatchInput(o2);renderHardware()});
+  const vap=$('orVaporizer'),o2=$('orO2');
+  qa('[data-vap-value]').forEach(b=>b.addEventListener('click',()=>setControlValue('vap',b.dataset.vapValue)));
+  qa('[data-o2-value]').forEach(b=>b.addEventListener('click',()=>setControlValue('o2',b.dataset.o2Value)));
   vap?.addEventListener('input',renderHardware);
   o2?.addEventListener('input',renderHardware);
   renderHardware();
 }
 function setStep(kind,delta){
   const el=$(kind==='vap'?'orVaporizer':'orO2');if(!el)return;
-  const max=kind==='vap'?10:20;
+  const max=kind==='vap'?5:10;
   const next=clamp(safeNumber(el.value,0)+delta,0,max);
-  el.value=next.toFixed(1);dispatchInput(el);renderHardware();
+  setControlValue(kind,next);
+}
+function buildCompactSummary(){
+  if($('orCompactSummaryRow'))return $('orCompactSummaryRow');
+  const row=make('div',{id:'orCompactSummaryRow',class:'or-compact-summary-row',role:'status','aria-live':'polite'});
+  row.innerHTML=`<span id="orCompactWeight" class="or-compact-chip">BW — kg</span>
+  <span id="orCompactAsa" class="or-compact-chip">ASA —</span>
+  <span id="orCompactProcedure" class="or-compact-chip wide">Procedure —</span>
+  <span id="orCompactAllergy" class="or-compact-chip wide" hidden>Allergy —</span>
+  <span id="orCompactRisk" class="or-compact-chip wide warn" hidden>Risk —</span>`;
+  return row;
+}
+function syncCompactSummary(){
+  const block=q('#orlive .or-patient-block');
+  if(block&&!$('orCompactSummaryRow')) block.appendChild(buildCompactSummary());
+  const weightRaw=String($('weight')?.value||'').trim();
+  const weight=weightRaw?`${Number(weightRaw).toFixed(1).replace(/\.0$/,'')} kg`:'— kg';
+  const asa=String($('orAsaBadge')?.textContent||$('asa')?.value||'—').trim()||'—';
+  const procedure=String($('procedure')?.value||$('patientProcedure')?.value||$('orProcedureLine')?.textContent||'').trim().replace(/^Procedure:\s*/i,'')||'—';
+  const allergy=String($('patientAllergies')?.value||'').trim();
+  const riskLine=$('orRiskLine');
+  const risk=(!riskLine?.hidden?String(riskLine?.textContent||'').trim().replace(/^⚠\s*/,''):'')||'';
+  if($('orCompactWeight')) $('orCompactWeight').textContent=`BW ${weight}`;
+  if($('orCompactAsa')) $('orCompactAsa').textContent=asa.startsWith('ASA')?asa:`ASA ${asa}`;
+  if($('orCompactProcedure')) $('orCompactProcedure').textContent=`Procedure ${procedure}`;
+  if($('orCompactAllergy')){ $('orCompactAllergy').hidden=!allergy; $('orCompactAllergy').textContent=`Allergy ${allergy||'—'}`; }
+  if($('orCompactRisk')){ $('orCompactRisk').hidden=!risk; $('orCompactRisk').textContent=`Risk ${risk||'—'}`; }
 }
 
 function updateBadges(){
@@ -105,23 +138,19 @@ function setView(view,{scroll=false}={}){
 }
 function buildMonitorControls(){
   const card=make('section',{id:'orMonitorAnesthesiaControls',class:'or-monitor-anesthesia-controls'});
-  card.innerHTML=`<div class="or-workspace-section-head"><div><span>RUNNING CONTROLS</span><h3>Anesthesia controls</h3><small>ค่าที่ปรับระหว่าง monitoring • บันทึกลง field เดิมของเคสทันที</small></div></div>
-  <div class="or-monitor-control-grid">
+  card.innerHTML=`<div class="or-workspace-section-head"><div><span>RUNNING CONTROLS</span><h3>Anesthesia controls</h3><small>ค่าที่ใช้บ่อยอยู่ด้านบน • แตะค่าได้ทันทีบนมือถือ</small></div></div>
+  <div class="or-monitor-control-grid compact">
     <article class="or-depth-control"><div class="or-control-title"><b>Depth</b><small>anesthetic depth</small></div><div id="orDepthSlot"></div></article>
-    <article class="or-vaporizer-control"><div class="or-control-title"><b>Vaporizer</b><small>หมุน/เลื่อนเพื่อปรับ</small></div><div class="or-vap-dial-wrap"><input id="orMonitorVaporizerRange" type="range" min="0" max="5" step="0.1" value="0" aria-label="Vaporizer percent"><div id="orMonitorVaporizerKnob" class="or-vap-knob" aria-hidden="true"><span>ISO</span><strong id="orMonitorVaporizerReadout">OFF</strong></div></div><div class="or-control-stepper"><button type="button" id="orVapMinus" aria-label="Decrease vaporizer">−</button><div id="orVaporizerSlot"></div><button type="button" id="orVapPlus" aria-label="Increase vaporizer">+</button></div></article>
-    <article class="or-o2-control"><div class="or-control-title"><b>O₂ Flow</b><small id="orMonitorO2Readout">0.0 L/min</small></div><div class="or-flowmeter"><input id="orMonitorO2Range" type="range" min="0" max="10" step="0.1" value="0" aria-label="Oxygen flow liters per minute"><div class="or-flow-tube"><div id="orMonitorO2Float" class="or-flow-float"></div></div><div class="or-flow-scale"><span>10</span><span>5</span><span>0</span></div></div><div class="or-control-stepper"><button type="button" id="orO2Minus" aria-label="Decrease oxygen flow">−</button><div id="orO2Slot"></div><button type="button" id="orO2Plus" aria-label="Increase oxygen flow">+</button></div></article>
+    <article class="or-vaporizer-control"><div class="or-control-title"><b>Vaporizer</b><small id="orMonitorVaporizerReadout">OFF</small></div><div class="or-choice-strip" id="orVaporizerChoices">${choiceStrip([5,4.5,4,3.5,3,2.5,2,1.5,1,0.5,0],'vap')}</div><div id="orVaporizerSlot"></div></article>
+    <article class="or-o2-control"><div class="or-control-title"><b>O₂ Flow</b><small id="orMonitorO2Readout">Room air / off</small></div><div class="or-choice-strip" id="orO2Choices">${choiceStrip([3,2.5,2,1.5,1,0.5,0],'o2')}</div><div id="orO2Slot"></div></article>
   </div><details id="orMonitorAdvancedBp" class="or-monitor-advanced"><summary>Optional BP values • SAP / DAP</summary><div id="orAdvancedBpSlot" class="or-monitor-bp-grid"></div></details>`;
   const depth=labelFor('orDepth'),vap=labelFor('orVaporizer'),o2=labelFor('orO2'),sap=labelFor('orSap'),dap=labelFor('orDap');
   if(depth){depth.classList.add('or-authoritative-control');q('#orDepthSlot',card).appendChild(depth)}
-  if(vap){vap.classList.add('or-authoritative-control');q('#orVaporizerSlot',card).appendChild(vap)}
-  if(o2){o2.classList.add('or-authoritative-control');q('#orO2Slot',card).appendChild(o2)}
+  if(vap){vap.classList.add('or-authoritative-control','or-inline-hidden-control');q('#orVaporizerSlot',card).appendChild(vap)}
+  if(o2){o2.classList.add('or-authoritative-control','or-inline-hidden-control');q('#orO2Slot',card).appendChild(o2)}
   if(sap)q('#orAdvancedBpSlot',card).appendChild(sap);
   if(dap)q('#orAdvancedBpSlot',card).appendChild(dap);
   const legacyVent=labelFor('orVentilation');if(legacyVent){legacyVent.hidden=true;legacyVent.classList.add('or-compat-control')}
-  card.querySelector('#orVapMinus')?.addEventListener('click',()=>setStep('vap',-.1));
-  card.querySelector('#orVapPlus')?.addEventListener('click',()=>setStep('vap',.1));
-  card.querySelector('#orO2Minus')?.addEventListener('click',()=>setStep('o2',-.1));
-  card.querySelector('#orO2Plus')?.addEventListener('click',()=>setStep('o2',.1));
   return card;
 }
 function buildSupport(){
@@ -158,9 +187,8 @@ function buildMeds(){
 }
 function buildMonitor(){
   const panel=make('section',{'data-or-workspace-panel':'monitor',class:'or-workspace-panel or-monitor-workspace'});
-  panel.innerHTML=`<div class="or-workspace-section-head or-monitor-heading"><div><span>MONITOR</span><h2>Vitals & anesthesia level</h2><small>หน้าหลักระหว่าง OR • บันทึก vitals และปรับยาสลบจากจุดเดียว</small></div></div>`;
-  const vf=$('orVitalsFocus'),vitals=q('#orlive .or-vital-grid');
-  if(vf){vf.hidden=false;panel.appendChild(vf)}
+  panel.innerHTML=`<div class="or-workspace-section-head or-monitor-heading"><div><span>MONITOR</span><h2>Vitals & anesthesia level</h2><small>หน้าหลักระหว่าง OR • การ์ด vitals และการปรับยาสลบอยู่ในจอเดียว</small></div></div>`;
+  const vitals=q('#orlive .or-vital-grid');
   if(vitals)panel.appendChild(vitals);
   panel.appendChild(buildMonitorControls());
   return panel;
@@ -234,8 +262,10 @@ function renderInductionQuickStrip(){
 
 function init(){
   const page=$('orlive');if(!page||$('orWorkspaceHost'))return;
-  const sticky=$('orStickyMini'),vitals=$('orVitalsFocus');
-  const anchor=sticky?.nextSibling||vitals||page.firstChild;
+  const sticky=$('orStickyMini'),vitals=$('orVitalsFocus'),command=q('#orlive .or-command-bar');
+  syncCompactSummary();
+  if(vitals&&command){vitals.hidden=false;command.after(vitals)}
+  const anchor=(vitals?.nextSibling)||sticky?.nextSibling||page.firstChild;
   const nav=make('nav',{id:'orWorkspaceNav',class:'or-workspace-nav','aria-label':'OR LIVE workspace'});
   nav.innerHTML=`<button type="button" data-or-workspace="monitor" class="active" aria-selected="true"><span>Monitor</span><small>Vitals + gas</small></button>
   <button type="button" data-or-workspace="support" aria-selected="false"><span>Support</span><small>Fluid + vent</small><b id="orWorkspaceSupportBadge" class="or-workspace-badge" hidden></b></button>
@@ -270,15 +300,16 @@ function init(){
   });
 
   bindHardware();
-  ['airwayStatus','orAirwaySummary','orFluidSummary','orPrimaryDocumentationNote'].forEach(id=>{
-    const el=$(id);if(el)new MutationObserver(updateBadges).observe(el,{childList:true,subtree:true,characterData:true,attributes:true});
+  syncCompactSummary();
+  ['airwayStatus','orAirwaySummary','orFluidSummary','orPrimaryDocumentationNote','orPatientName','orPatientMeta','orAsaBadge','orProcedureLine','orRiskLine'].forEach(id=>{
+    const el=$(id);if(el)new MutationObserver(()=>{updateBadges();syncCompactSummary()}).observe(el,{childList:true,subtree:true,characterData:true,attributes:true});
   });
-  ['airwayEttSize','airwayVentMode'].forEach(id=>$(id)?.addEventListener(id==='airwayVentMode'?'change':'input',updateBadges));
+  ['airwayEttSize','airwayVentMode','weight','patientAllergies','procedure','asa'].forEach(id=>$(id)?.addEventListener(id==='airwayVentMode'?'change':'input',()=>{updateBadges();syncCompactSummary()}));
   const primaryBtn=$('orPrimaryActionBtn');
   if(primaryBtn)new MutationObserver(()=>{renderInductionQuickStrip();updateBadges()}).observe(primaryBtn,{childList:true,subtree:true,attributes:true,attributeFilter:['data-action','disabled']});
   document.addEventListener('anesvet:drug-administration-changed',()=>{renderInductionQuickStrip();updateBadges()});
   document.addEventListener('anesvet:induction-provisional-changed',()=>{renderInductionQuickStrip();updateBadges()});
-  updateBadges();renderInductionQuickStrip();
+  updateBadges();syncCompactSummary();renderInductionQuickStrip();
   setView('monitor');
 }
 const api=Object.freeze({version:VERSION,init,setView,getView:()=>current,updateBadges,renderInductionQuickStrip});
