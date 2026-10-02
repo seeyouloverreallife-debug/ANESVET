@@ -1,4 +1,4 @@
-/* ANESVET V17.10.11 — side-effect-free application helpers.
+/* ANESVET V17.11.2 — side-effect-free application helpers.
    Keep this module free of patient/case state, storage, DOM writes, timers and clinical decisions. */
 (function(root){
   'use strict';

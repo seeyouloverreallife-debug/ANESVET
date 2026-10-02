@@ -1,4 +1,4 @@
-/* ANESVET V17.10.11 — state-derived clinical next step. Navigation only; native gates remain authoritative. */
+/* ANESVET V17.11.2 — state-derived clinical next step. Navigation only; native gates remain authoritative. */
 (function(root){
 'use strict';
 const $=id=>document.getElementById(id),app=()=>root.AnesvetApp||null;
@@ -21,5 +21,5 @@ function spec(){
 function render(){current=spec();if(!$('clinicalNextStepCard'))return;$('clinicalNextStepTitle').textContent=current.title;$('clinicalNextStepSummary').textContent=current.summary;$('clinicalNextStepBtn').textContent='→ '+current.label}
 function schedule(){if(pending)return;pending=true;requestAnimationFrame(()=>{pending=false;render()})}
 function bind(){if(bind.done)return;bind.done=true;$('clinicalNextStepBtn')?.addEventListener('click',()=>{current=spec();current?.run?.()});document.addEventListener('change',schedule,true);document.addEventListener('click',e=>{if(e.target.closest?.('#patient,#preop,#drugs,#orlive,#recovery,#endcase,.workflow-tabs'))schedule()},true);const o=new MutationObserver(schedule);['patientSaveStatus','preopProgress','caseDrugPlanStatus','casePhaseBadge','recoveryPhaseBadge','endCaseReadiness'].forEach(id=>{const el=$(id);if(el)o.observe(el,{subtree:true,attributes:true,childList:true,characterData:true})});root.ANESVET_LIFECYCLE_COORDINATOR?.subscribe('pageshow',schedule);root.ANESVET_LIFECYCLE_COORDINATOR?.subscribe('final-archive-status',schedule);render()}
-root.ANESVET_CLINICAL_NEXT_STEP=Object.freeze({version:'17.10.11',spec,render,schedule});root.ANESVET_LIFECYCLE_COORDINATOR?.ready(bind);
+root.ANESVET_CLINICAL_NEXT_STEP=Object.freeze({version:'17.11.2',spec,render,schedule});root.ANESVET_LIFECYCLE_COORDINATOR?.ready(bind);
 })(window);

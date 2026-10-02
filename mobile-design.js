@@ -1,4 +1,4 @@
-/* ANESVET V17.10.11: mobile shell only. Never infer or write clinical evidence. */
+/* ANESVET V17.11.2: mobile shell only. Never infer or write clinical evidence. */
 (() => {
   'use strict';
   const $=id=>document.getElementById(id);
@@ -32,7 +32,7 @@
     txt('avMeasurementStatus',!latest?'ค่ากรอกเอง · ยังไม่มี Vitals record':`Vitals record ${latest.clock} · ${diff?.classList.contains('has-changes')?'มีค่าแก้ไขยังไม่ลง record':diff?.classList.contains('has-blanks')?'มีช่องว่างในชุดที่กำลังกรอก':'ชุดค่าตรงกับ record ล่าสุด'}`);
     for(const el of document.querySelectorAll('[data-av-threshold]'))txt(el.id,$(el.dataset.avThreshold)?.textContent||'');
     $('avWorkspaceStatus').classList.toggle('av-save-error',!!$('saveState')?.classList.contains('error'));
-    txt('avHomeLocalStatus',s.simulationMode?'โหมดฝึก · ข้อมูลจำลอง':'ข้อมูลในเครื่อง · V17.10.11');
+    txt('avHomeLocalStatus',s.simulationMode?'โหมดฝึก · ข้อมูลจำลอง':'ข้อมูลในเครื่อง · V17.11.2');
     const existing=hasCase(s);hide('avHomeCase',!existing);hide('avHomeEmpty',existing);
     txt('avHomeSubtitle',existing?'กลับทำเคสต่อ หรือเลือกงานใหม่':'พร้อมสำหรับเคสถัดไป');
     txt('avHomeCaseKicker',s.simulationMode?'เคสฝึก':s.caseLocked?'เคสที่ปิดแล้ว':'เคสปัจจุบัน');

@@ -1524,6 +1524,7 @@ const OR_LIVE_CONTROLLER=window.ANESVET_OR_LIVE_CONTROLLER?.create?.({
   confirm:(msg)=>confirm(msg)
 });
 if(!OR_LIVE_CONTROLLER)throw new Error('ANESVET or-live-controller.js failed to load');
+window.ANESVET_OR_LIVE_INSTANCE=OR_LIVE_CONTROLLER;
 OR_LIVE_CONTROLLER.bind();
 BOOT?.mark?.('or-live-bound');
 function syncOrFromMain(){return OR_LIVE_CONTROLLER.syncOrFromMain()}
@@ -1559,6 +1560,7 @@ MEDICATION_WORKSPACE_CONTROLLER=window.ANESVET_MEDICATION_WORKSPACE_CONTROLLER?.
 });
 if(!MEDICATION_WORKSPACE_CONTROLLER)throw new Error('ANESVET medication-workspace-controller.js failed to load');
 MEDICATION_WORKSPACE_CONTROLLER.bind();
+window.ANESVET_MEDICATION_WORKSPACE=MEDICATION_WORKSPACE_CONTROLLER;
 BOOT?.mark?.('medication-workspace-bound');
 function renderBuiltInProtocolChips(cfg=currentSettingsObject()){
   const source=state?.protocolSnapshot?.builtInProtocol?activeBuiltInProtocol():cfg;
@@ -3898,7 +3900,7 @@ function freshState(){
     simulationMode:false,simulationScenario:'',simulationLabel:'',simulationStartedAt:null,simulationVersion:'',
     timer:{running:false,startedEpoch:null,elapsedMs:0},
     records:[],events:[],responses:[],corrections:[],complications:[],drugAdministrations:[],alertEpisodes:[],recoveryScores:[],recoveryRecords:[],recoveryTransfers:[],fluidRateHistory:[],
-    alertProtocolOverride:null,alertProtocolHistory:[],recoveryHandoffs:[],inductionDocumentationMode:'',inductionMedicationReviewCompletedAt:null,
+    alertProtocolOverride:null,alertProtocolHistory:[],recoveryHandoffs:[],inductionDocumentationMode:'',inductionMedicationReviewCompletedAt:null,inductionProvisionalAdministrations:[],
     recoveryChecks:[false,false,false,false,false,false],recoveryNA:[false,false,false,false,false,false],recoveryObservationNA:{spo2:false,temp:false,extubation:false},
   recHandoffNote:'',preopChecks:{},preopNA:{},preopExamRecordedAt:null,preopExamRecordedBy:'',preopRiskRecordedAt:null,preopRiskRecordedBy:'',
     patientSaved:false,patientMasterId:'',procedureTemplateId:'custom',procedureTemplateSnapshot:null,caseWorkflowProfile:'routine',
