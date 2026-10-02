@@ -209,10 +209,17 @@ function triggerOrMilestone(label){
   const btn=[...document.querySelectorAll('.or-milestone')].find(x=>x.dataset.label===label);
   if(!btn)return false;markMilestone(btn);renderOrLive();return true;
 }
+function copyValue(from,to){const a=$(from),b=$(to);if(a&&b)b.value=a.value||''}
 function openAirwayWorkflow(context='edit'){
-  if(!clinicalWriteAllowed())return;airwayWorkflowContext=context;const box=$('orAirwayPanelDetails');if(box){box.open=true;try{box.scrollIntoView({behavior:'smooth',block:'start'})}catch(e){box.scrollIntoView()}}
-  if(context==='intubation')toast('บันทึก airway แล้วกด Save — ระบบจะลง Intubation milestone ให้');
-  setTimeout(()=>$('airwayEttSize')?.focus(),180);
+  if(!clinicalWriteAllowed())return;airwayWorkflowContext=context;
+  const dlg=$('orAirwaySetupDialog');
+  if(dlg){
+    [['airwayEttSize','setupEttSize'],['airwayEttDepth','setupEttDepth'],['airwayCuff','setupCuff'],['airwayDifficulty','setupDifficulty'],['airwayCircuit','setupCircuit'],['airwayVentMode','setupVentMode'],['airwayPip','setupPip'],['airwayPeep','setupPeep'],['airwayVt','setupVt'],['airwayVentRr','setupVentRr'],['vaporizer','setupVaporizer'],['o2flow','setupO2'],['fluidRateInput','setupFluidRate'],['fluidActualTotal','setupFluidActual']].forEach(([a,b])=>copyValue(a,b));
+    renderSetupHardware();
+    try{dlg.showModal()}catch(_){dlg.setAttribute('open','')}
+    return;
+  }
+  const box=$('orAirwayPanelDetails');if(box){box.open=true;window.ANESVET_WORKSPACE_OWNER?.openForElement?.(box,{persist:false,scroll:true})}
 }
 function renderOrPrimaryFlow(){
   const title=$('orPrimaryActionTitle'),help=$('orPrimaryActionHelp'),primary=$('orPrimaryActionBtn'),secondary=$('orSecondaryPhaseBtn'),drug=$('orPrimaryDrugBtn'),stickyDrug=$('orStickyDrugBtn'),stepCounter=$('orPrimaryStepCounter'),docNote=$('orPrimaryDocumentationNote');if(!title||!help||!primary)return;
@@ -370,6 +377,46 @@ $('airwayVentMode')?.addEventListener('change',()=>{renderAirwayPanel();if($('or
 ['airwayEttSize','airwayEttDepth','airwayCuff','airwayDifficulty','airwayCircuit','airwayVt','airwayPip','airwayPeep','airwayVentRr'].forEach(id=>{
   const el=$(id);if(!el)return;const eventName=el.tagName==='SELECT'?'change':'input';el.addEventListener(eventName,()=>{renderAirwayPanel();if(eventName==='change')save({reason:`airway:${id}`});else scheduleAutosave(`airway:${id}`)});
 });
+
+function setupHardwareClamp(value,min,max,step){const n=Number(value);if(!Number.isFinite(n))return min;return Math.min(max,Math.max(min,Math.round(n/step)*step))}
+function renderSetupHardware(){
+  const vap=setupHardwareClamp($('setupVaporizer')?.value||0,0,5,.1),o2=setupHardwareClamp($('setupO2')?.value||0,0,10,.1);
+  if($('setupVaporizer'))$('setupVaporizer').value=vap.toFixed(1);if($('setupVaporizerDial'))$('setupVaporizerDial').value=vap;
+  if($('setupVaporizerReadout'))$('setupVaporizerReadout').textContent=vap<=0?'OFF':`${vap.toFixed(1)}%`;
+  if($('setupVaporizerKnob'))$('setupVaporizerKnob').style.setProperty('--dial-angle',`${-135+(vap/5)*270}deg`);
+  if($('setupO2'))$('setupO2').value=o2.toFixed(1);if($('setupO2Slider'))$('setupO2Slider').value=o2;
+  if($('setupO2Float'))$('setupO2Float').style.setProperty('--flow-level',`${(o2/10)*100}%`);
+}
+function setSetupHardware(kind,value){
+  const input=$(kind==='vap'?'setupVaporizer':'setupO2');if(!input)return;
+  input.value=setupHardwareClamp(value,0,kind==='vap'?5:10,.1).toFixed(1);renderSetupHardware();
+}
+$('setupVaporizerDial')?.addEventListener('input',e=>setSetupHardware('vap',e.target.value));
+$('setupO2Slider')?.addEventListener('input',e=>setSetupHardware('o2',e.target.value));
+$('setupVaporizer')?.addEventListener('input',e=>setSetupHardware('vap',e.target.value));
+$('setupO2')?.addEventListener('input',e=>setSetupHardware('o2',e.target.value));
+$('setupVaporizerMinus')?.addEventListener('click',()=>setSetupHardware('vap',Number($('setupVaporizer')?.value||0)-.1));
+$('setupVaporizerPlus')?.addEventListener('click',()=>setSetupHardware('vap',Number($('setupVaporizer')?.value||0)+.1));
+$('setupO2Minus')?.addEventListener('click',()=>setSetupHardware('o2',Number($('setupO2')?.value||0)-.1));
+$('setupO2Plus')?.addEventListener('click',()=>setSetupHardware('o2',Number($('setupO2')?.value||0)+.1));
+
+$('setupOpenInductionMeds')?.addEventListener('click',()=>{try{$('orAirwaySetupDialog')?.close()}catch(_){};openOrQuickDrug({phase:'induction',purpose:'induction'})});
+$('saveAirwaySetupBtn')?.addEventListener('click',()=>{
+  if(!clinicalWriteAllowed())return;
+  [['setupEttSize','airwayEttSize'],['setupEttDepth','airwayEttDepth'],['setupCuff','airwayCuff'],['setupDifficulty','airwayDifficulty'],['setupCircuit','airwayCircuit'],['setupVentMode','airwayVentMode'],['setupPip','airwayPip'],['setupPeep','airwayPeep'],['setupVt','airwayVt'],['setupVentRr','airwayVentRr'],['setupVaporizer','vaporizer'],['setupO2','o2flow'],['setupFluidRate','fluidRateInput'],['setupFluidActual','fluidActualTotal']].forEach(([a,b])=>copyValue(a,b));
+  if($('orVaporizer'))$('orVaporizer').value=$('vaporizer')?.value||'';
+  if($('orO2'))$('orO2').value=$('o2flow')?.value||'';
+  if($('orVentilation'))$('orVentilation').value=$('airwayVentMode')?.value||'';
+  if($('orFluidManageRate'))$('orFluidManageRate').value=$('fluidRateInput')?.value||'';
+  save({reason:'airway-anesthesia-setup'});renderAirwayPanel();renderOrFluidPanel?.();
+  const parts=[];if($('airwayEttSize')?.value)parts.push(`ETT ${$('airwayEttSize').value} mm`);if($('airwayEttDepth')?.value)parts.push(`depth ${$('airwayEttDepth').value} cm`);if($('airwayDifficulty')?.value)parts.push($('airwayDifficulty').value);if($('airwayVentMode')?.value)parts.push($('airwayVentMode').value);
+  addEvent({category:'Airway',name:'Airway / anesthesia setup saved',note:parts.join(' • ')||'Airway / anesthesia setup saved'});
+  if(airwayWorkflowContext==='intubation'){if(!hasProcedureMilestone('Induction'))triggerOrMilestone('Induction');if(!hasProcedureMilestone('Intubation'))triggerOrMilestone('Intubation')}
+  airwayWorkflowContext='';
+  try{$('orAirwaySetupDialog')?.close()}catch(_){}
+  renderOrPrimaryFlow();renderOrLive();
+  toast('บันทึก Airway / anesthesia setup แล้ว');
+});
 $('saveAirwayBtn')?.addEventListener('click',()=>{
   save();renderAirwayPanel();
   const parts=[];if($('airwayEttSize').value)parts.push(`ETT ${$('airwayEttSize').value} mm`);if($('airwayEttDepth').value)parts.push(`depth ${$('airwayEttDepth').value} cm`);if($('airwayDifficulty').value)parts.push($('airwayDifficulty').value);if($('airwayVentMode').value)parts.push($('airwayVentMode').value);
@@ -463,7 +510,7 @@ function renderOrMobileDock(){
   };
   const ui=actionUi[action]||['▶','CONTINUE'];
   if(dock)dock.classList.toggle('intraop',intraop);
-  // V17.10.8: keep the workflow transition visible during active surgery.
+  // V17.10.10: keep the workflow transition visible during active surgery.
   // End Surgery previously disappeared from the mobile dock, forcing a scroll/More-menu detour.
   // Safety is preserved because phase-changing actions still use the existing confirmation dialog.
   if(next){next.hidden=false;next.disabled=!!primary?.disabled;next.classList.toggle('danger',phase==='emergency'||action==='surgery-end');next.classList.toggle('workflow-secondary',intraop);next.setAttribute('aria-label',`Next clinical step: ${ui[1]}`);}

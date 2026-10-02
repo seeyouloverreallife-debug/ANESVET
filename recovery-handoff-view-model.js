@@ -1,6 +1,6 @@
 (function(){
 'use strict';
-// V17.10.8: this module must never block application startup because a helper
+// V17.10.10: this module must never block application startup because a helper
 // script is stale, delayed, or served from a mixed Service Worker cache.
 // The normalization helper is tiny and side-effect free, so keep a local
 // equivalent fallback while preferring the shared helper when available.

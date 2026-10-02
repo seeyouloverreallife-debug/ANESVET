@@ -14,8 +14,8 @@ const T=[
 ['ASA handler writes hidden input',pm.includes("input.value=card.dataset.asa")],
 ['ASA handler synchronizes selected cards',pm.includes('syncAsaCards();updatePatientSaveStatus()')],
 ['ASA is required by readiness',app.includes("required.push({key:'asa',label:'ASA Physical Status'")],
-['Current SW caches utils',sw.includes('app-pure-utils.js?v=17.10.8')],
-['Current SW caches handoff model',sw.includes('recovery-handoff-view-model.js?v=17.10.8')],
+['Current SW caches utils',sw.includes('app-pure-utils.js?v=17.10.10')],
+['Current SW caches handoff model',sw.includes('recovery-handoff-view-model.js?v=17.10.10')],
 ['End Surgery preserved',h.includes('data-label="Surgery end"')],
 ['Emergency Return preserved',h.includes('id="emergencyReturnOrBtn"')],
 ['Final Lock preserved',h.includes('id="endSaveArchiveBtn"')]

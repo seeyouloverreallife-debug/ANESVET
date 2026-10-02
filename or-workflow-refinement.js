@@ -1,4 +1,4 @@
-/* ANESVET V17.10.8 — OR LIVE phase presentation refinement. No clinical mutation. */
+/* ANESVET V17.10.10 — OR LIVE phase presentation refinement. No clinical mutation. */
 (function(root){'use strict';const $=id=>document.getElementById(id);let pending=false;
 function activeKey(){
  const s=root.AnesvetApp?.getState?.()||{},phase=s.casePhase||'setup',action=$('orPrimaryActionBtn')?.dataset.action||'';
@@ -16,5 +16,5 @@ function render(){
 }
 function schedule(){if(pending)return;pending=true;requestAnimationFrame(()=>{pending=false;render()})}
 function bind(){if(bind.done)return;bind.done=true;const o=new MutationObserver(schedule);['orPrimaryActionBtn','orPhaseBadge','casePhaseBadge'].forEach(id=>{const e=$(id);if(e)o.observe(e,{attributes:true,childList:true,characterData:true,subtree:true})});document.addEventListener('anesvet:viewportchange',schedule);render()}
-root.ANESVET_OR_WORKFLOW_REFINEMENT=Object.freeze({version:'17.10.8',render,activeKey});root.ANESVET_LIFECYCLE_COORDINATOR?.ready(bind);
+root.ANESVET_OR_WORKFLOW_REFINEMENT=Object.freeze({version:'17.10.10',render,activeKey});root.ANESVET_LIFECYCLE_COORDINATOR?.ready(bind);
 })(window);
