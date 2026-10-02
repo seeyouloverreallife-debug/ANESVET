@@ -1,6 +1,6 @@
 (function(root){
 'use strict';
-const VERSION='17.11.2',subs=new Map();
+const VERSION='17.11.3',subs=new Map();
 function emit(type,detail={}){
  const list=[...(subs.get(type)||[])];
  for(const fn of list){try{fn(Object.freeze({type,detail,ts:Date.now()}))}catch(e){console.warn('Lifecycle subscriber',type,e)}}

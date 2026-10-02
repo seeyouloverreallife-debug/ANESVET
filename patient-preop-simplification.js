@@ -1,4 +1,4 @@
-/* ANESVET V17.11.2 — Patient + Pre-op progressive workflow presentation. */
+/* ANESVET V17.11.3 — Patient + Pre-op progressive workflow presentation. */
 (function(root){
 'use strict';
 const $=id=>document.getElementById(id);
@@ -49,6 +49,6 @@ function bind(){
  $('preopQuickActionBtn')?.addEventListener('click',()=>{if($('preopQuickActionBtn')?.dataset.mode==='drugs')root.AnesvetApp?.setTab?.('drugs');else preopNext()});
  const po=$('preopProgress');if(po)new MutationObserver(renderPreop).observe(po,{subtree:true,childList:true,characterData:true,attributes:true});
 }
-root.ANESVET_PATIENT_PREOP_SIMPLIFICATION=Object.freeze({version:'17.11.2',bind,renderPatient,renderPreop,setDetails});
+root.ANESVET_PATIENT_PREOP_SIMPLIFICATION=Object.freeze({version:'17.11.3',bind,renderPatient,renderPreop,setDetails});
 root.ANESVET_LIFECYCLE_COORDINATOR?.ready(bind);
 })(window);

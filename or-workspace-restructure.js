@@ -1,9 +1,9 @@
-/* ANESVET V17.11.2 — OR LIVE workspace restructure.
+/* ANESVET V17.11.3 — OR LIVE workspace restructure.
  * Presentation/navigation only. Existing clinical fields remain authoritative.
  * Moves existing DOM controls into four task-based workspaces without cloning state. */
 (function(root){
 'use strict';
-const VERSION='17.11.2';
+const VERSION='17.11.3';
 const $=id=>document.getElementById(id);
 const q=(sel,scope=document)=>scope?.querySelector?.(sel)||null;
 const qa=(sel,scope=document)=>[...(scope?.querySelectorAll?.(sel)||[])];

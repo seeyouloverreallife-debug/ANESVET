@@ -534,7 +534,7 @@ function renderOrMobileDock(){
   };
   const ui=actionUi[action]||['▶','CONTINUE'];
   if(dock)dock.classList.toggle('intraop',intraop);
-  // V17.11.2: keep the workflow transition visible during active surgery.
+  // V17.11.3: keep the workflow transition visible during active surgery.
   // End Surgery previously disappeared from the mobile dock, forcing a scroll/More-menu detour.
   // Safety is preserved because phase-changing actions still use the existing confirmation dialog.
   if(next){next.hidden=false;next.disabled=!!primary?.disabled;next.classList.toggle('danger',phase==='emergency'||action==='surgery-end');next.classList.toggle('workflow-secondary',intraop);next.setAttribute('aria-label',`Next clinical step: ${ui[1]}`);}

@@ -1,4 +1,4 @@
-/* ANESVET V17.11.2 — OR LIVE task-based workspace */
+/* ANESVET V17.11.3 — OR LIVE task-based workspace */
 #orlive .or-workspace-nav{
   display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;
   margin:10px 0 12px;padding:6px;border:1px solid #b9d3d1;border-radius:16px;
@@ -147,7 +147,7 @@
 }
 
 
-/* V17.11.2 — Induction timestamp + prepared-drug quick taps */
+/* V17.11.3 — Induction timestamp + prepared-drug quick taps */
 
 #orlive .or-primary-flow.or-induction-owned{display:none!important}
 

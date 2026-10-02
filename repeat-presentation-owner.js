@@ -1,7 +1,7 @@
-/* ANESVET V17.11.2 — single presentation owner for Recovery → End Case / repeat-use state. */
+/* ANESVET V17.11.3 — single presentation owner for Recovery → End Case / repeat-use state. */
 (function(root){
 'use strict';
-const VERSION='17.11.2',$=id=>document.getElementById(id),app=()=>root.AnesvetApp||null,state=()=>app()?.getState?.()||null;
+const VERSION='17.11.3',$=id=>document.getElementById(id),app=()=>root.AnesvetApp||null,state=()=>app()?.getState?.()||null;
 let pending=false,observer=null;
 function working(s){return !!s?.caseStartedAt&&!s?.caseLocked}
 function phaseName(s){if(s?.recoveryCompletedAt||s?.casePhase==='complete')return'End Case';if(s?.casePhase==='recovery'||s?.recoveryStartedAt)return'Recovery';return'OR LIVE'}

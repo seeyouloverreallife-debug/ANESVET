@@ -1,4 +1,4 @@
-/* ANESVET V17.11.2 — Recovery → End Case presentation refinement. No clinical mutation. */
+/* ANESVET V17.11.3 — Recovery → End Case presentation refinement. No clinical mutation. */
 (function(root){'use strict';const $=id=>document.getElementById(id);let pending=false;
 function stage(){
  const s=root.AnesvetApp?.getState?.()||{},ready=String($('recoveryFocusReadiness')?.textContent||'').toUpperCase();
@@ -17,5 +17,5 @@ function render(){
 }
 function schedule(){if(pending)return;pending=true;requestAnimationFrame(()=>{pending=false;render()})}
 function bind(){if(bind.done)return;bind.done=true;const o=new MutationObserver(schedule);['recoveryFocusReadiness','recoveryPhaseBadge','recoveryFocusCompleteBtn','endRecoveryStatus'].forEach(id=>{const e=$(id);if(e)o.observe(e,{attributes:true,childList:true,characterData:true,subtree:true})});document.addEventListener('anesvet:viewportchange',schedule);render()}
-root.ANESVET_RECOVERY_END_REFINEMENT=Object.freeze({version:'17.11.2',stage,render});root.ANESVET_LIFECYCLE_COORDINATOR?.ready(bind);
+root.ANESVET_RECOVERY_END_REFINEMENT=Object.freeze({version:'17.11.3',stage,render});root.ANESVET_LIFECYCLE_COORDINATOR?.ready(bind);
 })(window);

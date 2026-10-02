@@ -9,11 +9,18 @@
 
   function orderOrWorkspace() {
     const page = $('orlive');
-    const primary = page?.querySelector('.or-primary-flow');
+    if (!page || page.dataset.uxR22Or === '1') return;
+    // V17.11+ owns OR LIVE layout through ANESVET_OR_WORKSPACE.
+    // Legacy R22 must never move nodes out of the task-based workspace.
+    if (window.ANESVET_OR_WORKSPACE || $('orWorkspaceHost')) {
+      page.dataset.uxR22Or = 'delegated-v17113';
+      return;
+    }
+    const primary = page.querySelector('.or-primary-flow');
     const focus = $('orVitalsFocus');
-    if (!page || !primary || !focus || page.dataset.uxR22Or === '1') return;
-    // The clinical next-step action must be first; vitals must appear before
-    // reference/context panels instead of being buried far down on phones.
+    if (!primary || !focus || primary.parentElement !== page || focus.parentElement !== page) return;
+    // Legacy fallback only: both reference nodes must still be direct children
+    // of the same page before insertBefore is allowed.
     page.insertBefore(primary, focus);
     let after = focus;
     const sequence = [

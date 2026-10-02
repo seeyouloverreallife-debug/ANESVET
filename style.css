@@ -1312,7 +1312,7 @@ button,.btn,.tab,.or-primary-action,.or-record-button,.or-action-link,.or-compli
 @media(max-width:600px){.unified-record-identity{grid-template-columns:1fr}.unified-record-status-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.record-spark-grid{grid-template-columns:1fr 1fr}.timeline-mode-buttons{width:100%}.timeline-mode-buttons .btn{flex:1 1 auto}.unified-integrity-grid{grid-template-columns:1fr}.procedure-item.unified-item{grid-template-columns:62px 1fr}.procedure-item.unified-item .pcat,.procedure-item.unified-item .ptext{grid-column:2}}
 
 
-/* V17.11.2 — mobile clinical workflow fixes */
+/* V17.11.3 — mobile clinical workflow fixes */
 .or-airway-setup-dialog{width:min(760px,calc(100vw - 20px));max-height:92dvh;border:0;border-radius:20px;padding:0;background:transparent}
 .or-airway-setup-dialog::backdrop{background:rgba(5,25,29,.62)}
 .or-airway-setup-sheet{background:#f7faf9;color:#173f43;border-radius:20px;overflow:auto;max-height:92dvh}
@@ -1331,7 +1331,7 @@ button,.btn,.tab,.or-primary-action,.or-record-button,.or-action-link,.or-compli
 }
 
 
-/* V17.11.2 — tactile anesthesia hardware controls */
+/* V17.11.3 — tactile anesthesia hardware controls */
 .anesthesia-hardware-controls{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
 .vaporizer-control,.oxygen-flow-control{min-width:0;border:1px solid #cbdcda;border-radius:16px;padding:12px;background:linear-gradient(180deg,#f8fbfa,#edf4f3)}
 .hardware-label{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:10px}.hardware-label small{color:#647b7d;font-size:.72rem}
@@ -1351,7 +1351,7 @@ button,.btn,.tab,.or-primary-action,.or-record-button,.or-action-link,.or-compli
 @media(max-width:360px){.anesthesia-hardware-controls{grid-template-columns:1fr}.vaporizer-dial-wrap,.flowmeter{margin-bottom:6px}}
 
 
-/* V17.11.2 — deterministic mobile sheet + non-blocking feedback */
+/* V17.11.3 — deterministic mobile sheet + non-blocking feedback */
 .or-airway-setup-dialog[hidden]{display:none!important}
 .or-airway-setup-dialog.is-open{display:flex!important;position:fixed!important;inset:0!important;z-index:10000!important;width:auto!important;height:auto!important;max-width:none!important;max-height:none!important;margin:0!important;padding:0!important;align-items:flex-end!important;justify-content:center!important;background:rgba(4,25,28,.62)!important;border:0!important;border-radius:0!important;box-sizing:border-box!important}
 .or-airway-setup-dialog.is-open .or-airway-setup-sheet{position:relative!important;width:min(760px,100%)!important;height:auto!important;max-height:min(88dvh,900px)!important;margin:0!important;border-radius:20px 20px 0 0!important;overflow:auto!important;overscroll-behavior:contain;background:#f7faf9!important}
