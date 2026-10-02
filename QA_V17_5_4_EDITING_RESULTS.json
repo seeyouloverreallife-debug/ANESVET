@@ -1,0 +1,75 @@
+{
+  "version": "17.5.4",
+  "passed": 16,
+  "total": 16,
+  "tests": [
+    {
+      "name": "360px phone keeps viewport scale 1 and does not expand its layout width",
+      "pass": true
+    },
+    {
+      "name": "End Surgery is visible in the main footer with readable native and shell buttons",
+      "pass": true
+    },
+    {
+      "name": "Transient feedback does not obscure the End Surgery or Vitals actions",
+      "pass": true
+    },
+    {
+      "name": "Medication queue collapses to its real review count and expands without marking any drug administered",
+      "pass": true
+    },
+    {
+      "name": "Scrolled OR retains one header; high-specificity legacy sticky patient bar stays hidden",
+      "pass": true
+    },
+    {
+      "name": "Overlay keyboard hides normal dock, keeps page padding, and anchors rail to visible viewport",
+      "pass": true
+    },
+    {
+      "name": "Long warning card and repeated visual viewport scroll events do not trigger a scroll loop",
+      "pass": true
+    },
+    {
+      "name": "Rapid viewport resize settles with at most one minimal input scroll; no animated card centering",
+      "pass": true
+    },
+    {
+      "name": "Resize-content Android model does not double-subtract keyboard height",
+      "pass": true
+    },
+    {
+      "name": "Prev/Next preserve the editor; finishing the last field never automatically creates a record",
+      "pass": true
+    },
+    {
+      "name": "Explicit rail Save records through native handler once and restores the normal actions",
+      "pass": true
+    },
+    {
+      "name": "Fill blanks remains available in native OR tools; the duplicate inline Save stays out of the main screen",
+      "pass": true
+    },
+    {
+      "name": "End Surgery cancel changes no evidence; confirm records one timestamp and advances to Emergence",
+      "pass": true
+    },
+    {
+      "name": "C-section End Surgery remains accessible without losing the native neonatal milestone action",
+      "pass": true
+    },
+    {
+      "name": "Final locked case cannot expose an enabled phase transition",
+      "pass": true
+    },
+    {
+      "name": "No uncaught runtime errors in focused input and phase transitions",
+      "pass": true
+    }
+  ],
+  "errors": [],
+  "limits": [
+    "Controlled Chromium mobile visualViewport overlay/resize models, not physical Android/iOS IME validation."
+  ]
+}

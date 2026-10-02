@@ -173,7 +173,7 @@ function medicationQueueSummary(){
 }
 function renderMedicationQueueGroup(label,rows,kind,limit){
   if(!rows.length||limit<=0)return{html:'',shown:0};
-  const visible=rows.slice(0,limit),html=`<div class="or-medication-queue-group ${kind}"><div class="or-medication-queue-group-head"><span>${escapeHtml(label)}</span><b>${rows.length}</b></div>${visible.map(r=>{const d=r.item,phase=caseDrugPlanPhaseLabel(d.phase),actual=r.actual,detail=actual?`${fmtDose(actual.actual)} ${actual.unit||'mL'} • ${actual.route||'—'} • ${actual.clock||''}`:[d.route,d.conc?`${d.conc} ${d.concUnit||''}`:''].filter(Boolean).join(' • ')||'Actual administration not documented',stateText=kind==='documented'?'✓ GIVEN':kind==='later'?'LATER':'NEEDS REVIEW';return `<article class="or-medication-queue-row ${r.status} timing-${kind}" data-plan-index="${r.planIndex}"><div class="or-medication-queue-drug"><span>${escapeHtml(phase)}</span><b>${escapeHtml(d.name||'Medication')}</b><small>${escapeHtml(detail)}</small></div><div class="or-medication-queue-state">${kind==='documented'?`<b>${stateText}</b>`:`<span class="or-medication-timing ${kind}">${stateText}</span><button class="btn or-medication-record-btn" type="button" data-plan-index="${r.planIndex}">Record</button>`}</div></article>`}).join('')}${rows.length>visible.length?`<div class="or-medication-queue-more">+${rows.length-visible.length} more in ${escapeHtml(label.toLowerCase())} • open All medications</div>`:''}</div>`;
+  const visible=rows.slice(0,limit),html=`<div class="or-medication-queue-group ${kind}"><div class="or-medication-queue-group-head"><span>${escapeHtml(label)}</span><b>${rows.length}</b></div>${visible.map(r=>{const d=r.item,phase=caseDrugPlanPhaseLabel(d.phase),actual=r.actual,detail=actual?`${fmtDose(actual.actual)} ${actual.unit||'mL'} • ${actual.route||'—'} • ${actual.clock||''}`:[d.route,d.conc?`${d.conc} ${d.concUnit||''}`:'',d.hospitalProtocol?`${d.hospitalProtocol} protocol`:''].filter(Boolean).join(' • ')||'Actual administration not documented',stateText=kind==='documented'?'✓ GIVEN':kind==='later'?'LATER':'NEEDS REVIEW';return `<article class="or-medication-queue-row ${r.status} timing-${kind}" data-plan-index="${r.planIndex}"><div class="or-medication-queue-drug"><span>${escapeHtml(phase)}</span><b>${escapeHtml(d.name||'Medication')}</b><small>${escapeHtml(detail)}</small></div><div class="or-medication-queue-state">${kind==='documented'?`<b>${stateText}</b>`:`<span class="or-medication-timing ${kind}">${stateText}</span><button class="btn or-medication-record-btn" type="button" data-plan-index="${r.planIndex}">Record</button>`}</div></article>`}).join('')}${rows.length>visible.length?`<div class="or-medication-queue-more">+${rows.length-visible.length} more in ${escapeHtml(label.toLowerCase())} • open All medications</div>`:''}</div>`;
   return{html,shown:visible.length};
 }
 function renderOrMedicationQueue(){
@@ -375,7 +375,7 @@ $('saveAirwayBtn')?.addEventListener('click',()=>{
   const parts=[];if($('airwayEttSize').value)parts.push(`ETT ${$('airwayEttSize').value} mm`);if($('airwayEttDepth').value)parts.push(`depth ${$('airwayEttDepth').value} cm`);if($('airwayDifficulty').value)parts.push($('airwayDifficulty').value);if($('airwayVentMode').value)parts.push($('airwayVentMode').value);
   addEvent({category:'Airway',name:'Airway record updated',note:parts.join(' • ')||'Airway record updated'});
   if(airwayWorkflowContext==='intubation'){if(!hasProcedureMilestone('Induction'))triggerOrMilestone('Induction');if(!hasProcedureMilestone('Intubation'))triggerOrMilestone('Intubation');}
-  airwayWorkflowContext='';if($('orAirwayPanelDetails'))$('orAirwayPanelDetails').open=false;renderOrPrimaryFlow();setTimeout(()=>{try{$('orPrimaryActionBtn')?.scrollIntoView({behavior:'smooth',block:'center'})}catch(e){}},50);toast('Airway record saved');
+  airwayWorkflowContext='';if($('orAirwayPanelDetails'))$('orAirwayPanelDetails').open=false;renderOrPrimaryFlow();setTimeout(()=>{if(window.ANESVET_MOBILE_OR_OWNER?.editing?.())return;try{$('orPrimaryActionBtn')?.scrollIntoView({behavior:'smooth',block:'nearest'})}catch(e){}},50);toast('Airway record saved');
 });
 $('orVentilation')?.addEventListener('change',()=>{if($('airwayVentMode')){$('airwayVentMode').value=$('orVentilation').value;renderAirwayPanel();save()}});
 
@@ -463,10 +463,10 @@ function renderOrMobileDock(){
   };
   const ui=actionUi[action]||['▶','CONTINUE'];
   if(dock)dock.classList.toggle('intraop',intraop);
-  // V15.25: during active surgery the fixed dock is reserved for frequent documentation.
-  // The next workflow transition (usually End Surgery) remains available in the OR card and More menu,
-  // reducing accidental phase changes while preserving one-tap access to Vitals and Medications.
-  if(next){next.hidden=intraop;next.disabled=!!primary?.disabled;next.classList.toggle('danger',phase==='emergency');next.setAttribute('aria-label',`Next clinical step: ${ui[1]}`);}
+  // V17.10.6: keep the workflow transition visible during active surgery.
+  // End Surgery previously disappeared from the mobile dock, forcing a scroll/More-menu detour.
+  // Safety is preserved because phase-changing actions still use the existing confirmation dialog.
+  if(next){next.hidden=false;next.disabled=!!primary?.disabled;next.classList.toggle('danger',phase==='emergency'||action==='surgery-end');next.classList.toggle('workflow-secondary',intraop);next.setAttribute('aria-label',`Next clinical step: ${ui[1]}`);}
   if(icon)icon.textContent=ui[0];if(label)label.textContent=ui[1];
   if(record){record.hidden=false;const due=!!$('orRecordNowBtn')?.classList.contains('due');record.classList.toggle('due',due);record.classList.toggle('primary',intraop);record.setAttribute('aria-label',intraop?'Record intraoperative vital signs':'Record vital signs');const b=record.querySelector('b');if(b)b.textContent=due?'RECORD VITALS • DUE':intraop?'RECORD VITALS':'VITALS';}
   if(meds){const review=state.caseStartedAt?reviewNowPlannedMedicationRows().length:0;meds.hidden=!intraop;meds.classList.toggle('pending',review>0);meds.setAttribute('aria-label',review?`Medications, ${review} planned medication record${review===1?'':'s'} need review`:'Medications');if(medsLabel)medsLabel.textContent=review?`MEDS • ${review}`:'MEDS';}

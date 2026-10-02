@@ -1,0 +1,25 @@
+{
+  "js_syntax_checked": 83,
+  "syntax_failures": [],
+  "ids": 1391,
+  "removed_original_ids": [],
+  "duplicate_ids": [],
+  "precache_assets": 151,
+  "missing_assets": [],
+  "clinical_modules_checked": [
+    "clinical-knowledge-data.js",
+    "special-patient-knowledge.js",
+    "comorbidity-knowledge.js",
+    "drug-dose-reference.js",
+    "or-live-controller.js",
+    "or-domain.js",
+    "or-record-orchestration.js",
+    "recovery-controller.js",
+    "recovery-domain.js",
+    "recovery-orchestration.js",
+    "core-storage.js",
+    "patient-domain.js",
+    "ecg-educational-rules.js"
+  ],
+  "changed_clinical_modules": []
+}

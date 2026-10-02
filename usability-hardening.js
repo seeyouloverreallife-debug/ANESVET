@@ -219,7 +219,7 @@
       const el=$(id);if(el)new MutationObserver(schedule).observe(el,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['class','hidden']});
     });
     qa('.tabpage').forEach(el=>new MutationObserver(schedule).observe(el,{attributes:true,attributeFilter:['class']}));
-    window.addEventListener('online',schedule);window.addEventListener('offline',schedule);window.addEventListener('resize',schedule,{passive:true});
+    window.ANESVET_LIFECYCLE_COORDINATOR?.subscribe('connectivity',schedule);window.ANESVET_MOBILE_OR_OWNER?.subscribe((view,reason)=>{if(reason==='viewport'&&!view.editing)schedule()});
     document.addEventListener('click',e=>{if(e.target.closest?.('.workflow-tabs,.mobile-workflow-dialog,.mobile-quick-bar,#preOrReadinessDialog,#endcase'))schedule();},true);
     // Android/PWA rescue: allow pointer fallback only when the real shortcut is the topmost tap target.
     // Never capture another control by coordinates or bypass the lock, modal, or view-only safeguards.
@@ -228,5 +228,5 @@
     document.addEventListener('pointerup',handleShortcutPointerEnd,true);
     refresh();
   }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
+  window.ANESVET_LIFECYCLE_COORDINATOR?.ready(boot);
 })();

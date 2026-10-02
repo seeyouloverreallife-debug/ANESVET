@@ -16,11 +16,7 @@
   function activePageId(){ return q('.tabpage.active')?.id || ''; }
   function schedule(){ clearTimeout(refreshTimer); refreshTimer = setTimeout(refresh, 30); }
 
-  function revealFor(target){
-    if(!target) return;
-    try{ window.ANESVETProgressiveDisclosure?.openForElement?.(target); }catch(_){}
-    try{ window.ANESVETFocusedWorkspace?.openForElement?.(target); }catch(_){}
-  }
+  function revealFor(target){window.ANESVET_WORKSPACE_OWNER?.openForElement?.(target,{persist:true});}
 
   /* ---------- Patient master: compact once a patient is linked ---------- */
   function setupPatientMasterCompact(){
@@ -76,6 +72,9 @@
     if(persist){try{localStorage.setItem(DETAILS_KEY,open?'1':'0')}catch(_){}}
   }
   function setupPatientDetails(){
+    // V17.10.6: Patient detail disclosure is canonically owned by
+    // ANESVET_PATIENT_PREOP_SIMPLIFICATION. Do not create a second toggle/state owner.
+    if(window.ANESVET_PATIENT_PREOP_SIMPLIFICATION)return;
     const panel=q('#patient .patient-entry-panel'), grid=q('#patient .patient-form-grid');
     if(!panel||!grid||$('patientDetailsToggle'))return;
     patientOptionalNodes().forEach(n=>n.classList.add('ux-patient-optional'));
@@ -127,9 +126,9 @@
     qa('.tabpage,.workflow-tabs .tab').forEach(el=>new MutationObserver(schedule).observe(el,{attributes:true,attributeFilter:['class']}));
     document.addEventListener('change',e=>{if(e.target.closest?.('#patient,#preop,#drugs,#endcase'))schedule()},true);
     document.addEventListener('click',e=>{if(e.target.closest?.('#patient,#preop,#drugs,#endcase,.mobile-quick-bar,.workflow-tabs'))schedule()},true);
-    window.addEventListener('resize',schedule,{passive:true});
+    document.addEventListener('anesvet:viewportchange',schedule);
     refresh();
   }
 
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true}); else boot();
+  window.ANESVET_LIFECYCLE_COORDINATOR?.ready(boot);
 })();

@@ -21,12 +21,9 @@
 
   function scrollAndFocus(target){
     if(!target) return;
-    window.ANESVETFocusedWorkspace?.openForElement?.(target);
-    const container = target.closest?.('.panel,.case-drug-plan-panel,.recovery-check-item') || target;
-    try{ container.scrollIntoView({behavior:'smooth',block:'center'}); }
-    catch(_){ container.scrollIntoView(); }
+    window.ANESVET_WORKSPACE_OWNER?.openForElement?.(target,{persist:false,scroll:true});
     const focusable = target.matches?.('input,select,textarea,button') ? target : target.querySelector?.('input:not([disabled]),select:not([disabled]),textarea:not([disabled]),button:not([disabled])');
-    setTimeout(()=>focusable?.focus?.({preventScroll:true}),260);
+    setTimeout(()=>focusable?.focus?.({preventScroll:true}),120);
   }
 
   function mobileContinueSpec(){

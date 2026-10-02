@@ -1,0 +1,130 @@
+{
+  "version": "17.5.4",
+  "passed": 14,
+  "total": 14,
+  "tests": [
+    {
+      "name": "Baseline reproduction: held external CSS prevents the Figma first paint",
+      "pass": true
+    },
+    {
+      "name": "Figma splash paints while all 38 external styles are still pending",
+      "pass": true
+    },
+    {
+      "name": "Ready clinical runtime cannot dismiss startup while styles are incomplete",
+      "pass": true
+    },
+    {
+      "name": "The exact first-paint assets fit a 360 pixel viewport without overflow",
+      "pass": true
+    },
+    {
+      "name": "Only after all styles load does the app open its native current-case home",
+      "pass": true
+    },
+    {
+      "name": "Failed stylesheet is fail-closed with Retry; seeded clinical records are preserved",
+      "pass": true
+    },
+    {
+      "name": "Stylesheet timeout never exposes unfinished clinical controls",
+      "pass": true
+    },
+    {
+      "name": "Retry after a stylesheet failure restores normal startup",
+      "pass": true
+    },
+    {
+      "name": "Installed manifest keeps the exact previous app identity and uses the dark splash color",
+      "pass": true
+    },
+    {
+      "name": "An online manifest refresh replaces an old cached white splash",
+      "pass": true
+    },
+    {
+      "name": "Offline manifest requests use the last successfully updated dark copy",
+      "pass": true
+    },
+    {
+      "name": "HTTP failure cannot replace the cached manifest with an error response",
+      "pass": true
+    },
+    {
+      "name": "Versioned Android icon URLs are available offline without changing logo bytes",
+      "pass": true
+    },
+    {
+      "name": "No uncaught runtime errors in first-paint, failure, retry or manifest flows",
+      "pass": true
+    }
+  ],
+  "errors": [],
+  "baselineMetrics": {
+    "paint": [],
+    "bg": "rgba(0, 0, 0, 0)",
+    "logoWidth": 220
+  },
+  "early": {
+    "paint": [
+      {
+        "name": "first-paint",
+        "time": 100
+      },
+      {
+        "name": "first-contentful-paint",
+        "time": 100
+      }
+    ],
+    "bg": "rgb(11, 45, 49)",
+    "bootHidden": false,
+    "pending": 38,
+    "assets": [
+      {
+        "src": "./assets/startup/glow.svg",
+        "loaded": true,
+        "w": 393,
+        "h": 640
+      },
+      {
+        "src": "./assets/startup/system.svg",
+        "loaded": true,
+        "w": 7,
+        "h": 7
+      },
+      {
+        "src": "./assets/startup/logo.png",
+        "loaded": true,
+        "w": 220,
+        "h": 220
+      },
+      {
+        "src": "./assets/startup/ring.svg",
+        "loaded": true,
+        "w": 176,
+        "h": 176
+      },
+      {
+        "src": "./assets/startup/ecg.svg",
+        "loaded": true,
+        "w": 345,
+        "h": 53
+      },
+      {
+        "src": "./assets/startup/connection.svg",
+        "loaded": true,
+        "w": 6,
+        "h": 6
+      }
+    ],
+    "width": 393,
+    "client": 393,
+    "viewport": 393
+  },
+  "limits": [
+    "Chromium mobile emulation; native Android launcher/WebAPK splash not exercised.",
+    "A new service worker must first activate through the existing checkpointed update flow.",
+    "Chrome controls installed manifest update timing; this code cannot instantly redraw an existing native splash."
+  ]
+}

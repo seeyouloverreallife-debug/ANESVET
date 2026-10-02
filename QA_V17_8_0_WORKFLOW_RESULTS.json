@@ -1,0 +1,110 @@
+{
+  "suite": "ANESVET V17.10.6 Full Workflow Regression",
+  "generatedAt": "2026-10-02T12:53:04.635Z",
+  "scope": "Node pure-model + source-contract regression; NOT browser/device E2E",
+  "pass": 20,
+  "fail": 0,
+  "total": 20,
+  "results": [
+    {
+      "name": "phase order setup→induction→intraop→emergence→recovery",
+      "pass": true,
+      "detail": "PASS"
+    },
+    {
+      "name": "tracker marks earlier phases done",
+      "pass": true,
+      "detail": "PASS"
+    },
+    {
+      "name": "recovery begin patch preserves first recovery timestamp",
+      "pass": true,
+      "detail": "PASS"
+    },
+    {
+      "name": "recovery complete patch moves to complete",
+      "pass": true,
+      "detail": "PASS"
+    },
+    {
+      "name": "session locks recovery access during emergency return",
+      "pass": true,
+      "detail": "PASS"
+    },
+    {
+      "name": "sealed final case is safe from reload rescue",
+      "pass": true,
+      "detail": "PASS"
+    },
+    {
+      "name": "active mutable case is reload-unsafe",
+      "pass": true,
+      "detail": "PASS"
+    },
+    {
+      "name": "Start Case freezes identity + procedure + protocol before save",
+      "pass": true,
+      "detail": "PASS"
+    },
+    {
+      "name": "Surgery end uses native milestone mutation",
+      "pass": true,
+      "detail": "PASS"
+    },
+    {
+      "name": "Extubation routes through Recovery controller",
+      "pass": true,
+      "detail": "PASS"
+    },
+    {
+      "name": "Recovery transition saves and navigates Recovery",
+      "pass": true,
+      "detail": "PASS"
+    },
+    {
+      "name": "Emergency return has explicit OR and Recovery paths",
+      "pass": true,
+      "detail": "PASS"
+    },
+    {
+      "name": "Recovery completion pauses timer and goes End Case",
+      "pass": true,
+      "detail": "PASS"
+    },
+    {
+      "name": "Workflow undo is blocked after post-transition clinical data",
+      "pass": true,
+      "detail": "PASS"
+    },
+    {
+      "name": "Geno V Cefazolin profile remains actionable",
+      "pass": true,
+      "detail": "PASS"
+    },
+    {
+      "name": "Geno V Convenia profile remains actionable",
+      "pass": true,
+      "detail": "PASS"
+    },
+    {
+      "name": "Medication actual confirmation remains required",
+      "pass": true,
+      "detail": "PASS"
+    },
+    {
+      "name": "Medication workspace stays open for consecutive entries",
+      "pass": true,
+      "detail": "PASS"
+    },
+    {
+      "name": "Case phase transition persists before rerender",
+      "pass": true,
+      "detail": "PASS"
+    },
+    {
+      "name": "Final lock guard is used by lifecycle layer",
+      "pass": true,
+      "detail": "PASS"
+    }
+  ]
+}

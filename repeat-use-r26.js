@@ -27,13 +27,7 @@
     row.append(copy,button);panel.insertAdjacentElement('afterend',row);
   }
 
-  function repaint(){
-    const s=state();if(!s)return;
-    const done=!!s.caseLocked, row=$('r26NextCase');
-    if(row)row.hidden=!done;
-    // Do not conceal archive verification or safety blockers after Final Lock.
-    $('endCaseFastFinish')?.classList.toggle('r26-sealed',done);
-  }
+  function repaint(){window.ANESVET_REPEAT_PRESENTATION_OWNER?.schedule?.();}
 
   function recoveryEntryIsAllowed(el){
     if(!el||el.disabled||!active('recovery'))return false;
@@ -60,21 +54,6 @@
 
   let pending=false;
   function schedule(){if(pending)return;pending=true;requestAnimationFrame(()=>{pending=false;repaint()})}
-  function boot(){
-    buildNextCase();repaint();
-    document.addEventListener('keydown',onRecoveryKey,true);
-    ['endCaseReadiness','endCaseFastFinishTitle','endRecoveryStatus'].forEach(id=>{
-      const el=$(id);if(el)new MutationObserver(schedule).observe(el,{subtree:true,childList:true,characterData:true});
-    });
-    document.addEventListener('anesvet:final-archive-status',schedule);
-    document.addEventListener('click',e=>{
-      if(e.target.closest?.('#endcase,#recovery,#cases,.workflow-tabs'))schedule();
-    },true);
-    window.addEventListener('pageshow',schedule);
-    // Native record action remains explicit. Make the action's consequence clear.
-    const save=$('recordRecoveryVitalsBtn');if(save){
-      save.title='บันทึกค่าที่กรอก (Enter จากช่องสุดท้ายจะเลื่อนมาที่ปุ่มนี้ แต่ไม่บันทึกให้อัตโนมัติ)';
-    }
-  }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
+  function boot(){buildNextCase();repaint();document.addEventListener('keydown',onRecoveryKey,true);const save=$('recordRecoveryVitalsBtn');if(save)save.title='บันทึกค่าที่กรอก (Enter จากช่องสุดท้ายจะเลื่อนมาที่ปุ่มนี้ แต่ไม่บันทึกให้อัตโนมัติ)';}
+  window.ANESVET_LIFECYCLE_COORDINATOR?.ready(boot);
 })();

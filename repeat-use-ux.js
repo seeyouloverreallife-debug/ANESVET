@@ -54,35 +54,9 @@
    ['editPatientBtn','openPreopBtn'].forEach(id=>{const btn=$(id);if(btn)tools.appendChild(btn)});
    detail.appendChild(tools);group.appendChild(detail);
  }
- function update(){
-   const s=caseState();if(!s)return;
-   const show=isWorking(s), name=phaseName(s),patient=(s.patientName||$('patientName')?.value||'').trim();
-   ['r25ResumeFromPatient','r25ResumeFromSummary','r25ResumeFromCases'].forEach(id=>{
-     const btn=$(id);if(!btn)return;
-     btn.hidden=!show;
-     if(show){btn.textContent='↩ กลับไป '+name;
-       btn.title=`กลับเข้าสู่ ${name}${patient?' — '+patient:''} (ไม่เริ่มหรือจบเคสอัตโนมัติ)`;}
-   });
-   const route=$('endCaseFastFinish');
-   if(route)route.classList.toggle('r25-case-locked',!!s.caseLocked);
-   const recovery=$('recoveryExitCard');
-   if(recovery)recovery.classList.toggle('r25-done',!!s.recoveryCompletedAt);
-   // Avoid false claim of saving: the native save-state badge is the single source of truth.
- }
+ function update(){window.ANESVET_REPEAT_PRESENTATION_OWNER?.schedule?.();}
  let scheduled=false;
  function schedule(){if(scheduled)return;scheduled=true;requestAnimationFrame(()=>{scheduled=false;update();});}
- function boot(){
-   installReturnActions();simplifyFinalReview();reduceSummaryChoiceOverload();update();
-   // Listen to native UI state badges only. Do not observe the tree we create, avoiding loops.
-   ['casePhaseBadge','timerStateBadge','recoveryPhaseBadge','endCaseReadiness'].forEach(id=>{
-      const node=$(id);if(node)new MutationObserver(schedule).observe(node,{subtree:true,childList:true,characterData:true,attributes:true});
-   });
-   document.addEventListener('click',e=>{
-     if(e.target.closest?.('.workflow-tabs,.mobile-workflow-dialog,#recovery,#endcase,#casesummary,#patient,#cases'))schedule();
-   },true);
-   document.addEventListener('anesvet:final-archive-status',schedule);
-   document.addEventListener('change',e=>{if(e.target.closest?.('#endcase,#recovery,#patient'))schedule()});
-   window.addEventListener('pageshow',schedule);
- }
- if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
+ function boot(){installReturnActions();simplifyFinalReview();reduceSummaryChoiceOverload();update();}
+ window.ANESVET_LIFECYCLE_COORDINATOR?.ready(boot);
 })();

@@ -1,20 +1,23 @@
-ANESVET V17.5.3
+ANESVET V17.5.4
 
-แก้การกรอกบนมือถือและปุ่มจบผ่าตัด; รวมหน้าเปิด Figma และแก้ save animation จาก V17.5.2
-อ่าน RELEASE_V17_5_3_TH.md สำหรับแนวทาง UX, การทดสอบ, ข้อจำกัดและวิธีนำขึ้น
+แก้หน้าเปิด Figma ให้แสดงระหว่างโหลด CSS และแก้การตรวจอัปเดตสี/ไอคอนหน้าเปิด Android
+อ่าน RELEASE_V17_5_4_TH.md สำหรับหลักฐาน การทดสอบ วิธีนำขึ้น และข้อจำกัด native Android
 
-วางไฟล์โปรแกรมที่ราก repository ANESVET ให้ index.html อยู่รากและ assets/ ครบ
-รับการอัปเดตผ่านปุ่มของแอปที่ URL เดิม ตรวจเลข V17.5.3 ก่อนลองใช้
-รุ่นนี้ยังไม่ได้เผยแพร่: การเขียน GitHub เดิมติด HTTP 403
+Full-Source: วาง index.html ที่ราก repository และ assets/ ครบ
+Startup-Patch: ใช้ทับฐาน V17.5.3 เท่านั้น มี 6 ไฟล์ที่แก้ (index, app, mobile-design.js, or-speed-hardening.js, manifest, service-worker)
+รับการอัปเดตผ่านปุ่มของแอปที่ URL เดิม ตรวจเลข V17.5.4
+รุ่นนี้ยังไม่ได้เผยแพร่: การเขียน GitHub ครั้งนี้ติด HTTP 403; main ที่ตรวจมี V17.5.3 แล้ว
 ไม่ต้องเคลียร์ข้อมูล browser หรือถอนแอป เพราะข้อมูลเคสอยู่ในเครื่อง
 
-QA ผ่าน 94/94 บน Chromium จำลองมือถือ/visualViewport ไม่ใช่คีย์บอร์ด Android/iOS เครื่องจริง
-ใช้ SOURCE_SHA256.json ตรวจไฟล์ทุกชิ้นในชุด
+QA ผ่าน 108/108 บน Chromium จำลองมือถือ ไม่ใช่ native Android splash หรือแป้นพิมพ์เครื่องจริง
+ใช้ SOURCE_SHA256.json ตรวจไฟล์ในชุด
 
 ทดสอบซ้ำ: ติดตั้ง Node.js, Playwright และ Chromium ในเครื่องทดสอบ
 กำหนด ANESVET_CHROMIUM_EXECUTABLE ชี้ Chromium ของเครื่อง
-node QA_V17_5_3_MOBILE.js
-node QA_V17_5_3_KNOWLEDGE_BROWSER.js
-node QA_V17_5_3_PWA.js
-node QA_V17_5_3_STARTUP_PERFORMANCE.js
-node QA_V17_5_3_EDITING.js
+node QA_V17_5_4_MOBILE.js
+node QA_V17_5_4_KNOWLEDGE_BROWSER.js
+node QA_V17_5_4_PWA.js
+node QA_V17_5_4_STARTUP_PERFORMANCE.js
+node QA_V17_5_4_EDITING.js
+สำหรับ SPLASH comparison: แตก V17.5.3 baseline แล้วตั้ง ANESVET_BASELINE_DIR เป็น absolute directory
+node QA_V17_5_4_SPLASH.js

@@ -1,4 +1,4 @@
-/* ANESVET V17.5.3 — OR LIVE Speed & Android/PWA Hardening
+/* ANESVET V17.5.4 — OR LIVE Speed & Android/PWA Hardening
    Interaction hardening only. Does not change clinical calculations or record semantics. */
 (()=>{
   'use strict';
@@ -34,30 +34,9 @@
   function isOrActive(){return !!byId('orlive')?.classList.contains('active')}
   function fieldIndex(id=activeFastId){return FAST_FIELDS.findIndex(x=>x.id===id)}
   function activeInput(){const el=document.activeElement;return el&&FAST_IDS.has(el.id)?el:null}
-  function keyboardCandidate(){return !!document.activeElement?.matches?.('input:not([type=checkbox]):not([type=radio]):not([type=button]):not([type=submit]):not([type=hidden]),textarea,select,[contenteditable="true"]')}
-
+  function keyboardCandidate(){return window.ANESVET_MOBILE_OR_OWNER?.editing?.()??!!document.activeElement?.matches?.('input:not([type=checkbox]):not([type=radio]):not([type=button]):not([type=submit]):not([type=hidden]),textarea,select,[contenteditable="true"]')}
   function updateViewportMetrics({orientationReset=false}={}){
-    const viewport=window.visualViewport;
-    if(!viewport){
-      document.documentElement.style.setProperty('--anesvet-keyboard-offset','0px');
-      document.documentElement.style.setProperty('--anesvet-visual-height',`${window.innerHeight||0}px`);
-      document.body.classList.remove('anesvet-soft-keyboard');
-      document.body.classList.toggle('av-editing',document.body.classList.contains('av-mobile-design')&&mobileQuery.matches&&keyboardCandidate());
-      positionEntryRail();
-      return;
-    }
-    const orientation=screen?.orientation?.type||String(window.orientation||'');
-    if(orientationReset||orientation!==lastOrientation){baselineVisualHeight=viewport.height;lastOrientation=orientation}
-    if(!keyboardCandidate())baselineVisualHeight=Math.max(viewport.height,baselineVisualHeight>viewport.height*1.35?viewport.height:baselineVisualHeight);
-    const layoutGap=Math.max(0,(window.innerHeight||document.documentElement.clientHeight||viewport.height)-viewport.height-viewport.offsetTop);
-    const baselineGap=Math.max(0,baselineVisualHeight-viewport.height);
-    const keyboardOffset=Math.min(Math.max(layoutGap,baselineGap>=110?baselineGap:0),Math.max(0,(window.innerHeight||viewport.height)*0.62));
-    document.documentElement.style.setProperty('--anesvet-keyboard-offset',`${Math.round(keyboardOffset)}px`);
-    document.documentElement.style.setProperty('--anesvet-visual-height',`${Math.round(viewport.height)}px`);
-    document.body.classList.toggle('anesvet-soft-keyboard',keyboardOffset>=110&&keyboardCandidate());
-    // The mobile shell owns one editing layout even before the IME resizes.
-    // Some Android modes resize both innerHeight and visualViewport equally.
-    document.body.classList.toggle('av-editing',document.body.classList.contains('av-mobile-design')&&mobileQuery.matches&&keyboardCandidate());
+    window.ANESVET_MOBILE_OR_OWNER?.sync?.(orientationReset?'orientation':'or-speed');
     positionEntryRail();
   }
 
@@ -153,19 +132,12 @@
   }
 
   document.addEventListener('focusin',e=>{
-    updateViewportMetrics();
     if(!FAST_IDS.has(e.target?.id))return;
-    activeFastId=e.target.id;
-    updateViewportMetrics();
-    updateRail();
-    queueFocusedVisibility();
+    activeFastId=e.target.id;updateRail();queueFocusedVisibility();
   });
   document.addEventListener('focusout',e=>{
-    requestAnimationFrame(updateViewportMetrics);
     if(!FAST_IDS.has(e.target?.id))return;
-    setTimeout(()=>{
-      if(!activeInput()){activeFastId='';updateRail();setTimeout(()=>updateViewportMetrics(),120)}
-    },40);
+    setTimeout(()=>{if(!activeInput()){activeFastId='';updateRail()}},40);
   });
   document.addEventListener('input',e=>{if(FAST_IDS.has(e.target?.id)){activeFastId=e.target.id;updateRail()}});
 
@@ -219,8 +191,8 @@
   document.addEventListener('freeze',()=>{
     try{if(typeof flushPendingSave==='function')flushPendingSave('page-freeze');else if(typeof save==='function')save({reason:'page-freeze'})}catch(_){/* app already owns primary persistence path */}
   });
-  window.addEventListener('pageshow',e=>{
-    if(!e.persisted)return;
+  window.ANESVET_LIFECYCLE_COORDINATOR?.subscribe('pageshow',e=>{
+    if(!e.detail?.persisted)return;
     setTimeout(()=>{
       try{if(typeof renderOrLive==='function')renderOrLive()}catch(_){ }
       try{if(typeof renderRecovery==='function')renderRecovery()}catch(_){ }
@@ -230,18 +202,20 @@
     },0);
   });
 
-  const onViewportResize=()=>{updateViewportMetrics();if(activeInput())queueFocusedVisibility();};
-  vv?.addEventListener('resize',onViewportResize);
+  const onViewportChange=e=>{
+    const orientationReset=/orientation/.test(e?.detail?.reason||'');
+    updateViewportMetrics({orientationReset});
+    if(activeInput())queueFocusedVisibility();
+  };
+  window.ANESVET_MOBILE_OR_OWNER?.subscribe((view,reason)=>{if(reason==='viewport'||reason==='focusin'||reason==='focusout'||reason==='pageshow')onViewportChange({detail:{reason}})});
   vv?.addEventListener('scroll',positionEntryRail,{passive:true});
-  window.addEventListener('resize',onViewportResize);
-  window.addEventListener('orientationchange',()=>setTimeout(()=>updateViewportMetrics({orientationReset:true}),180));
-  mobileQuery.addEventListener?.('change',()=>{updateRail();updateViewportMetrics({orientationReset:true})});
+  mobileQuery.addEventListener?.('change',()=>{updateRail();window.ANESVET_VIEWPORT_COORDINATOR?.schedule('media-change')});
 
   updateViewportMetrics({orientationReset:true});
   updateRail();
 
   window.ANESVET_OR_SPEED_HARDENING=Object.freeze({
-    version:'17.5.3',
+    version:'17.6.0',
     fields:FAST_FIELDS.map(x=>x.id),
     refreshViewport:updateViewportMetrics,
     focusField:index=>focusAt(index),

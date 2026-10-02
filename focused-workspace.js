@@ -52,9 +52,7 @@
     if(drug)grid.insertBefore(btn,drug);else grid.prepend(btn);
     btn.addEventListener('click',()=>{
       try{$('orMoreDialog')?.close()}catch(_){$('orMoreDialog')?.removeAttribute('open')}
-      tracker.classList.add('ux-phase-requested');
-      tracker.open=true;
-      requestAnimationFrame(()=>tracker.scrollIntoView({behavior:'smooth',block:'center'}));
+      window.ANESVET_WORKSPACE_OWNER?.openWorkflowStatus?.();
     });
     tracker.addEventListener('toggle',()=>{if(!tracker.open)tracker.classList.remove('ux-phase-requested')});
   }
@@ -122,8 +120,6 @@
     if(!el)return;
     const ux=el.closest?.('.ux-recovery-collapsible');
     if(ux)setRecoveryPanelOpen(ux,true);
-    const pd=el.closest?.('.pd-enhanced.pd-collapsed');
-    if(pd){const toggle=pd.querySelector(':scope > .section-heading .pd-toggle');toggle?.click()}
   }
 
   function setupRecoveryProgressiveWorkspace(){
@@ -139,10 +135,7 @@
     }
   }
 
-  function setupMobileChrome(){
-    const sync=()=>document.documentElement.classList.toggle('ux-phone',window.matchMedia('(max-width:720px)').matches);
-    window.addEventListener('resize',sync,{passive:true});sync();
-  }
+  function setupMobileChrome(){window.ANESVET_WORKSPACE_OWNER?.syncViewport?.();}
 
   window.ANESVETFocusedWorkspace={openForElement:revealFor,setRecoveryPanelOpen};
   document.documentElement.classList.add('focused-workspace-v162');

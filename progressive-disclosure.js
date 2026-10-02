@@ -171,17 +171,15 @@
   }
 
   function setupAutoReveal(){
-    document.addEventListener('focusin', e => revealAncestor(e.target,false), true);
-    document.addEventListener('invalid', e => revealAncestor(e.target,false), true);
     window.addEventListener('hashchange', () => {
       const id = decodeURIComponent(location.hash.slice(1));
-      if (id) revealAncestor(document.getElementById(id),false);
+      if (id) window.ANESVET_WORKSPACE_OWNER?.openForElement(document.getElementById(id),{persist:false});
     });
   }
 
   function exposeApi(){
     window.ANESVETProgressiveDisclosure = {
-      openForElement(el){ revealAncestor(el,true); },
+      openForElement(el,persist=true){ revealAncestor(el,persist); },
       collapseSettings(){ document.querySelectorAll('#settings > .pd-panel').forEach(p=>setOpen(p,false)); },
       expandSettings(){ document.querySelectorAll('#settings > .pd-panel').forEach(p=>setOpen(p,true)); }
     };
@@ -194,6 +192,5 @@
     exposeApi();
   }
 
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded',boot,{once:true});
-  else boot();
+  window.ANESVET_LIFECYCLE_COORDINATOR?.ready(boot);
 })();

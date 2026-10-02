@@ -96,7 +96,7 @@
   $('finalArchiveBackupBtn')?.addEventListener('click',()=>$('endBackupBtn')?.click());
   document.addEventListener('anesvet:final-archive-status',e=>acceptExternalStatus(e.detail));
   document.addEventListener('click',e=>{if(e.target.closest?.('[data-tab="endcase"],[data-mobile-tab="endcase"]'))setTimeout(()=>refresh({silent:true}),60)});
-  window.addEventListener('pageshow',()=>setTimeout(()=>refresh({silent:true}),80));
+  const onPageShow=()=>setTimeout(()=>refresh({silent:true}),80);window.ANESVET_LIFECYCLE_COORDINATOR?.subscribe('pageshow',onPageShow);
 
   window.AnesvetFinalArchiveAssurance=Object.freeze({refresh,retry,getStatus:()=>({...current}),canStartNewCase,render});
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(()=>refresh({silent:true}),80),{once:true});else setTimeout(()=>refresh({silent:true}),80);

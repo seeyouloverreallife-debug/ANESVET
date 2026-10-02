@@ -128,7 +128,7 @@
   function boot(){buildDialog();buildEntrypoints();buildActiveBanner();repaint();patchFinalizedDialog();
     document.addEventListener('anesvet:simulation-complete',()=>{setTimeout(()=>{repaint();patchFinalizedDialog()},0)});
     document.addEventListener('click',e=>{if(e.target.closest?.('.workflow-tabs,[data-mobile-tab],#endcase,#patient'))setTimeout(repaint,25)},true);
-    window.addEventListener('pageshow',()=>{repaint();patchFinalizedDialog()});
+    const onPageShow=()=>{repaint();patchFinalizedDialog()};window.ANESVET_LIFECYCLE_COORDINATOR?.subscribe('pageshow',onPageShow);
     const simButton=$('finalizedNewCaseBtn');simButton?.addEventListener('click',e=>{if(!active())return;e.stopImmediatePropagation();e.preventDefault();const sc=currentScenario();api()?.simulation?.start?.({id:sc.id,label:sc.title,seed:sc.seed,replace:true});},true);
     const next=$('r26NextCaseButton');next?.addEventListener('click',e=>{if(!active())return;e.stopImmediatePropagation();e.preventDefault();resetDemo();},true);
     window.AnesvetSimulation=Object.freeze({version:VERSION,active,open:openDialog,start:startScenario,reset:resetDemo,exit:exitDemo,scenarios:()=>JSON.parse(JSON.stringify(scenarios))});

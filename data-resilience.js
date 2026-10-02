@@ -73,7 +73,7 @@ function init(){
   $('restoreMismatchCode')?.addEventListener('input',updateRestoreReady);
   $('confirmRestoreBtn')?.addEventListener('click',confirmRestore);
   renderHealth();
-  window.addEventListener('online',renderHealth);window.addEventListener('offline',renderHealth);window.addEventListener('anesvet:data-safety-changed',renderHealth);
+  window.ANESVET_LIFECYCLE_COORDINATOR?.subscribe('connectivity',renderHealth);window.ANESVET_LIFECYCLE_COORDINATOR?.subscribe('data-safety',renderHealth);
   document.addEventListener('visibilitychange',()=>{if(!document.hidden)renderHealth()});
 }
 window.AnesvetDataResilience={renderHealth,openBackupPreflight,previewRestoreFile,requestPersistence,verifyAll};

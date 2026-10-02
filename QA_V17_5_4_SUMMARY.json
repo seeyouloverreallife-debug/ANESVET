@@ -1,0 +1,603 @@
+{
+  "version": "17.5.4",
+  "passed": 108,
+  "total": 108,
+  "suites": {
+    "MOBILE": {
+      "version": "17.5.4",
+      "passed": 19,
+      "total": 19,
+      "errors": [],
+      "tests": [
+        {
+          "name": "Empty startup uses live storage, blank BW, no onboarding obstruction",
+          "pass": true
+        },
+        {
+          "name": "Primary action reaches original patient fields",
+          "pass": true
+        },
+        {
+          "name": "OR and Recovery tabs retain readiness gates",
+          "pass": true
+        },
+        {
+          "name": "Real patient setup save confirms measured BW and survives reload",
+          "pass": true
+        },
+        {
+          "name": "Case hub and every More route remain reachable without mutating clinical state",
+          "pass": true
+        },
+        {
+          "name": "Knowledge and BOAS/cardiac/pancreatitis/liver/kidney/ECG stay read only",
+          "pass": true
+        },
+        {
+          "name": "Cold launch shows real current case on home; Continue resumes OR",
+          "pass": true
+        },
+        {
+          "name": "Vitals save records actual fields and survives reload",
+          "pass": true
+        },
+        {
+          "name": "Six measured inputs fit above footer at 360x780; threshold details preserve native text",
+          "pass": true
+        },
+        {
+          "name": "Draft change is distinguished from saved record; critical hints remain visible",
+          "pass": true
+        },
+        {
+          "name": "Downloaded worker waits for explicit update and restores actual case after promotion",
+          "pass": true
+        },
+        {
+          "name": "Footer Meds opens actual medication editor, no automatic administration",
+          "pass": true
+        },
+        {
+          "name": "Actual medication validates fields, respects cancel, saves once and persists",
+          "pass": true
+        },
+        {
+          "name": "OR tools retain native timer/wake/fullscreen and close correctly",
+          "pass": true
+        },
+        {
+          "name": "Layout works at 360, 393, 768 and 1280 without page overflow",
+          "pass": true
+        },
+        {
+          "name": "PWA reload is offline-ready with all new assets and local fonts",
+          "pass": true
+        },
+        {
+          "name": "Recovery resumes, records real observations, OR remains locked",
+          "pass": true
+        },
+        {
+          "name": "Unreadable storage fails closed with retry and review, original bytes preserved",
+          "pass": true
+        },
+        {
+          "name": "No uncaught runtime errors",
+          "pass": true
+        }
+      ],
+      "limits": [
+        "Chromium mobile emulation; physical iOS/Android not tested.",
+        "Clinical knowledge and dose rules are inherited, not independently clinically approved by this UI test."
+      ]
+    },
+    "KNOWLEDGE": {
+      "version": "17.5.4",
+      "kind": "Real Chromium, mobile-emulated/tablet/desktop UI and offline PWA tests",
+      "passed": 36,
+      "total": 36,
+      "errors": [],
+      "tests": [
+        {
+          "name": "Full inherited app boots with knowledge dependencies and no uncaught errors",
+          "pass": true
+        },
+        {
+          "name": "Existing contextual entry routes short Quick Assist to the correct Full Guide",
+          "pass": true
+        },
+        {
+          "name": "Drug monograph provides 13 fields and expandable source locators",
+          "pass": true
+        },
+        {
+          "name": "Unknown calculator drug opens an explicit search without a guessed monograph",
+          "pass": true
+        },
+        {
+          "name": "Decision tree advances, exposes sourced actions, steps back and resets",
+          "pass": true
+        },
+        {
+          "name": "Educational ECG workflow renders rules; editing clears stale results; closing clears observations",
+          "pass": true
+        },
+        {
+          "name": "Hemodynamic emergency appears before complete ECG classification",
+          "pass": true
+        },
+        {
+          "name": "Sources/register and all full guides remain reachable at 320px",
+          "pass": true
+        },
+        {
+          "name": "Reviewed dose-reference dialog links to the matching qualitative monograph",
+          "pass": true
+        },
+        {
+          "name": "Existing alert-dialog Full Guide preserves low/high ETCO2 direction without acknowledging",
+          "pass": true
+        },
+        {
+          "name": "18 attributed image cards cover all 16 rhythms and load successfully",
+          "pass": true
+        },
+        {
+          "name": "Normal tracing markers toggle without changing original image bytes or observations",
+          "pass": true
+        },
+        {
+          "name": "Mobile zoom confines sideways scrolling to the strip and can be reversed",
+          "pass": true
+        },
+        {
+          "name": "Caption/strip speed discrepancy and PEA clinical requirement are visible",
+          "pass": true
+        },
+        {
+          "name": "Existing rhythm guide links scroll to a matching textbook example without filling the form",
+          "pass": true
+        },
+        {
+          "name": "Image atlas fits 320px, tablet and desktop while all source images decode",
+          "pass": true
+        },
+        {
+          "name": "Brachycephalic guide is searchable and filtered within existing Full Guides",
+          "pass": true
+        },
+        {
+          "name": "Phase shortcuts open extubation/recovery/rescue text and retain source locators",
+          "pass": true
+        },
+        {
+          "name": "Brachy decision tree emergency/preparation branches, back and reset",
+          "pass": true
+        },
+        {
+          "name": "Brachy related guides/monographs resolve and all sections fit 320px",
+          "pass": true
+        },
+        {
+          "name": "cardiac-disease: search, phase navigation and source evidence at 320px",
+          "pass": true
+        },
+        {
+          "name": "cardiac-disease: every phase fits mobile and decision actions reset safely",
+          "pass": true
+        },
+        {
+          "name": "cardiac-disease: related guide and drug links resolve; patient state unchanged",
+          "pass": true
+        },
+        {
+          "name": "pancreatitis: search, phase navigation and source evidence at 320px",
+          "pass": true
+        },
+        {
+          "name": "pancreatitis: every phase fits mobile and decision actions reset safely",
+          "pass": true
+        },
+        {
+          "name": "pancreatitis: related guide and drug links resolve; patient state unchanged",
+          "pass": true
+        },
+        {
+          "name": "hepatic-disease: search, phase navigation and source evidence at 320px",
+          "pass": true
+        },
+        {
+          "name": "hepatic-disease: every phase fits mobile and decision actions reset safely",
+          "pass": true
+        },
+        {
+          "name": "hepatic-disease: related guide and drug links resolve; patient state unchanged",
+          "pass": true
+        },
+        {
+          "name": "renal-disease: search, phase navigation and source evidence at 320px",
+          "pass": true
+        },
+        {
+          "name": "renal-disease: every phase fits mobile and decision actions reset safely",
+          "pass": true
+        },
+        {
+          "name": "renal-disease: related guide and drug links resolve; patient state unchanged",
+          "pass": true
+        },
+        {
+          "name": "Opening/reading knowledge and ECG does not mutate patient state or protocol",
+          "pass": true
+        },
+        {
+          "name": "Tablet and desktop layouts fit viewport",
+          "pass": true
+        },
+        {
+          "name": "Real service worker controls page and provides offline reload including knowledge and Thai fonts",
+          "pass": true
+        },
+        {
+          "name": "No uncaught browser errors through knowledge and offline reload",
+          "pass": true
+        }
+      ],
+      "limits": [
+        "Chromium emulation is not physical Android/iOS or Safari validation.",
+        "Educational content source checks do not constitute independent clinical signoff."
+      ]
+    },
+    "PWA": {
+      "version": "17.5.4",
+      "passed": 14,
+      "total": 14,
+      "tests": [
+        {
+          "name": "Controller change blocks reload on false",
+          "pass": true
+        },
+        {
+          "name": "Activation blocks worker promotion on false",
+          "pass": true
+        },
+        {
+          "name": "Controller change blocks reload on ok:false",
+          "pass": true
+        },
+        {
+          "name": "Activation blocks worker promotion on ok:false",
+          "pass": true
+        },
+        {
+          "name": "Controller change blocks reload on exception",
+          "pass": true
+        },
+        {
+          "name": "Activation blocks worker promotion on exception",
+          "pass": true
+        },
+        {
+          "name": "Controller change blocks reload on missing acknowledgement",
+          "pass": true
+        },
+        {
+          "name": "Activation blocks worker promotion on missing acknowledgement",
+          "pass": true
+        },
+        {
+          "name": "Successful update checkpoints before promotion and again before reload",
+          "pass": true
+        },
+        {
+          "name": "Failure after promotion keeps page and retries without waiting worker",
+          "pass": true
+        },
+        {
+          "name": "Concurrent controller events and taps cannot start duplicate reloads",
+          "pass": true
+        },
+        {
+          "name": "First installation claims without reloading or checkpointing",
+          "pass": true
+        },
+        {
+          "name": "Late PWA binding registers even when window load already finished",
+          "pass": true
+        },
+        {
+          "name": "Worker installation precaches without skipWaiting; explicit message promotes",
+          "pass": true
+        }
+      ]
+    },
+    "STARTUP": {
+      "version": "17.5.4",
+      "passed": 9,
+      "total": 9,
+      "tests": [
+        {
+          "name": "Figma splash is visible while runtime loads; every local asset decodes and fits",
+          "pass": true
+        },
+        {
+          "name": "Empty Figma home has a full-width archive action and no hard-coded patient",
+          "pass": true
+        },
+        {
+          "name": "Cold launch from old installed start URL shows actual current case without changing records",
+          "pass": true
+        },
+        {
+          "name": "Continue and reload resume the existing native OR instead of forcing home",
+          "pass": true
+        },
+        {
+          "name": "Successful save flash settles without observer recursion or new records",
+          "pass": true
+        },
+        {
+          "name": "Fast input still updates critical thresholds immediately; historical record stays unchanged",
+          "pass": true
+        },
+        {
+          "name": "Offline cold launch provides Figma home and existing case from precached assets",
+          "pass": true
+        },
+        {
+          "name": "Failed UI script shows retry and preserves clinical bytes instead of exposing old screen",
+          "pass": true
+        },
+        {
+          "name": "No uncaught runtime errors in startup/input/offline flows",
+          "pass": true
+        }
+      ],
+      "errors": [],
+      "limits": [
+        "Chromium mobile emulation; not a physical installed iOS/Android test."
+      ]
+    },
+    "EDITING": {
+      "version": "17.5.4",
+      "passed": 16,
+      "total": 16,
+      "tests": [
+        {
+          "name": "360px phone keeps viewport scale 1 and does not expand its layout width",
+          "pass": true
+        },
+        {
+          "name": "End Surgery is visible in the main footer with readable native and shell buttons",
+          "pass": true
+        },
+        {
+          "name": "Transient feedback does not obscure the End Surgery or Vitals actions",
+          "pass": true
+        },
+        {
+          "name": "Medication queue collapses to its real review count and expands without marking any drug administered",
+          "pass": true
+        },
+        {
+          "name": "Scrolled OR retains one header; high-specificity legacy sticky patient bar stays hidden",
+          "pass": true
+        },
+        {
+          "name": "Overlay keyboard hides normal dock, keeps page padding, and anchors rail to visible viewport",
+          "pass": true
+        },
+        {
+          "name": "Long warning card and repeated visual viewport scroll events do not trigger a scroll loop",
+          "pass": true
+        },
+        {
+          "name": "Rapid viewport resize settles with at most one minimal input scroll; no animated card centering",
+          "pass": true
+        },
+        {
+          "name": "Resize-content Android model does not double-subtract keyboard height",
+          "pass": true
+        },
+        {
+          "name": "Prev/Next preserve the editor; finishing the last field never automatically creates a record",
+          "pass": true
+        },
+        {
+          "name": "Explicit rail Save records through native handler once and restores the normal actions",
+          "pass": true
+        },
+        {
+          "name": "Fill blanks remains available in native OR tools; the duplicate inline Save stays out of the main screen",
+          "pass": true
+        },
+        {
+          "name": "End Surgery cancel changes no evidence; confirm records one timestamp and advances to Emergence",
+          "pass": true
+        },
+        {
+          "name": "C-section End Surgery remains accessible without losing the native neonatal milestone action",
+          "pass": true
+        },
+        {
+          "name": "Final locked case cannot expose an enabled phase transition",
+          "pass": true
+        },
+        {
+          "name": "No uncaught runtime errors in focused input and phase transitions",
+          "pass": true
+        }
+      ],
+      "errors": [],
+      "limits": [
+        "Controlled Chromium mobile visualViewport overlay/resize models, not physical Android/iOS IME validation."
+      ]
+    },
+    "SPLASH": {
+      "version": "17.5.4",
+      "passed": 14,
+      "total": 14,
+      "tests": [
+        {
+          "name": "Baseline reproduction: held external CSS prevents the Figma first paint",
+          "pass": true
+        },
+        {
+          "name": "Figma splash paints while all 38 external styles are still pending",
+          "pass": true
+        },
+        {
+          "name": "Ready clinical runtime cannot dismiss startup while styles are incomplete",
+          "pass": true
+        },
+        {
+          "name": "The exact first-paint assets fit a 360 pixel viewport without overflow",
+          "pass": true
+        },
+        {
+          "name": "Only after all styles load does the app open its native current-case home",
+          "pass": true
+        },
+        {
+          "name": "Failed stylesheet is fail-closed with Retry; seeded clinical records are preserved",
+          "pass": true
+        },
+        {
+          "name": "Stylesheet timeout never exposes unfinished clinical controls",
+          "pass": true
+        },
+        {
+          "name": "Retry after a stylesheet failure restores normal startup",
+          "pass": true
+        },
+        {
+          "name": "Installed manifest keeps the exact previous app identity and uses the dark splash color",
+          "pass": true
+        },
+        {
+          "name": "An online manifest refresh replaces an old cached white splash",
+          "pass": true
+        },
+        {
+          "name": "Offline manifest requests use the last successfully updated dark copy",
+          "pass": true
+        },
+        {
+          "name": "HTTP failure cannot replace the cached manifest with an error response",
+          "pass": true
+        },
+        {
+          "name": "Versioned Android icon URLs are available offline without changing logo bytes",
+          "pass": true
+        },
+        {
+          "name": "No uncaught runtime errors in first-paint, failure, retry or manifest flows",
+          "pass": true
+        }
+      ],
+      "errors": [],
+      "baselineMetrics": {
+        "paint": [],
+        "bg": "rgba(0, 0, 0, 0)",
+        "logoWidth": 220
+      },
+      "early": {
+        "paint": [
+          {
+            "name": "first-paint",
+            "time": 100
+          },
+          {
+            "name": "first-contentful-paint",
+            "time": 100
+          }
+        ],
+        "bg": "rgb(11, 45, 49)",
+        "bootHidden": false,
+        "pending": 38,
+        "assets": [
+          {
+            "src": "./assets/startup/glow.svg",
+            "loaded": true,
+            "w": 393,
+            "h": 640
+          },
+          {
+            "src": "./assets/startup/system.svg",
+            "loaded": true,
+            "w": 7,
+            "h": 7
+          },
+          {
+            "src": "./assets/startup/logo.png",
+            "loaded": true,
+            "w": 220,
+            "h": 220
+          },
+          {
+            "src": "./assets/startup/ring.svg",
+            "loaded": true,
+            "w": 176,
+            "h": 176
+          },
+          {
+            "src": "./assets/startup/ecg.svg",
+            "loaded": true,
+            "w": 345,
+            "h": 53
+          },
+          {
+            "src": "./assets/startup/connection.svg",
+            "loaded": true,
+            "w": 6,
+            "h": 6
+          }
+        ],
+        "width": 393,
+        "client": 393,
+        "viewport": 393
+      },
+      "limits": [
+        "Chromium mobile emulation; native Android launcher/WebAPK splash not exercised.",
+        "A new service worker must first activate through the existing checkpointed update flow.",
+        "Chrome controls installed manifest update timing; this code cannot instantly redraw an existing native splash."
+      ]
+    }
+  },
+  "static": {
+    "js_syntax_checked": 83,
+    "syntax_failures": [],
+    "ids": 1391,
+    "removed_original_ids": [],
+    "duplicate_ids": [],
+    "precache_assets": 151,
+    "missing_assets": [],
+    "clinical_modules_checked": [
+      "clinical-knowledge-data.js",
+      "special-patient-knowledge.js",
+      "comorbidity-knowledge.js",
+      "drug-dose-reference.js",
+      "or-live-controller.js",
+      "or-domain.js",
+      "or-record-orchestration.js",
+      "recovery-controller.js",
+      "recovery-domain.js",
+      "recovery-orchestration.js",
+      "core-storage.js",
+      "patient-domain.js",
+      "ecg-educational-rules.js"
+    ],
+    "changed_clinical_modules": []
+  },
+  "deployment": {
+    "published": false,
+    "observed_repository_version": "17.5.3",
+    "repository": "seeyouloverreallife-debug/ANESVET",
+    "branch_mutated": false,
+    "write_attempt_result": "403 Resource not accessible by integration"
+  },
+  "limitations": [
+    "Chromium mobile emulation only; no physical native Android/WebAPK splash or IME test.",
+    "Native installed manifest update scheduling belongs to Chrome."
+  ]
+}
