@@ -1,4 +1,4 @@
-/* ANESVET V17.5.1: mobile shell only. Never infer or write clinical evidence. */
+/* ANESVET V17.5.3: mobile shell only. Never infer or write clinical evidence. */
 (() => {
   'use strict';
   const $=id=>document.getElementById(id);
@@ -32,8 +32,9 @@
     txt('avMeasurementStatus',!latest?'ค่ากรอกเอง · ยังไม่มี Vitals record':`Vitals record ${latest.clock} · ${diff?.classList.contains('has-changes')?'มีค่าแก้ไขยังไม่ลง record':diff?.classList.contains('has-blanks')?'มีช่องว่างในชุดที่กำลังกรอก':'ชุดค่าตรงกับ record ล่าสุด'}`);
     for(const el of document.querySelectorAll('[data-av-threshold]'))txt(el.id,$(el.dataset.avThreshold)?.textContent||'');
     $('avWorkspaceStatus').classList.toggle('av-save-error',!!$('saveState')?.classList.contains('error'));
-    txt('avHomeLocalStatus',s.simulationMode?'โหมดฝึก · ข้อมูลจำลอง':'ข้อมูลในเครื่อง · V17.5.1');
+    txt('avHomeLocalStatus',s.simulationMode?'โหมดฝึก · ข้อมูลจำลอง':'ข้อมูลในเครื่อง · V17.5.3');
     const existing=hasCase(s);hide('avHomeCase',!existing);hide('avHomeEmpty',existing);
+    txt('avHomeSubtitle',existing?'กลับทำเคสต่อ หรือเลือกงานใหม่':'พร้อมสำหรับเคสถัดไป');
     txt('avHomeCaseKicker',s.simulationMode?'เคสฝึก':s.caseLocked?'เคสที่ปิดแล้ว':'เคสปัจจุบัน');
     txt('avHomePatient',s.patientName||'ยังไม่ระบุชื่อ');
     txt('avHomeMeta',currentCaseSummary(s));
@@ -58,6 +59,13 @@
     txt('avContextPrimary',id==='recovery'?($('recoveryMobilePrimaryLabel')?.textContent||'บันทึกฟื้นตัว'):'บันทึก Vitals');
     const nativePrimary=$(id==='recovery'?'recoveryMobileRecordBtn':'orRecordNowBtn');
     $('avContextPrimary').disabled=blocked||locked||status.sessionActive===false||!!nativePrimary?.disabled;
+    const step=$('orSecondaryPhaseBtn')?.dataset.action==='surgery-end'&&!$('orSecondaryPhaseBtn').hidden?$('orSecondaryPhaseBtn'):$('orPrimaryActionBtn');
+    const action=step?.dataset.action,stepLabels={'start-induction':'เริ่มวางยา',airway:'ใส่ท่อช่วยหายใจ','surgery-start':'เริ่มผ่าตัด','surgery-end':'จบผ่าตัด',extubation:'ถอดท่อ → ฟื้นตัว',recovery:'เริ่มฟื้นตัว','open-recovery':'ดูการฟื้นตัว','end-case':'ทบทวนปิดเคส'};
+    hide('avContextWorkflow',id!=='orlive'||!step||step.hidden||action==='locked');
+    txt('avContextWorkflow',stepLabels[action]||step?.textContent||'ขั้นตอนถัดไป');
+    $('avContextWorkflow').dataset.nativeTarget=step?.id||'';
+    $('avContextWorkflow').disabled=blocked||locked||status.sessionActive===false||!!step?.disabled;
+    $('avContextWorkflow').setAttribute('aria-label',action==='surgery-end'?'จบผ่าตัด (End surgery) — ยืนยันก่อนบันทึก':stepLabels[action]||step?.textContent||'ขั้นตอนถัดไป');
     $('avHeaderTools').setAttribute('aria-label',id==='orlive'?'เครื่องมือ OR LIVE':id==='recovery'?'เครื่องมือ Recovery':'เมนูเพิ่มเติม');
   }
   let pending=false;
@@ -97,6 +105,16 @@
         const row=document.createElement('p'),name=document.createElement('b'),value=document.createElement('span');name.textContent=label+' · ';value.id='avThreshold'+id;value.dataset.avThreshold=id;row.append(name,value);hints.append(row);
       }
       group.after(hints);
+      const fill=$('orCopyLastVitalsBtn');if(fill)group.append(fill);
+    }
+    // Preserve native IDs/listeners and all planned rows, with an explicit
+    // expandable count rather than a long queue competing with measured vitals.
+    const queue=$('orMedicationQueue');
+    if(queue){
+      const details=document.createElement('details');details.id='avMedicationDetails';details.className='av-medication-details';
+      const summary=document.createElement('summary'),label=document.createElement('span');label.textContent='รายการยา · เปิดทบทวน';summary.append(label);
+      const badge=$('orMedicationQueueBadge');if(badge)summary.append(badge);
+      const children=Array.from(queue.children);details.append(summary);children.forEach(child=>details.append(child));queue.append(details);
     }
     const practice=$('simulationWelcomeCard');if(practice)$('more')?.append(practice);
     document.addEventListener('click',e=>{
@@ -104,13 +122,14 @@
       if(b.dataset.avRoute)navigate(b.dataset.avRoute);
       else if(b.dataset.avNative)nativeClick(b.dataset.avNative);
       else if(b.dataset.avKnowledge)window.ANESVET_CLINICAL_KNOWLEDGE?.open(b.dataset.avKnowledge);
-      else ({continue:continueCase,new:newCase,tools:openTools,vitals:saveVitals,meds:contextMeds,identity:()=>nativeClick('securityIdentityChip'),retry:()=>location.reload(),diagnostic:()=>window.ANESVET_BOOT_DIAGNOSTIC?.open(),review:()=>{if(!app()||!window.ANESVET_BOOT_DIAGNOSTIC?.snapshot().ready)return;hide('avBoot',true);document.body.classList.remove('av-boot-error','av-booting');navigate('cases');}})[b.dataset.avAction]?.();
+      else ({continue:continueCase,new:newCase,tools:openTools,vitals:saveVitals,meds:contextMeds,workflow:()=>{if(active()==='orlive')nativeClick($('avContextWorkflow').dataset.nativeTarget);},identity:()=>nativeClick('securityIdentityChip'),retry:()=>location.reload(),diagnostic:()=>window.ANESVET_BOOT_DIAGNOSTIC?.open(),review:()=>{if(!app()||!window.ANESVET_BOOT_DIAGNOSTIC?.snapshot().ready)return;hide('avBoot',true);document.body.classList.remove('av-boot-error','av-booting');navigate('cases');}})[b.dataset.avAction]?.();
     });
     for(const page of document.querySelectorAll('.tabpage'))new MutationObserver(schedule).observe(page,{attributes:true,attributeFilter:['class']});
     ['caseStripPatient','caseStripAsa','casePhaseBadge','saveState','securityIdentityChip','caseFreshnessBanner','sessionBanner','orVitalChangeSummary','orVitalSaveFeedback'].forEach(id=>{const el=$(id);if(el)new MutationObserver(schedule).observe(el,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['hidden','class']});});
+    ['orPrimaryActionBtn','orSecondaryPhaseBtn'].forEach(id=>{const el=$(id);if(el)new MutationObserver(schedule).observe(el,{childList:true,attributes:true,attributeFilter:['data-action','hidden','disabled']});});
     ['input','change','anesvet:final-archive-status'].forEach(type=>document.addEventListener(type,schedule));
     window.addEventListener('pageshow',schedule);
-    const started=Date.now();
+    const started=Date.now(),coldLaunch=performance.getEntriesByType('navigation')[0]?.type!=='reload';
     function showBootError(message){
       document.body.classList.remove('av-booting');document.body.classList.add('av-boot-error');hide('avBoot',false);hide('avBootErrorActions',false);
       if($('avBootReview'))$('avBootReview').disabled=!app()||!window.ANESVET_BOOT_DIAGNOSTIC?.snapshot().ready;
@@ -122,10 +141,10 @@
       if(boot?.ready&&app()){
         const status=app().startupStatus?.()||{};
         if(status.primaryUnreadable||status.recoveredOnlyInMemory||status.restoreReview){showBootError('ตรวจข้อมูลและสำเนาที่พบก่อนเริ่มเคสใหม่ ข้อมูลเดิมยังได้รับการเก็บรักษาตามระบบตรวจสอบของโปรแกรม');return;}
+        if(coldLaunch&&performance.now()<1200){setTimeout(checkBoot,Math.min(100,1200-performance.now()));return;}
         hide('avBoot',true);$('avBoot').setAttribute('aria-busy','false');document.body.classList.remove('av-booting');
         let next='';try{next=sessionStorage.getItem('anesvet_ui_next_page')||'';sessionStorage.removeItem('anesvet_ui_next_page');}catch(_){}
-        // During an active anesthetic, preserve the established direct OR/Recovery resume path.
-        // On other launches the home shows real current-case data, including pending setup.
+        // Cold launches show home; reload/update keeps the native active-case route.
         if(next==='patient')navigate('patient');else if(!app().getState().caseStartedAt&&!app().getState().recoveryStartedAt&&!app().getState().caseLocked)navigate('start');
         render();return;
       }
@@ -134,6 +153,6 @@
     }
     checkBoot();
   }
-  window.ANESVET_MOBILE_DESIGN=Object.freeze({version:'17.5.1',render,home:()=>navigate('start')});
+  window.ANESVET_MOBILE_DESIGN=Object.freeze({version:'17.5.3',render,home:()=>navigate('start')});
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else install();
 })();

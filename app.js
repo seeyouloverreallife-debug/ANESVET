@@ -39,7 +39,7 @@ const SESSION_TTL_MS=30000;
 const SESSION_HEARTBEAT_MS=5000;
 const DB_NAME='ANESVET_DB';
 const DB_VERSION=2;
-const APP_VERSION='17.5.1';
+const APP_VERSION='17.5.3';
 const SECURITY=window.ANESVET_SECURITY_BASELINE||null;
 const SYNC_FOUNDATION=window.ANESVET_SYNC_FOUNDATION||null;
 const DOSE_REF=window.ANESVET_DOSE_REFERENCE||null;
@@ -1890,6 +1890,8 @@ function setTab(id,opts={}){
     try{localStorage.setItem(TAB_KEY,id)}catch(e){BOOT?.mark?.('navigation-tab-preference-unavailable')}
     if(id==='trends') renderTrends();
     if(id==='timeline') renderProcedureTimeline();
+    if(id==='record')renderRecordPreview();
+    if(id==='dashboard')renderInterpretation();
     if(id==='cases'){renderArchives();renderBackupHealth();}
     if(id==='casesummary') renderCaseSummary();
     if(id==='orlive'){renderOrLive();renderAirwayPanel();}
@@ -2222,6 +2224,7 @@ function setHint(id,level,text){
   const el=$(id);el.className=`vital-foot ${level}`;el.textContent=text;
 }
 function updateDashboard(options={}){
+  const fastVitalInput=['hr','rr','sap','map','dap','spo2','etco2','temp'].includes(options.inputId);
   const st=thresholds();
   const speciesForAlert=$('species').value;
   const hrNow=getVal('hr'), rrNow=getVal('rr');
@@ -2254,13 +2257,16 @@ function updateDashboard(options={}){
   $('caseStripProcedure').textContent=$('procedure').value.trim()||$('patientProcedure')?.value.trim()||'—';
   $('caseStripInterval').textContent=`${$('recordInterval').value} min`;
 
-  renderInterpretation();
-  renderRecordPreview();
-  drugCalc();
-  updatePlanCalc();
-  updateBalance();
+  // Keep immediate thresholds/alerts; unrelated reference panels do not
+  // depend on measured vitals and need not rebuild on each entered digit.
+  if(!fastVitalInput){
+    renderInterpretation();renderRecordPreview();drugCalc();updatePlanCalc();updateBalance();
+    renderProcedureTemplatePicker();renderCaseSummary();renderWeightSafetyState();
+  }else{
+    if($('dashboard')?.classList.contains('active'))renderInterpretation();
+    if($('record')?.classList.contains('active'))renderRecordPreview();
+  }
   renderSmartAlerts();
-  renderProcedureTemplatePicker();renderCaseSummary();renderWeightSafetyState();
   if($('orlive')?.classList.contains('active')) renderOrLive();
   maybeShowCriticalClinicalAlert();
   // V15.28: callers handling continuous typing can suppress the synchronous full-state write.
@@ -3996,7 +4002,7 @@ $('pauseCaseBtn').addEventListener('click',()=>{pauseTimer();renderOrLive()});
 
 dataFields.forEach(id=>{
   const el=$(id);if(!el)return;const discrete=el.type==='checkbox'||el.tagName==='SELECT',eventName=discrete?'change':'input';
-  el.addEventListener(eventName,()=>{if(id==='weight'&&!state.caseStartedAt&&state.caseDrugPlanReviewedAt){state.caseDrugPlanReviewedAt=null;state.caseDrugPlanReviewedBy='';if(state.caseDrugPlanInitialized)renderCaseDrugPlan()}updateDashboard({persist:false});if(discrete)save({reason:`field:${id}`});else scheduleAutosave(`field:${id}`)});
+  el.addEventListener(eventName,()=>{if(id==='weight'&&!state.caseStartedAt&&state.caseDrugPlanReviewedAt){state.caseDrugPlanReviewedAt=null;state.caseDrugPlanReviewedBy='';if(state.caseDrugPlanInitialized)renderCaseDrugPlan()}updateDashboard({persist:false,inputId:id});if(discrete)save({reason:`field:${id}`});else scheduleAutosave(`field:${id}`)});
 });
 
 async function prepareForVersionUpdate(){
@@ -4360,7 +4366,8 @@ if(safeUpdateResume?.caseId===state.caseId&&safeUpdateResume?.resumeTab)storedTa
 const activeCaseTarget=ACTIVE_CASE_RESCUE.targetForState(state);
 // V17.2.3: an already-started case must resume its clinical workspace even if Patient Setup later became NOT SAVED.
 // NOT SAVED remains visible and must still be reviewed; it no longer traps a progressed anesthesia case on Patient.
-const initialTab=activeCaseTarget||(state.patientSaved?storedTab:'patient');
+const coldLaunchHome=!!$('start')&&performance.getEntriesByType('navigation')[0]?.type!=='reload'&&!safeUpdateResume;
+const initialTab=coldLaunchHome?'start':activeCaseTarget||(state.patientSaved?storedTab:'patient');
 const resumeClinicalTab=['orlive','recovery','endcase'].includes(initialTab)&&!!activeCaseTarget;
 setTab(initialTab,{force:resumeClinicalTab});
 // A valid progressed case must still display OR LIVE/Recovery after a PWA reload;

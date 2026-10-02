@@ -1,4 +1,4 @@
-/* ANESVET V16.11.0 — OR LIVE Speed & Android/PWA Hardening
+/* ANESVET V17.5.3 — OR LIVE Speed & Android/PWA Hardening
    Interaction hardening only. Does not change clinical calculations or record semantics. */
 (()=>{
   'use strict';
@@ -18,6 +18,7 @@
   let activeFastId='';
   let lastOrientation=screen?.orientation?.type||String(window.orientation||'');
   let savedFlashTimer=null;
+  let visibilityTimer=null;
 
   const byId=id=>document.getElementById(id);
   const rail=byId('orFastEntryRail');
@@ -33,7 +34,7 @@
   function isOrActive(){return !!byId('orlive')?.classList.contains('active')}
   function fieldIndex(id=activeFastId){return FAST_FIELDS.findIndex(x=>x.id===id)}
   function activeInput(){const el=document.activeElement;return el&&FAST_IDS.has(el.id)?el:null}
-  function keyboardCandidate(){const el=document.activeElement;return !!el&&/^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName)}
+  function keyboardCandidate(){return !!document.activeElement?.matches?.('input:not([type=checkbox]):not([type=radio]):not([type=button]):not([type=submit]):not([type=hidden]),textarea,select,[contenteditable="true"]')}
 
   function updateViewportMetrics({orientationReset=false}={}){
     const viewport=window.visualViewport;
@@ -41,6 +42,8 @@
       document.documentElement.style.setProperty('--anesvet-keyboard-offset','0px');
       document.documentElement.style.setProperty('--anesvet-visual-height',`${window.innerHeight||0}px`);
       document.body.classList.remove('anesvet-soft-keyboard');
+      document.body.classList.toggle('av-editing',document.body.classList.contains('av-mobile-design')&&mobileQuery.matches&&keyboardCandidate());
+      positionEntryRail();
       return;
     }
     const orientation=screen?.orientation?.type||String(window.orientation||'');
@@ -52,7 +55,23 @@
     document.documentElement.style.setProperty('--anesvet-keyboard-offset',`${Math.round(keyboardOffset)}px`);
     document.documentElement.style.setProperty('--anesvet-visual-height',`${Math.round(viewport.height)}px`);
     document.body.classList.toggle('anesvet-soft-keyboard',keyboardOffset>=110&&keyboardCandidate());
-    if(activeInput())ensureFocusedCardVisible();
+    // The mobile shell owns one editing layout even before the IME resizes.
+    // Some Android modes resize both innerHeight and visualViewport equally.
+    document.body.classList.toggle('av-editing',document.body.classList.contains('av-mobile-design')&&mobileQuery.matches&&keyboardCandidate());
+    positionEntryRail();
+  }
+
+  function positionEntryRail(){
+    if(!rail||rail.hidden)return;
+    const viewport=window.visualViewport;
+    // Anchor to the visible bottom once; never subtract a stale keyboard gap
+    // from a layout viewport that Android has already resized.
+    rail.style.bottom='auto';
+    rail.style.top=`${Math.max(viewport?.offsetTop||0,(viewport?.offsetTop||0)+(viewport?.height||window.innerHeight)-rail.offsetHeight-8)}px`;
+  }
+  function queueFocusedVisibility(){
+    clearTimeout(visibilityTimer);
+    visibilityTimer=setTimeout(ensureFocusedCardVisible,180);
   }
 
   function metricText(row,input){
@@ -72,20 +91,23 @@
     if(progress)progress.textContent=`VITAL ${idx+1}/${FAST_FIELDS.length}`;
     if(current){current.textContent=saved?'✓ Vitals saved':metricText(row,input);current.classList.toggle('saved',saved)}
     if(prev)prev.disabled=idx<=0;
-    if(next){next.disabled=idx>=FAST_FIELDS.length-1;next.textContent=idx>=FAST_FIELDS.length-1?'DONE':'NEXT ›'}
+    if(next){next.disabled=false;next.textContent=idx>=FAST_FIELDS.length-1?'เสร็จ':'ถัดไป';next.setAttribute('aria-label',idx>=FAST_FIELDS.length-1?'จบการกรอก โดยยังไม่บันทึก':'ช่องถัดไป');}
     if(saveBtn)saveBtn.textContent='✓ SAVE';
+    positionEntryRail();
   }
 
   function ensureFocusedCardVisible(){
     const input=activeInput();if(!input||!mobileQuery.matches)return;
-    const card=input.closest('.or-vital-card')||input;
+    if(document.querySelector('dialog[open]'))return;
     const viewport=window.visualViewport;
-    const rect=card.getBoundingClientRect();
-    const topLimit=(viewport?.offsetTop||0)+48;
-    const bottomLimit=(viewport?.offsetTop||0)+(viewport?.height||window.innerHeight)-78;
-    if(rect.top<topLimit||rect.bottom>bottomLimit){
-      try{card.scrollIntoView({block:'center',inline:'nearest',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'})}catch(_){card.scrollIntoView()}
-    }
+    const rect=input.getBoundingClientRect();
+    const topLimit=(viewport?.offsetTop||0)+8;
+    const bottomLimit=(viewport?.offsetTop||0)+(viewport?.height||window.innerHeight)-(rail&&!rail.hidden?rail.offsetHeight+16:8);
+    if(bottomLimit-topLimit<rect.height)return;
+    // A long warning card may never fit. Only reveal the actual input and do
+    // not center cards, animate scrolling, or react recursively to vv.scroll.
+    const delta=rect.top<topLimit?rect.top-topLimit:rect.bottom>bottomLimit?rect.bottom-bottomLimit:0;
+    if(Math.abs(delta)>1)window.scrollBy({top:delta,left:0,behavior:'instant'});
   }
 
   function focusAt(index){
@@ -94,15 +116,16 @@
     activeFastId=row.id;
     try{el.focus({preventScroll:true})}catch(_){el.focus()}
     updateRail();
-    setTimeout(ensureFocusedCardVisible,60);
+    queueFocusedVisibility();
     return true;
   }
 
   function dismissFastKeyboard(){
     const el=activeInput();if(el)el.blur();
     activeFastId='';
+    clearTimeout(visibilityTimer);
     updateRail();
-    setTimeout(()=>updateViewportMetrics(),120);
+    updateViewportMetrics();
   }
 
   function flashSaved(){
@@ -130,13 +153,15 @@
   }
 
   document.addEventListener('focusin',e=>{
+    updateViewportMetrics();
     if(!FAST_IDS.has(e.target?.id))return;
     activeFastId=e.target.id;
     updateViewportMetrics();
     updateRail();
-    setTimeout(ensureFocusedCardVisible,80);
+    queueFocusedVisibility();
   });
   document.addEventListener('focusout',e=>{
+    requestAnimationFrame(updateViewportMetrics);
     if(!FAST_IDS.has(e.target?.id))return;
     setTimeout(()=>{
       if(!activeInput()){activeFastId='';updateRail();setTimeout(()=>updateViewportMetrics(),120)}
@@ -144,8 +169,8 @@
   });
   document.addEventListener('input',e=>{if(FAST_IDS.has(e.target?.id)){activeFastId=e.target.id;updateRail()}});
 
-  /* Capture Enter before the legacy handler so the last field saves instead of
-     moving focus to an off-screen button. Shift+Enter moves backward. */
+  /* Enter moves through fields. The last field finishes editing; a record
+     requires an explicit Save action (or the deliberate Ctrl/Meta+Enter shortcut). */
   document.addEventListener('keydown',e=>{
     if(!FAST_IDS.has(e.target?.id))return;
     if(e.key==='Escape'){e.preventDefault();dismissFastKeyboard();return}
@@ -154,12 +179,14 @@
     const idx=fieldIndex(e.target.id);
     if(e.ctrlKey||e.metaKey){saveVitalsFromRail();return}
     if(e.shiftKey){focusAt(Math.max(0,idx-1));return}
-    if(idx<FAST_FIELDS.length-1)focusAt(idx+1);else saveVitalsFromRail();
+    if(idx<FAST_FIELDS.length-1)focusAt(idx+1);else dismissFastKeyboard();
   },true);
 
   prev?.addEventListener('click',()=>focusAt(Math.max(0,fieldIndex()-1)));
-  next?.addEventListener('click',()=>{const idx=fieldIndex();if(idx<FAST_FIELDS.length-1)focusAt(idx+1)});
+  next?.addEventListener('click',()=>{const idx=fieldIndex();if(idx<FAST_FIELDS.length-1)focusAt(idx+1);else dismissFastKeyboard()});
   saveBtn?.addEventListener('click',saveVitalsFromRail);
+  // Tapping the rail must not blur a field before its button handles the tap.
+  [prev,next,saveBtn].forEach(btn=>btn?.addEventListener('pointerdown',e=>e.preventDefault()));
 
   /* Medication workspace: keyboard navigation reduces taps, but never auto-saves.
      Confirmation and duplicate-administration safeguards remain in app.js. */
@@ -203,9 +230,10 @@
     },0);
   });
 
-  vv?.addEventListener('resize',updateViewportMetrics);
-  vv?.addEventListener('scroll',updateViewportMetrics);
-  window.addEventListener('resize',updateViewportMetrics);
+  const onViewportResize=()=>{updateViewportMetrics();if(activeInput())queueFocusedVisibility();};
+  vv?.addEventListener('resize',onViewportResize);
+  vv?.addEventListener('scroll',positionEntryRail,{passive:true});
+  window.addEventListener('resize',onViewportResize);
   window.addEventListener('orientationchange',()=>setTimeout(()=>updateViewportMetrics({orientationReset:true}),180));
   mobileQuery.addEventListener?.('change',()=>{updateRail();updateViewportMetrics({orientationReset:true})});
 
@@ -213,7 +241,7 @@
   updateRail();
 
   window.ANESVET_OR_SPEED_HARDENING=Object.freeze({
-    version:'16.11.0',
+    version:'17.5.3',
     fields:FAST_FIELDS.map(x=>x.id),
     refreshViewport:updateViewportMetrics,
     focusField:index=>focusAt(index),

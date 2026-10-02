@@ -33,9 +33,11 @@
   // Visual-only confirmation when the existing persistence layer reports a completed save.
   const saveState=document.getElementById('saveState');
   if(saveState){
-    let previous=saveState.className+'|'+saveState.textContent;
+    // Animation classes are presentation, not another successful save.
+    const statusSignature=()=>['error','saving','dirty','saved'].find(mode=>saveState.classList.contains(mode))+'|'+saveState.textContent;
+    let previous=statusSignature(),flashTimer=null;
     const savedObs=new MutationObserver(()=>{
-      const current=saveState.className+'|'+saveState.textContent;
+      const current=statusSignature();
       if(current===previous)return;
       previous=current;
       if(saveState.classList.contains('saved')){
@@ -43,7 +45,8 @@
         // Force a new animation only after the app itself reports saved.
         void saveState.offsetWidth;
         saveState.classList.add('ux-just-saved');
-        window.setTimeout(()=>saveState.classList.remove('ux-just-saved'),650);
+        clearTimeout(flashTimer);
+        flashTimer=window.setTimeout(()=>saveState.classList.remove('ux-just-saved'),650);
       }
     });
     savedObs.observe(saveState,{attributes:true,attributeFilter:['class'],childList:true,characterData:true,subtree:true});

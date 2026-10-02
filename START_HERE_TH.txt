@@ -1,12 +1,20 @@
-ANESVET V17.5.1 — โปรแกรมครบชุด
+ANESVET V17.5.3
 
-แก้ PWA update/checkpoint และปุ่มบันทึก Vitals พร้อมหน้า OR กระชับสำหรับมือถือ
-อ่าน RELEASE_V17_5_1_TH.md และรายงาน QA ที่แนบ
+แก้การกรอกบนมือถือและปุ่มจบผ่าตัด; รวมหน้าเปิด Figma และแก้ save animation จาก V17.5.2
+อ่าน RELEASE_V17_5_3_TH.md สำหรับแนวทาง UX, การทดสอบ, ข้อจำกัดและวิธีนำขึ้น
 
-สำหรับทดสอบในเครื่อง: เปิด terminal ในโฟลเดอร์นี้ รัน python -m http.server 8000
-แล้วเปิด http://localhost:8000 (อย่าเปิด index.html ผ่าน file://)
-สำหรับเว็บจริง: นำไฟล์โปรแกรมทั้งหมดวางที่ root ของ repository ANESVET เดิม และให้ GitHub Pages deploy
-QA_* เป็นไฟล์ตรวจสอบ ไม่ต้องใช้ในการรันแอป
+วางไฟล์โปรแกรมที่ราก repository ANESVET ให้ index.html อยู่รากและ assets/ ครบ
+รับการอัปเดตผ่านปุ่มของแอปที่ URL เดิม ตรวจเลข V17.5.3 ก่อนลองใช้
+รุ่นนี้ยังไม่ได้เผยแพร่: การเขียน GitHub เดิมติด HTTP 403
+ไม่ต้องเคลียร์ข้อมูล browser หรือถอนแอป เพราะข้อมูลเคสอยู่ในเครื่อง
 
-เว็บจริงยังไม่อัปเดตจากชุดนี้ เนื่องจากสิทธิ์เขียน GitHub ถูกปฏิเสธ
-ทดสอบ Chromium/จอจำลอง ยังไม่ทดสอบเครื่อง iOS/Android จริงหรือรับรองเนื้อหาทางคลินิก
+QA ผ่าน 94/94 บน Chromium จำลองมือถือ/visualViewport ไม่ใช่คีย์บอร์ด Android/iOS เครื่องจริง
+ใช้ SOURCE_SHA256.json ตรวจไฟล์ทุกชิ้นในชุด
+
+ทดสอบซ้ำ: ติดตั้ง Node.js, Playwright และ Chromium ในเครื่องทดสอบ
+กำหนด ANESVET_CHROMIUM_EXECUTABLE ชี้ Chromium ของเครื่อง
+node QA_V17_5_3_MOBILE.js
+node QA_V17_5_3_KNOWLEDGE_BROWSER.js
+node QA_V17_5_3_PWA.js
+node QA_V17_5_3_STARTUP_PERFORMANCE.js
+node QA_V17_5_3_EDITING.js

@@ -68,7 +68,8 @@ function create({isReloadUnsafe=()=>false,prepareForUpdate=async()=>({ok:true}),
     root.addEventListener('appinstalled',()=>{if($('installBtn'))$('installBtn').hidden=true});
     $('updateNowBtn')?.addEventListener('click',activateWaitingUpdate);
     $('updateLaterBtn')?.addEventListener('click',()=>{if($('updateBanner'))$('updateBanner').hidden=true});
-    root.addEventListener('load',setupServiceWorkerUpdates);
+    if(root.document?.readyState==='complete')setupServiceWorkerUpdates();
+    else root.addEventListener('load',setupServiceWorkerUpdates);
   }
   return Object.freeze({bind,renderUpdateBanner,setupServiceWorkerUpdates,activateWaitingUpdate,getPendingRegistration:()=>pendingRegistration});
 }

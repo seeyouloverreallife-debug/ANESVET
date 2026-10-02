@@ -33,6 +33,9 @@
   // so they cannot cover vitals / recovery inputs; reveal them again when editing ends.
   const vv=window.visualViewport;
   const syncKeyboard=()=>{
+    // The current mobile shell has one viewport/keyboard owner in OR speed
+    // hardening. Keep this legacy behavior only for the original shell.
+    if(document.body.classList.contains('av-mobile-design'))return;
     const el=document.activeElement;
     const edit=!!el?.matches?.('input:not([type=checkbox]):not([type=radio]):not([type=button]),textarea,select,[contenteditable="true"]');
     const shrink=vv?Math.max(0,window.innerHeight-vv.height):0;

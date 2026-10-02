@@ -1,0 +1,63 @@
+{
+  "version": "17.5.3",
+  "passed": 14,
+  "total": 14,
+  "tests": [
+    {
+      "name": "Controller change blocks reload on false",
+      "pass": true
+    },
+    {
+      "name": "Activation blocks worker promotion on false",
+      "pass": true
+    },
+    {
+      "name": "Controller change blocks reload on ok:false",
+      "pass": true
+    },
+    {
+      "name": "Activation blocks worker promotion on ok:false",
+      "pass": true
+    },
+    {
+      "name": "Controller change blocks reload on exception",
+      "pass": true
+    },
+    {
+      "name": "Activation blocks worker promotion on exception",
+      "pass": true
+    },
+    {
+      "name": "Controller change blocks reload on missing acknowledgement",
+      "pass": true
+    },
+    {
+      "name": "Activation blocks worker promotion on missing acknowledgement",
+      "pass": true
+    },
+    {
+      "name": "Successful update checkpoints before promotion and again before reload",
+      "pass": true
+    },
+    {
+      "name": "Failure after promotion keeps page and retries without waiting worker",
+      "pass": true
+    },
+    {
+      "name": "Concurrent controller events and taps cannot start duplicate reloads",
+      "pass": true
+    },
+    {
+      "name": "First installation claims without reloading or checkpointing",
+      "pass": true
+    },
+    {
+      "name": "Late PWA binding registers even when window load already finished",
+      "pass": true
+    },
+    {
+      "name": "Worker installation precaches without skipWaiting; explicit message promotes",
+      "pass": true
+    }
+  ]
+}

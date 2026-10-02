@@ -1,0 +1,47 @@
+{
+  "version": "17.5.3",
+  "passed": 9,
+  "total": 9,
+  "tests": [
+    {
+      "name": "Figma splash is visible while runtime loads; every local asset decodes and fits",
+      "pass": true
+    },
+    {
+      "name": "Empty Figma home has a full-width archive action and no hard-coded patient",
+      "pass": true
+    },
+    {
+      "name": "Cold launch from old installed start URL shows actual current case without changing records",
+      "pass": true
+    },
+    {
+      "name": "Continue and reload resume the existing native OR instead of forcing home",
+      "pass": true
+    },
+    {
+      "name": "Successful save flash settles without observer recursion or new records",
+      "pass": true
+    },
+    {
+      "name": "Fast input still updates critical thresholds immediately; historical record stays unchanged",
+      "pass": true
+    },
+    {
+      "name": "Offline cold launch provides Figma home and existing case from precached assets",
+      "pass": true
+    },
+    {
+      "name": "Failed UI script shows retry and preserves clinical bytes instead of exposing old screen",
+      "pass": true
+    },
+    {
+      "name": "No uncaught runtime errors in startup/input/offline flows",
+      "pass": true
+    }
+  ],
+  "errors": [],
+  "limits": [
+    "Chromium mobile emulation; not a physical installed iOS/Android test."
+  ]
+}
