@@ -1,8 +1,14 @@
 (function(){
 'use strict';
-const U=window.ANESVET_APP_UTILS;
-if(!U)throw new Error('ANESVET_APP_UTILS must load before recovery-handoff-view-model.js [dependency-order]');
-const normalized=U.normalizedHandoffDrugName;
+// V17.10.8: this module must never block application startup because a helper
+// script is stale, delayed, or served from a mixed Service Worker cache.
+// The normalization helper is tiny and side-effect free, so keep a local
+// equivalent fallback while preferring the shared helper when available.
+const normalized=(name)=>{
+  const shared=window.ANESVET_APP_UTILS?.normalizedHandoffDrugName;
+  if(typeof shared==='function')return shared(name);
+  return String(name||'').toLowerCase().replace(/\([^)]*\)/g,' ').replace(/[—–-]+/g,' ').replace(/\s+/g,' ').trim();
+};
 function planDrugForAdministration(admin,plan=[]){const needle=normalized(admin?.drug);if(!needle)return null;return (plan||[]).find(d=>{const n=normalized(d?.name);return n===needle||n.includes(needle)||needle.includes(n)})||null}
 function medicationRole(admin,plan=[]){const p=planDrugForAdministration(admin,plan),meta=`${p?.drugClass||''} ${p?.role||''}`.toLowerCase(),name=normalized(admin?.drug);if(/nsaid|carprofen|meloxicam|robenacoxib|firocoxib|deracoxib/.test(`${meta} ${name}`))return 'nsaid';if(/antibiotic|antimicrobial|cefaz|cefovec|convenia|ampicillin|amoxicillin|clindamycin|enrofloxacin|marbofloxacin/.test(`${meta} ${name}`))return 'antibiotic';if(/analges|opioid|methadone|fentanyl|buprenorphine|butorphanol|tramadol|morphine|hydromorphone|oxymorphone|ketamine/.test(`${meta} ${name}`))return 'analgesia';return 'other'}
 function medicationGroups(admins=[],plan=[]){const out={analgesia:[],antibiotic:[],nsaid:[],other:[]};(admins||[]).filter(x=>x&&!x.voidedAt).forEach(x=>out[medicationRole(x,plan)].push(x));return out}

@@ -1,5 +1,5 @@
 {
-  "suite": "ANESVET V17.10.7 Full Workflow Regression",
+  "suite": "ANESVET V17.10.8 Full Workflow Regression",
   "generatedAt": "2026-10-02T12:53:04.635Z",
   "scope": "Node pure-model + source-contract regression; NOT browser/device E2E",
   "pass": 20,

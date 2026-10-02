@@ -72,7 +72,7 @@
     if(persist){try{localStorage.setItem(DETAILS_KEY,open?'1':'0')}catch(_){}}
   }
   function setupPatientDetails(){
-    // V17.10.7: Patient detail disclosure is canonically owned by
+    // V17.10.8: Patient detail disclosure is canonically owned by
     // ANESVET_PATIENT_PREOP_SIMPLIFICATION. Do not create a second toggle/state owner.
     if(window.ANESVET_PATIENT_PREOP_SIMPLIFICATION)return;
     const panel=q('#patient .patient-entry-panel'), grid=q('#patient .patient-form-grid');
