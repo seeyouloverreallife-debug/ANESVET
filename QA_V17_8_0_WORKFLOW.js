@@ -34,6 +34,6 @@ test('Medication workspace stays open for consecutive entries',()=>{assert(med.i
 test('Case phase transition persists before rerender',()=>{const p=app.indexOf('function setCasePhase');const chunk=app.slice(p,app.indexOf('function renderTimerState',p));const tail=chunk.slice(chunk.indexOf("if(log)"));assert(tail.indexOf('save();')>=0&&tail.indexOf('save();')<tail.indexOf('renderCasePhase();'),'phase save/render order mismatch')});
 test('Final lock guard is used by lifecycle layer',()=>{assert(app.includes('finalCaseIsSealed=(caseObj=state)=>CASE_LIFECYCLE.finalCaseIsSealed(caseObj)'),'final seal integration missing')});
 
-const pass=results.filter(x=>x.pass).length,fail=results.length-pass;const out={suite:'ANESVET V17.10.6 Full Workflow Regression',generatedAt:new Date().toISOString(),scope:'Node pure-model + source-contract regression; NOT browser/device E2E',pass,fail,total:results.length,results};
+const pass=results.filter(x=>x.pass).length,fail=results.length-pass;const out={suite:'ANESVET V17.10.7 Full Workflow Regression',generatedAt:new Date().toISOString(),scope:'Node pure-model + source-contract regression; NOT browser/device E2E',pass,fail,total:results.length,results};
 fs.writeFileSync(path.join(ROOT,'QA_V17_8_0_WORKFLOW_RESULTS.json'),JSON.stringify(out,null,2));
 console.log(JSON.stringify(out,null,2));process.exitCode=fail?1:0;

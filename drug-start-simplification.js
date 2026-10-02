@@ -1,4 +1,4 @@
-/* ANESVET V17.10.6 — Drug Plan + Start Case workflow presentation. */
+/* ANESVET V17.10.7 — Drug Plan + Start Case workflow presentation. */
 (function(root){
 'use strict';const $=id=>document.getElementById(id);let current=null,pending=false;
 function planState(){const st=$('caseDrugPlanStatus'),items=[...document.querySelectorAll('#caseDrugPlanList .case-drug-plan-item')],txt=(st?.textContent||'').toLowerCase(),frozen=st?.classList.contains('frozen')||txt.includes('frozen'),reviewed=frozen||st?.classList.contains('reviewed')||(txt.includes('reviewed')&&!txt.includes('not reviewed'));return {count:items.length,frozen,reviewed}}
@@ -14,5 +14,5 @@ function spec(){
 function render(){current=spec();const p=planState(),bw=weight(),title=$('drugWorkflowFocusTitle');if(!title)return;title.textContent=current.title;$('drugWorkflowFocusSummary').textContent=current.summary;$('drugWorkflowPrimaryBtn').textContent=current.label;$('drugWorkflowFocus').dataset.tone=current.tone;$('drugWorkflowBwChip').textContent=bw?`BW ${bw.toFixed(1)} kg`:'BW NOT CONFIRMED';$('drugWorkflowBwChip').className=`status-pill ${bw?'good':'warn'}`;$('drugWorkflowPlanChip').textContent=p.frozen?'PLAN FROZEN':p.reviewed?'PLAN REVIEWED':p.count?'PLAN NOT REVIEWED':'NO CASE PLAN';$('drugWorkflowPlanChip').className=`status-pill ${p.reviewed?'good':'warn'}`}
 function schedule(){if(pending)return;pending=true;requestAnimationFrame(()=>{pending=false;render()})}
 function bind(){if(bind.done)return;bind.done=true;$('drugWorkflowPrimaryBtn')?.addEventListener('click',()=>{current=spec();current.run()});['weight','drugFocusPlanOnly'].forEach(id=>$(id)?.addEventListener('change',schedule));const o=new MutationObserver(schedule);['caseDrugPlanStatus','caseDrugPlanList','patientSaveStatus','preopProgress'].forEach(id=>{const e=$(id);if(e)o.observe(e,{attributes:true,childList:true,characterData:true,subtree:true})});document.addEventListener('click',e=>{if(e.target.closest?.('#drugs,#casesummary,.workflow-tabs'))schedule()},true);render()}
-root.ANESVET_DRUG_START_SIMPLIFICATION=Object.freeze({version:'17.10.6',spec,render,schedule});root.ANESVET_LIFECYCLE_COORDINATOR?.ready(bind);
+root.ANESVET_DRUG_START_SIMPLIFICATION=Object.freeze({version:'17.10.7',spec,render,schedule});root.ANESVET_LIFECYCLE_COORDINATOR?.ready(bind);
 })(window);

@@ -1,7 +1,7 @@
 (function(){
 'use strict';
 const U=window.ANESVET_APP_UTILS;
-if(!U)throw new Error('ANESVET_APP_UTILS must load before recovery-handoff-view-model.js');
+if(!U)throw new Error('ANESVET_APP_UTILS must load before recovery-handoff-view-model.js [dependency-order]');
 const normalized=U.normalizedHandoffDrugName;
 function planDrugForAdministration(admin,plan=[]){const needle=normalized(admin?.drug);if(!needle)return null;return (plan||[]).find(d=>{const n=normalized(d?.name);return n===needle||n.includes(needle)||needle.includes(n)})||null}
 function medicationRole(admin,plan=[]){const p=planDrugForAdministration(admin,plan),meta=`${p?.drugClass||''} ${p?.role||''}`.toLowerCase(),name=normalized(admin?.drug);if(/nsaid|carprofen|meloxicam|robenacoxib|firocoxib|deracoxib/.test(`${meta} ${name}`))return 'nsaid';if(/antibiotic|antimicrobial|cefaz|cefovec|convenia|ampicillin|amoxicillin|clindamycin|enrofloxacin|marbofloxacin/.test(`${meta} ${name}`))return 'antibiotic';if(/analges|opioid|methadone|fentanyl|buprenorphine|butorphanol|tramadol|morphine|hydromorphone|oxymorphone|ketamine/.test(`${meta} ${name}`))return 'analgesia';return 'other'}
