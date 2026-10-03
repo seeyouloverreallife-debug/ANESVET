@@ -7,7 +7,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="description" content="ANESVET V17.14.4 — Clinical Knowledge System">
+  <meta name="description" content="ANESVET V17.14.5 — Clinical Knowledge System">
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="preload" as="image" href="./assets/startup/logo.png" fetchpriority="high">
   <link rel="preload" as="image" href="./assets/startup/glow.svg">
@@ -78,14 +78,14 @@ body.av-booting>main{display:none!important}
 @media(max-width:392px){.av-boot-trace{width:310.5px;height:47.7px}.av-boot .av-boot-trace img{transform:scale(.9);transform-origin:top left}.av-boot-note>span{max-width:180px}.av-boot-utility{padding-left:16px;padding-right:16px;font-size:11px}.av-boot-utility small{font-size:11px}}
 @media(prefers-reduced-motion:reduce){.av-boot .av-progress:after,.av-boot-brand,.av-boot-utility,.av-boot-bottom{animation:none!important}}
   </style>
-  <link rel="stylesheet" href="./assets/css/anesvet-ui-bundle.css?v=17.14.4" media="print" data-av-style="pending" onload="this.media='all';this.dataset.avStyle='ready'" onerror="this.dataset.avStyle='error'">
-  <link rel="stylesheet" href="./assets/css/or-workspace-restructure.css?v=17.14.4">
-  <title>ANESVET V17.14.4</title>
+  <link rel="stylesheet" href="./assets/css/anesvet-ui-bundle.css?v=17.14.5" media="print" data-av-style="pending" onload="this.media='all';this.dataset.avStyle='ready'" onerror="this.dataset.avStyle='error'">
+  <link rel="stylesheet" href="./assets/css/or-workspace-restructure.css?v=17.14.5">
+  <title>ANESVET V17.14.5</title>
 </head>
 <body class="av-booting av-mobile-design">
 <section id="avBoot" class="av-boot" aria-labelledby="avBootTitle" aria-live="polite" aria-busy="true">
   <img class="av-boot-glow" src="./assets/startup/glow.svg" alt="" width="393" height="640">
-  <div class="av-boot-utility"><span><img src="./assets/startup/system.svg" alt="" width="7" height="7">Clinical monitoring system</span><small>MOBILE · V17.14.4</small></div>
+  <div class="av-boot-utility"><span><img src="./assets/startup/system.svg" alt="" width="7" height="7">Clinical monitoring system</span><small>MOBILE · V17.14.5</small></div>
   <div class="av-boot-brand">
     <span class="av-boot-category"><i aria-hidden="true"></i>Veterinary anesthesia</span>
     <div class="av-brand-moment"><img class="av-boot-logo" fetchpriority="high" src="./assets/startup/logo.png" alt="ANESVET" width="220" height="220"><img class="av-boot-ring" src="./assets/startup/ring.svg" alt="" width="176" height="176"></div>
@@ -100,7 +100,7 @@ body.av-booting>main{display:none!important}
 </section>
 <noscript><style>.av-boot,main{display:none}.av-booting>.topbar{visibility:visible}</style><p>โปรดเปิด JavaScript เพื่อใช้ ANESVET</p></noscript>
 <header class="av-workspace-header">
-  <div class="av-utility"><button type="button" class="session-safe" data-av-route="start" aria-label="หน้าเริ่มใช้งาน"><img src="./assets/system-indicator.svg" alt="" width="7" height="7">ANESVET</button><span>V17.14.4</span></div>
+  <div class="av-utility"><button type="button" class="session-safe" data-av-route="start" aria-label="หน้าเริ่มใช้งาน"><img src="./assets/system-indicator.svg" alt="" width="7" height="7">ANESVET</button><span>V17.14.5</span></div>
   <div class="av-bar"><div class="av-bar-copy"><h2 id="avWorkspaceTitle">ANESVET</h2><small id="avWorkspaceCase">กำลังเปิดข้อมูล</small><small id="avMeasurementStatus" class="av-measurement-status" role="status" aria-live="polite" hidden></small><small id="avWorkspaceStatus" class="av-save-status" role="status" aria-live="polite"></small></div><button id="avHeaderTools" class="av-square session-safe" data-av-action="tools" type="button" aria-label="เมนูเพิ่มเติม">⋯</button></div>
 </header>
 <header class="topbar">
@@ -108,7 +108,7 @@ body.av-booting>main{display:none!important}
     <img class="brand-logo" src="./assets/icons/icon-192.png" alt="ANESVET logo">
     <div>
       <div class="eyebrow">GENOVI PET CARE • DIGITAL ANESTHESIA RECORD</div>
-      <h1>ANESVET <span>V17.14.4</span></h1>
+      <h1>ANESVET <span>V17.14.5</span></h1>
       <div id="appHospitalName" class="app-hospital-name" hidden></div>
     </div>
   </div>
@@ -3318,7 +3318,7 @@ body.av-booting>main{display:none!important}
     </div>
 
     <section class="help-about-card">
-      <div><small>ABOUT</small><b>ANESVET V17.14.4</b><p>Veterinary anesthesia workflow, monitoring record and clinical decision-support. ไม่ใช่ continuous physiologic monitor และไม่แทน clinical judgment หรือ source monitor data.</p></div>
+      <div><small>ABOUT</small><b>ANESVET V17.14.5</b><p>Veterinary anesthesia workflow, monitoring record and clinical decision-support. ไม่ใช่ continuous physiologic monitor และไม่แทน clinical judgment หรือ source monitor data.</p></div>
       <button id="helpOpenSettingsBtn" class="btn session-safe" type="button">Settings</button>
     </section>
     <div class="workflow-dialog-actions help-center-actions"><button id="helpCenterCloseBottomBtn" class="btn session-safe" type="button">Close</button></div>
@@ -3660,7 +3660,7 @@ Tramadol"></textarea><small>แสดง shortcut ไป Medication workspace �
 <script id="anesvetBootSentinel">
 (function(){
 'use strict';
-const VERSION='17.14.4';
+const VERSION='17.14.5';
 const STORAGE_KEY='anesvet_v17_2_5_boot_diagnostic';
 const startedAt=Date.now();
 const stages=[];
@@ -3867,75 +3867,75 @@ setTimeout(()=>{if(!stages.some(x=>x.stage==='patient-master-bound'))issue('star
 setTimeout(()=>{if(!ready&&stages.some(x=>x.stage==='patient-master-bound')){mark('startup-incomplete-watchdog',currentStage());issue('startup','Startup did not finish after 12 seconds',currentStage())}},12000);
 })();
 </script>
-<script defer src="./runtime/platform/lifecycle-coordinator.js?v=17.14.4"></script>
-<script defer src="./runtime/platform/viewport-coordinator.js?v=17.14.4"></script>
-  <script defer src="./runtime/platform/workspace-owner.js?v=17.14.4"></script>
-  <script defer src="./runtime/platform/presentation-ownership.js?v=17.14.4"></script>
-  <script defer src="./runtime/platform/mobile-or-owner.js?v=17.14.4"></script>
-<script defer src="./runtime/clinical/drug-dose-reference.js?v=17.14.4"></script>
-<script defer src="./runtime/clinical/protocol-review.js?v=17.14.4"></script>
-<script defer src="./runtime/clinical/clinical-workflow.js?v=17.14.4"></script>
-<script defer src="./runtime/core/app-shell.js?v=17.14.4"></script>
-<script defer src="./runtime/core/case-lifecycle.js?v=17.14.4"></script>
-<script defer src="./runtime/core/support.js?v=17.14.4"></script>
-<script defer src="./runtime/core/reliability.js?v=17.14.4"></script>
-<script defer src="./runtime/core/branding.js?v=17.14.4"></script>
-<script defer src="./runtime/core/clinical-validation.js?v=17.14.4"></script>
-<script defer src="./runtime/core/case-runtime.js?v=17.14.4"></script>
-<script defer src="./runtime/core/core-storage.js?v=17.14.4"></script>
-<script defer src="./runtime/core/session-coordination.js?v=17.14.4"></script>
-<script defer src="./runtime/core/session-controller.js?v=17.14.4"></script>
-<script defer src="./runtime/domains/pwa-controller.js?v=17.14.4"></script>
-<script defer src="./runtime/domains/dose-reference-controller.js?v=17.14.4"></script>
-<script defer src="./runtime/domains/patient-domain.js?v=17.14.4"></script>
-<script defer src="./runtime/domains/or-domain.js?v=17.14.4"></script>
-<script defer src="./runtime/domains/recovery-domain.js?v=17.14.4"></script>
-<script defer src="./runtime/orchestration/patient-master-orchestration.js?v=17.14.4"></script>
-<script defer src="./runtime/orchestration/or-record-orchestration.js?v=17.14.4"></script>
-<script defer src="./runtime/orchestration/recovery-orchestration.js?v=17.14.4"></script>
-<script defer src="./runtime/controllers/patient-master-controller.js?v=17.14.4"></script>
-<script defer src="./runtime/controllers/preop-controller.js?v=17.14.4"></script>
-<script defer src="./runtime/controllers/medication-workspace-controller.js?v=17.14.4"></script>
-<script defer src="./runtime/controllers/or-live-controller.js?v=17.14.4"></script>
-<script defer src="./runtime/controllers/recovery-controller.js?v=17.14.4"></script>
-<script defer src="./runtime/controllers/backup-restore-controller.js?v=17.14.4"></script>
-<script defer src="./runtime/controllers/finalization-archive-controller.js?v=17.14.4"></script>
-<script defer src="./procedure-templates.js?v=17.14.4"></script>
-<script defer src="./validation-center.js?v=17.14.4"></script>
-<script defer src="./hospital-protocol-governance.js?v=17.14.4"></script>
-<script defer src="./security-baseline.js?v=17.14.4"></script>
-<script defer src="./sync-transport.js?v=17.14.4"></script>
-<script defer src="./sync-foundation.js?v=17.14.4"></script>
-<script defer src="./case-review-dashboard.js?v=17.14.4"></script>
-<script defer src="./architecture-registry.js?v=17.14.4"></script>
-<script defer src="./production-pilot.js?v=17.14.4"></script>
-<script defer src="./active-case-rescue.js?v=17.14.4"></script>
-<script defer src="./active-case-freshness.js?v=17.14.4"></script>
-<script defer src="./app-pure-utils.js?v=17.14.4"></script>
-<script src="./recovery-handoff-view-model.js?v=17.14.4"></script>
-  <script src="./case-lifecycle-model.js?v=17.14.4"></script>
-  <script src="./session-lifecycle-model.js?v=17.14.4"></script>
-  <script defer src="./or-simplification-controller.js?v=17.14.4"></script>
-  <script defer src="./app.js?v=17.14.4"></script>
-<script defer src="./data-resilience.js?v=17.14.4"></script>
-<script defer src="./data-safety-2.js?v=17.14.4"></script>
-<script defer src="./medication-reconciliation.js?v=17.14.4"></script>
-<script defer src="./help.js?v=17.14.4"></script>
-<script defer src="./clinical-next-step-controller.js?v=17.14.4"></script>
-<script defer src="./finalization.js?v=17.14.4"></script>
-<script defer src="./final-archive-assurance.js?v=17.14.4"></script>
-<script defer src="./documentation-guardian.js?v=17.14.4"></script>
-<script defer src="./problem-response-review.js?v=17.14.4"></script>
+<script defer src="./runtime/platform/lifecycle-coordinator.js?v=17.14.5"></script>
+<script defer src="./runtime/platform/viewport-coordinator.js?v=17.14.5"></script>
+  <script defer src="./runtime/platform/workspace-owner.js?v=17.14.5"></script>
+  <script defer src="./runtime/platform/presentation-ownership.js?v=17.14.5"></script>
+  <script defer src="./runtime/platform/mobile-or-owner.js?v=17.14.5"></script>
+<script defer src="./runtime/clinical/drug-dose-reference.js?v=17.14.5"></script>
+<script defer src="./runtime/clinical/protocol-review.js?v=17.14.5"></script>
+<script defer src="./runtime/clinical/clinical-workflow.js?v=17.14.5"></script>
+<script defer src="./runtime/core/app-shell.js?v=17.14.5"></script>
+<script defer src="./runtime/core/case-lifecycle.js?v=17.14.5"></script>
+<script defer src="./runtime/core/support.js?v=17.14.5"></script>
+<script defer src="./runtime/core/reliability.js?v=17.14.5"></script>
+<script defer src="./runtime/core/branding.js?v=17.14.5"></script>
+<script defer src="./runtime/core/clinical-validation.js?v=17.14.5"></script>
+<script defer src="./runtime/core/case-runtime.js?v=17.14.5"></script>
+<script defer src="./runtime/core/core-storage.js?v=17.14.5"></script>
+<script defer src="./runtime/core/session-coordination.js?v=17.14.5"></script>
+<script defer src="./runtime/core/session-controller.js?v=17.14.5"></script>
+<script defer src="./runtime/domains/pwa-controller.js?v=17.14.5"></script>
+<script defer src="./runtime/domains/dose-reference-controller.js?v=17.14.5"></script>
+<script defer src="./runtime/domains/patient-domain.js?v=17.14.5"></script>
+<script defer src="./runtime/domains/or-domain.js?v=17.14.5"></script>
+<script defer src="./runtime/domains/recovery-domain.js?v=17.14.5"></script>
+<script defer src="./runtime/orchestration/patient-master-orchestration.js?v=17.14.5"></script>
+<script defer src="./runtime/orchestration/or-record-orchestration.js?v=17.14.5"></script>
+<script defer src="./runtime/orchestration/recovery-orchestration.js?v=17.14.5"></script>
+<script defer src="./runtime/controllers/patient-master-controller.js?v=17.14.5"></script>
+<script defer src="./runtime/controllers/preop-controller.js?v=17.14.5"></script>
+<script defer src="./runtime/controllers/medication-workspace-controller.js?v=17.14.5"></script>
+<script defer src="./runtime/controllers/or-live-controller.js?v=17.14.5"></script>
+<script defer src="./runtime/controllers/recovery-controller.js?v=17.14.5"></script>
+<script defer src="./runtime/controllers/backup-restore-controller.js?v=17.14.5"></script>
+<script defer src="./runtime/controllers/finalization-archive-controller.js?v=17.14.5"></script>
+<script defer src="./procedure-templates.js?v=17.14.5"></script>
+<script defer src="./validation-center.js?v=17.14.5"></script>
+<script defer src="./hospital-protocol-governance.js?v=17.14.5"></script>
+<script defer src="./security-baseline.js?v=17.14.5"></script>
+<script defer src="./sync-transport.js?v=17.14.5"></script>
+<script defer src="./sync-foundation.js?v=17.14.5"></script>
+<script defer src="./case-review-dashboard.js?v=17.14.5"></script>
+<script defer src="./architecture-registry.js?v=17.14.5"></script>
+<script defer src="./production-pilot.js?v=17.14.5"></script>
+<script defer src="./active-case-rescue.js?v=17.14.5"></script>
+<script defer src="./active-case-freshness.js?v=17.14.5"></script>
+<script defer src="./app-pure-utils.js?v=17.14.5"></script>
+<script src="./recovery-handoff-view-model.js?v=17.14.5"></script>
+  <script src="./case-lifecycle-model.js?v=17.14.5"></script>
+  <script src="./session-lifecycle-model.js?v=17.14.5"></script>
+  <script defer src="./or-simplification-controller.js?v=17.14.5"></script>
+  <script defer src="./app.js?v=17.14.5"></script>
+<script defer src="./data-resilience.js?v=17.14.5"></script>
+<script defer src="./data-safety-2.js?v=17.14.5"></script>
+<script defer src="./medication-reconciliation.js?v=17.14.5"></script>
+<script defer src="./help.js?v=17.14.5"></script>
+<script defer src="./clinical-next-step-controller.js?v=17.14.5"></script>
+<script defer src="./finalization.js?v=17.14.5"></script>
+<script defer src="./final-archive-assurance.js?v=17.14.5"></script>
+<script defer src="./documentation-guardian.js?v=17.14.5"></script>
+<script defer src="./problem-response-review.js?v=17.14.5"></script>
 
-  <script defer src="./patient-preop-simplification.js?v=17.14.4"></script>
-  <script defer src="./drug-start-simplification.js?v=17.14.4"></script>
-  <script defer src="./or-workflow-refinement.js?v=17.14.4"></script>
-  <script defer src="./or-workspace-restructure.js?v=17.14.4"></script>
-  <script defer src="./recovery-end-refinement.js?v=17.14.4"></script>
-<script defer src="./repeat-presentation-owner.js?v=17.14.4"></script>
-<script defer src="./simulation-mode.js?v=17.14.4"></script>
-<script defer src="./knowledge-loader.js?v=17.14.4"></script>
-<script defer src="./or-knowledge.js?v=17.14.4"></script>
-<script defer src="./mobile-design.js?v=17.14.4" onerror="document.body.classList.add('av-boot-error');document.body.classList.remove('av-booting');document.getElementById('avBootTitle').textContent='เปิดหน้าจอไม่สำเร็จ';document.getElementById('avBootStatus').textContent='ลองเปิดอีกครั้ง ข้อมูลเคสเดิมยังอยู่ในเครื่อง';document.getElementById('avBootErrorActions').hidden=false;document.getElementById('avBootRetry').onclick=()=>location.reload();document.getElementById('avBootReview').disabled=true"></script>
+  <script defer src="./patient-preop-simplification.js?v=17.14.5"></script>
+  <script defer src="./drug-start-simplification.js?v=17.14.5"></script>
+  <script defer src="./or-workflow-refinement.js?v=17.14.5"></script>
+  <script defer src="./or-workspace-restructure.js?v=17.14.5"></script>
+  <script defer src="./recovery-end-refinement.js?v=17.14.5"></script>
+<script defer src="./repeat-presentation-owner.js?v=17.14.5"></script>
+<script defer src="./simulation-mode.js?v=17.14.5"></script>
+<script defer src="./knowledge-loader.js?v=17.14.5"></script>
+<script defer src="./or-knowledge.js?v=17.14.5"></script>
+<script defer src="./mobile-design.js?v=17.14.5" onerror="document.body.classList.add('av-boot-error');document.body.classList.remove('av-booting');document.getElementById('avBootTitle').textContent='เปิดหน้าจอไม่สำเร็จ';document.getElementById('avBootStatus').textContent='ลองเปิดอีกครั้ง ข้อมูลเคสเดิมยังอยู่ในเครื่อง';document.getElementById('avBootErrorActions').hidden=false;document.getElementById('avBootRetry').onclick=()=>location.reload();document.getElementById('avBootReview').disabled=true"></script>
 </body>
 </html>

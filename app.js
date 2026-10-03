@@ -39,7 +39,7 @@ const SESSION_TTL_MS=30000;
 const SESSION_HEARTBEAT_MS=5000;
 const DB_NAME='ANESVET_DB';
 const DB_VERSION=2;
-const APP_VERSION='17.14.4';
+const APP_VERSION='17.14.5';
 const SECURITY=window.ANESVET_SECURITY_BASELINE||null;
 const SYNC_FOUNDATION=window.ANESVET_SYNC_FOUNDATION||null;
 const DOSE_REF=window.ANESVET_DOSE_REFERENCE||null;
@@ -1585,7 +1585,7 @@ function protocolReviewBuiltIns(){
   return [
     {id:'diazepamDose',name:'Diazepam',origin:'Built-in',phase:'induction',mode:'mgkg',dose:v('settingDiazepamDose','diazepamDose'),route:'IV',species:['dog','cat']},
     {id:'propofolDose',name:'Propofol',origin:'Built-in',phase:'induction',mode:'mgkg',dose:v('settingPropofolDose','propofolDose'),route:'IV',species:['dog','cat']},
-    {id:'tramadolDose',name:'Tramadol',origin:'Built-in',phase:'pre',mode:'mgkg',dose:v('settingTramadolDose','tramadolDose'),route:'',species:['dog','cat']},
+    {id:'tramadolDose',name:'Tramadol',origin:'Built-in',phase:'pre',mode:'mgkg',dose:v('settingTramadolDose','tramadolDose'),route:'SC',species:['dog','cat']},
     {id:'carprofenDose',name:'Carprofen',origin:'Built-in',phase:'post',mode:'mgkg',dose:v('settingCarprofenDose','carprofenDose'),route:'',species:['dog']},
     {id:'meloxicamDose',name:'Meloxicam',origin:'Built-in',phase:'post',mode:'mgkg',dose:v('settingMeloxicamDose','meloxicamDose'),route:'',species:['cat']},
     {id:'cefazolinDivisor',name:'Cefazolin',origin:'Built-in legacy',phase:'pre',mode:'bwdiv',dose:v('settingCefazolinDivisor','cefazolinDivisor'),route:'',species:['dog','cat']},
@@ -1609,7 +1609,7 @@ function protocolReviewSavedPayload(){
   const builtIns=[
     {id:'diazepamDose',name:'Diazepam',mode:'mgkg',dose:s.diazepamDose,route:'IV',species:['dog','cat']},
     {id:'propofolDose',name:'Propofol',mode:'mgkg',dose:s.propofolDose,route:'IV',species:['dog','cat']},
-    {id:'tramadolDose',name:'Tramadol',mode:'mgkg',dose:s.tramadolDose,route:'',species:['dog','cat']},
+    {id:'tramadolDose',name:'Tramadol',mode:'mgkg',dose:s.tramadolDose,route:'SC',species:['dog','cat']},
     {id:'carprofenDose',name:'Carprofen',mode:'mgkg',dose:s.carprofenDose,route:'',species:['dog']},
     {id:'meloxicamDose',name:'Meloxicam',mode:'mgkg',dose:s.meloxicamDose,route:'',species:['cat']},
     {id:'cefazolinDivisor',name:'Cefazolin',mode:'bwdiv',dose:s.cefazolinDivisor,route:'',species:['dog','cat']},
@@ -3466,7 +3466,7 @@ function currentProtocolDrugDefinitions(){
   const defs=[
     {id:'diazepamDose',name:'Diazepam',phase:'induction',role:'adjunct',mode:'mgkg',dose:s.diazepamDose,conc:conc('diazepamConc'),concUnit:'mg/mL',route:'IV'},
     {id:'propofolDose',name:'Propofol',phase:'induction',role:'agent',mode:'mgkg',dose:s.propofolDose,conc:conc('propofolConc'),concUnit:'mg/mL',route:'IV'},
-    {id:'tramadolDose',name:'Tramadol',phase:'pre',mode:'mgkg',dose:s.tramadolDose,conc:conc('tramadolConc'),concUnit:'mg/mL',route:''},
+    {id:'tramadolDose',name:'Tramadol',phase:'pre',mode:'mgkg',dose:s.tramadolDose,conc:conc('tramadolConc'),concUnit:'mg/mL',route:'SC'},
     {id:'carprofenDose',name:'Carprofen',phase:'post',mode:'mgkg',dose:s.carprofenDose,conc:conc('rimadylConc'),concUnit:'mg/mL',route:''},
     {id:'meloxicamDose',name:'Meloxicam',phase:'post',mode:'mgkg',dose:s.meloxicamDose,conc:conc('metacamConc'),concUnit:'mg/mL',route:''},
     {id:'cefazolinDivisor',name:'Cefazolin',phase:'pre',mode:'bwdiv',dose:s.cefazolinDivisor,conc:250,concUnit:'mg/mL',route:'IV',note:'Geno V Pet Care hospital preparation • 1000 mg vial + sterile water 4 mL → 250 mg/mL • volume BW ÷ 10 mL',hospitalProtocol:'Geno V Pet Care',preparation:{vialMg:1000,diluent:'Sterile water',diluentMl:4,workingConc:250,concUnit:'mg/mL'}},

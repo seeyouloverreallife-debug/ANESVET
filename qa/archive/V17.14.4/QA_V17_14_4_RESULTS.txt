@@ -1,0 +1,12 @@
+ANESVET V17.14.4 — Physical Pilot Readiness / Device Resilience
+
+Current QA suites: 17
+Contract checks: 450/450 PASS
+Physical-device telemetry: 25/25 PASS
+Runtime JS syntax: 76/76 PASS
+Service Worker syntax: PASS
+CSS parser: 40/40 PASS
+Logical runtime comparison vs V17.14.3: 75/76 modules version-only; production-pilot.js is the only non-version runtime logic delta.
+index.html functional delta: Production Pilot telemetry controls/surface.
+service-worker.js and app.js: version-only after normalization.
+Physical-device qualification: NOT claimed; requires Android/iPad/Windows real-device pilot.

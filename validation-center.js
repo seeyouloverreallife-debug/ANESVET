@@ -1,10 +1,10 @@
-/* ANESVET V17.14.4 — Production Validation Center
+/* ANESVET V17.14.5 — Production Validation Center
    Non-clinical real-device qualification evidence only.
    Does not alter clinical calculations, thresholds, medication semantics, or patient records. */
 (function(root){
 'use strict';
 
-const FALLBACK_VERSION='17.14.4';
+const FALLBACK_VERSION='17.14.5';
 const runtimeVersion=()=>root.AnesvetApp?.version||FALLBACK_VERSION;
 const RUNS_KEY='anesvet_v16_19_1_validation_runs';
 const ACTIVE_KEY='anesvet_v16_19_1_active_validation_run';

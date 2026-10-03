@@ -1,9 +1,9 @@
-/* ANESVET V17.14.4 — lazy clinical knowledge loader.
+/* ANESVET V17.14.5 — lazy clinical knowledge loader.
    Keeps knowledge assets available offline via service-worker precache while
    removing their parse/initialization cost from the critical app startup path. */
 (()=>{
 'use strict';
-const VERSION='17.14.4';
+const VERSION='17.14.5';
 const FILES=[
  'runtime/knowledge/clinical-knowledge-data.js','runtime/knowledge/ecg-educational-rules.js','runtime/knowledge/ecg-visual-atlas-data.js',
  'runtime/knowledge/special-patient-knowledge.js','runtime/knowledge/comorbidity-knowledge.js','runtime/knowledge/clinical-knowledge-ui.js','runtime/knowledge/ecg-visual-atlas.js'

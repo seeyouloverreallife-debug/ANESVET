@@ -1,0 +1,16 @@
+ANESVET V17.14.5 — Physical Pilot UX Fix I
+
+Current QA suites: 18
+Contract checks: 485/485 PASS
+Runtime JS syntax: 76/76 PASS
+Service Worker syntax: PASS
+CSS parser: 40/40 PASS
+Service Worker inventory: 120 assets / 76 JS / 2 CSS
+
+Physical-device acceptance basis:
+- User-provided V17.14.4 phone screenshots and interaction feedback.
+
+Important scope limitation:
+- The V17.14.5 fixed artifact has not yet been re-tested on that physical device.
+- Automated validation covers source contracts, deterministic runtime/controller behavior, syntax and CSS parsing.
+- Touch/IME/browser chrome/device-specific rendering must be revalidated on the same phone/tablet.

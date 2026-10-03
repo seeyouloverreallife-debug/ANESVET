@@ -2,7 +2,7 @@
    Incremental OR LIVE UI/controller extraction. Existing OR domain/orchestration and clinical semantics remain injected and unchanged. */
 (function(root){
 'use strict';
-const VERSION='17.14.4';
+const VERSION='17.14.5';
 function create(ctx={}){
   const $=ctx.$,$$=ctx.$$;
   if(!$||!$$||typeof ctx.getState!=='function')return null;
@@ -30,7 +30,7 @@ function create(ctx={}){
   const currentSettingsObject=ctx.currentSettingsObject||(()=>({})),fillBlankVitalsFromLast=ctx.fillBlankVitalsFromLast||(()=>{}),markMilestone=ctx.markMilestone||(()=>false),openComplicationDialog=ctx.openComplicationDialog||(()=>{});
   const renderRecovery=ctx.renderRecovery||(()=>{}),beginRecovery=ctx.beginRecovery||(()=>false),confirmFn=ctx.confirm||((msg)=>root.confirm?.(msg)??false);
   let airwayWorkflowContext='';
-  /* V17.14.4 canonical Fast Vital interaction owner.
+  /* V17.14.5 canonical Fast Vital interaction owner.
      Migrated from or-speed-hardening.js without changing record semantics. */
   const FAST_FIELDS=Object.freeze([
     {id:'orHr',label:'HR',unit:'bpm'},

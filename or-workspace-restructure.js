@@ -1,9 +1,9 @@
-/* ANESVET V17.14.4 — OR LIVE interaction polish + clean secondary charting.
+/* ANESVET V17.14.5 — OR LIVE interaction polish + clean secondary charting.
  * Presentation/navigation only. Existing clinical fields remain authoritative.
  * Moves existing DOM controls into four task-based workspaces without cloning state. */
 (function(root){
 'use strict';
-const VERSION='17.14.4';
+const VERSION='17.14.5';
 const $=id=>document.getElementById(id);
 const q=(sel,scope=document)=>scope?.querySelector?.(sel)||null;
 root.ANESVET_PRESENTATION_OWNERSHIP?.claim?.('orlive.layout','or-workspace-v17130');
@@ -100,8 +100,17 @@ function syncSafetyCompact(){
 function bindVentModeButtons(panel){
   const select=$('airwayVentMode');if(!select||!panel)return;
   const strip=q('#orVentModeButtons',panel);if(!strip)return;
-  const render=()=>qa('[data-vent-mode]',strip).forEach(b=>b.classList.toggle('active',b.dataset.ventMode===select.value));
-  strip.addEventListener('click',e=>{const b=e.target.closest?.('[data-vent-mode]');if(!b)return;select.value=b.dataset.ventMode;select.dispatchEvent(new Event('change',{bubbles:true}));render()});
+  const buttons=qa('[data-vent-mode]',strip);
+  const render=()=>buttons.forEach(b=>{const active=b.dataset.ventMode===select.value;b.classList.toggle('active',active);b.setAttribute('aria-pressed',active?'true':'false')});
+  const apply=mode=>{
+    if(!mode)return;
+    select.value=mode;
+    const mirror=$('orVentilation');if(mirror)mirror.value=mode;
+    select.dispatchEvent(new Event('change',{bubbles:true}));
+    render();
+    if(['Manual PPV','Mechanical ventilation'].includes(mode))requestAnimationFrame(()=>q('#orVentSettingsSlot',panel)?.scrollIntoView?.({block:'nearest',behavior:'smooth'}));
+  };
+  buttons.forEach(b=>{b.setAttribute('aria-pressed','false');b.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();apply(b.dataset.ventMode)});});
   select.addEventListener('change',render);render();
 }
 function secondaryHeader(kicker,title,help){

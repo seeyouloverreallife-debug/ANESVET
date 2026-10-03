@@ -1,8 +1,8 @@
 {
-  "name": "ANESVET V17.14.4",
+  "name": "ANESVET V17.14.5",
   "short_name": "ANESVET",
   "description": "Local-first veterinary anesthesia workflow with a unified case timeline, anesthesia record, recovery handoff, medication safety, clinical validation, reporting, and audit-ready record integrity",
-  "start_url": "./?launch=home&v=17.14.4",
+  "start_url": "./?launch=home&v=17.14.5",
   "scope": "./",
   "display": "standalone",
   "background_color": "#0b2d31",
@@ -10,17 +10,17 @@
   "lang": "th",
   "icons": [
     {
-      "src": "./assets/icons/icon-192.png?v=17.14.4",
+      "src": "./assets/icons/icon-192.png?v=17.14.5",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "./assets/icons/icon-512.png?v=17.14.4",
+      "src": "./assets/icons/icon-512.png?v=17.14.5",
       "sizes": "512x512",
       "type": "image/png"
     },
     {
-      "src": "./assets/icons/icon-maskable-512.png?v=17.14.4",
+      "src": "./assets/icons/icon-maskable-512.png?v=17.14.5",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"

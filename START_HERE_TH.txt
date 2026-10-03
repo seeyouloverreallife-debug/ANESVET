@@ -1,7 +1,7 @@
-ANESVET V17.14.4 — Physical Pilot Readiness / Device Resilience
+ANESVET V17.14.5 — Physical Pilot UX Fix I
 
-ฐานงาน: V17.14.3 Clinical Pilot Simulation II: Stress & Edge Cases
-เป้าหมาย: หลัง software stress ผ่านแล้ว เพิ่มหลักฐานสำหรับทดสอบ Android/iPad/Windows เครื่องจริงโดยไม่เปลี่ยน clinical workflow
+ฐานงาน: V17.14.4 Physical Pilot Readiness / Device Resilience
+เป้าหมาย: แก้ friction ที่พบจากการทดสอบบนมือถือจริงของผู้ใช้ โดยไม่เปลี่ยน dose logic, clinical thresholds หรือ persistence semantics
 
 โครงสร้าง runtime
 - runtime/platform/          positions 1–5
@@ -13,27 +13,30 @@ ANESVET V17.14.4 — Physical Pilot Readiness / Device Resilience
 - root                       startup positions 34–69
 - runtime/knowledge/         lazy knowledge/ECG 7 modules
 
-V17.14.4 Physical Pilot telemetry
-- ปิดเป็นค่าเริ่มต้น; กด Start device telemetry เมื่อต้องการ physical pilot
-- เก็บ VisualViewport, keyboard inset, orientation, focus type, long tasks, BFCache/resume, optional JS heap
-- Run device readiness เพิ่ม event-loop responsiveness probe
-- Capture device snapshot เก็บ snapshot ครั้งเดียวได้แม้ continuous telemetry ปิด
-- Export Production Pilot report เป็น V2 และรวม telemetry evidence
-- ไม่เก็บค่าที่พิมพ์, patient/case payload, drug/vital values หรือ clinical notes
-- telemetry local-only และไม่แก้ clinical state
+V17.14.5 Physical Pilot UX Fix I
+- Ventilator mode buttons ใช้ direct binding และ sync กับ authoritative ventilation select/mirror
+- Tramadol ใช้ SC เป็น route default ตาม workflow ของโรงพยาบาลผู้ใช้ รวม frozen plan เก่าที่ route ว่าง
+- Emergency/standby medications ไม่ถูก auto-suggest หรือ auto-advance เป็นยาถัดไป แต่ยังเลือกได้จาก All medications
+- Bottom navigation ยังคงแสดงระหว่าง focus/input/keyboard และย่อให้กะทัดรัด
+- Workflow transition Undo strip แสดงเด่นบน mobile; clinical records ยังคง correction/void audit trail
+- เพิ่ม mobile overflow containment สำหรับข้อความ/section/table
+- Recovery primary flow จัดเป็น Observations → Vital records → Score → Checklist
+- Recovery score เพิ่ม tap-first controls 0/1/2/N/A และ Save disabled จนข้อมูล score ครบ
 
 Retained clinical contracts
 - Induction prepared meds = Given / details pending
 - administration time แก้ย้อนหลังได้
 - Intubation timestamp-only
-- Quick Drug / Fast Vital / End Surgery / Emergency Return / Recovery / Final Lock คงเดิม
-- dose / concentration / thresholds / persistence schema ไม่เปลี่ยน
+- Quick Drug / Fast Vital / End Surgery / Emergency Return / Final Lock คงเดิม
+- dose / concentration / alert thresholds / persistence schema ไม่เปลี่ยน
+- Emergency drugs ยังเข้าถึงได้ด้วย explicit selection; เปลี่ยนเฉพาะ auto-suggestion behavior
+
+Physical pilot telemetry จาก V17.14.4 ยังคงอยู่และเป็น opt-in/local-only
 
 QA ปัจจุบันอยู่ใน qa/current/
 เอกสารหลัก
-- docs/audits/PHYSICAL_PILOT_READINESS_V17_14_4.md
-- docs/architecture/OWNER_MAP_V17_14_4.md
-- docs/architecture/RUNTIME_MODULE_MAP_V17_14_4.md
-- docs/releases/RELEASE_V17_14_4_TH.md
+- docs/audits/PHYSICAL_PILOT_UX_FIX_V17_14_5.md
+- docs/architecture/OWNER_MAP_V17_14_5.md
+- docs/releases/RELEASE_V17_14_5_TH.md
 
-ข้อจำกัด: telemetry เป็นเครื่องมือเตรียม/เก็บหลักฐาน physical pilot ไม่ใช่หลักฐานว่าผ่าน Android/iPad/PWA/IME/touch/thermal/performance qualification แล้ว
+ข้อจำกัด: V17.14.5 แก้จาก feedback และ screenshots บนอุปกรณ์จริงของผู้ใช้ แต่ build ที่แก้แล้วนี้ยังไม่ได้ re-test บนมือถือเครื่องเดิม จึงยังไม่ถือว่า physical-device acceptance ผ่านจนกว่าจะทดสอบซ้ำ

@@ -2,7 +2,7 @@
 
 `config/runtime-map.json` is the source-of-truth runtime path inventory.
 
-Current V17.14.4 policy:
+Current V17.14.5 policy:
 - startup JavaScript: 69 modules total;
 - `runtime/platform/`: 5 platform-foundation modules;
 - `runtime/clinical/`: 3 clinical-foundation modules;
