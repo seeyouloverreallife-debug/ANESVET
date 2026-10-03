@@ -1,9 +1,9 @@
-/* ANESVET V17.14.5 — OR LIVE interaction polish + clean secondary charting.
+/* ANESVET V17.14.6 — OR LIVE interaction polish + clean secondary charting.
  * Presentation/navigation only. Existing clinical fields remain authoritative.
  * Moves existing DOM controls into four task-based workspaces without cloning state. */
 (function(root){
 'use strict';
-const VERSION='17.14.5';
+const VERSION='17.14.6';
 const $=id=>document.getElementById(id);
 const q=(sel,scope=document)=>scope?.querySelector?.(sel)||null;
 root.ANESVET_PRESENTATION_OWNERSHIP?.claim?.('orlive.layout','or-workspace-v17130');
@@ -101,17 +101,27 @@ function bindVentModeButtons(panel){
   const select=$('airwayVentMode');if(!select||!panel)return;
   const strip=q('#orVentModeButtons',panel);if(!strip)return;
   const buttons=qa('[data-vent-mode]',strip);
-  const render=()=>buttons.forEach(b=>{const active=b.dataset.ventMode===select.value;b.classList.toggle('active',active);b.setAttribute('aria-pressed',active?'true':'false')});
+  const render=()=>{buttons.forEach(b=>{const active=b.dataset.ventMode===select.value;b.classList.toggle('active',active);b.setAttribute('aria-pressed',active?'true':'false')});const status=q('#orVentModeFeedback',panel);if(status){status.textContent=select.value?`Selected • ${select.value}`:'Choose ventilation mode';status.classList.toggle('selected',!!select.value)}};
   const apply=mode=>{
     if(!mode)return;
-    select.value=mode;
-    const mirror=$('orVentilation');if(mirror)mirror.value=mode;
-    select.dispatchEvent(new Event('change',{bubbles:true}));
+    const owner=root.ANESVET_OR_LIVE_INSTANCE;
+    if(typeof owner?.setVentilationMode==='function')owner.setVentilationMode(mode);
+    else{
+      select.value=mode;
+      const mirror=$('orVentilation');if(mirror)mirror.value=mode;
+      const master=$('ventilation');if(master)master.value=mode;
+      if($('ventilatorFields'))$('ventilatorFields').hidden=!['Manual PPV','Mechanical ventilation'].includes(mode);
+      select.dispatchEvent(new Event('change',{bubbles:true}));
+    }
     render();
+    updateBadges();
     if(['Manual PPV','Mechanical ventilation'].includes(mode))requestAnimationFrame(()=>q('#orVentSettingsSlot',panel)?.scrollIntoView?.({block:'nearest',behavior:'smooth'}));
   };
-  buttons.forEach(b=>{b.setAttribute('aria-pressed','false');b.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();apply(b.dataset.ventMode)});});
-  select.addEventListener('change',render);render();
+  buttons.forEach(b=>b.setAttribute('aria-pressed','false'));
+  strip.addEventListener('click',e=>{const b=e.target.closest?.('[data-vent-mode]');if(!b)return;e.preventDefault();e.stopPropagation();apply(b.dataset.ventMode)});
+  select.addEventListener('change',render);
+  document.addEventListener('anesvet:ventilation-mode-changed',render);
+  render();
 }
 function secondaryHeader(kicker,title,help){
   return `<div class="or-workspace-section-head compact"><div><span>${kicker}</span><h2>${title}</h2><small>${help}</small></div><button type="button" class="or-workspace-back" data-or-back-monitor>← Monitor</button></div>`;
@@ -220,7 +230,7 @@ function buildFluid(){
 }
 function buildVent(){
   const panel=make('section',{'data-or-workspace-panel':'vent',class:'or-workspace-panel or-vent-workspace'});
-  panel.innerHTML=`${secondaryHeader('VENT','Ventilator / PPV','Choose mode, then RR / PIP / PEEP / VT')}<section class="panel or-ventilator-workspace"><div id="orVentModeButtons" class="or-vent-mode-buttons"><button type="button" data-vent-mode="Spontaneous">Spontaneous</button><button type="button" data-vent-mode="Manual PPV">Manual PPV</button><button type="button" data-vent-mode="Mechanical ventilation">Mechanical</button></div><div id="orVentModeSlot" class="or-support-mode or-authoritative-mode"></div><div id="orVentSettingsSlot"></div></section>`;
+  panel.innerHTML=`${secondaryHeader('VENT','Ventilator / PPV','Choose mode, then RR / PIP / PEEP / VT')}<section class="panel or-ventilator-workspace"><div id="orVentModeButtons" class="or-vent-mode-buttons"><button type="button" data-vent-mode="Spontaneous">Spontaneous</button><button type="button" data-vent-mode="Manual PPV">Manual PPV</button><button type="button" data-vent-mode="Mechanical ventilation">Mechanical</button></div><div id="orVentModeFeedback" class="or-vent-mode-feedback" role="status" aria-live="polite">Choose ventilation mode</div><div id="orVentModeSlot" class="or-support-mode or-authoritative-mode"></div><div id="orVentSettingsSlot"></div></section>`;
   const mode=labelFor('airwayVentMode'),settings=$('ventilatorFields');
   if(mode)q('#orVentModeSlot',panel).appendChild(mode);
   if(settings)q('#orVentSettingsSlot',panel).appendChild(settings);

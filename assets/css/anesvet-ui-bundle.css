@@ -3753,7 +3753,7 @@ body.av-mobile-design #orlive #orPrimaryActionBtn:disabled{background:#dce7e6!im
 }
 
 
-/* V17.14.5 — physical pilot mobile containment + Recovery scoring. */
+/* V17.14.6 — physical pilot mobile containment + Recovery scoring. */
 @media(max-width:720px){
   body.av-mobile-design :is(#orlive,#recovery,.panel,.section-heading,.recovery-focus,.recovery-secondary-body,.or-workspace-panel){min-width:0;max-width:100%}
   body.av-mobile-design :is(#orlive,#recovery) :is(h1,h2,h3,p,small,b,span,label,.status-pill,.settings-note,.or-medication-queue-more,.recovery-secondary-state){overflow-wrap:anywhere;word-break:normal;max-width:100%}
@@ -3774,4 +3774,74 @@ body.av-mobile-design #orlive #orPrimaryActionBtn:disabled{background:#dce7e6!im
   body.av-mobile-design #recovery .recovery-score-primary-save:disabled{opacity:.55}
   body.av-mobile-design[data-av-page=orlive] #orUndoStepBtn:not([hidden]){position:fixed!important;left:12px!important;right:12px!important;bottom:calc(var(--av-footer) + 10px + env(safe-area-inset-bottom))!important;z-index:45!important;width:auto!important;max-width:680px!important;margin:auto!important;min-height:44px!important;border-radius:12px!important;background:#fff7df!important;border:1px solid #e5c86f!important;color:#6b4d00!important;box-shadow:0 8px 24px rgba(0,0,0,.16)!important}
   body.av-mobile-design.av-editing[data-av-page=orlive] #orUndoStepBtn:not([hidden]){top:calc(env(safe-area-inset-top) + 8px)!important;bottom:auto!important}
+}
+
+/* V17.14.6 — physical pilot Recovery task order + minimal semantic score. */
+@media(max-width:720px){
+  body.recovery-mobile-active #recovery.active{display:flex!important;flex-direction:column!important}
+  body.recovery-mobile-active #recovery>#recoveryObservationPanel{order:1!important}
+  body.recovery-mobile-active #recovery>#recoveryFocus{order:2!important}
+  body.recovery-mobile-active #recovery>#recoveryProblemsPanel{order:3!important}
+  body.recovery-mobile-active #recovery>#recoveryDocumentationGuardian{order:4!important}
+  body.recovery-mobile-active #recovery>.dashboard-grid{order:5!important}
+  body.recovery-mobile-active #recovery>.recovery-efficiency-tools{order:6!important}
+  body.recovery-mobile-active #recovery>#recoveryHandoffPanel{order:7!important}
+  body.recovery-mobile-active #recovery>#recoverySecondaryDetails{order:8!important}
+  body.recovery-mobile-active #recovery>#recoveryExitCard{order:9!important}
+
+  body.av-mobile-design #recovery .recovery-vitals-entry-panel{padding:12px!important;margin:8px 0 10px!important;border-radius:16px!important}
+  body.av-mobile-design #recovery .recovery-vitals-entry-head{display:flex!important;align-items:flex-start!important;gap:8px!important}
+  body.av-mobile-design #recovery .recovery-vitals-entry-head>div{min-width:0;flex:1}
+  body.av-mobile-design #recovery .recovery-vitals-entry-head h2{font-size:1.08rem!important;margin:0!important}
+  body.av-mobile-design #recovery .recovery-vitals-entry-head p{font-size:.72rem!important;margin:2px 0 0!important;color:#657a78!important}
+  body.av-mobile-design #recovery .recovery-vitals-entry-head .status-pill{flex:0 0 auto;max-width:42%;white-space:normal;text-align:center}
+  body.av-mobile-design #recovery .recovery-vital-core-grid{display:grid!important;grid-template-columns:1fr 1fr!important;gap:8px!important;margin-top:10px}
+  body.av-mobile-design #recovery .recovery-vital-core-grid>label,
+  body.av-mobile-design #recovery .recovery-vital-core-grid>.recovery-field-na{min-width:0;margin:0!important}
+  body.av-mobile-design #recovery .recovery-vital-core-grid label{display:grid!important;gap:4px!important;font-size:.72rem!important;font-weight:700!important;color:#4d6462!important}
+  body.av-mobile-design #recovery .recovery-vital-core-grid input,
+  body.av-mobile-design #recovery .recovery-vital-core-grid select{width:100%!important;min-width:0!important;min-height:50px!important;box-sizing:border-box!important;font-size:18px!important;padding:8px 10px!important}
+  body.av-mobile-design #recovery .recovery-vital-core-grid .recovery-field-na{display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;gap:5px!important;align-items:end!important}
+  body.av-mobile-design #recovery .recovery-vital-core-grid .recovery-observation-na-btn{min-width:48px!important;min-height:50px!important;padding:6px!important}
+  body.av-mobile-design #recovery .recovery-vitals-entry-actions{display:grid!important;grid-template-columns:minmax(0,.7fr) minmax(0,1.3fr)!important;gap:8px!important;margin-top:10px!important}
+  body.av-mobile-design #recovery .recovery-vitals-entry-actions .btn{min-height:50px!important;margin:0!important}
+  body.av-mobile-design #recovery .recovery-observation-more{margin-top:10px;border-top:1px solid #e1e9e7;padding-top:8px}
+  body.av-mobile-design #recovery .recovery-observation-more>summary{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:8px!important;min-height:42px!important;color:#3c5c59!important}
+  body.av-mobile-design #recovery .recovery-observation-more>summary span:first-child{display:grid;gap:1px;min-width:0}
+  body.av-mobile-design #recovery .recovery-observation-more>summary small{font-size:.64rem!important;color:#768783!important}
+  body.av-mobile-design #recovery .recovery-observation-more-grid{grid-template-columns:1fr!important;gap:8px!important;margin-top:8px!important}
+
+  /* The quick summary follows editable vitals; do not duplicate a second vital dashboard. */
+  body.av-mobile-design #recovery .recovery-focus{padding:10px 12px!important;margin:0 0 10px!important}
+  body.av-mobile-design #recovery .recovery-focus-latest{display:none!important}
+  body.av-mobile-design #recovery .recovery-focus-head>div:first-child h2{font-size:.98rem!important}
+  body.av-mobile-design #recovery .recovery-focus-head>div:first-child p{font-size:.7rem!important}
+  body.av-mobile-design #recovery .recovery-focus-actions{grid-template-columns:1fr!important}
+  body.av-mobile-design #recovery #recoveryCopyLastBtn,
+  body.av-mobile-design #recovery #recoveryFocusRecordBtn{display:none!important}
+
+  body.av-mobile-design #recovery .dashboard-grid{display:grid!important;grid-template-columns:1fr!important;gap:10px!important}
+  body.av-mobile-design #recovery .recovery-primary-checklist{order:1!important}
+  body.av-mobile-design #recovery .recovery-primary-score{order:2!important}
+
+  /* Restore descriptive selects: score meaning must remain visible to unfamiliar users. */
+  body.av-mobile-design #recovery .recovery-score-panel{padding:12px!important}
+  body.av-mobile-design #recovery .recovery-score-panel .section-heading{display:flex!important;align-items:flex-start!important;gap:8px!important}
+  body.av-mobile-design #recovery .recovery-score-panel .section-heading>div{min-width:0;flex:1}
+  body.av-mobile-design #recovery .recovery-score-panel .section-heading h2{font-size:1.02rem!important;margin:0!important}
+  body.av-mobile-design #recovery .recovery-score-panel .section-heading p{font-size:.68rem!important;line-height:1.45!important;margin:3px 0 0!important;color:#667a78!important}
+  body.av-mobile-design #recovery .recovery-score-panel .section-heading .btn{display:inline-flex!important;min-height:42px!important;padding:6px 9px!important;font-size:.7rem!important;white-space:nowrap!important}
+  body.av-mobile-design #recovery .recovery-score-grid{display:grid!important;grid-template-columns:1fr!important;gap:7px!important}
+  body.av-mobile-design #recovery .recovery-score-grid label{display:grid!important;grid-template-columns:minmax(105px,.42fr) minmax(0,1fr)!important;align-items:center!important;gap:8px!important;font-size:.72rem!important;font-weight:700!important;color:#4f6260!important}
+  body.av-mobile-design #recovery .recovery-score-grid select,
+  body.av-mobile-design #recovery .recovery-score-grid input{position:static!important;width:100%!important;height:auto!important;opacity:1!important;pointer-events:auto!important;clip:auto!important;clip-path:none!important;white-space:normal!important;min-height:44px!important;font-size:14px!important;box-sizing:border-box!important}
+  body.av-mobile-design #recovery .recovery-score-native{position:static!important;width:100%!important;height:auto!important;opacity:1!important;pointer-events:auto!important;clip:auto!important;clip-path:none!important;white-space:normal!important}
+  body.av-mobile-design #recovery .recovery-score-quick{display:none!important}
+  body.av-mobile-design #recovery .recovery-score-primary-save{display:none!important}
+  body.av-mobile-design #recovery .recovery-score-summary{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:5px!important;margin-top:8px!important}
+  body.av-mobile-design #recovery .recovery-score-summary>div{padding:6px 7px!important}
+  body.av-mobile-design #recovery .recovery-score-history.empty-state{display:none!important}
+}
+@media(max-width:420px){
+  body.av-mobile-design #recovery .recovery-score-grid label{grid-template-columns:1fr!important;gap:3px!important}
 }

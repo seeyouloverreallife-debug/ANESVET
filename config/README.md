@@ -15,7 +15,7 @@ It records:
 - current production CSS and icon paths;
 - semantic runtime groups and proposed future directories.
 
-Runtime policy in V17.14.5:
+Runtime policy in V17.14.6:
 - keep the proven static `<script defer>` startup model;
 - preserve exact startup order while paths move group-by-group;
 - Service Worker must precache all 69 startup + 7 lazy modules at their current paths;

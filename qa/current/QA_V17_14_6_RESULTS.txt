@@ -1,0 +1,44 @@
+ANESVET V17.14.6 — FINAL QA RESULTS
+
+Contract QA: 19/19 suites; 512/512 PASS
+Physical Pilot UX Fix II: 36/36 PASS
+Runtime JS syntax: 76/76 PASS
+Service Worker syntax: PASS
+CSS parser: 40/40 PASS
+Service Worker inventory: 120 assets / 76 JS / 2 CSS
+Active version alignment: PASS (no V17.14.5 deployment refs)
+
+Functional production delta vs V17.14.5 after version normalization:
+- assets/css/anesvet-ui-bundle.css
+- assets/css/or-workspace-restructure.css
+- config/runtime-map.json
+- index.html
+- or-workspace-restructure.js
+- runtime/controllers/or-live-controller.js
+- runtime/controllers/recovery-controller.js
+- src/styles/canonical/mobile-design.css
+
+Version-only production changes after normalization:
+- app.js
+- architecture-registry.js
+- knowledge-loader.js
+- manifest.webmanifest
+- mobile-design.js
+- production-pilot.js
+- runtime/controllers/medication-workspace-controller.js
+- runtime/domains/pwa-controller.js
+- runtime/platform/presentation-ownership.js
+- service-worker.js
+- simulation-mode.js
+- validation-center.js
+
+Scope evidence:
+- Vent selection is owned by OR Live controller setVentilationMode().
+- Vent owner synchronizes airwayVentMode / orVentilation / ventilation and field visibility.
+- Recovery editable vitals precede summary/history on mobile.
+- Recovery assessment uses descriptive selects rather than numeric-only tap controls.
+- No intended change to dose calculations, concentration rules, alert thresholds, persistence schema, Induction/Intubation semantics, Emergency Return, Recovery completion criteria, or Final Lock.
+
+Physical-device status:
+- Fixes are based on physical-device feedback/screenshots.
+- This V17.14.6 artifact itself still requires re-test on the same physical device before physical acceptance is claimed.

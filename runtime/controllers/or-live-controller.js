@@ -2,7 +2,7 @@
    Incremental OR LIVE UI/controller extraction. Existing OR domain/orchestration and clinical semantics remain injected and unchanged. */
 (function(root){
 'use strict';
-const VERSION='17.14.5';
+const VERSION='17.14.6';
 function create(ctx={}){
   const $=ctx.$,$$=ctx.$$;
   if(!$||!$$||typeof ctx.getState!=='function')return null;
@@ -30,7 +30,7 @@ function create(ctx={}){
   const currentSettingsObject=ctx.currentSettingsObject||(()=>({})),fillBlankVitalsFromLast=ctx.fillBlankVitalsFromLast||(()=>{}),markMilestone=ctx.markMilestone||(()=>false),openComplicationDialog=ctx.openComplicationDialog||(()=>{});
   const renderRecovery=ctx.renderRecovery||(()=>{}),beginRecovery=ctx.beginRecovery||(()=>false),confirmFn=ctx.confirm||((msg)=>root.confirm?.(msg)??false);
   let airwayWorkflowContext='';
-  /* V17.14.5 canonical Fast Vital interaction owner.
+  /* V17.14.6 canonical Fast Vital interaction owner.
      Migrated from or-speed-hardening.js without changing record semantics. */
   const FAST_FIELDS=Object.freeze([
     {id:'orHr',label:'HR',unit:'bpm'},
@@ -471,7 +471,20 @@ function renderAirwayPanel(){
   if($('orAirwaySummary'))$('orAirwaySummary').textContent=recorded?(bits.join(' • ')||'Intubation recorded'):'ยังไม่ได้บันทึก airway';
   renderOrPrimaryFlow();
 }
-$('airwayVentMode')?.addEventListener('change',()=>{renderAirwayPanel();if($('orVentilation')){$('orVentilation').value=$('airwayVentMode').value;syncMainFromOr('orVentilation')}save()});
+function setVentilationMode(mode,{persist=true}={}){
+  const allowed=['','Spontaneous','Manual PPV','Mechanical ventilation'];
+  mode=allowed.includes(String(mode||''))?String(mode||''):'';
+  const airway=$('airwayVentMode'),orMirror=$('orVentilation'),master=$('ventilation');
+  if(airway)airway.value=mode;
+  if(orMirror)orMirror.value=mode;
+  if(master){master.value=mode;master.dispatchEvent(new Event('change',{bubbles:true}))}
+  if($('ventilatorFields'))$('ventilatorFields').hidden=!['Manual PPV','Mechanical ventilation'].includes(mode);
+  renderAirwayPanel();
+  if(persist)save({reason:'ventilation-mode'});
+  try{document.dispatchEvent(new CustomEvent('anesvet:ventilation-mode-changed',{detail:{mode}}))}catch(_){ }
+  return mode;
+}
+$('airwayVentMode')?.addEventListener('change',()=>setVentilationMode($('airwayVentMode')?.value||''));
 ['airwayEttSize','airwayEttDepth','airwayCuff','airwayDifficulty','airwayAttempts','airwayCircuit','airwayNote','airwayVt','airwayPip','airwayPeep','airwayVentRr'].forEach(id=>{
   const el=$(id);if(!el)return;const eventName=el.tagName==='SELECT'?'change':'input';el.addEventListener(eventName,()=>{renderAirwayPanel();if(eventName==='change')save({reason:`airway:${id}`});else scheduleAutosave(`airway:${id}`)});
 });
@@ -532,7 +545,7 @@ $('saveAirwayBtn')?.addEventListener('click',()=>{
   const airwayBox=$('orAirwayPanelDetails');if(airwayBox)airwayBox.open=window.ANESVET_OR_WORKSPACE?.getView?.()==='airway';
   renderOrPrimaryFlow();window.ANESVET_OR_WORKSPACE?.updateBadges?.();toast('Airway details saved');
 });
-$('orVentilation')?.addEventListener('change',()=>{if($('airwayVentMode')){$('airwayVentMode').value=$('orVentilation').value;renderAirwayPanel();save()}});
+$('orVentilation')?.addEventListener('change',()=>setVentilationMode($('orVentilation')?.value||''));
 
 function renderOrLive(){
   if(!$('orlive'))return;
@@ -683,7 +696,7 @@ $('orFullscreenBtn')?.addEventListener('click',async()=>{try{if(!document.fullsc
     version:VERSION,bind,closeOrMoreDialog,
     syncOrFromMain,syncMainFromOr,workflowProfileInfo,activeWorkflowProfile,hasProcedureMilestone,procedureMilestoneEvent,workflowEvent,templateQuickDrugCandidates,renderTemplateQuickActions,renderWorkflowContext,
     inductionMedicationRecords,normalizeMedicationIdentity,plannedRoutineMedicationRows,reviewNowPlannedMedicationRows,laterPlannedMedicationRows,medicationQueueSummary,renderOrMedicationQueue,setMedicationQueueExpanded,inductionMedicationComplete,
-    renderOrPrimaryFlow,renderOrUndoControls,handleOrWorkflowAction,startCaseFromOr,undoLastOrWorkflowStep,renderAirwayPanel,renderOrLive,renderOrWorkspacePreferences,renderOrRecent,renderOrTimerState,
+    renderOrPrimaryFlow,renderOrUndoControls,handleOrWorkflowAction,startCaseFromOr,undoLastOrWorkflowStep,renderAirwayPanel,setVentilationMode,renderOrLive,renderOrWorkspacePreferences,renderOrRecent,renderOrTimerState,
     focusFastField,saveFastVitals,refreshFastViewport
   });
 }

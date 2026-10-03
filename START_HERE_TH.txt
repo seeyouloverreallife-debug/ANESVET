@@ -1,7 +1,6 @@
-ANESVET V17.14.5 — Physical Pilot UX Fix I
+ANESVET V17.14.6 — Physical Pilot UX Fix II
 
-ฐานงาน: V17.14.4 Physical Pilot Readiness / Device Resilience
-เป้าหมาย: แก้ friction ที่พบจากการทดสอบบนมือถือจริงของผู้ใช้ โดยไม่เปลี่ยน dose logic, clinical thresholds หรือ persistence semantics
+ล่าสุด: แก้ Vent ให้ OR controller เป็น canonical owner ของ mode และปรับ Recovery ให้ช่องกรอก vitals จริงอยู่ก่อน summary/history; Recovery assessment กลับมาใช้ descriptive selects แบบ minimal.
 
 โครงสร้าง runtime
 - runtime/platform/          positions 1–5
@@ -13,15 +12,14 @@ ANESVET V17.14.5 — Physical Pilot UX Fix I
 - root                       startup positions 34–69
 - runtime/knowledge/         lazy knowledge/ECG 7 modules
 
-V17.14.5 Physical Pilot UX Fix I
-- Ventilator mode buttons ใช้ direct binding และ sync กับ authoritative ventilation select/mirror
-- Tramadol ใช้ SC เป็น route default ตาม workflow ของโรงพยาบาลผู้ใช้ รวม frozen plan เก่าที่ route ว่าง
-- Emergency/standby medications ไม่ถูก auto-suggest หรือ auto-advance เป็นยาถัดไป แต่ยังเลือกได้จาก All medications
-- Bottom navigation ยังคงแสดงระหว่าง focus/input/keyboard และย่อให้กะทัดรัด
-- Workflow transition Undo strip แสดงเด่นบน mobile; clinical records ยังคง correction/void audit trail
-- เพิ่ม mobile overflow containment สำหรับข้อความ/section/table
-- Recovery primary flow จัดเป็น Observations → Vital records → Score → Checklist
-- Recovery score เพิ่ม tap-first controls 0/1/2/N/A และ Save disabled จนข้อมูล score ครบ
+V17.14.6 Physical Pilot UX Fix II
+- Vent mode buttons เรียก canonical OR controller โดยตรง; Spontaneous / Manual PPV / Mechanical ventilation sync state และเปิด/ปิด RR/PIP/PEEP/VT ตาม mode
+- คง Tramadol SC site-default และ standby/emergency medication filtering จาก V17.14.5
+- Bottom navigation, Undo strip และ mobile overflow fixes จาก V17.14.5 ยังคงอยู่
+- Recovery editable vitals เป็นงานแรก: HR / RR / SpO₂ / Temp / Mentation / Extubation พร้อม Record recovery vitals / Copy last
+- MAP / O₂ support / interval / note / structured assessment ย้ายไว้ใน More observations
+- Latest-vitals summary อยู่หลังช่องกรอก และ record history กลับไปอยู่ secondary details
+- Recovery assessment กลับมาใช้ descriptive selects ที่อธิบายความหมาย 0/1/2/N/A และจัด layout ให้ minimal; ไม่มี numeric-only tap controls
 
 Retained clinical contracts
 - Induction prepared meds = Given / details pending
@@ -35,8 +33,8 @@ Physical pilot telemetry จาก V17.14.4 ยังคงอยู่และ
 
 QA ปัจจุบันอยู่ใน qa/current/
 เอกสารหลัก
-- docs/audits/PHYSICAL_PILOT_UX_FIX_V17_14_5.md
-- docs/architecture/OWNER_MAP_V17_14_5.md
-- docs/releases/RELEASE_V17_14_5_TH.md
+- docs/audits/PHYSICAL_PILOT_UX_FIX_II_V17_14_6.md
+- docs/architecture/OWNER_MAP_V17_14_6.md
+- docs/releases/RELEASE_V17_14_6_TH.md
 
-ข้อจำกัด: V17.14.5 แก้จาก feedback และ screenshots บนอุปกรณ์จริงของผู้ใช้ แต่ build ที่แก้แล้วนี้ยังไม่ได้ re-test บนมือถือเครื่องเดิม จึงยังไม่ถือว่า physical-device acceptance ผ่านจนกว่าจะทดสอบซ้ำ
+ข้อจำกัด: V17.14.6 แก้จาก feedback และ screenshots บนอุปกรณ์จริงของผู้ใช้ แต่ build ที่แก้แล้วนี้ยังไม่ได้ re-test บนมือถือเครื่องเดิม จึงยังไม่ถือว่า physical-device acceptance ผ่านจนกว่าจะทดสอบซ้ำ
