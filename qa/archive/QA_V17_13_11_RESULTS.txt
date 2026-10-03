@@ -1,0 +1,231 @@
+ANESVET V17.13.11 — RELEASE QA RESULTS
+Source: V17.13.10 package, incremental patch only
+
+===== QA_V17_13_11_CANONICAL_CSS_OWNERSHIP_II.js =====
+PASS  Runtime scripts remain 69
+PASS  Bundle retains 38 source markers
+PASS  All bundle markers now point to src/styles folders
+PASS  Every marker resolves to an existing source file
+PASS  Legacy CSS debt reduced from 11 to 9 source names
+PASS  usability-hardening.css source name is retired
+PASS  mobile-first-r27.css source name is retired
+PASS  Canonical workflow assist source exists
+PASS  Canonical mobile workspace source exists
+PASS  Workflow assist migration preserves V17.13.9 bytes
+PASS  Mobile workspace migration preserves V17.13.9 bytes
+PASS  Bundle declarations/cascade are byte-equivalent after marker normalization
+PASS  Remaining 9 legacy-active CSS sources have no inactive class selectors
+PASS  All 13 retired JS owners remain absent from startup
+PASS  All 13 retired JS owners remain preserved in src/legacy-js
+PASS  Save assist CSS contract remains
+PASS  Actionable readiness/finalization CSS contracts remain
+PASS  Return-to-case CSS contract remains
+PASS  Mobile keyboard-open contract remains
+PASS  Mobile identity bridge CSS contract remains
+PASS  Runtime delivery remains two stylesheets
+PASS  Service worker still precaches two runtime CSS assets
+PASS  Induction details-pending contract remains
+PASS  Intubation timestamp-only contract remains
+PASS  Final Lock remains
+
+25/25 PASS
+
+===== QA_V17_13_11_CURRENT_WORKFLOW.js =====
+PASS  Induction start marks prepared induction meds given provisionally
+PASS  Induction start does not create full drug administration records
+PASS  Provisional list persisted in case state
+PASS  Only frozen planned induction meds are provisionally marked
+PASS  Provisional record uses Induction milestone epoch
+PASS  Provisional status explicitly details-pending
+PASS  Induction marking creates audit entry
+PASS  Quick drug button later opens editor rather than recording a new-time administration
+PASS  Later review defaults to provisional Induction time
+PASS  Editable administration time field exists
+PASS  Time input is shown for induction medication review
+PASS  Edited clock converts safely around midnight
+PASS  Edited administration time is used in actual drug record
+PASS  Time adjustment is retained in audit note
+PASS  Confirming actual details completes provisional record
+PASS  Induction review cannot complete with details pending
+PASS  Queue recognizes Given-but-details-pending state
+PASS  Queue labels provisional administration as Given Review
+PASS  Generic quick-med strip redirects provisional induction to review flow
+PASS  Undo restores induction provisional state
+PASS  Quick strip tells user Induction means drugs given
+PASS  Prepared drug button shows Given details pending
+PASS  Prepared drug button is still actionable until details saved
+PASS  Actual completed drug becomes non-actionable in quick strip
+PASS  Intubation remains timestamp-only
+PASS  Fluid, Vent and Airway remain deferred workspaces
+PASS  Current SW cache generation
+PASS  Current workspace assets cached
+PASS  End Surgery preserved
+PASS  Emergency Return preserved
+PASS  Final Lock preserved
+
+31/31 PASS
+
+===== QA_V17_13_11_END_TO_END.js =====
+PASS  Patient gate requires identity/BW/procedure/ASA
+PASS  Drug Plan blocks unconfirmed BW and routes through review
+PASS  Start case freezes protocol/identity before OR
+PASS  Induction marks frozen induction meds Given • details pending
+PASS  Individual induction drug administration time remains editable
+PASS  Intubation remains timestamp-only
+PASS  OR monitor is fixed above secondary charting
+PASS  Surgery end uses audited workflow mutation
+PASS  Extubation enters Recovery through controller
+PASS  Emergency Return preserves explicit Recovery↔OR path
+PASS  Recovery complete goes to End Case
+PASS  Finalization retains explicit final lock path
+PASS  Case lifecycle phase order remains stable
+PASS  Recovery patch preserves first recovery timestamp
+PASS  Session model locks Recovery while Emergency Return active
+PASS  Final sealed case is reload-safe
+PASS  Synthetic completed case produces coherent recovery handoff
+
+17/17 PASS
+
+===== QA_V17_13_11_OR_INTERACTION.js =====
+PASS  Current workspace version
+PASS  Vitals remain fixed above secondary navigation
+PASS  Monitor is no longer a redundant secondary-nav button
+PASS  Secondary nav contains Fluid Vent Airway Meds
+PASS  Secondary panels provide Back to Monitor action
+PASS  Clear safety state auto-compacts
+PASS  Active safety remains distinct
+PASS  Safety state observes current runtime text
+PASS  Fluid main keeps rate hero
+PASS  Fluid main keeps bolus visible
+PASS  Fluid optional actual correction moves under More
+PASS  Fluid blood loss urine blood product move under More
+PASS  Fluid visible glance is Total In + Current Rate
+PASS  Fluid effective/net/history move under More
+PASS  Vent has tap-first mode buttons
+PASS  Vent quick buttons write authoritative airwayVentMode select
+PASS  Authoritative vent select retained but visually hidden
+PASS  Airway shows Intubation timestamp from authoritative milestone
+PASS  Airway Attempts field exists
+PASS  Airway Note field exists
+PASS  Airway Attempts and Note have fresh-state persistence
+PASS  Airway Attempts and Note are in final report
+PASS  Airway autosave watches Attempts and Note
+PASS  Vaporizer discrete 0.5 steps retained
+PASS  O2 simple selector retained
+PASS  Induction given/details-pending semantics preserved
+PASS  Intubation remains timestamp-only
+PASS  Legacy Clinical Simplicity retired from runtime
+PASS  End Surgery preserved
+PASS  Emergency Return preserved
+PASS  Final Lock preserved
+PASS  Current service worker generation
+PASS  Current workspace assets cached
+\n33/33 PASS
+
+===== QA_V17_13_11_PACKAGE_STRUCTURE.js =====
+PASS  Package has docs/releases folder
+PASS  Package has docs/architecture folder
+PASS  Package has docs/audits folder
+PASS  Package has docs/retirement folder
+PASS  Package has qa/current and qa/archive folders
+PASS  Package has qa/evidence folder
+PASS  Package has src/styles/canonical and legacy-active folders
+PASS  Package has src/legacy-js folder
+PASS  Package has build/history folder
+PASS  Root file count reduced to 81 or fewer
+PASS  No RELEASE markdown remains at root
+PASS  No OWNER_MAP markdown remains at root
+PASS  No QA scripts/results remain at root
+PASS  Historical release notes preserved
+PASS  Owner-map history preserved
+PASS  Audit documents grouped
+PASS  Retirement history grouped
+PASS  Historical QA preserved in archive
+PASS  Current QA suite contains seven scripts
+PASS  Canonical bundle source CSS count is 29
+PASS  Legacy-active bundle source CSS count is 9
+PASS  Retired JS archive contains 13 owners
+PASS  Old build metadata moved to build/history
+PASS  Current BUILD_SHA256 remains at package root
+PASS  START_HERE remains at package root
+PASS  Runtime entrypoints remain at root
+PASS  Runtime path manifest exists
+PASS  Tooling guidance exists
+PASS  Production CSS grouped under assets/css
+PASS  App icons grouped under assets/icons
+PASS  Startup runtime JS remains unmoved in preparation release
+
+31/31 PASS
+
+===== QA_V17_13_11_RUNTIME_PATHS.js =====
+PASS  Runtime map schema is V1 for release 17.13.11
+PASS  Runtime map declares prepared-not-moved startup JS policy
+PASS  Runtime map contains exactly 69 startup modules
+PASS  Runtime map contains exactly 7 lazy modules
+PASS  No duplicate startup module paths
+PASS  No duplicate lazy module paths
+PASS  Startup and lazy module sets do not overlap
+PASS  Runtime map startup order exactly matches index.html
+PASS  Every startup module path exists
+PASS  Every lazy module path exists
+PASS  Startup JS stays at root in preparation release
+PASS  Lazy JS stays at root in preparation release
+PASS  Every startup module has a valid ownership group
+PASS  Every future startup path targets runtime/*
+PASS  Every future lazy path targets runtime/knowledge/*
+PASS  Service Worker precaches all startup modules
+PASS  Service Worker precaches all lazy modules
+PASS  Knowledge loader list matches manifest lazy modules
+PASS  Runtime map styles exactly match index styles
+PASS  Production CSS paths are grouped under assets/css
+PASS  Service Worker precaches both production CSS paths
+PASS  Production icons are grouped under assets/icons
+PASS  Manifest icon paths exactly match runtime map
+PASS  Index icon references use assets/icons
+PASS  Service Worker precaches all runtime-map icons
+PASS  No old root production CSS path remains in index or SW
+PASS  No old root icon path remains in index, manifest or SW
+PASS  Retired JS is absent from runtime manifest
+PASS  All versioned runtime path refs use 17.13.11
+PASS  Index and Service Worker contain no V17.13.10 deployment refs
+PASS  Service Worker cache generation is 17.13.11
+
+31/31 PASS
+
+===== QA_V17_13_11_STATIC_INTEGRITY.js =====
+PASS  69 runtime scripts
+PASS  All runtime scripts exist at stable root paths
+PASS  All linked stylesheets exist
+PASS  All local service-worker assets exist
+PASS  HTML IDs are unique
+PASS  Lifecycle coordinator loads before workspace owners
+PASS  App shell loads before app core
+PASS  OR LIVE controller loads before app core
+PASS  Medication workspace controller loads before app core
+PASS  PWA controller loads before app core
+PASS  Finalization loads before repeat presentation owner
+PASS  All 13 retired JS owners are absent from startup and SW
+PASS  All 13 retired JS owners are preserved under src/legacy-js
+PASS  Fast-entry CSS remains in canonical bundle
+PASS  Service worker precaches only two canonical production styles
+PASS  Deployment runtime files use V17.13.11 only
+PASS  Current SW cache generation is V17.13.11
+
+17/17 PASS
+
+CONTRACT_TOTAL 185/185 PASS
+
+===== SYNTAX / PARSER =====
+RUNTIME_JS_SYNTAX 76/76 PASS
+SERVICE_WORKER_SYNTAX PASS
+CSS_PARSER 40/40 PASS
+SW_ASSETS 119
+SW_VERSIONED_JS 76
+SW_VERSIONED_CSS 2
+ROOT_FILES 81
+TOTAL_FILES_BEFORE_CHECKSUM 395
+ASSET_SHA256 assets/css/anesvet-ui-bundle.css 8c11207ef077cf07cd8d8c2fd804c819b442e9c3b1bab09b16a57f20d35d1856
+ASSET_SHA256 assets/css/or-workspace-restructure.css 8a062bfab28874a1537de804bfefd7c26e9f1941a99d7169e8972f4ce1e38c73
+ASSET_SHA256 assets/icons/icon-192.png 1a99a7727d52b197eeb110722fbd2e48006eaa6753ce36deb0bff489fe8ddc2d
+ASSET_SHA256 assets/icons/icon-512.png 1fa5120fb616c0a3909380728737cc8ea78b732a2c3c70c9d5da507d592decda
+ASSET_SHA256 assets/icons/icon-maskable-512.png 9e3bd4e58576d6560ff99a84899dc2550d1ab05987be8c8267f17908e5a4285a

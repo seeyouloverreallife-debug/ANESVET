@@ -1,0 +1,125 @@
+/* ANESVET V16.2.0 — Focused Clinical Workspace
+   UX/presentation layer only. No clinical thresholds, calculations, gates or record semantics are changed. */
+
+:root{
+  --ux-rail:#d8e3e5;
+}
+
+/* ---------- Workflow navigation: clearer current position ---------- */
+.workflow-tabs{position:relative;isolation:isolate}
+.workflow-tabs::after{
+  content:"";position:absolute;left:12px;right:12px;bottom:4px;height:1px;background:var(--ux-rail);z-index:-1;
+}
+.workflow-tabs .tab[data-step-state="past"]{color:#60747a;background:transparent}
+.workflow-tabs .tab[data-step-state="past"] .step-no{background:#e8f0f1;color:#4d6b72}
+.workflow-tabs .tab[data-step-state="future"]{color:#7d8c90}
+.workflow-tabs .tab.active{background:#edf5f5!important;color:var(--primary)!important}
+.workflow-tabs .tab.active .step-no{background:var(--primary)!important;color:#fff!important}
+.workflow-tabs .tab.locked-step{opacity:.58}
+
+/* ---------- Compact patient/case context ---------- */
+.case-strip{transition:padding .15s ease,border-color .15s ease,background .15s ease}
+.case-summary strong{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:22ch}
+
+/* ---------- OR LIVE: avoid duplicate context until it is actually needed ---------- */
+@media(max-width:1180px), (pointer:coarse) and (max-width:1400px){
+  /* Next-step card already owns routine workflow guidance on a phone/tablet. */
+  body.or-mobile-active .or-phase-tracker-panel:not(.ux-phase-requested){display:none!important}
+  body.or-mobile-active .or-phase-tracker-panel.ux-phase-requested{
+    display:block!important;scroll-margin-top:112px;border-color:#cfdfe2!important;box-shadow:0 8px 24px rgba(18,52,59,.07)!important
+  }
+}
+/* ---------- Recovery progressive workspace ---------- */
+.ux-recovery-collapsible{overflow:hidden}
+.ux-recovery-heading{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;margin:-2px 0 10px;
+}
+.ux-recovery-heading-copy{min-width:0}
+.ux-recovery-heading-copy h2{margin:0}
+.ux-recovery-summary{display:block;margin-top:3px;color:var(--muted);font-size:.72rem;font-weight:600;line-height:1.35}
+.ux-recovery-toggle{
+  flex:0 0 auto;display:inline-flex;align-items:center;gap:6px;min-height:34px;padding:6px 9px;border:1px solid var(--line);
+  border-radius:10px;background:#fff;color:#4f666c;font:inherit;font-size:.72rem;font-weight:700;cursor:pointer;
+}
+.ux-recovery-toggle:hover{background:#f5f8f8}
+.ux-recovery-toggle-icon{font-size:.8rem;transition:transform .14s ease}
+.ux-recovery-collapsible.ux-open .ux-recovery-toggle-icon{transform:rotate(180deg)}
+.ux-recovery-body{display:none}
+.ux-recovery-collapsible.ux-open .ux-recovery-body{display:block}
+.ux-recovery-collapsible:not(.ux-open){padding-bottom:12px!important}
+.ux-recovery-collapsible:not(.ux-open) .ux-recovery-heading{margin-bottom:0}
+.ux-recovery-collapsible.ux-attention{border-color:#ead8b7!important;background:#fffdf9!important}
+.ux-recovery-collapsible.ux-complete{border-color:#d9e8df!important}
+
+/* Keep unresolved problems immediately visible; make routine documentation quieter. */
+#recoveryProblemsPanel:has(.empty-state){border-color:var(--line);background:#fbfcfc}
+
+/* ---------- Mobile: one navigation system, not two ---------- */
+@media(max-width:720px){
+  body:not(.or-mobile-active):not(.recovery-mobile-active) .workflow-tabs{display:none!important}
+  body.mobile-quick-active{padding-bottom:calc(72px + env(safe-area-inset-bottom))}
+
+  .topbar{min-height:54px!important;padding:8px 10px!important;padding-top:calc(8px + env(safe-area-inset-top))!important}
+  .brand-logo{width:34px!important;height:34px!important}.brand h1{font-size:1.02rem!important}.brand h1 span{font-size:.55rem!important}
+  .top-actions #alertFeedbackBtn,.top-actions #pilotFeedbackBtn,.top-actions #installBtn{display:none!important}
+  .connectivity-state.local{display:none!important}
+  .save-state{font-size:.58rem!important;padding:3px 5px!important}.case-clock{font-size:.78rem!important;padding:5px 7px!important}
+
+  .case-strip{
+    position:sticky;top:0;z-index:43;margin:0 0 8px!important;padding:7px 9px!important;border-radius:12px!important;
+    background:rgba(255,255,255,.96)!important;backdrop-filter:blur(14px);box-shadow:0 5px 16px rgba(18,52,59,.055)!important
+  }
+  .case-summary{display:grid!important;grid-template-columns:minmax(0,1.2fr) 48px minmax(0,.95fr)!important;gap:7px!important;min-width:0}
+  .case-summary>div:nth-child(4){display:none!important}
+  .case-summary .label{font-size:.52rem!important}.case-summary strong{font-size:.76rem!important;max-width:100%!important}
+  .case-strip-status{margin-left:auto}.case-strip-status #globalStatus{display:none!important}
+
+  /* Cleaner mobile workflow bar: navigation + context + continue only. */
+  .mobile-quick-bar:not([hidden]){border-radius:16px!important;padding:5px!important;gap:4px!important}
+  #mobileQuickReportBtn{display:none!important}
+  .mobile-quick-bar:not(.has-continue){grid-template-columns:64px minmax(0,1fr)!important}
+  .mobile-quick-bar.has-continue:not([hidden]){grid-template-columns:60px minmax(0,1fr) 62px!important}
+  .mobile-quick-btn{min-height:50px!important;border-radius:12px!important}
+  .mobile-quick-current small{font-size:.49rem!important}.mobile-quick-current b{font-size:.68rem!important}
+
+  /* OR is a focused cockpit: no duplicate global chrome. */
+  body.or-mobile-active .case-strip,body.or-mobile-active .workflow-tabs,body.or-mobile-active #patientRiskBanner{display:none!important}
+  body.or-mobile-active .or-command-bar{margin-top:0!important}
+  body.or-mobile-active .or-primary-flow{margin-top:7px!important}
+
+  /* Recovery header: the fixed dock owns common actions while active. */
+  body.recovery-mobile-active .case-strip,body.recovery-mobile-active .workflow-tabs,body.recovery-mobile-active #patientRiskBanner{display:none!important}
+  body.recovery-mobile-active.recovery-session-active .recovery-command-actions #recoveryMedicationBtn,
+  body.recovery-mobile-active.recovery-session-active .recovery-command-actions #completeRecoveryBtn,
+  body.recovery-mobile-active.recovery-session-active .recovery-command-actions #emergencyReturnOrBtn,
+  body.recovery-mobile-active.recovery-session-active .recovery-command-actions #recoveryLeaveFocusBtn{display:none!important}
+  body.recovery-mobile-active .recovery-command{padding:12px!important}
+  body.recovery-mobile-active .recovery-command>div:first-child p{display:none!important}
+  body.recovery-mobile-active .recovery-command-actions{gap:6px!important}
+  body.recovery-mobile-active .recovery-focus{margin-top:7px!important}
+
+  .ux-recovery-heading{margin-top:0}.ux-recovery-summary{font-size:.68rem}.ux-recovery-toggle{min-height:32px;font-size:.68rem;padding:5px 8px}
+}
+
+@media(max-width:430px){
+  .case-summary{grid-template-columns:minmax(0,1fr) 44px!important}
+  .case-summary>div:nth-child(3){display:none!important}
+  .mobile-quick-bar.has-continue:not([hidden]){grid-template-columns:56px minmax(0,1fr) 58px!important}
+}
+
+@media print{
+  .ux-recovery-toggle{display:none!important}.ux-recovery-body{display:block!important}
+  .ux-recovery-collapsible{overflow:visible!important}
+}
+
+@media(prefers-reduced-motion:reduce){.ux-recovery-toggle-icon{transition:none!important}}
+
+/* V16.2 final mobile polish: once Recovery is active, the quick workspace + dock own the screen. */
+@media(max-width:720px){
+  body.recovery-mobile-active.recovery-session-active .recovery-command{display:none!important}
+  body.or-mobile-active .topbar,body.recovery-mobile-active .topbar{
+    min-height:30px!important;padding:4px 8px!important;padding-top:calc(4px + env(safe-area-inset-top))!important
+  }
+  body.or-mobile-active .save-state,body.recovery-mobile-active .save-state{font-size:.56rem!important;padding:2px 5px!important}
+  body.or-mobile-active main,body.recovery-mobile-active main{padding-top:4px!important}
+}

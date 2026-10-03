@@ -1,0 +1,48 @@
+ANESVET V17.14.2 — Clinical Pilot Simulation I
+
+Final contract QA: 402/402 PASS
+- App Foundation Audit: 21/21
+- Canonical CSS Ownership II: 25/25
+- Clinical Pilot Simulation: 25/25
+- Controllers Dependency Audit: 34/34
+- Current Workflow: 31/31
+- Domains Dependency Audit: 28/28
+- End-to-End: 17/17
+- Orchestration Dependency Audit: 30/30
+- OR Interaction: 33/33
+- OR Medication Focus: 33/33
+- Package Structure: 26/26
+- Post-Refactor UX: 34/34
+- Runtime Grouping IX: 24/24
+- Session Ownership: 20/20
+- Static Integrity: 21/21
+
+Runtime JS syntax: 76/76 PASS
+Service Worker syntax: PASS
+CSS parser: 40/40 PASS, 0 errors
+Service Worker inventory: 120 assets / 76 JS / 2 CSS
+
+Clinical pilot findings:
+- Deterministic production-controller routine case reached Recovery without jump shortcuts.
+- Induction prepared Diazepam + Propofol retained Given / details-pending semantics.
+- Intubation remained timestamp-only.
+- MAP 45 was classified danger; MAP 72 was classified good under production/frozen protocol logic.
+- Actual intra-operative medication could coexist with deferred induction details.
+- Surgery end -> emergence -> Extubation -> Recovery ordering remained coherent.
+- Emergency Return blocked Recovery completion; normal completion produced casePhase=complete.
+- No new production clinical-flow regression was found in this deterministic routine/hypotension/recovery path.
+
+Issues found and fixed:
+- Simulation Mode stale build label V17.3.1 -> authoritative current app version.
+- Production Pilot stale build label V16.21.0 -> authoritative current app version; readiness is current-build scoped.
+- Validation Center stale build label V16.21.0 -> authoritative current app version; active/history evidence is current-build scoped.
+- index.html retained 78 V17.14.1 visible/cache-busting refs while core/manifest/SW were V17.14.2; all active index refs aligned to V17.14.2 and full QA rerun.
+
+Functional runtime JS delta vs V17.14.1 after version normalization is limited to:
+- simulation-mode.js
+- production-pilot.js
+- validation-center.js
+Clinical production controllers/domains were not logically changed by this pilot release.
+
+Scope limitation:
+Software-level deterministic simulation + static/source-contract + Node regression + syntax/CSS parser only. Not physical Android/iPad/PWA/IME/touch/screen-lock/storage-eviction/performance qualification.

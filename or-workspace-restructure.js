@@ -1,11 +1,12 @@
-/* ANESVET V17.11.4 — OR LIVE mobile compact strip + quick gas controls.
+/* ANESVET V17.14.4 — OR LIVE interaction polish + clean secondary charting.
  * Presentation/navigation only. Existing clinical fields remain authoritative.
  * Moves existing DOM controls into four task-based workspaces without cloning state. */
 (function(root){
 'use strict';
-const VERSION='17.11.4';
+const VERSION='17.14.4';
 const $=id=>document.getElementById(id);
 const q=(sel,scope=document)=>scope?.querySelector?.(sel)||null;
+root.ANESVET_PRESENTATION_OWNERSHIP?.claim?.('orlive.layout','or-workspace-v17130');
 const qa=(sel,scope=document)=>[...(scope?.querySelectorAll?.(sel)||[])];
 let current='monitor';
 
@@ -86,20 +87,46 @@ function syncCompactSummary(){
   if($('orCompactRisk')){ $('orCompactRisk').hidden=!risk; $('orCompactRisk').textContent=`Risk ${risk||'—'}`; }
 }
 
+
+function syncSafetyCompact(){
+  const box=$('orCoreSafety');if(!box)return;
+  const title=String($('orCoreSafetyTitle')?.textContent||'').trim().toLowerCase();
+  const summary=String($('orCoreSafetySummary')?.textContent||'').trim().toLowerCase();
+  const alerts=String($('orAlertCount')?.textContent||'').trim();
+  const clear=(title.includes('no active')||title.includes('no problem'))&&(summary.includes('no active')||summary.includes('no alert')||summary==='')&&!/\b[1-9]\d*\s*alert/i.test(alerts);
+  box.classList.toggle('or-safety-clear',clear);
+  box.classList.toggle('or-safety-active',!clear);
+}
+function bindVentModeButtons(panel){
+  const select=$('airwayVentMode');if(!select||!panel)return;
+  const strip=q('#orVentModeButtons',panel);if(!strip)return;
+  const render=()=>qa('[data-vent-mode]',strip).forEach(b=>b.classList.toggle('active',b.dataset.ventMode===select.value));
+  strip.addEventListener('click',e=>{const b=e.target.closest?.('[data-vent-mode]');if(!b)return;select.value=b.dataset.ventMode;select.dispatchEvent(new Event('change',{bubbles:true}));render()});
+  select.addEventListener('change',render);render();
+}
+function secondaryHeader(kicker,title,help){
+  return `<div class="or-workspace-section-head compact"><div><span>${kicker}</span><h2>${title}</h2><small>${help}</small></div><button type="button" class="or-workspace-back" data-or-back-monitor>← Monitor</button></div>`;
+}
 function updateBadges(){
   const airway=$('orWorkspaceAirwayBadge');
   if(airway){
     const ett=String($('airwayEttSize')?.value||'').trim();
-    const status=String($('airwayStatus')?.textContent||'').trim();
-    airway.textContent=ett?`ETT ${ett}`:(status==='RECORDED'?'TIME SAVED':'PENDING');
-    airway.classList.toggle('done',!!ett);
+    const milestone=root.ANESVET_OR_LIVE_INSTANCE?.procedureMilestoneEvent?.('Intubation');
+    airway.textContent=ett?`ETT ${ett}`:(milestone?.clock?milestone.clock:'PENDING');
+    airway.classList.toggle('done',!!ett||!!milestone);
+    if($('orAirwayTimestamp'))$('orAirwayTimestamp').textContent=milestone?.clock?`Intubation ${milestone.clock}`:'Intubation time not recorded';
   }
-  const support=$('orWorkspaceSupportBadge');
-  if(support){
-    const mode=String($('airwayVentMode')?.value||'').trim();
+  const fluidBadge=$('orWorkspaceFluidBadge');
+  if(fluidBadge){
     const fluid=String($('orFluidSummary')?.textContent||'').trim();
-    support.textContent=mode||((fluid&&fluid!=='Not set')?'FLUID SET':'');
-    support.hidden=!support.textContent;
+    fluidBadge.textContent=(fluid&&fluid!=='Not set')?'SET':'';
+    fluidBadge.hidden=!fluidBadge.textContent;
+  }
+  const ventBadge=$('orWorkspaceVentBadge');
+  if(ventBadge){
+    const mode=String($('airwayVentMode')?.value||'').trim();
+    ventBadge.textContent=mode?mode.replace('Mechanical ventilation','MECH').replace('Manual PPV','PPV').replace('Spontaneous','SPONT'):'';
+    ventBadge.hidden=!ventBadge.textContent;
   }
   const meds=$('orWorkspaceMedsBadge');
   if(meds){
@@ -112,38 +139,36 @@ function updateBadges(){
 }
 
 function setView(view,{scroll=false}={}){
-  if(!['monitor','support','airway','meds'].includes(view))view='monitor';
+  if(!['monitor','fluid','vent','airway','meds'].includes(view))view='monitor';
   current=view;
   const host=$('orWorkspaceHost');if(!host)return false;
   host.dataset.view=view;
+  host.hidden=view==='monitor';
   qa('[data-or-workspace-panel]',host).forEach(p=>{p.hidden=p.dataset.orWorkspacePanel!==view});
   qa('[data-or-workspace]', $('orWorkspaceNav')).forEach(b=>{
     const active=b.dataset.orWorkspace===view;
     b.classList.toggle('active',active);b.setAttribute('aria-selected',String(active));b.tabIndex=active?0:-1;
   });
-  if(view==='support'){
-    const f=$('orFluidPanelDetails');if(f)f.open=true;
-  }
-  if(view==='airway'){
-    const a=$('orAirwayPanelDetails');if(a)a.open=true;
-  }
+  if(view==='fluid'){$('orFluidPanelDetails')?.setAttribute('open','')}
+  if(view==='airway'){$('orAirwayPanelDetails')?.setAttribute('open','')}
   updateBadges();
   if(scroll){
     requestAnimationFrame(()=>{
       if(root.ANESVET_MOBILE_OR_OWNER?.editing?.())return;
-      try{$('orWorkspaceNav')?.scrollIntoView({behavior:'smooth',block:'start'})}catch(_){}
+      const target=view==='monitor'?($('orVitalsFocus')||q('#orlive .or-vital-grid')):$('orWorkspaceNav');
+      try{target?.scrollIntoView({behavior:'smooth',block:'start'})}catch(_){}
     });
   }
   return true;
 }
 function buildMonitorControls(){
-  const card=make('section',{id:'orMonitorAnesthesiaControls',class:'or-monitor-anesthesia-controls'});
-  card.innerHTML=`<div class="or-workspace-section-head"><div><span>RUNNING CONTROLS</span><h3>Anesthesia controls</h3><small>ค่าที่ใช้บ่อยอยู่ด้านบน • แตะค่าได้ทันทีบนมือถือ</small></div></div>
+  const card=make('section',{id:'orMonitorAnesthesiaControls',class:'or-monitor-anesthesia-controls or-monitor-inline'});
+  card.innerHTML=`<div class="or-monitor-inline-head"><b>Anesthesia</b><small>Depth • Vaporizer • O₂</small></div>
   <div class="or-monitor-control-grid compact">
     <article class="or-depth-control"><div class="or-control-title"><b>Depth</b><small>anesthetic depth</small></div><div id="orDepthSlot"></div></article>
     <article class="or-vaporizer-control"><div class="or-control-title"><b>Vaporizer</b><small id="orMonitorVaporizerReadout">OFF</small></div><div class="or-choice-strip" id="orVaporizerChoices">${choiceStrip([5,4.5,4,3.5,3,2.5,2,1.5,1,0.5,0],'vap')}</div><div id="orVaporizerSlot"></div></article>
-    <article class="or-o2-control"><div class="or-control-title"><b>O₂ Flow</b><small id="orMonitorO2Readout">Room air / off</small></div><div class="or-choice-strip" id="orO2Choices">${choiceStrip([3,2.5,2,1.5,1,0.5,0],'o2')}</div><div id="orO2Slot"></div></article>
-  </div><details id="orMonitorAdvancedBp" class="or-monitor-advanced"><summary>Optional BP values • SAP / DAP</summary><div id="orAdvancedBpSlot" class="or-monitor-bp-grid"></div></details>`;
+    <article class="or-o2-control"><div class="or-control-title"><b>O₂ flow</b><small id="orMonitorO2Readout">Off</small></div><div class="or-choice-strip" id="orO2Choices">${choiceStrip([3,2.5,2,1.5,1,0.5,0],'o2')}</div><div id="orO2Slot"></div></article>
+  </div><details id="orMonitorAdvancedBp" class="or-monitor-advanced"><summary>SAP / DAP (optional)</summary><div id="orAdvancedBpSlot" class="or-monitor-bp-grid"></div></details>`;
   const depth=labelFor('orDepth'),vap=labelFor('orVaporizer'),o2=labelFor('orO2'),sap=labelFor('orSap'),dap=labelFor('orDap');
   if(depth){depth.classList.add('or-authoritative-control');q('#orDepthSlot',card).appendChild(depth)}
   if(vap){vap.classList.add('or-authoritative-control','or-inline-hidden-control');q('#orVaporizerSlot',card).appendChild(vap)}
@@ -153,47 +178,67 @@ function buildMonitorControls(){
   const legacyVent=labelFor('orVentilation');if(legacyVent){legacyVent.hidden=true;legacyVent.classList.add('or-compat-control')}
   return card;
 }
-function buildSupport(){
-  const panel=make('section',{'data-or-workspace-panel':'support',class:'or-workspace-panel or-support-workspace'});
-  panel.innerHTML=`<div class="or-workspace-section-head"><div><span>SUPPORT</span><h2>Fluids & ventilation</h2><small>ตั้งค่าระหว่างเคสเมื่อผู้ป่วย stable • ไม่ผูกกับ Intubation timestamp</small></div></div>
-  <section class="panel or-ventilator-workspace"><div class="section-heading"><div><h2>Ventilator / PPV</h2><p>เลือก mode ก่อน แล้วบันทึก setting ที่ใช้จริง</p></div></div><div id="orVentModeSlot" class="or-support-mode"></div><div id="orVentSettingsSlot"></div></section>
-  <div id="orFluidWorkspaceSlot"></div>`;
-  const mode=labelFor('airwayVentMode'),settings=$('ventilatorFields'),fluid=$('orFluidPanelDetails');
+function buildFluid(){
+  const panel=make('section',{'data-or-workspace-panel':'fluid',class:'or-workspace-panel or-fluid-workspace'});
+  panel.innerHTML=`${secondaryHeader('FLUID','Fluids','Rate / bolus / total in first')}<div id="orFluidWorkspaceSlot"></div>`;
+  const fluid=$('orFluidPanelDetails');
+  if(fluid){
+    fluid.open=true;fluid.classList.add('or-fluid-simplified');q('#orFluidWorkspaceSlot',panel).appendChild(fluid);
+    const summary=q('.or-collapsible-summary',fluid);if(summary)summary.hidden=true;
+    const body=q('.or-collapsible-body',fluid);if(body){
+      q('.section-heading',body)?.classList.add('or-fluid-legacy-heading');
+      const hero=q('.fluid-rate-hero',body),quick=q('.fluid-quick-grid',body),running=q('.fluid-running-summary',body),history=$('fluidRateHistoryView');
+      if(hero&&!q('.or-fluid-main',body)){
+        const main=make('div',{class:'or-fluid-main'}),more=make('details',{class:'or-fluid-secondary'}),sum=make('summary',{text:'More • actual correction / blood loss / urine / blood / balance / history'}),inner=make('div',{class:'or-fluid-secondary-body'});
+        body.insertBefore(main,hero);main.appendChild(hero);
+        const heroCards=qa(':scope > *',hero),actual=heroCards.find(x=>x.classList?.contains('actual'));
+        if(actual)inner.appendChild(actual);
+        if(quick){const cards=qa(':scope > article',quick);if(cards[0])main.appendChild(cards[0]);cards.slice(1).forEach(card=>inner.appendChild(card));quick.remove()}
+        if(running){
+          const items=qa(':scope > div',running),glance=make('div',{class:'or-fluid-glance'});
+          // Total fluid in + Current rate stay visible. Effective/net move to More.
+          if(items[1])glance.appendChild(items[1]);if(items[3])glance.appendChild(items[3]);
+          if(glance.children.length)main.appendChild(glance);
+          [items[0],items[2]].filter(Boolean).forEach(x=>inner.appendChild(x));
+          running.remove();
+        }
+        if(history)inner.appendChild(history);
+        more.append(sum,inner);main.after(more);
+      }
+    }
+  }
+  return panel;
+}
+function buildVent(){
+  const panel=make('section',{'data-or-workspace-panel':'vent',class:'or-workspace-panel or-vent-workspace'});
+  panel.innerHTML=`${secondaryHeader('VENT','Ventilator / PPV','Choose mode, then RR / PIP / PEEP / VT')}<section class="panel or-ventilator-workspace"><div id="orVentModeButtons" class="or-vent-mode-buttons"><button type="button" data-vent-mode="Spontaneous">Spontaneous</button><button type="button" data-vent-mode="Manual PPV">Manual PPV</button><button type="button" data-vent-mode="Mechanical ventilation">Mechanical</button></div><div id="orVentModeSlot" class="or-support-mode or-authoritative-mode"></div><div id="orVentSettingsSlot"></div></section>`;
+  const mode=labelFor('airwayVentMode'),settings=$('ventilatorFields');
   if(mode)q('#orVentModeSlot',panel).appendChild(mode);
   if(settings)q('#orVentSettingsSlot',panel).appendChild(settings);
-  if(fluid){fluid.open=true;q('#orFluidWorkspaceSlot',panel).appendChild(fluid)}
+  bindVentModeButtons(panel);
   return panel;
 }
 function buildAirway(){
   const panel=make('section',{'data-or-workspace-panel':'airway',class:'or-workspace-panel or-airway-workspace'});
-  panel.innerHTML=`<div class="or-workspace-section-head"><div><span>AIRWAY DETAILS</span><h2>ET tube & intubation details</h2><small>Intubation time ถูกบันทึกจาก quick action แยกต่างหาก • หน้านี้ไว้ลงรายละเอียดภายหลัง</small></div></div><div id="orAirwayWorkspaceSlot"></div>`;
+  panel.innerHTML=`${secondaryHeader('AIRWAY','ET tube details','Fill after patient is stable')}<div id="orAirwayTimestamp" class="or-airway-timestamp">Intubation time not recorded</div><div id="orAirwayWorkspaceSlot"></div>`;
   const airway=$('orAirwayPanelDetails');
   if(airway){
-    airway.open=true;
-    const title=q('.or-collapsible-summary b',airway);if(title)title.textContent='🫁 ET tube / Airway details';
-    const desc=q('.section-heading p',airway);if(desc)desc.textContent='บันทึก ETT size / depth / cuff / difficulty / circuit หลังผู้ป่วย stable';
+    airway.open=true;airway.classList.add('or-airway-simplified');
+    const title=q('.or-collapsible-summary b',airway);if(title)title.textContent='ET tube / Airway details';
+    const desc=q('.section-heading p',airway);if(desc)desc.textContent='ETT size / depth / cuff / difficulty / attempts / circuit / note';
     q('#orAirwayWorkspaceSlot',panel).appendChild(airway);
   }
   return panel;
 }
 function buildMeds(){
   const panel=make('section',{'data-or-workspace-panel':'meds',class:'or-workspace-panel or-meds-workspace'});
-  panel.innerHTML=`<div class="or-workspace-section-head"><div><span>MEDICATIONS</span><h2>Medication documentation</h2><small>ลง actual dose / review planned medications เมื่อมีเวลา • ไม่บล็อก milestone ถัดไป</small></div></div><div id="orQuickMedSlot"></div><div id="orMedicationQueueSlot"></div><div id="orGuardianSlot"></div>`;
+  panel.innerHTML=`${secondaryHeader('MEDS','Medication review','Actual dose / time / route when stable')}<div id="orQuickMedSlot"></div><div id="orMedicationQueueSlot"></div><div id="orGuardianSlot"></div>`;
   const quick=q('.or-quick-med-strip'),queue=$('orMedicationQueue'),guardian=$('orDocumentationGuardian');
   if(quick)q('#orQuickMedSlot',panel).appendChild(quick);
   if(queue){queue.hidden=false;q('#orMedicationQueueSlot',panel).appendChild(queue)}
   if(guardian)q('#orGuardianSlot',panel).appendChild(guardian);
   return panel;
 }
-function buildMonitor(){
-  const panel=make('section',{'data-or-workspace-panel':'monitor',class:'or-workspace-panel or-monitor-workspace'});
-  panel.innerHTML=`<div class="or-workspace-section-head or-monitor-heading"><div><span>MONITOR</span><h2>Vitals & anesthesia level</h2><small>หน้าหลักระหว่าง OR • การ์ด vitals และการปรับยาสลบอยู่ในจอเดียว</small></div></div>`;
-  const vitals=q('#orlive .or-vital-grid');
-  if(vitals)panel.appendChild(vitals);
-  panel.appendChild(buildMonitorControls());
-  return panel;
-}
-
 function buildInductionQuickStrip(){
   const section=make('section',{id:'orInductionQuickStrip',class:'or-induction-quick-strip','aria-label':'Induction timestamp and prepared medications'});
   section.innerHTML=`<div class="or-induction-quick-head">
@@ -262,57 +307,63 @@ function renderInductionQuickStrip(){
 
 function init(){
   const page=$('orlive');if(!page||$('orWorkspaceHost'))return;
-  const sticky=$('orStickyMini'),vitals=$('orVitalsFocus'),command=q('#orlive .or-command-bar');
+  page.dataset.presentationOwner='or-workspace-v17130';page.dataset.layoutContract='monitor-first-v17130';
+  const command=q('#orlive .or-command-bar'),vitals=$('orVitalsFocus'),vitalGrid=q('#orlive .or-vital-grid'),primary=q('#orlive .or-primary-flow'),safety=$('orCoreSafety'),phase=$('orCorePhaseStrip');
   syncCompactSummary();
-  if(vitals&&command){vitals.hidden=false;command.after(vitals)}
-  const anchor=(vitals?.nextSibling)||sticky?.nextSibling||page.firstChild;
-  const nav=make('nav',{id:'orWorkspaceNav',class:'or-workspace-nav','aria-label':'OR LIVE workspace'});
-  nav.innerHTML=`<button type="button" data-or-workspace="monitor" class="active" aria-selected="true"><span>Monitor</span><small>Vitals + gas</small></button>
-  <button type="button" data-or-workspace="support" aria-selected="false"><span>Support</span><small>Fluid + vent</small><b id="orWorkspaceSupportBadge" class="or-workspace-badge" hidden></b></button>
-  <button type="button" data-or-workspace="airway" aria-selected="false"><span>Airway</span><small>ET tube</small><b id="orWorkspaceAirwayBadge" class="or-workspace-badge">PENDING</b></button>
-  <button type="button" data-or-workspace="meds" aria-selected="false"><span>Meds</span><small>Actual dose</small><b id="orWorkspaceMedsBadge" class="or-workspace-badge" hidden></b></button>`;
-  page.insertBefore(nav,anchor);
 
-  const primary=q('#orlive .or-primary-flow'),safety=$('orCoreSafety'),phase=$('orCorePhaseStrip');
-  if(primary)nav.after(primary);
+  // V17.12: OR LIVE is a working monitor first. These nodes are always above workflow/navigation.
+  if(vitals&&command){vitals.hidden=false;command.after(vitals)}
+  if(vitalGrid&&vitals)vitals.after(vitalGrid);
+  const monitorControls=buildMonitorControls();
+  (vitalGrid||vitals||command).after(monitorControls);
+
+  // Workflow remains authoritative but visually secondary to monitoring.
+  if(primary)monitorControls.after(primary);
   const inductionQuick=buildInductionQuickStrip();
-  if(primary)primary.after(inductionQuick);else nav.after(inductionQuick);
+  if(primary)primary.after(inductionQuick);else monitorControls.after(inductionQuick);
   if(safety)inductionQuick.after(safety);
   if(phase)phase.classList.add('or-phase-strip-secondary');
 
-  const host=make('div',{id:'orWorkspaceHost',class:'or-workspace-host'});
-  (safety||inductionQuick||primary||nav).after(host);
-  host.appendChild(buildMonitor());
-  host.appendChild(buildSupport());
+  const nav=make('nav',{id:'orWorkspaceNav',class:'or-workspace-nav or-secondary-workspace-nav','aria-label':'OR LIVE secondary workspace'});
+  nav.innerHTML=`<button type="button" data-or-workspace="fluid" aria-selected="false"><span>Fluid</span><small>Rate + bolus</small><b id="orWorkspaceFluidBadge" class="or-workspace-badge" hidden></b></button>
+  <button type="button" data-or-workspace="vent" aria-selected="false"><span>Vent</span><small>RR + PIP</small><b id="orWorkspaceVentBadge" class="or-workspace-badge" hidden></b></button>
+  <button type="button" data-or-workspace="airway" aria-selected="false"><span>Airway</span><small>ET tube</small><b id="orWorkspaceAirwayBadge" class="or-workspace-badge">PENDING</b></button>
+  <button type="button" data-or-workspace="meds" aria-selected="false"><span>Meds</span><small>Review</small><b id="orWorkspaceMedsBadge" class="or-workspace-badge" hidden></b></button>`;
+  (safety||inductionQuick||primary||monitorControls).after(nav);
+
+  const host=make('div',{id:'orWorkspaceHost',class:'or-workspace-host'});nav.after(host);
+  host.appendChild(buildFluid());
+  host.appendChild(buildVent());
   host.appendChild(buildAirway());
   host.appendChild(buildMeds());
 
-  // Old combined status row is redundant with Monitor's due/last state.
+  // Old combined status row is redundant with the top Save/Next Due strip.
   q('#orlive .or-status-row')?.classList.add('or-redundant-status');
-  // Legacy all-in-one airway setup is intentionally retired from the active workflow.
+  // Legacy all-in-one airway setup is retired from the active workflow.
   const oldSetup=$('orAirwaySetupDialog');if(oldSetup){oldSetup.hidden=true;oldSetup.classList.remove('is-open')}
 
-  nav.addEventListener('click',e=>{const b=e.target.closest?.('[data-or-workspace]');if(b)setView(b.dataset.orWorkspace,{scroll:false})});
+  nav.addEventListener('click',e=>{const b=e.target.closest?.('[data-or-workspace]');if(b)setView(b.dataset.orWorkspace,{scroll:true})});
+  host.addEventListener('click',e=>{if(e.target.closest?.('[data-or-back-monitor]'))setView('monitor',{scroll:true})});
   nav.addEventListener('keydown',e=>{
     const buttons=qa('[data-or-workspace]',nav),i=buttons.indexOf(document.activeElement);
     if(i<0||!['ArrowLeft','ArrowRight'].includes(e.key))return;
-    e.preventDefault();const next=(i+(e.key==='ArrowRight'?1:-1)+buttons.length)%buttons.length;buttons[next].focus();setView(buttons[next].dataset.orWorkspace);
+    e.preventDefault();const next=(i+(e.key==='ArrowRight'?1:-1)+buttons.length)%buttons.length;buttons[next].focus();setView(buttons[next].dataset.orWorkspace,{scroll:false});
   });
 
-  bindHardware();
-  syncCompactSummary();
+  bindHardware();syncCompactSummary();syncSafetyCompact();
   ['airwayStatus','orAirwaySummary','orFluidSummary','orPrimaryDocumentationNote','orPatientName','orPatientMeta','orAsaBadge','orProcedureLine','orRiskLine'].forEach(id=>{
     const el=$(id);if(el)new MutationObserver(()=>{updateBadges();syncCompactSummary()}).observe(el,{childList:true,subtree:true,characterData:true,attributes:true});
   });
   ['airwayEttSize','airwayVentMode','weight','patientAllergies','procedure','asa'].forEach(id=>$(id)?.addEventListener(id==='airwayVentMode'?'change':'input',()=>{updateBadges();syncCompactSummary()}));
   const primaryBtn=$('orPrimaryActionBtn');
   if(primaryBtn)new MutationObserver(()=>{renderInductionQuickStrip();updateBadges()}).observe(primaryBtn,{childList:true,subtree:true,attributes:true,attributeFilter:['data-action','disabled']});
+  ['orCoreSafetyTitle','orCoreSafetySummary','orAlertCount'].forEach(id=>{const el=$(id);if(el)new MutationObserver(syncSafetyCompact).observe(el,{childList:true,subtree:true,characterData:true,attributes:true})});
   document.addEventListener('anesvet:drug-administration-changed',()=>{renderInductionQuickStrip();updateBadges()});
   document.addEventListener('anesvet:induction-provisional-changed',()=>{renderInductionQuickStrip();updateBadges()});
-  updateBadges();syncCompactSummary();renderInductionQuickStrip();
+  updateBadges();syncCompactSummary();syncSafetyCompact();renderInductionQuickStrip();
   setView('monitor');
 }
-const api=Object.freeze({version:VERSION,init,setView,getView:()=>current,updateBadges,renderInductionQuickStrip});
+const api=Object.freeze({version:VERSION,init,setView,getView:()=>current,updateBadges,renderInductionQuickStrip,syncSafetyCompact});
 root.ANESVET_OR_WORKSPACE=api;
 if(root.ANESVET_LIFECYCLE_COORDINATOR?.ready)root.ANESVET_LIFECYCLE_COORDINATOR.ready(init);
 else if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});

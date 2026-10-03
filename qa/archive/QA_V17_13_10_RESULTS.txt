@@ -1,0 +1,24 @@
+ANESVET V17.13.10 — QA RESULTS
+
+Canonical CSS Ownership II: 25/25 PASS
+Package Structure: 26/26 PASS
+Static Integrity: 17/17 PASS
+Current Workflow: 31/31 PASS
+End-to-End: 17/17 PASS
+OR Interaction: 33/33 PASS
+
+TOTAL CONTRACT QA: 149/149 PASS
+
+Additional validation:
+- Startup JavaScript syntax: 69/69 PASS
+- Startup + lazy runtime JavaScript syntax: 76/76 PASS
+- CSS parser: 40/40 PASS, 0 errors
+- Runtime normalized against V17.13.9: no non-version code changes
+- anesvet-ui-bundle.css after source-marker normalization: byte-equivalent to V17.13.9
+- Runtime JS paths moved: 0
+- Root files reduced: ~311 -> 86
+- Retired JS archived: 13/13
+- Bundle source CSS: 38/38 (29 canonical + 9 legacy-active)
+
+Limitation:
+Static/source-contract + deterministic Node regression + syntax/CSS parser validation. Not a physical Android/iPad/PWA/IME visual interaction test.

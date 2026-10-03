@@ -1,0 +1,22 @@
+ANESVET V17.13.14 — Release QA Results
+
+Contract suites
+- Canonical CSS Ownership II: 25/25 PASS
+- Package Structure: 40/40 PASS
+- Runtime Module Grouping III: 48/48 PASS
+- Static Integrity: 25/25 PASS
+- Current Workflow: 31/31 PASS
+- End-to-End: 17/17 PASS
+- OR Interaction: 33/33 PASS
+- TOTAL: 219/219 PASS
+
+Additional validation
+- Startup + lazy runtime JS syntax: 76/76 PASS
+- Service Worker syntax: PASS
+- CSS parser: 40/40 PASS, 0 errors
+- clinical-foundation moved: 3/3 exact byte-identical versus V17.13.13
+- logical runtime modules: 76/76 no non-version content changes versus V17.13.13
+- Service Worker inventory: 120 assets / 76 JavaScript / 2 CSS
+- startup modules: 69 total = platform 5 + clinical 3 + root 61
+- lazy knowledge modules: 7 under runtime/knowledge
+- physical Android/iPad/PWA/IME test: NOT performed

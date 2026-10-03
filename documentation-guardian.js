@@ -170,7 +170,7 @@
   function runAction(x){
     if(!x)return;
     switch(x.action){
-      case 'record-or-vitals': api()?.setTab?.('orlive',{force:true});setTimeout(()=>{scrollTo($('orVitalsFocus')||$('orHr'));if(window.ANESVET_OR_SPEED_HARDENING?.focusField)window.ANESVET_OR_SPEED_HARDENING.focusField(0);else scrollTo($('orHr'),true)},100);break;
+      case 'record-or-vitals': api()?.setTab?.('orlive',{force:true});setTimeout(()=>{scrollTo($('orVitalsFocus')||$('orHr'));if(window.ANESVET_OR_LIVE_INSTANCE?.focusFastField)window.ANESVET_OR_LIVE_INSTANCE.focusFastField(0);else scrollTo($('orHr'),true)},100);break;
       case 'airway': openAirway();break;
       case 'medication': {
         const row=x.data?.row,item=row?.item||{};const purpose=norm(item.phase)==='induction'?'induction':'planned';

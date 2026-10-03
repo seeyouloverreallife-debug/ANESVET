@@ -1,23 +1,39 @@
-ANESVET V17.5.4
+ANESVET V17.14.4 — Physical Pilot Readiness / Device Resilience
 
-แก้หน้าเปิด Figma ให้แสดงระหว่างโหลด CSS และแก้การตรวจอัปเดตสี/ไอคอนหน้าเปิด Android
-อ่าน RELEASE_V17_5_4_TH.md สำหรับหลักฐาน การทดสอบ วิธีนำขึ้น และข้อจำกัด native Android
+ฐานงาน: V17.14.3 Clinical Pilot Simulation II: Stress & Edge Cases
+เป้าหมาย: หลัง software stress ผ่านแล้ว เพิ่มหลักฐานสำหรับทดสอบ Android/iPad/Windows เครื่องจริงโดยไม่เปลี่ยน clinical workflow
 
-Full-Source: วาง index.html ที่ราก repository และ assets/ ครบ
-Startup-Patch: ใช้ทับฐาน V17.5.3 เท่านั้น มี 6 ไฟล์ที่แก้ (index, app, mobile-design.js, or-speed-hardening.js, manifest, service-worker)
-รับการอัปเดตผ่านปุ่มของแอปที่ URL เดิม ตรวจเลข V17.5.4
-รุ่นนี้ยังไม่ได้เผยแพร่: การเขียน GitHub ครั้งนี้ติด HTTP 403; main ที่ตรวจมี V17.5.3 แล้ว
-ไม่ต้องเคลียร์ข้อมูล browser หรือถอนแอป เพราะข้อมูลเคสอยู่ในเครื่อง
+โครงสร้าง runtime
+- runtime/platform/          positions 1–5
+- runtime/clinical/          positions 6–8
+- runtime/core/              positions 9–18
+- runtime/domains/           positions 19–23
+- runtime/orchestration/     positions 24–26
+- runtime/controllers/       positions 27–33
+- root                       startup positions 34–69
+- runtime/knowledge/         lazy knowledge/ECG 7 modules
 
-QA ผ่าน 108/108 บน Chromium จำลองมือถือ ไม่ใช่ native Android splash หรือแป้นพิมพ์เครื่องจริง
-ใช้ SOURCE_SHA256.json ตรวจไฟล์ในชุด
+V17.14.4 Physical Pilot telemetry
+- ปิดเป็นค่าเริ่มต้น; กด Start device telemetry เมื่อต้องการ physical pilot
+- เก็บ VisualViewport, keyboard inset, orientation, focus type, long tasks, BFCache/resume, optional JS heap
+- Run device readiness เพิ่ม event-loop responsiveness probe
+- Capture device snapshot เก็บ snapshot ครั้งเดียวได้แม้ continuous telemetry ปิด
+- Export Production Pilot report เป็น V2 และรวม telemetry evidence
+- ไม่เก็บค่าที่พิมพ์, patient/case payload, drug/vital values หรือ clinical notes
+- telemetry local-only และไม่แก้ clinical state
 
-ทดสอบซ้ำ: ติดตั้ง Node.js, Playwright และ Chromium ในเครื่องทดสอบ
-กำหนด ANESVET_CHROMIUM_EXECUTABLE ชี้ Chromium ของเครื่อง
-node QA_V17_5_4_MOBILE.js
-node QA_V17_5_4_KNOWLEDGE_BROWSER.js
-node QA_V17_5_4_PWA.js
-node QA_V17_5_4_STARTUP_PERFORMANCE.js
-node QA_V17_5_4_EDITING.js
-สำหรับ SPLASH comparison: แตก V17.5.3 baseline แล้วตั้ง ANESVET_BASELINE_DIR เป็น absolute directory
-node QA_V17_5_4_SPLASH.js
+Retained clinical contracts
+- Induction prepared meds = Given / details pending
+- administration time แก้ย้อนหลังได้
+- Intubation timestamp-only
+- Quick Drug / Fast Vital / End Surgery / Emergency Return / Recovery / Final Lock คงเดิม
+- dose / concentration / thresholds / persistence schema ไม่เปลี่ยน
+
+QA ปัจจุบันอยู่ใน qa/current/
+เอกสารหลัก
+- docs/audits/PHYSICAL_PILOT_READINESS_V17_14_4.md
+- docs/architecture/OWNER_MAP_V17_14_4.md
+- docs/architecture/RUNTIME_MODULE_MAP_V17_14_4.md
+- docs/releases/RELEASE_V17_14_4_TH.md
+
+ข้อจำกัด: telemetry เป็นเครื่องมือเตรียม/เก็บหลักฐาน physical pilot ไม่ใช่หลักฐานว่าผ่าน Android/iPad/PWA/IME/touch/thermal/performance qualification แล้ว

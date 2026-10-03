@@ -1,0 +1,160 @@
+ANESVET V17.13.4 — Legacy Presentation Retirement IV / OR Interaction Ownership Consolidation
+Release QA Summary
+
+===== QA_V17_13_4_LEGACY_RETIREMENT_IV.js =====
+PASS  Runtime scripts reduced to 69
+PASS  Legacy Retirement IV module absent from runtime
+PASS  Legacy Retirement IV module absent from service worker JS precache
+PASS  Standalone OR speed CSS removed from precache because canonical bundle carries it
+PASS  Ownership registry tracks all thirteen retired modules
+PASS  Retired OR speed source retained for traceability
+PASS  OR LIVE controller owns Fast Vital field sequence
+PASS  OR LIVE controller owns explicit fast-vital Save
+PASS  Fast Vital Enter navigation never auto-saves by plain Enter
+PASS  Fast Vital rail still follows visible viewport
+PASS  Fast Vital focus assist is exposed by canonical OR instance
+PASS  Documentation Guardian no longer calls retired OR-speed global
+PASS  Medication owner owns Quick Drug keyboard progression
+PASS  Quick Drug keyboard remains navigation-only
+PASS  Medication owner refreshes induction next-action label
+PASS  PWA controller owns freeze callback boundary
+PASS  PWA controller owns BFCache restore callback boundary
+PASS  App freeze callback delegates to existing persistence path
+PASS  App BFCache restore preserves OR Recovery session and wake state
+PASS  App BFCache restore refreshes mobile/fast-vital viewport ownership
+PASS  Repeat presentation owner remains canonical
+PASS  Induction given/details pending preserved
+PASS  Editable induction administration time preserved
+PASS  Intubation remains timestamp-only
+PASS  End Surgery preserved
+PASS  Emergency Return preserved
+PASS  Final Lock preserved
+PASS  Runtime app version is current
+PASS  Manifest is current
+PASS  Current SW generation
+PASS  No V17.13.3 deployment refs remain in index or service worker
+
+31/31 PASS
+
+===== QA_V17_13_4_STATIC_INTEGRITY.js =====
+PASS  69 runtime scripts
+PASS  All runtime scripts exist
+PASS  All linked stylesheets exist
+PASS  All local service-worker assets exist
+PASS  HTML IDs are unique
+PASS  Lifecycle coordinator loads before workspace owners
+PASS  App shell loads before app core
+PASS  OR LIVE controller loads before app core
+PASS  Medication workspace controller loads before app core
+PASS  PWA controller loads before app core
+PASS  Finalization loads before repeat presentation owner
+PASS  Retirement III-IV JS absent everywhere active
+PASS  Fast-entry CSS remains available after JS owner migration
+PASS  Deployment refs use only V17.13.4
+
+14/14 PASS
+
+===== QA_V17_13_4_CURRENT_WORKFLOW.js =====
+PASS  Induction start marks prepared induction meds given provisionally
+PASS  Induction start does not create full drug administration records
+PASS  Provisional list persisted in case state
+PASS  Only frozen planned induction meds are provisionally marked
+PASS  Provisional record uses Induction milestone epoch
+PASS  Provisional status explicitly details-pending
+PASS  Induction marking creates audit entry
+PASS  Quick drug button later opens editor rather than recording a new-time administration
+PASS  Later review defaults to provisional Induction time
+PASS  Editable administration time field exists
+PASS  Time input is shown for induction medication review
+PASS  Edited clock converts safely around midnight
+PASS  Edited administration time is used in actual drug record
+PASS  Time adjustment is retained in audit note
+PASS  Confirming actual details completes provisional record
+PASS  Induction review cannot complete with details pending
+PASS  Queue recognizes Given-but-details-pending state
+PASS  Queue labels provisional administration as Given Review
+PASS  Generic quick-med strip redirects provisional induction to review flow
+PASS  Undo restores induction provisional state
+PASS  Quick strip tells user Induction means drugs given
+PASS  Prepared drug button shows Given details pending
+PASS  Prepared drug button is still actionable until details saved
+PASS  Actual completed drug becomes non-actionable in quick strip
+PASS  Intubation remains timestamp-only
+PASS  Fluid, Vent and Airway remain deferred workspaces
+PASS  Current SW cache generation
+PASS  Current workspace assets cached
+PASS  End Surgery preserved
+PASS  Emergency Return preserved
+PASS  Final Lock preserved
+
+31/31 PASS
+
+===== QA_V17_13_4_END_TO_END.js =====
+PASS  Patient gate requires identity/BW/procedure/ASA
+PASS  Drug Plan blocks unconfirmed BW and routes through review
+PASS  Start case freezes protocol/identity before OR
+PASS  Induction marks frozen induction meds Given • details pending
+PASS  Individual induction drug administration time remains editable
+PASS  Intubation remains timestamp-only
+PASS  OR monitor is fixed above secondary charting
+PASS  Surgery end uses audited workflow mutation
+PASS  Extubation enters Recovery through controller
+PASS  Emergency Return preserves explicit Recovery↔OR path
+PASS  Recovery complete goes to End Case
+PASS  Finalization retains explicit final lock path
+PASS  Case lifecycle phase order remains stable
+PASS  Recovery patch preserves first recovery timestamp
+PASS  Session model locks Recovery while Emergency Return active
+PASS  Final sealed case is reload-safe
+PASS  Synthetic completed case produces coherent recovery handoff
+
+17/17 PASS
+
+===== QA_V17_13_4_OR_INTERACTION.js =====
+PASS  Current workspace version
+PASS  Vitals remain fixed above secondary navigation
+PASS  Monitor is no longer a redundant secondary-nav button
+PASS  Secondary nav contains Fluid Vent Airway Meds
+PASS  Secondary panels provide Back to Monitor action
+PASS  Clear safety state auto-compacts
+PASS  Active safety remains distinct
+PASS  Safety state observes current runtime text
+PASS  Fluid main keeps rate hero
+PASS  Fluid main keeps bolus visible
+PASS  Fluid optional actual correction moves under More
+PASS  Fluid blood loss urine blood product move under More
+PASS  Fluid visible glance is Total In + Current Rate
+PASS  Fluid effective/net/history move under More
+PASS  Vent has tap-first mode buttons
+PASS  Vent quick buttons write authoritative airwayVentMode select
+PASS  Authoritative vent select retained but visually hidden
+PASS  Airway shows Intubation timestamp from authoritative milestone
+PASS  Airway Attempts field exists
+PASS  Airway Note field exists
+PASS  Airway Attempts and Note have fresh-state persistence
+PASS  Airway Attempts and Note are in final report
+PASS  Airway autosave watches Attempts and Note
+PASS  Vaporizer discrete 0.5 steps retained
+PASS  O2 simple selector retained
+PASS  Induction given/details-pending semantics preserved
+PASS  Intubation remains timestamp-only
+PASS  Legacy Clinical Simplicity retired from runtime
+PASS  End Surgery preserved
+PASS  Emergency Return preserved
+PASS  Final Lock preserved
+PASS  Current service worker generation
+PASS  Current workspace assets cached
+\n33/33 PASS
+
+
+Static runtime syntax:
+- Active runtime JavaScript: 69/69 PASS
+
+Aggregate current-release contract suites: 126/126 PASS
+Runtime script count: 69
+or-speed-hardening.js absent from runtime and service-worker JS precache
+Standalone or-speed-hardening.css absent from service-worker precache; active bundled styles retained
+No V17.13.3 deployment references remain in index.html/service-worker.js
+
+Scope limitation:
+- Static/source-contract + deterministic Node regression only; physical Android/iPad/PWA/IME smoke test remains required before production validation.

@@ -1,0 +1,26 @@
+ANESVET V17.13.13 — QA RESULTS
+
+Canonical CSS Ownership II: 25/25 PASS
+Package Structure: 37/37 PASS
+Runtime Module Grouping II: 41/41 PASS
+Static Integrity: 22/22 PASS
+Current Workflow: 31/31 PASS
+End-to-End: 17/17 PASS
+OR Interaction: 33/33 PASS
+TOTAL CONTRACT QA: 206/206 PASS
+
+Runtime JS syntax: 76/76 PASS
+Service Worker syntax: PASS
+CSS parser: 40/40 PASS, 0 errors
+Service Worker inventory: 120 assets / 76 versioned JS / 2 versioned CSS
+Root files: 69
+
+Platform move preservation:
+- lifecycle-coordinator.js: exact byte-identical
+- viewport-coordinator.js: exact byte-identical
+- workspace-owner.js: exact byte-identical
+- presentation-ownership.js: identical after normalizing 17.13.13 → 17.13.12 version stamp
+- mobile-or-owner.js: exact byte-identical
+- logical runtime modules: 76/76 no non-version content changes versus V17.13.12
+
+Scope limitation: static/source-contract + deterministic Node regression + syntax/CSS parser validation; not a physical Android/iPad/PWA/IME visual interaction test.

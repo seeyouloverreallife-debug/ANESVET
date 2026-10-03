@@ -1,0 +1,175 @@
+ANESVET V17.13.8 QA RESULTS
+===========================
+
+== QA_V17_13_8_RETIRED_CSS_DEBT.js ==
+PASS  Runtime scripts remain 69
+PASS  Index loads exactly two canonical stylesheets
+PASS  Service worker precaches exactly two CSS assets
+PASS  Bundle retains 38 source markers
+PASS  All 38 standalone CSS sources remain packaged
+PASS  Every standalone CSS source has one bundle marker
+PASS  All 13 retired CSS counterparts remain packaged for traceability
+PASS  All 13 retired CSS counterparts remain represented in canonical bundle
+PASS  All 13 retired JavaScript owners remain absent from startup
+PASS  All 13 retired JavaScript owners remain absent from Service Worker JS delivery
+PASS  Retired CSS audit has zero inactive class selectors after safe pruning
+PASS  Focused workspace dead no-problems branch removed
+PASS  Focused workspace unused sticky custom property removed
+PASS  Repeat-use unused ink custom property removed
+PASS  Mobile-first dead case-form selector member removed
+PASS  Mobile-first dead record table wrapper removed
+PASS  Mobile-first dead archive table wrapper removed
+PASS  Clinical-simplicity duplicate recovery command ordering removed
+PASS  Clinical-simplicity duplicate dashboard ordering removed
+PASS  Touched retired source chunks are byte-equivalent to their bundle sections
+PASS  Bundle shrank from V17.13.7
+PASS  Bundle matches V17.13.8 safe-pruned size
+PASS  R27 keyboard state remains owned by mobile-or-owner
+PASS  R27 Identity bridge remains owned by workspace-owner
+PASS  Fast Vital active state remains owned by OR LIVE controller
+PASS  Save-assist presentation remains owned by app shell
+PASS  Return-to-active-case shortcut remains owned by repeat presentation owner
+PASS  Recovery collapsible state remains owned by recovery end refinement
+PASS  R25 resume styles remain because live resume class is referenced
+PASS  OR fast-entry styles remain because live rail class is referenced
+PASS  Save-assist styles remain because live class is referenced
+PASS  Return-case styles remain because live class is referenced
+PASS  Recovery collapsible styles remain because live class is referenced
+PASS  Runtime-written visual-height CSS contract is retained
+PASS  Knowledge loader release version is V17.13.8
+PASS  Every lazy knowledge asset is precached with matching V17.13.8 query
+PASS  Canonical CSS query versions are V17.13.8
+PASS  Current cache generation is V17.13.8
+PASS  Induction given/details-pending contract remains
+PASS  Editable induction administration time remains
+PASS  Intubation remains timestamp-only
+PASS  End Surgery remains available
+PASS  Emergency Return remains available
+PASS  Final Lock remains available
+
+44/44 PASS
+
+== QA_V17_13_8_STATIC_INTEGRITY.js ==
+PASS  69 runtime scripts
+PASS  All runtime scripts exist
+PASS  All linked stylesheets exist
+PASS  All local service-worker assets exist
+PASS  HTML IDs are unique
+PASS  Lifecycle coordinator loads before workspace owners
+PASS  App shell loads before app core
+PASS  OR LIVE controller loads before app core
+PASS  Medication workspace controller loads before app core
+PASS  PWA controller loads before app core
+PASS  Finalization loads before repeat presentation owner
+PASS  Retirement III-V JS absent everywhere active
+PASS  Fast-entry CSS remains available after JS owner migration
+PASS  Service worker precaches only canonical production styles
+PASS  Deployment refs use only V17.13.8
+
+15/15 PASS
+
+== QA_V17_13_8_CURRENT_WORKFLOW.js ==
+PASS  Induction start marks prepared induction meds given provisionally
+PASS  Induction start does not create full drug administration records
+PASS  Provisional list persisted in case state
+PASS  Only frozen planned induction meds are provisionally marked
+PASS  Provisional record uses Induction milestone epoch
+PASS  Provisional status explicitly details-pending
+PASS  Induction marking creates audit entry
+PASS  Quick drug button later opens editor rather than recording a new-time administration
+PASS  Later review defaults to provisional Induction time
+PASS  Editable administration time field exists
+PASS  Time input is shown for induction medication review
+PASS  Edited clock converts safely around midnight
+PASS  Edited administration time is used in actual drug record
+PASS  Time adjustment is retained in audit note
+PASS  Confirming actual details completes provisional record
+PASS  Induction review cannot complete with details pending
+PASS  Queue recognizes Given-but-details-pending state
+PASS  Queue labels provisional administration as Given Review
+PASS  Generic quick-med strip redirects provisional induction to review flow
+PASS  Undo restores induction provisional state
+PASS  Quick strip tells user Induction means drugs given
+PASS  Prepared drug button shows Given details pending
+PASS  Prepared drug button is still actionable until details saved
+PASS  Actual completed drug becomes non-actionable in quick strip
+PASS  Intubation remains timestamp-only
+PASS  Fluid, Vent and Airway remain deferred workspaces
+PASS  Current SW cache generation
+PASS  Current workspace assets cached
+PASS  End Surgery preserved
+PASS  Emergency Return preserved
+PASS  Final Lock preserved
+
+31/31 PASS
+
+== QA_V17_13_8_END_TO_END.js ==
+PASS  Patient gate requires identity/BW/procedure/ASA
+PASS  Drug Plan blocks unconfirmed BW and routes through review
+PASS  Start case freezes protocol/identity before OR
+PASS  Induction marks frozen induction meds Given • details pending
+PASS  Individual induction drug administration time remains editable
+PASS  Intubation remains timestamp-only
+PASS  OR monitor is fixed above secondary charting
+PASS  Surgery end uses audited workflow mutation
+PASS  Extubation enters Recovery through controller
+PASS  Emergency Return preserves explicit Recovery↔OR path
+PASS  Recovery complete goes to End Case
+PASS  Finalization retains explicit final lock path
+PASS  Case lifecycle phase order remains stable
+PASS  Recovery patch preserves first recovery timestamp
+PASS  Session model locks Recovery while Emergency Return active
+PASS  Final sealed case is reload-safe
+PASS  Synthetic completed case produces coherent recovery handoff
+
+17/17 PASS
+
+== QA_V17_13_8_OR_INTERACTION.js ==
+PASS  Current workspace version
+PASS  Vitals remain fixed above secondary navigation
+PASS  Monitor is no longer a redundant secondary-nav button
+PASS  Secondary nav contains Fluid Vent Airway Meds
+PASS  Secondary panels provide Back to Monitor action
+PASS  Clear safety state auto-compacts
+PASS  Active safety remains distinct
+PASS  Safety state observes current runtime text
+PASS  Fluid main keeps rate hero
+PASS  Fluid main keeps bolus visible
+PASS  Fluid optional actual correction moves under More
+PASS  Fluid blood loss urine blood product move under More
+PASS  Fluid visible glance is Total In + Current Rate
+PASS  Fluid effective/net/history move under More
+PASS  Vent has tap-first mode buttons
+PASS  Vent quick buttons write authoritative airwayVentMode select
+PASS  Authoritative vent select retained but visually hidden
+PASS  Airway shows Intubation timestamp from authoritative milestone
+PASS  Airway Attempts field exists
+PASS  Airway Note field exists
+PASS  Airway Attempts and Note have fresh-state persistence
+PASS  Airway Attempts and Note are in final report
+PASS  Airway autosave watches Attempts and Note
+PASS  Vaporizer discrete 0.5 steps retained
+PASS  O2 simple selector retained
+PASS  Induction given/details-pending semantics preserved
+PASS  Intubation remains timestamp-only
+PASS  Legacy Clinical Simplicity retired from runtime
+PASS  End Surgery preserved
+PASS  Emergency Return preserved
+PASS  Final Lock preserved
+PASS  Current service worker generation
+PASS  Current workspace assets cached
+\n33/33 PASS
+
+CSS_PARSER 6/6 PASS (0 errors)
+ACTIVE_RUNTIME_JS_SYNTAX 69/69 PASS
+RUNTIME_PLUS_LAZY_JS_SYNTAX 76/76 PASS
+SERVICE_WORKER_SYNTAX PASS
+TOTAL_CONTRACT_QA 140/140 PASS
+SERVICE_WORKER_ASSETS 119 PASS
+SERVICE_WORKER_JS_REFS 75 PASS
+SERVICE_WORKER_CSS_REFS 2 PASS
+CSS_BYTES anesvet-ui-bundle.css 395402
+CANONICAL_CSS_HASH anesvet-ui-bundle.css d3532aba949ee6a04e5b79ad800251a3fdafd464ef359515992d1b4bd446a8a8
+CSS_BYTES or-workspace-restructure.css 40360
+CANONICAL_CSS_HASH or-workspace-restructure.css 8a062bfab28874a1537de804bfefd7c26e9f1941a99d7169e8972f4ce1e38c73
+KNOWLEDGE_LOADER_VERSION 17.13.8 PASS

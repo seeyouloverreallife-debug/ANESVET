@@ -1,11 +1,12 @@
-/* ANESVET V17.3.1 — Simulation Mode
+/* ANESVET V17.14.4 — Simulation Mode
  * UX sandbox for practicing the full anesthesia workflow without creating
  * Patient Master or real Archive records. Simulation may start only when there
  * is no mutable real case. Clinical calculations and alert rules remain native.
  */
 (() => {
   'use strict';
-  const VERSION='17.3.1';
+  const FALLBACK_VERSION='17.14.4';
+  const runtimeVersion=()=>window.AnesvetApp?.version||FALLBACK_VERSION;
   const $=id=>document.getElementById(id);
   const api=()=>window.AnesvetApp||null;
   const state=()=>api()?.getState?.()||null;
@@ -34,7 +35,7 @@
     if($('simulationDialog'))return;
     const d=document.createElement('dialog');d.id='simulationDialog';d.className='simulation-dialog';d.setAttribute('aria-labelledby','simulationDialogTitle');
     d.innerHTML=`<div class="simulation-sheet">
-      <div class="simulation-sheet-head"><div><small>V${VERSION} • PRACTICE SANDBOX</small><h2 id="simulationDialogTitle">🧪 Simulation Mode</h2><p>ทดลอง workflow ได้เต็มที่โดยไม่สร้าง Patient Master หรือ Archive จริง</p></div><button id="simulationDialogClose" class="btn light" type="button">✕</button></div>
+      <div class="simulation-sheet-head"><div><small>V${runtimeVersion()} • PRACTICE SANDBOX</small><h2 id="simulationDialogTitle">🧪 Simulation Mode</h2><p>ทดลอง workflow ได้เต็มที่โดยไม่สร้าง Patient Master หรือ Archive จริง</p></div><button id="simulationDialogClose" class="btn light" type="button">✕</button></div>
       <div class="simulation-safety-note"><b>ข้อมูล Demo แยกจากเคสจริง</b><span>เริ่มได้เฉพาะเมื่อไม่มี current case ที่กำลังทำอยู่ • ยา/alert ใช้ engine จริงของ ANESVET เพื่อทดสอบ UX</span></div>
       <div class="simulation-scenarios">${Object.values(scenarios).map(x=>`<button class="simulation-scenario" type="button" data-sim-scenario="${x.id}"><span class="simulation-scenario-icon">${x.icon}</span><span><b>${esc(x.title)}</b><small>${esc(x.subtitle)}</small></span><span>→</span></button>`).join('')}</div>
       <button id="simulationCancel" class="btn" type="button">ยกเลิก</button>
@@ -131,7 +132,7 @@
     const onPageShow=()=>{repaint();patchFinalizedDialog()};window.ANESVET_LIFECYCLE_COORDINATOR?.subscribe('pageshow',onPageShow);
     const simButton=$('finalizedNewCaseBtn');simButton?.addEventListener('click',e=>{if(!active())return;e.stopImmediatePropagation();e.preventDefault();const sc=currentScenario();api()?.simulation?.start?.({id:sc.id,label:sc.title,seed:sc.seed,replace:true});},true);
     const next=$('r26NextCaseButton');next?.addEventListener('click',e=>{if(!active())return;e.stopImmediatePropagation();e.preventDefault();resetDemo();},true);
-    window.AnesvetSimulation=Object.freeze({version:VERSION,active,open:openDialog,start:startScenario,reset:resetDemo,exit:exitDemo,scenarios:()=>JSON.parse(JSON.stringify(scenarios))});
+    window.AnesvetSimulation=Object.freeze({get version(){return runtimeVersion()},active,open:openDialog,start:startScenario,reset:resetDemo,exit:exitDemo,scenarios:()=>JSON.parse(JSON.stringify(scenarios))});
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();

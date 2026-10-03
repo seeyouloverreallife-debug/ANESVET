@@ -1,0 +1,27 @@
+
+'use strict';
+const fs=require('fs'),path=require('path'),R=path.resolve(__dirname,'../..'),read=f=>fs.readFileSync(path.join(R,f),'utf8');
+const h=read('index.html'),sw=read('service-worker.js'),css=read('assets/css/anesvet-ui-bundle.css'),map=JSON.parse(read('config/runtime-map.json'));
+const local=p=>p.split('?')[0].replace(/^\.\//,''),scripts=[...h.matchAll(/<script[^>]+src=["']([^"']+)["']/g)].map(x=>local(x[1]));
+const ids=[...h.matchAll(/\sid=["']([^"']+)["']/g)].map(x=>x[1]),dup=[...new Set(ids.filter((x,i,a)=>a.indexOf(x)!==i))];
+const swAssets=[...sw.matchAll(/["'](\.\/[^"']+?)(?:\?v=[^"']+)?["']/g)].map(x=>local(x[1])).filter(Boolean);
+const missing=scripts.filter(x=>!fs.existsSync(path.join(R,x))),missingSw=[...new Set(swAssets)].filter(x=>!['.','index.html','manifest.webmanifest'].includes(x)&&!fs.existsSync(path.join(R,x)));
+const pos=x=>scripts.findIndex(p=>path.basename(p)===x),first18=['lifecycle-coordinator.js','viewport-coordinator.js','workspace-owner.js','presentation-ownership.js','mobile-or-owner.js','drug-dose-reference.js','protocol-review.js','clinical-workflow.js','app-shell.js','case-lifecycle.js','support.js','reliability.js','branding.js','clinical-validation.js','case-runtime.js','core-storage.js','session-coordination.js','session-controller.js'];
+const app=map.startupModules.filter(x=>x.order>=9&&x.order<=18);
+const T=[];const add=(n,v)=>T.push([n,!!v]);
+add('69 startup scripts',scripts.length===69);
+add('All startup scripts exist',missing.length===0);
+add('All local Service Worker assets exist',missingSw.length===0);
+add('HTML IDs remain unique',dup.length===0);
+add('First eighteen startup modules retain exact order',JSON.stringify(scripts.slice(0,18).map(x=>path.basename(x)))===JSON.stringify(first18));
+add('Ten app foundation modules exist under runtime/core',app.length===10&&app.every(x=>x.path.startsWith('runtime/core/')&&fs.existsSync(path.join(R,x.path))));
+add('No app foundation root copies remain',app.every(x=>!fs.existsSync(path.join(R,path.basename(x.path)))));
+add('Session coordination still loads before session controller',pos('session-coordination.js')<pos('session-controller.js'));
+add('App shell remains before session controller and app core',pos('app-shell.js')<pos('session-controller.js')&&pos('app-shell.js')<pos('app.js'));
+add('Core storage remains before session pair',pos('core-storage.js')<pos('session-coordination.js'));
+add('OR LIVE and medication controllers remain before app core',pos('or-live-controller.js')<pos('app.js')&&pos('medication-workspace-controller.js')<pos('app.js'));
+add('Finalization remains before repeat presentation owner',pos('finalization.js')<pos('repeat-presentation-owner.js'));
+add('Fast-entry CSS remains',css.includes('.or-fast-entry-rail'));
+add('Deployment refs use 17.13.17',h.includes('17.13.17')&&sw.includes('17.13.17')&&!h.includes('17.13.16')&&!sw.includes('17.13.16'));
+add('Current SW cache generation is V17.13.17',sw.includes('anesvet-v17-13-17-startup'));
+let p=0;for(const [n,v] of T){console.log((v?'PASS':'FAIL')+'  '+n);if(v)p++;} console.log(`\n${p}/${T.length} PASS`);process.exit(p===T.length?0:1);

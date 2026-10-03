@@ -59,7 +59,7 @@
     const s=st(),wrap=$('endCaseBlockers');if(!wrap||!s)return;
     if(s.caseLocked){if(s.simulationMode){wrap.innerHTML='<span class="endcase-blocker-chip good">✓ Simulation complete • no real archive created</span>';return;}const verified=archiveAssurance()?.canStartNewCase?.()===true;wrap.innerHTML=verified?'<span class="endcase-blocker-chip good">✓ Final record locked & archive verified</span>':'<span class="endcase-blocker-chip warn">⚠ Final record locked • archive verification required</span>';return;}
     if(!list.length){wrap.innerHTML='<span class="endcase-blocker-chip good">✓ Final checks complete</span>';return;}
-    wrap.innerHTML=list.slice(0,9).map(x=>`<span class="endcase-blocker-chip ${x.tone||'muted'}">${esc(x.label)}</span>`).join('');
+    wrap.innerHTML=list.slice(0,9).map(x=>`<span class="endcase-blocker-chip ux-actionable-blocker ${x.tone||'muted'}" role="button" tabindex="0" data-end-action="${esc(x.type)}">${esc(x.label)}</span>`).join('');
   }
   function nextDescriptor(list){
     const s=st();if(s?.caseLocked){if(s.simulationMode)return {label:'↻ Reset demo',action:'reset-simulation'};const verified=archiveAssurance()?.canStartNewCase?.()===true;return verified?{label:'＋ Start new case',action:'new-case'}:{label:'↻ Verify final archive',action:'archive-assurance'};}
@@ -89,8 +89,8 @@
   }
   function schedule(){clearTimeout(refreshToken);refreshToken=setTimeout(render,20);}
   function scrollTo(el){if(!el)return;try{el.scrollIntoView({behavior:'smooth',block:'center'});}catch(e){el.scrollIntoView();}el.classList.add('endcase-target-pulse');setTimeout(()=>el.classList.remove('endcase-target-pulse'),1100);}
-  function runNext(){
-    const action=$('endCaseNextTaskBtn')?.dataset.action||'';
+  function runNext(actionOverride=''){
+    const action=actionOverride||$('endCaseNextTaskBtn')?.dataset.action||'';
     if(action==='reset-simulation'){window.AnesvetSimulation?.reset?.();return;}
     if(action==='archive-assurance'){archiveAssurance()?.refresh?.({force:true});return;}
     if(action==='new-case'){if(archiveAssurance()?.canStartNewCase?.()!==true){api()?.toast?.('Verify the archived final record before starting a new case');archiveAssurance()?.refresh?.({force:true});return;}if(confirm('เริ่มเคสใหม่? Final record นี้ถูก archive และ verify แล้ว'))api()?.resetCurrent?.();return;}
@@ -112,7 +112,9 @@
   function closeFinalizedDialog(){const d=$('caseFinalizedDialog');if(!d)return;try{if(d.open)d.close();else d.removeAttribute('open');}catch(e){d.removeAttribute('open');}}
 
   window.showCaseFinalizedDialog=openFinalizedDialog;
-  $('endCaseNextTaskBtn')?.addEventListener('click',runNext);
+  $('endCaseNextTaskBtn')?.addEventListener('click',()=>runNext());
+  $('endCaseBlockers')?.addEventListener('click',e=>{const chip=e.target.closest?.('[data-end-action]');if(chip)runNext(chip.dataset.endAction||'')});
+  $('endCaseBlockers')?.addEventListener('keydown',e=>{if(e.key!=='Enter'&&e.key!==' ')return;const chip=e.target.closest?.('[data-end-action]');if(!chip)return;e.preventDefault();runNext(chip.dataset.endAction||'')});
   $('endCaseFocusPending')?.addEventListener('change',render);
   $('endPreferredReportBtn')?.addEventListener('click',exportPreferred);
   $('endExportSummaryPdfBtn')?.addEventListener('click',markReportReviewed);

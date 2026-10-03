@@ -7,12 +7,12 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="description" content="ANESVET V17.11.4 — Clinical Knowledge System">
+  <meta name="description" content="ANESVET V17.14.4 — Clinical Knowledge System">
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="preload" as="image" href="./assets/startup/logo.png" fetchpriority="high">
   <link rel="preload" as="image" href="./assets/startup/glow.svg">
-  <link rel="icon" href="./icon-192.png">
-  <link rel="apple-touch-icon" href="./icon-192.png">
+  <link rel="icon" href="./assets/icons/icon-192.png">
+  <link rel="apple-touch-icon" href="./assets/icons/icon-192.png">
   <style id="avStartupCritical">
 @font-face{font-family:"ANESVET Thai";font-style:normal;font-weight:400;font-display:swap;src:url("./assets/fonts/noto-sans-thai-thai-400-normal.woff2") format("woff2");unicode-range:U+0E01-0E5B,U+200C-200D,U+25CC}
 @font-face{font-family:"ANESVET Thai";font-style:normal;font-weight:700;font-display:swap;src:url("./assets/fonts/noto-sans-thai-thai-700-normal.woff2") format("woff2");unicode-range:U+0E01-0E5B,U+200C-200D,U+25CC}
@@ -78,14 +78,14 @@ body.av-booting>main{display:none!important}
 @media(max-width:392px){.av-boot-trace{width:310.5px;height:47.7px}.av-boot .av-boot-trace img{transform:scale(.9);transform-origin:top left}.av-boot-note>span{max-width:180px}.av-boot-utility{padding-left:16px;padding-right:16px;font-size:11px}.av-boot-utility small{font-size:11px}}
 @media(prefers-reduced-motion:reduce){.av-boot .av-progress:after,.av-boot-brand,.av-boot-utility,.av-boot-bottom{animation:none!important}}
   </style>
-  <link rel="stylesheet" href="./anesvet-ui-bundle.css?v=17.11.4" media="print" data-av-style="pending" onload="this.media='all';this.dataset.avStyle='ready'" onerror="this.dataset.avStyle='error'">
-  <link rel="stylesheet" href="./or-workspace-restructure.css?v=17.11.4">
-  <title>ANESVET V17.11.4</title>
+  <link rel="stylesheet" href="./assets/css/anesvet-ui-bundle.css?v=17.14.4" media="print" data-av-style="pending" onload="this.media='all';this.dataset.avStyle='ready'" onerror="this.dataset.avStyle='error'">
+  <link rel="stylesheet" href="./assets/css/or-workspace-restructure.css?v=17.14.4">
+  <title>ANESVET V17.14.4</title>
 </head>
 <body class="av-booting av-mobile-design">
 <section id="avBoot" class="av-boot" aria-labelledby="avBootTitle" aria-live="polite" aria-busy="true">
   <img class="av-boot-glow" src="./assets/startup/glow.svg" alt="" width="393" height="640">
-  <div class="av-boot-utility"><span><img src="./assets/startup/system.svg" alt="" width="7" height="7">Clinical monitoring system</span><small>MOBILE · V17.11.4</small></div>
+  <div class="av-boot-utility"><span><img src="./assets/startup/system.svg" alt="" width="7" height="7">Clinical monitoring system</span><small>MOBILE · V17.14.4</small></div>
   <div class="av-boot-brand">
     <span class="av-boot-category"><i aria-hidden="true"></i>Veterinary anesthesia</span>
     <div class="av-brand-moment"><img class="av-boot-logo" fetchpriority="high" src="./assets/startup/logo.png" alt="ANESVET" width="220" height="220"><img class="av-boot-ring" src="./assets/startup/ring.svg" alt="" width="176" height="176"></div>
@@ -100,15 +100,15 @@ body.av-booting>main{display:none!important}
 </section>
 <noscript><style>.av-boot,main{display:none}.av-booting>.topbar{visibility:visible}</style><p>โปรดเปิด JavaScript เพื่อใช้ ANESVET</p></noscript>
 <header class="av-workspace-header">
-  <div class="av-utility"><button type="button" class="session-safe" data-av-route="start" aria-label="หน้าเริ่มใช้งาน"><img src="./assets/system-indicator.svg" alt="" width="7" height="7">ANESVET</button><span>V17.11.4</span></div>
+  <div class="av-utility"><button type="button" class="session-safe" data-av-route="start" aria-label="หน้าเริ่มใช้งาน"><img src="./assets/system-indicator.svg" alt="" width="7" height="7">ANESVET</button><span>V17.14.4</span></div>
   <div class="av-bar"><div class="av-bar-copy"><h2 id="avWorkspaceTitle">ANESVET</h2><small id="avWorkspaceCase">กำลังเปิดข้อมูล</small><small id="avMeasurementStatus" class="av-measurement-status" role="status" aria-live="polite" hidden></small><small id="avWorkspaceStatus" class="av-save-status" role="status" aria-live="polite"></small></div><button id="avHeaderTools" class="av-square session-safe" data-av-action="tools" type="button" aria-label="เมนูเพิ่มเติม">⋯</button></div>
 </header>
 <header class="topbar">
   <div class="brand">
-    <img class="brand-logo" src="./icon-192.png" alt="ANESVET logo">
+    <img class="brand-logo" src="./assets/icons/icon-192.png" alt="ANESVET logo">
     <div>
       <div class="eyebrow">GENOVI PET CARE • DIGITAL ANESTHESIA RECORD</div>
-      <h1>ANESVET <span>V17.11.4</span></h1>
+      <h1>ANESVET <span>V17.14.4</span></h1>
       <div id="appHospitalName" class="app-hospital-name" hidden></div>
     </div>
   </div>
@@ -199,8 +199,8 @@ body.av-booting>main{display:none!important}
   <nav class="tabs workflow-tabs" aria-label="ขั้นตอนการวางยาสลบ">
     <button class="tab active" data-tab="patient"><span class="step-no">1</span><span>ประวัติผู้ป่วย</span></button>
     <button class="tab" data-tab="preop"><span class="step-no">2</span><span>Pre-check</span></button>
-    <button class="tab" data-tab="drugs"><span class="step-no">3</span><span>Medications</span></button>
-    <button class="tab or-live-tab" data-tab="orlive"><span class="step-no">4</span><span>ช่วงวางยา</span></button>
+    <button class="tab" data-tab="drugs"><span class="step-no">3</span><span>ยา / Drug Plan</span></button>
+    <button class="tab or-live-tab" data-tab="orlive"><span class="step-no">4</span><span>OR LIVE</span></button>
     <button class="tab" data-tab="recovery"><span class="step-no">5</span><span>Recovery</span></button>
     <button class="tab end-case-tab" data-tab="endcase"><span class="step-no">6</span><span>End Case</span></button>
     <button id="moreMenuBtn" class="tab more-tab" type="button">⋯ เพิ่มเติม</button>
@@ -678,7 +678,10 @@ body.av-booting>main{display:none!important}
           <b>Medication queue</b>
           <small id="orMedicationQueueHint">Shows documented vs pending planned medications. It never marks a drug as given automatically.</small>
         </div>
-        <span id="orMedicationQueueBadge" class="status-pill good">0 PENDING</span>
+        <div class="or-medication-queue-head-actions">
+          <span id="orMedicationQueueBadge" class="status-pill good">0 PENDING</span>
+          <button id="orMedicationQueueToggleBtn" class="btn or-medication-queue-toggle" type="button" aria-controls="orMedicationQueueList" aria-expanded="false">View plan</button>
+        </div>
       </div>
       <div id="orMedicationQueueList" class="or-medication-queue-list"></div>
       <div class="or-medication-queue-actions">
@@ -951,9 +954,11 @@ body.av-booting>main{display:none!important}
         <label>ETT size (mm)<input id="airwayEttSize" type="number" min="0" step="0.5" placeholder="เช่น 6.0"></label>
         <label>ETT depth (cm)<input id="airwayEttDepth" type="number" min="0" step="0.5" placeholder="optional"></label>
         <label>Cuff<select id="airwayCuff"><option value="">—</option><option>Inflated / sealed</option><option>Minimal occlusive volume</option><option>Uncuffed</option></select></label>
-        <label>Intubation<select id="airwayDifficulty"><option value="">—</option><option>Easy</option><option>Moderate</option><option>Difficult</option></select></label>
+        <label>Intubation difficulty<select id="airwayDifficulty"><option value="">—</option><option>Easy</option><option>Moderate</option><option>Difficult</option></select></label>
+        <label>Attempts<select id="airwayAttempts"><option value="">—</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4+">4+</option></select></label>
         <label>Circuit<select id="airwayCircuit"><option value="">—</option><option>Rebreathing</option><option>Non-rebreathing</option></select></label>
         <label>Ventilation mode<select id="airwayVentMode"><option value="">—</option><option>Spontaneous</option><option>Manual PPV</option><option>Mechanical ventilation</option></select></label>
+        <label class="airway-note-field">Airway note<input id="airwayNote" type="text" placeholder="optional"></label>
       </div>
       <div id="ventilatorFields" class="ventilator-grid" hidden>
         <label>VT (mL)<input id="airwayVt" type="number" min="0" step="1"></label>
@@ -1022,9 +1027,9 @@ body.av-booting>main{display:none!important}
         <span id="orMobileNextIcon" class="or-mobile-next-icon">▶</span>
         <span class="or-mobile-next-copy"><small>NEXT STEP</small><b id="orMobileNextLabel">START INDUCTION</b></span>
       </button>
-      <button id="orMobileRecordBtn" class="or-mobile-dock-btn or-mobile-vitals" type="button"><span>＋</span><b>VITALS</b></button>
+      <button id="orMobileRecordBtn" class="or-mobile-dock-btn or-mobile-vitals" type="button"><span>＋</span><b>Vital signs</b></button>
       <button id="orMobileMedsBtn" class="or-mobile-dock-btn or-mobile-meds" type="button" hidden><span>💉</span><b id="orMobileMedsLabel">MEDS</b></button>
-      <button id="orMobileMoreBtn" class="or-mobile-dock-btn" type="button"><span>•••</span><b>MORE</b></button>
+      <button id="orMobileMoreBtn" class="or-mobile-dock-btn" type="button"><span>•••</span><b>เมนู</b></button>
     </nav>
 
     <nav id="orFastEntryRail" class="or-fast-entry-rail" aria-label="Fast vital entry controls" hidden>
@@ -2465,8 +2470,8 @@ body.av-booting>main{display:none!important}
 
     <nav id="recoveryMobileDock" class="recovery-mobile-dock" aria-label="Recovery primary actions">
       <button id="recoveryMobileRecordBtn" class="recovery-mobile-dock-btn primary" type="button" data-primary-action="record"><span id="recoveryMobilePrimaryIcon">＋</span><b id="recoveryMobilePrimaryLabel">Record vitals</b><small id="recoveryMobileDue">DUE</small></button>
-      <button id="recoveryMobileMedicationBtn" class="recovery-mobile-dock-btn" type="button"><span>💉</span><b>MEDS</b></button>
-      <button id="recoveryMobileMoreBtn" class="recovery-mobile-dock-btn" type="button"><span>•••</span><b>MORE</b></button>
+      <button id="recoveryMobileMedicationBtn" class="recovery-mobile-dock-btn" type="button"><span>💉</span><b>ยา</b></button>
+      <button id="recoveryMobileMoreBtn" class="recovery-mobile-dock-btn" type="button"><span>•••</span><b>เมนู</b></button>
     </nav>
 
     <dialog id="recoveryMoreDialog" class="or-more-dialog recovery-more-dialog" aria-labelledby="recoveryMoreTitle">
@@ -3012,14 +3017,22 @@ body.av-booting>main{display:none!important}
     <div><span>Automated device readiness</span><b>Storage • PWA • viewport • recovery copies</b><small>รันบนอุปกรณ์ที่ใช้ใน OR จริง ไม่ใช่แค่ development machine</small></div>
     <div><span>Real-device acceptance</span><b>11 required scenarios</b><small>background, force-close, offline, Recovery, Final Lock, backup/restore และ long-case endurance</small></div>
     <div><span>Lifecycle evidence</span><b id="productionPilotLifecycleBadge">0 EVENTS</b><small>บันทึกเฉพาะ technical state เช่น hidden / pageshow / online / offline; ไม่เก็บชื่อผู้ป่วย</small></div>
+    <div><span>Device telemetry</span><b id="productionPilotTelemetryBadge">0 SAMPLES</b><small>VisualViewport • keyboard inset • focus • long tasks • memory (ถ้ารองรับ) โดยไม่เก็บค่าที่พิมพ์</small></div>
   </div>
   <div class="production-pilot-actions">
     <button id="productionPilotRunBtn" class="btn primary" type="button">Run device readiness</button>
+    <button id="productionPilotTelemetryToggleBtn" class="btn" type="button" aria-pressed="false">Start device telemetry</button>
+    <button id="productionPilotCaptureBtn" class="btn" type="button">Capture device snapshot</button>
     <button id="productionPilotExportBtn" class="btn" type="button">Export pilot report</button>
     <button id="productionPilotRefreshBtn" class="btn" type="button">Refresh</button>
+    <button id="productionPilotTelemetryResetBtn" class="btn" type="button">Reset telemetry</button>
     <button id="productionPilotResetBtn" class="btn danger-outline" type="button">Reset pilot results</button>
   </div>
   <div id="productionPilotAutomatedResults" class="pilot-auto-grid"></div>
+  <details class="pilot-device-telemetry-wrap" open>
+    <summary><b>Physical-device telemetry</b> — local technical metrics only; no patient identifiers or typed field values</summary>
+    <div id="productionPilotDeviceTelemetry" class="pilot-auto-grid"></div>
+  </details>
   <details open>
     <summary><b>Real-device acceptance matrix</b> — mark PASS only after observing the full scenario on this device</summary>
     <div id="productionPilotScenarioList" class="pilot-scenario-list"></div>
@@ -3305,7 +3318,7 @@ body.av-booting>main{display:none!important}
     </div>
 
     <section class="help-about-card">
-      <div><small>ABOUT</small><b>ANESVET V17.11.4</b><p>Veterinary anesthesia workflow, monitoring record and clinical decision-support. ไม่ใช่ continuous physiologic monitor และไม่แทน clinical judgment หรือ source monitor data.</p></div>
+      <div><small>ABOUT</small><b>ANESVET V17.14.4</b><p>Veterinary anesthesia workflow, monitoring record and clinical decision-support. ไม่ใช่ continuous physiologic monitor และไม่แทน clinical judgment หรือ source monitor data.</p></div>
       <button id="helpOpenSettingsBtn" class="btn session-safe" type="button">Settings</button>
     </section>
     <div class="workflow-dialog-actions help-center-actions"><button id="helpCenterCloseBottomBtn" class="btn session-safe" type="button">Close</button></div>
@@ -3647,7 +3660,7 @@ Tramadol"></textarea><small>แสดง shortcut ไป Medication workspace �
 <script id="anesvetBootSentinel">
 (function(){
 'use strict';
-const VERSION='17.11.4';
+const VERSION='17.14.4';
 const STORAGE_KEY='anesvet_v17_2_5_boot_diagnostic';
 const startedAt=Date.now();
 const stages=[];
@@ -3753,6 +3766,7 @@ function snapshot(){
     href:clip(location.href,500),userAgent:clip(navigator.userAgent,500),visibility:document.visibilityState,
     bodyClass:clip(document.body?.className||'',500),session:sessionSnapshot(),openDialogs:openDialogs(),inertNodes:inertNodes(),
     globals:{appShell:!!window.ANESVET_APP_SHELL,caseRuntime:!!window.ANESVET_CASE_RUNTIME,sessionController:!!window.ANESVET_SESSION_CONTROLLER,patientMasterController:!!window.ANESVET_PATIENT_MASTER_CONTROLLER,anesvetApp:!!window.AnesvetApp},
+    presentationOwners:window.ANESVET_PRESENTATION_OWNERSHIP?.snapshot?.().owners||{},
     asa:{value:document.getElementById('asa')?.value||'',cards:document.querySelectorAll?.('.asa-card')?.length||0,selected:document.querySelector?.('.asa-card.selected')?.dataset?.asa||''}
   };
 }
@@ -3769,7 +3783,7 @@ function diagText(reason='diagnostic'){
     `navigation: ${s.lastNavigation?JSON.stringify(s.lastNavigation):'none'}`,
     `session: ${JSON.stringify(s.session)}`, 
     `bodyClass: ${s.bodyClass||'(none)'}`, `dialogs: ${JSON.stringify(s.openDialogs)}`, `inert: ${JSON.stringify(s.inertNodes)}`,
-    `globals: ${JSON.stringify(s.globals)}`, `UA: ${s.userAgent}`,
+    `globals: ${JSON.stringify(s.globals)}`, `presentationOwners: ${JSON.stringify(s.presentationOwners||{})}`, `UA: ${s.userAgent}`,
     'stages:', ...s.stages.slice(-18).map(x=>`  +${x.ms}ms ${x.stage}${x.detail?` — ${x.detail}`:''}`)
   ].join('\n');
 }
@@ -3853,87 +3867,75 @@ setTimeout(()=>{if(!stages.some(x=>x.stage==='patient-master-bound'))issue('star
 setTimeout(()=>{if(!ready&&stages.some(x=>x.stage==='patient-master-bound')){mark('startup-incomplete-watchdog',currentStage());issue('startup','Startup did not finish after 12 seconds',currentStage())}},12000);
 })();
 </script>
-<script defer src="./lifecycle-coordinator.js?v=17.11.4"></script>
-<script defer src="./viewport-coordinator.js?v=17.11.4"></script>
-  <script defer src="./workspace-owner.js?v=17.11.4"></script>
-  <script defer src="./mobile-or-owner.js?v=17.11.4"></script>
-<script defer src="./drug-dose-reference.js?v=17.11.4"></script>
-<script defer src="./protocol-review.js?v=17.11.4"></script>
-<script defer src="./clinical-workflow.js?v=17.11.4"></script>
-<script defer src="./app-shell.js?v=17.11.4"></script>
-<script defer src="./case-lifecycle.js?v=17.11.4"></script>
-<script defer src="./support.js?v=17.11.4"></script>
-<script defer src="./reliability.js?v=17.11.4"></script>
-<script defer src="./branding.js?v=17.11.4"></script>
-<script defer src="./clinical-validation.js?v=17.11.4"></script>
-<script defer src="./case-runtime.js?v=17.11.4"></script>
-<script defer src="./core-storage.js?v=17.11.4"></script>
-<script defer src="./session-coordination.js?v=17.11.4"></script>
-<script defer src="./session-controller.js?v=17.11.4"></script>
-<script defer src="./pwa-controller.js?v=17.11.4"></script>
-<script defer src="./dose-reference-controller.js?v=17.11.4"></script>
-<script defer src="./patient-domain.js?v=17.11.4"></script>
-<script defer src="./or-domain.js?v=17.11.4"></script>
-<script defer src="./recovery-domain.js?v=17.11.4"></script>
-<script defer src="./patient-master-orchestration.js?v=17.11.4"></script>
-<script defer src="./or-record-orchestration.js?v=17.11.4"></script>
-<script defer src="./recovery-orchestration.js?v=17.11.4"></script>
-<script defer src="./patient-master-controller.js?v=17.11.4"></script>
-<script defer src="./preop-controller.js?v=17.11.4"></script>
-<script defer src="./medication-workspace-controller.js?v=17.11.4"></script>
-<script defer src="./or-live-controller.js?v=17.11.4"></script>
-<script defer src="./recovery-controller.js?v=17.11.4"></script>
-<script defer src="./backup-restore-controller.js?v=17.11.4"></script>
-<script defer src="./finalization-archive-controller.js?v=17.11.4"></script>
-<script defer src="./procedure-templates.js?v=17.11.4"></script>
-<script defer src="./validation-center.js?v=17.11.4"></script>
-<script defer src="./hospital-protocol-governance.js?v=17.11.4"></script>
-<script defer src="./security-baseline.js?v=17.11.4"></script>
-<script defer src="./sync-transport.js?v=17.11.4"></script>
-<script defer src="./sync-foundation.js?v=17.11.4"></script>
-<script defer src="./case-review-dashboard.js?v=17.11.4"></script>
-<script defer src="./architecture-registry.js?v=17.11.4"></script>
-<script defer src="./production-pilot.js?v=17.11.4"></script>
-<script defer src="./active-case-rescue.js?v=17.11.4"></script>
-<script defer src="./active-case-freshness.js?v=17.11.4"></script>
-<script defer src="./app-pure-utils.js?v=17.11.4"></script>
-<script src="./recovery-handoff-view-model.js?v=17.11.4"></script>
-  <script src="./case-lifecycle-model.js?v=17.11.4"></script>
-  <script src="./session-lifecycle-model.js?v=17.11.4"></script>
-  <script defer src="./or-simplification-controller.js?v=17.11.4"></script>
-  <script defer src="./app.js?v=17.11.4"></script>
-<script defer src="./data-resilience.js?v=17.11.4"></script>
-<script defer src="./data-safety-2.js?v=17.11.4"></script>
-<script defer src="./medication-reconciliation.js?v=17.11.4"></script>
-<script defer src="./help.js?v=17.11.4"></script>
-<script defer src="./ui-refinement.js?v=17.11.4"></script>
-<script defer src="./pilot-efficiency.js?v=17.11.4"></script>
-  <script defer src="./clinical-next-step-controller.js?v=17.11.4"></script>
-<script defer src="./finalization.js?v=17.11.4"></script>
-<script defer src="./final-archive-assurance.js?v=17.11.4"></script>
-<script defer src="./documentation-guardian.js?v=17.11.4"></script>
-<script defer src="./problem-response-review.js?v=17.11.4"></script>
+<script defer src="./runtime/platform/lifecycle-coordinator.js?v=17.14.4"></script>
+<script defer src="./runtime/platform/viewport-coordinator.js?v=17.14.4"></script>
+  <script defer src="./runtime/platform/workspace-owner.js?v=17.14.4"></script>
+  <script defer src="./runtime/platform/presentation-ownership.js?v=17.14.4"></script>
+  <script defer src="./runtime/platform/mobile-or-owner.js?v=17.14.4"></script>
+<script defer src="./runtime/clinical/drug-dose-reference.js?v=17.14.4"></script>
+<script defer src="./runtime/clinical/protocol-review.js?v=17.14.4"></script>
+<script defer src="./runtime/clinical/clinical-workflow.js?v=17.14.4"></script>
+<script defer src="./runtime/core/app-shell.js?v=17.14.4"></script>
+<script defer src="./runtime/core/case-lifecycle.js?v=17.14.4"></script>
+<script defer src="./runtime/core/support.js?v=17.14.4"></script>
+<script defer src="./runtime/core/reliability.js?v=17.14.4"></script>
+<script defer src="./runtime/core/branding.js?v=17.14.4"></script>
+<script defer src="./runtime/core/clinical-validation.js?v=17.14.4"></script>
+<script defer src="./runtime/core/case-runtime.js?v=17.14.4"></script>
+<script defer src="./runtime/core/core-storage.js?v=17.14.4"></script>
+<script defer src="./runtime/core/session-coordination.js?v=17.14.4"></script>
+<script defer src="./runtime/core/session-controller.js?v=17.14.4"></script>
+<script defer src="./runtime/domains/pwa-controller.js?v=17.14.4"></script>
+<script defer src="./runtime/domains/dose-reference-controller.js?v=17.14.4"></script>
+<script defer src="./runtime/domains/patient-domain.js?v=17.14.4"></script>
+<script defer src="./runtime/domains/or-domain.js?v=17.14.4"></script>
+<script defer src="./runtime/domains/recovery-domain.js?v=17.14.4"></script>
+<script defer src="./runtime/orchestration/patient-master-orchestration.js?v=17.14.4"></script>
+<script defer src="./runtime/orchestration/or-record-orchestration.js?v=17.14.4"></script>
+<script defer src="./runtime/orchestration/recovery-orchestration.js?v=17.14.4"></script>
+<script defer src="./runtime/controllers/patient-master-controller.js?v=17.14.4"></script>
+<script defer src="./runtime/controllers/preop-controller.js?v=17.14.4"></script>
+<script defer src="./runtime/controllers/medication-workspace-controller.js?v=17.14.4"></script>
+<script defer src="./runtime/controllers/or-live-controller.js?v=17.14.4"></script>
+<script defer src="./runtime/controllers/recovery-controller.js?v=17.14.4"></script>
+<script defer src="./runtime/controllers/backup-restore-controller.js?v=17.14.4"></script>
+<script defer src="./runtime/controllers/finalization-archive-controller.js?v=17.14.4"></script>
+<script defer src="./procedure-templates.js?v=17.14.4"></script>
+<script defer src="./validation-center.js?v=17.14.4"></script>
+<script defer src="./hospital-protocol-governance.js?v=17.14.4"></script>
+<script defer src="./security-baseline.js?v=17.14.4"></script>
+<script defer src="./sync-transport.js?v=17.14.4"></script>
+<script defer src="./sync-foundation.js?v=17.14.4"></script>
+<script defer src="./case-review-dashboard.js?v=17.14.4"></script>
+<script defer src="./architecture-registry.js?v=17.14.4"></script>
+<script defer src="./production-pilot.js?v=17.14.4"></script>
+<script defer src="./active-case-rescue.js?v=17.14.4"></script>
+<script defer src="./active-case-freshness.js?v=17.14.4"></script>
+<script defer src="./app-pure-utils.js?v=17.14.4"></script>
+<script src="./recovery-handoff-view-model.js?v=17.14.4"></script>
+  <script src="./case-lifecycle-model.js?v=17.14.4"></script>
+  <script src="./session-lifecycle-model.js?v=17.14.4"></script>
+  <script defer src="./or-simplification-controller.js?v=17.14.4"></script>
+  <script defer src="./app.js?v=17.14.4"></script>
+<script defer src="./data-resilience.js?v=17.14.4"></script>
+<script defer src="./data-safety-2.js?v=17.14.4"></script>
+<script defer src="./medication-reconciliation.js?v=17.14.4"></script>
+<script defer src="./help.js?v=17.14.4"></script>
+<script defer src="./clinical-next-step-controller.js?v=17.14.4"></script>
+<script defer src="./finalization.js?v=17.14.4"></script>
+<script defer src="./final-archive-assurance.js?v=17.14.4"></script>
+<script defer src="./documentation-guardian.js?v=17.14.4"></script>
+<script defer src="./problem-response-review.js?v=17.14.4"></script>
 
-  <script defer src="./patient-preop-simplification.js?v=17.11.4"></script>
-  <script defer src="./drug-start-simplification.js?v=17.11.4"></script>
-  <script defer src="./or-workflow-refinement.js?v=17.11.4"></script>
-  <script defer src="./or-workspace-restructure.js?v=17.11.4"></script>
-  <script defer src="./recovery-end-refinement.js?v=17.11.4"></script>
-  <script defer src="./progressive-disclosure.js?v=17.11.4"></script>
-<script defer src="./focused-workspace.js?v=17.11.4"></script>
-<script defer src="./progressive-clinical-flow.js?v=17.11.4"></script>
-<script defer src="./adaptive-workspace.js?v=17.11.4"></script>
-<script defer src="./usability-hardening.js?v=17.11.4"></script>
-<script defer src="./or-speed-hardening.js?v=17.11.4"></script>
-<script defer src="./clinical-simplicity.js?v=17.11.4"></script>
-<script defer src="./repeat-presentation-owner.js?v=17.11.4"></script>
-  <script defer src="./recovery-endcase-ux.js?v=17.11.4"></script>
-<script defer src="./repeat-use-ux.js?v=17.11.4"></script>
-<script defer src="./repeat-use-r26.js?v=17.11.4"></script>
-<script defer src="./mobile-first-r27.js?v=17.11.4"></script>
-<script defer src="./simulation-mode.js?v=17.11.4"></script>
-<script defer src="./knowledge-loader.js?v=17.11.4"></script>
-<script defer src="./or-knowledge.js?v=17.11.4"></script>
-<script defer src="./mobile-design.js?v=17.11.4" onerror="document.body.classList.add('av-boot-error');document.body.classList.remove('av-booting');document.getElementById('avBootTitle').textContent='เปิดหน้าจอไม่สำเร็จ';document.getElementById('avBootStatus').textContent='ลองเปิดอีกครั้ง ข้อมูลเคสเดิมยังอยู่ในเครื่อง';document.getElementById('avBootErrorActions').hidden=false;document.getElementById('avBootRetry').onclick=()=>location.reload();document.getElementById('avBootReview').disabled=true"></script>
+  <script defer src="./patient-preop-simplification.js?v=17.14.4"></script>
+  <script defer src="./drug-start-simplification.js?v=17.14.4"></script>
+  <script defer src="./or-workflow-refinement.js?v=17.14.4"></script>
+  <script defer src="./or-workspace-restructure.js?v=17.14.4"></script>
+  <script defer src="./recovery-end-refinement.js?v=17.14.4"></script>
+<script defer src="./repeat-presentation-owner.js?v=17.14.4"></script>
+<script defer src="./simulation-mode.js?v=17.14.4"></script>
+<script defer src="./knowledge-loader.js?v=17.14.4"></script>
+<script defer src="./or-knowledge.js?v=17.14.4"></script>
+<script defer src="./mobile-design.js?v=17.14.4" onerror="document.body.classList.add('av-boot-error');document.body.classList.remove('av-booting');document.getElementById('avBootTitle').textContent='เปิดหน้าจอไม่สำเร็จ';document.getElementById('avBootStatus').textContent='ลองเปิดอีกครั้ง ข้อมูลเคสเดิมยังอยู่ในเครื่อง';document.getElementById('avBootErrorActions').hidden=false;document.getElementById('avBootRetry').onclick=()=>location.reload();document.getElementById('avBootReview').disabled=true"></script>
 </body>
 </html>

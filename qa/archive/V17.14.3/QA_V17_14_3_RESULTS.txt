@@ -1,0 +1,35 @@
+ANESVET V17.14.3 — Clinical Pilot Simulation II: Stress & Edge Cases
+
+FINAL WORKING-BUILD VERIFICATION
+- Contract QA: 425/425 PASS across 16 current suites
+- Stress & Edge Cases: 23/23 PASS
+- Runtime JS syntax: 76/76 PASS
+- Service Worker syntax: PASS
+- CSS parser: 40/40 PASS
+- Service Worker inventory: 120 assets / 76 JS / 2 CSS
+- Service Worker cache: anesvet-v17-14-3-startup
+- Runtime logical compare vs V17.14.2 after version normalization: 75/76 unchanged; only production-pilot.js has intentional non-version logic change
+
+STRESS COVERAGE
+- 720 serial OR vital records chronological
+- duplicate vital guard + changed-vital acceptance + correction audit
+- medication near-duplicate confirmation + repeat + retrospective + void audit
+- 10 Emergency Return cycles + completion block while active
+- active-case freshness stale-writer block
+- session collision / VIEW ONLY / Take Control / stale-owner recovery
+- freeze flush + BFCache persisted restore
+- large backup 1200 records / 200 events / 80 meds + single-field tamper detection
+- Final Lock one-time seal + unresolved-alert block
+
+DEFECT FIXED
+- Production Pilot cache readiness no longer searches historical anesvet-v16-21-0.
+- expectedCacheName() derives exact current-generation cache from AnesvetApp.version.
+- This is a pilot/readiness evidence fix; clinical case logic is unchanged.
+
+SCOPE LIMITATION
+Software-level deterministic simulation only. The 720-record test is a long-case/high-volume dataset proxy, not a multi-hour physical-device run. No claim is made for physical Android/iPad/PWA/IME/touch/screen-lock/thermal/frame-rate qualification.
+
+PACKAGE STRUCTURE BEFORE FINAL ZIP
+- Root files: 41
+- Total package files: 603 including BUILD_SHA256.txt
+- BUILD_SHA256 entries: 602 (all package files except BUILD_SHA256.txt itself)

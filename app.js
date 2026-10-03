@@ -39,7 +39,7 @@ const SESSION_TTL_MS=30000;
 const SESSION_HEARTBEAT_MS=5000;
 const DB_NAME='ANESVET_DB';
 const DB_VERSION=2;
-const APP_VERSION='17.5.4';
+const APP_VERSION='17.14.4';
 const SECURITY=window.ANESVET_SECURITY_BASELINE||null;
 const SYNC_FOUNDATION=window.ANESVET_SYNC_FOUNDATION||null;
 const DOSE_REF=window.ANESVET_DOSE_REFERENCE||null;
@@ -79,7 +79,7 @@ const dataFields = [
   'patientName','hospitalId','visitId','patientMasterId','species','sex','reproductiveStatus','microchip','breed','weight','age','birthDate','birthDateEstimated','ageSource','estimatedBirthPeriod','approxAgeYears','approxAgeMonths','approxAgeWeeks','bcs','asa','emergency','patientProcedure','patientAllergies','patientComorbidities','patientPrecautions','procedureTemplateId','caseWorkflowProfile','procedure','surgeon','anesthetist','surgicalAssistant','preopMentation','preopHR','preopPulse','preopHeart','preopRR','preopRespEffort','preopLungs','preopTemp','preopMM','preopCRT','preopHydration','preopPain','preopExamNotes','preopExaminer','preopRiskNone','riskBrachycephalic','riskBOAS','riskDifficultAirway','riskUpperAirway','riskAspiration','riskCardiacDisease','riskArrhythmia','riskRespiratoryDisease','riskHypovolemia','riskAnemiaBleeding','riskRenal','riskHepatic','riskMetabolicElectrolyte','riskHypoglycemia','riskPediatric','riskGeriatric','riskObesity','riskPregnancy','riskPreviousAnesthetic','riskEmergency','riskMajorHemorrhage','riskBOASStertor','riskBOASStridor','riskBOASExerciseHeat','riskBOASSleep','riskBOASRegurg','riskBOASAirwaySurgery','riskBOASPreviousDifficultIntubation','riskBOASNotes','riskOther','preopRiskAssessor',
   'hr','rr','sap','map','dap','spo2','etco2','temp','vaporizer','o2flow','fluidRateInput','fluidTotal',
   'depth','ventilation','bradyPoorPerf','bloodLoss','cardiacRisk','respRisk','recordInterval','reminderOn',
-  'recordNote','recHR','recRR','recMAP','recSpO2','recTemp','recExtubation','recOxygen','recMentation','recPain','recPainScale','recPainScore','recDysphoria','recNausea','recAmbulation','recDestination','recHandoffTo','recTransferNote','recHandoffNote','recNaReason','recRecordInterval','recScoreAirway','recScoreOxygen','recScoreTemp','recScoreMentation','recScoreComfort','recScoreNote','planPremed','planInduction','planMaintenance','planAnalgesia','planAntibiotic','planNSAID','planBlock','planNote','actualDiazepamMl','actualPropofolMl','actualTramadolMl','balanceCrystalloid','balanceBolus','balanceBloodIn','balanceBloodLoss','balanceUrine','fluidActualTotal','airwayEttSize','airwayEttDepth','airwayCuff','airwayDifficulty','airwayCircuit','airwayVentMode','airwayVt','airwayPip','airwayPeep','airwayVentRr','diazepamConc','propofolConc','tramadolConc','rimadylConc','metacamConc','adrenalineConc','atropineConc','atropineMode','dopamineDose','dopamineConc'
+  'recordNote','recHR','recRR','recMAP','recSpO2','recTemp','recExtubation','recOxygen','recMentation','recPain','recPainScale','recPainScore','recDysphoria','recNausea','recAmbulation','recDestination','recHandoffTo','recTransferNote','recHandoffNote','recNaReason','recRecordInterval','recScoreAirway','recScoreOxygen','recScoreTemp','recScoreMentation','recScoreComfort','recScoreNote','planPremed','planInduction','planMaintenance','planAnalgesia','planAntibiotic','planNSAID','planBlock','planNote','actualDiazepamMl','actualPropofolMl','actualTramadolMl','balanceCrystalloid','balanceBolus','balanceBloodIn','balanceBloodLoss','balanceUrine','fluidActualTotal','airwayEttSize','airwayEttDepth','airwayCuff','airwayDifficulty','airwayAttempts','airwayCircuit','airwayNote','airwayVentMode','airwayVt','airwayPip','airwayPeep','airwayVentRr','diazepamConc','propofolConc','tramadolConc','rimadylConc','metacamConc','adrenalineConc','atropineConc','atropineMode','dopamineDose','dopamineConc'
 ];
 
 // R13: the session lock confirms *who* may write, but not *which revision* of
@@ -342,7 +342,7 @@ let pendingPreOrTarget='orlive';
 function renderPreOrReadinessDialog(target='orlive'){
   const d=$('preOrReadinessDialog');if(!d)return;pendingPreOrTarget=target;
   const st=preOrReadinessStatus(),req=$('preOrRequiredList'),rec=$('preOrRecommendedList');
-  const item=x=>`<li><span>•</span><b>${escapeHtml(x.label)}</b></li>`;
+  const item=x=>`<li><span>•</span><b>${escapeHtml(x.label)}</b><button type="button" class="ux-inline-fix" data-readiness-tab="${escapeHtml(x.tab||'preop')}" data-readiness-target="${escapeHtml(x.target||'')}" aria-label="ไปแก้ ${escapeHtml(x.label)}">ไปแก้</button></li>`;
   if(req)req.innerHTML=[...st.hard,...st.required].length?[...st.hard,...st.required].map(item).join(''):'<li class="ready">✓ Required items complete</li>';
   if(rec)rec.innerHTML=st.recommended.length?st.recommended.map(item).join(''):'<li class="ready">✓ No additional warnings</li>';
   if($('preOrReadinessTitle'))$('preOrReadinessTitle').textContent=st.ready?'Ready for OR LIVE':'Complete required items before OR LIVE';
@@ -1889,7 +1889,12 @@ function setTab(id,opts={}){
 $$('.tab[data-tab]').forEach(b=>b.addEventListener('click',()=>setTab(b.dataset.tab)));
 $('preOrReadinessCloseBtn')?.addEventListener('click',()=>{try{$('preOrReadinessDialog')?.close()}catch(e){}});
 $('preOrReadinessCancelBtn')?.addEventListener('click',()=>{try{$('preOrReadinessDialog')?.close()}catch(e){}});
-$('preOrGoFixBtn')?.addEventListener('click',()=>{const b=$('preOrGoFixBtn'),tab=b?.dataset.tab||'preop',target=b?.dataset.target||'';try{$('preOrReadinessDialog')?.close()}catch(e){}setTab(tab,{force:true});setTimeout(()=>{const el=$(target)||document.getElementById(target);el?.scrollIntoView?.({behavior:'smooth',block:'center'});el?.focus?.()},100)});
+function runPreOrReadinessFix(tab='preop',target=''){
+  try{$('preOrReadinessDialog')?.close()}catch(e){}
+  setTab(tab,{force:true});setTimeout(()=>{const el=$(target)||document.getElementById(target);window.ANESVET_WORKSPACE_OWNER?.openForElement?.(el,{persist:false,scroll:true});const focusable=el?.matches?.('input,select,textarea,button')?el:el?.querySelector?.('input:not([disabled]),select:not([disabled]),textarea:not([disabled]),button:not([disabled])');try{focusable?.focus?.({preventScroll:true})}catch(_){focusable?.focus?.()}},100);
+}
+$('preOrGoFixBtn')?.addEventListener('click',()=>{const b=$('preOrGoFixBtn');runPreOrReadinessFix(b?.dataset.tab||'preop',b?.dataset.target||'')});
+['preOrRequiredList','preOrRecommendedList'].forEach(id=>$(id)?.addEventListener('click',e=>{const b=e.target.closest?.('[data-readiness-target]');if(!b)return;e.preventDefault();e.stopPropagation();runPreOrReadinessFix(b.dataset.readinessTab||'preop',b.dataset.readinessTarget||'')}));
 $('preOrOverrideBtn')?.addEventListener('click',()=>{const st=preOrReadinessStatus();if(st.hard.length){toast('Patient identity / saved setup / current BW cannot be overridden');return}const reason=$('preOrOverrideReason')?.value.trim()||'',by=$('preOrOverrideBy')?.value.trim()||'';if(!reason){toast('กรุณาระบุเหตุผลที่ต้องเข้า OR ก่อน checklist ครบ');$('preOrOverrideReason')?.focus();return}if(!by){toast('กรุณาระบุผู้รับผิดชอบ');$('preOrOverrideBy')?.focus();return}state.preOrReadinessOverride={at:Date.now(),by,reason,blockerKeys:st.blockerKeys,missing:st.required.map(x=>x.label)};addAudit('PRE_OR_READINESS_OVERRIDE',`${st.required.map(x=>x.label).join(' • ')} • Reason: ${reason}`,by);save();try{$('preOrReadinessDialog')?.close()}catch(e){}toast('⚠ OR readiness override documented');setTab(pendingPreOrTarget,{force:true})});
 $('preOrBriefingCloseBtn')?.addEventListener('click',()=>{try{$('preOrBriefingDialog')?.close()}catch(e){}});
 $('preOrBriefingBackBtn')?.addEventListener('click',()=>{try{$('preOrBriefingDialog')?.close()}catch(e){}setTab('casesummary',{force:true})});
@@ -3082,7 +3087,9 @@ function buildPdfReport(){
     reportInfoItem('ETT size',$('airwayEttSize')?.value?`${$('airwayEttSize').value} mm`:'—'),
     reportInfoItem('ETT depth',$('airwayEttDepth')?.value?`${$('airwayEttDepth').value} cm`:'—'),
     reportInfoItem('Intubation',$('airwayDifficulty')?.value||'—'),
+    reportInfoItem('Attempts',$('airwayAttempts')?.value||'—'),
     reportInfoItem('Circuit',$('airwayCircuit')?.value||'—'),
+    reportInfoItem('Airway note',$('airwayNote')?.value||'—'),
     reportInfoItem('Ventilation mode',$('airwayVentMode')?.value||'—')
   ].join('');
 
@@ -3916,7 +3923,7 @@ function freshState(){
     planPremed:'',planInduction:'',planMaintenance:'',planAnalgesia:'',planAntibiotic:'',planNSAID:'',planBlock:'',planNote:'',
     actualDiazepamMl:'',actualPropofolMl:'',actualTramadolMl:'',
     balanceCrystalloid:'',balanceBolus:'',balanceBloodIn:'',balanceBloodLoss:'',balanceUrine:'',fluidActualTotal:'',
-    airwayEttSize:'',airwayEttDepth:'',airwayCuff:'',airwayDifficulty:'',airwayCircuit:'',airwayVentMode:'',airwayVt:'',airwayPip:'',airwayPeep:'',airwayVentRr:'',
+    airwayEttSize:'',airwayEttDepth:'',airwayCuff:'',airwayDifficulty:'',airwayAttempts:'',airwayCircuit:'',airwayNote:'',airwayVentMode:'',airwayVt:'',airwayPip:'',airwayPeep:'',airwayVentRr:'',
     recHR:'',recRR:'',recMAP:'',recSpO2:'',recTemp:'',recExtubation:'',recOxygen:'',recMentation:'',recPain:'',recPainScale:'',recPainScore:'',recDysphoria:'',recNausea:'',recAmbulation:'',recDestination:'',recHandoffTo:'',recTransferNote:'',recNaReason:'',recScoreAirway:'',recScoreOxygen:'',recScoreTemp:'',recScoreMentation:'',recScoreComfort:'',recScoreNote:'',
     caseStartedAt:null,caseIdentitySnapshot:null,casePhase:'setup',recoveryStartedAt:null,recoveryCompletedAt:null,recoveryCompletionOverride:null,emergencyReturnActive:false,
     surgeryEndedAt:null,extubatedAt:null,lastSavedAt:null,caseLocked:false,lockedAt:null,protocolSnapshot:null,caseDrugPlan:[],caseDrugPlanInitialized:false,caseDrugPlanReviewedAt:null,caseDrugPlanReviewedBy:'',medicationReconciliation:{version:1,decisions:{}},preOrReadinessOverride:null,preOrBriefingReview:null,orLastTransition:null,
@@ -4021,6 +4028,13 @@ const PWA_CONTROLLER=window.ANESVET_PWA_CONTROLLER?.create?.({
   isReloadUnsafe:()=>versionReloadUnsafe(),
   prepareForUpdate:()=>prepareForVersionUpdate(),
   onReloadStarting:()=>{versionUpdateReloadInProgress=true},
+  flushOnFreeze:()=>flushPendingSave('page-freeze'),
+  restoreAfterBFCache:()=>{
+    renderOrLive();renderRecovery();writeSessionLock();
+    if(autoWakeEnabled())requestScreenWakeLock(true);
+    window.ANESVET_MOBILE_OR_OWNER?.sync?.('pageshow-bfcache');
+    OR_LIVE_CONTROLLER.refreshFastViewport?.('pageshow-bfcache');
+  },
   toast,
   serviceWorkerUrl:`./service-worker.js?v=${APP_VERSION}`
 });
@@ -4228,6 +4242,7 @@ $('dismissSafetyRecoveryBtn')?.addEventListener('click',()=>{startupRecoveryNoti
 
 BOOT?.mark?.('public-api-publishing');
 window.AnesvetApp=Object.freeze({
+  version:APP_VERSION,
   getState:()=>state,
   startupStatus:()=>({primaryUnreadable:startupPrimaryUnreadable,recoveredOnlyInMemory:startupRecoveredOnlyInMemory,restoreReview:restoreJournalNeedsReview(),freshnessBlocked:CASE_FRESHNESS.isBlocked(),freshnessReason:CASE_FRESHNESS.reason(),sessionActive:sessionActive()}),
   save:(options)=>save(options),

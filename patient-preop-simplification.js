@@ -1,54 +1,32 @@
-/* ANESVET V17.11.3 — Patient + Pre-op progressive workflow presentation. */
+/* ANESVET V17.13.3 — canonical Patient + Pre-op presentation owner.
+ * Owns patient essentials/details, linked-patient compact UI, and pre-op next-task UX.
+ * Presentation only: no clinical calculations, safety gates, or record semantics changed. */
 (function(root){
 'use strict';
-const $=id=>document.getElementById(id);
-const SECONDARY='.patient-secondary-field';
-function value(id){const e=$(id);return String(e?.value||'').trim()}
-function patientState(){
- const missing=[];
- if(!value('patientName'))missing.push('ชื่อ');
- if(!value('species'))missing.push('Species');
- const w=Number(value('weight'));if(!(w>0))missing.push('Current BW');
- if(!value('patientProcedure')&&!value('procedure'))missing.push('Procedure');
- if(!value('asa'))missing.push('ASA');
- return {missing,ready:missing.length===0};
-}
-function renderPatient(){
- const s=patientState(),box=$('patientRequiredSummary');if(!box)return;
- box.classList.toggle('ready',s.ready);
- box.textContent=s.ready?'✓ ข้อมูลหลักพร้อม — ตรวจข้อควรระวัง แล้วบันทึกไป Pre-check':`ยังขาด ${s.missing.length} รายการ: ${s.missing.join(' • ')}`;
-}
-function setDetails(open,persist=true){
- document.querySelectorAll(`#patient ${SECONDARY}`).forEach(el=>el.classList.toggle('patient-secondary-open',!!open));
- const b=$('patientMoreDetailsBtn');if(b){b.setAttribute('aria-expanded',String(!!open));b.textContent=open?'− ซ่อนรายละเอียดเพิ่มเติม':'＋ รายละเอียดเพิ่มเติม'}
- if(persist){try{localStorage.setItem('anesvet.patient.details.open',open?'1':'0')}catch(_){}}
-}
-function revealSecondaryFor(el){
- const sec=el?.closest?.(SECONDARY);if(sec&&!sec.classList.contains('patient-secondary-open'))setDetails(true);
-}
-function preopNext(){
- const b=$('preopNextIncompleteBtn');if(b&&!b.disabled){b.click();return}
- const exam=$('preopExamStatus'),risk=$('preopRiskStatus');
- if(exam&&!/RECORDED|DONE|COMPLETE/i.test(exam.textContent||'')){root.ANESVET_WORKSPACE_OWNER?.openForElement?.($('preopExamHeading'),{scroll:true});return}
- if(risk&&!/REVIEWED|DONE|COMPLETE/i.test(risk.textContent||'')){root.ANESVET_WORKSPACE_OWNER?.openForElement?.($('preopRiskHeading'),{scroll:true});return}
-}
-function renderPreop(){
- const progress=$('preopProgress'),title=$('preopQuickTitle'),summary=$('preopQuickSummary'),btn=$('preopQuickActionBtn');if(!progress||!title||!summary||!btn)return;
- const text=(progress.textContent||'').trim(),m=text.match(/(\d+)\s*\/\s*(\d+)/),done=m?Number(m[1]):0,total=m?Number(m[2]):0,complete=total>0&&done>=total;
- if(complete){title.textContent='✓ Pre-op checklist reviewed';summary.textContent='ไป Drug Plan / Readiness ต่อได้ โดย safety gate เดิมยังตรวจครบ';btn.textContent='→ ไป Drug Plan';btn.dataset.mode='drugs'}
- else{title.textContent=done?`เหลือ ${Math.max(0,total-done)} รายการที่ต้องทบทวน`:'เริ่ม Pre-op review';summary.textContent='ทำรายการที่ยังขาดทีละรายการ • ระบบไม่ mark Done หรือ N/A ให้อัตโนมัติ';btn.textContent='↓ ทำรายการถัดไป';btn.dataset.mode='next'}
-}
-function bind(){
- if(bind.done)return;bind.done=true;
- let open=false;try{open=localStorage.getItem('anesvet.patient.details.open')==='1'}catch(_){}
- setDetails(open);renderPatient();renderPreop();
- $('patientMoreDetailsBtn')?.addEventListener('click',()=>setDetails($('patientMoreDetailsBtn')?.getAttribute('aria-expanded')!=='true'));
- $('#patient');
- ['patientName','species','weight','patientProcedure','procedure','asa'].forEach(id=>$(id)?.addEventListener('input',renderPatient));
+root.ANESVET_PRESENTATION_OWNERSHIP?.claim?.('patient.layout','patient-preop-v17130');
+root.ANESVET_PRESENTATION_OWNERSHIP?.claim?.('preop.layout','patient-preop-v17130');
+const VERSION='17.13.3',$=id=>document.getElementById(id),q=(sel,scope=document)=>scope?.querySelector?.(sel)||null,qa=(sel,scope=document)=>[...(scope?.querySelectorAll?.(sel)||[])];
+const SECONDARY='.patient-secondary-field';let patientBrowsing=false,pending=false;
+const value=id=>String($(id)?.value||'').trim();
+const isGood=el=>!!el&&el.classList.contains('good');
+function schedule(){if(pending)return;pending=true;requestAnimationFrame(()=>{pending=false;renderPatient();renderPreop();renderPatientMasterCompact()})}
+function patientState(){const missing=[];if(!value('patientName'))missing.push('ชื่อ');if(!value('species'))missing.push('Species');const w=Number(value('weight'));if(!(w>0))missing.push('Current BW');if(!value('patientProcedure')&&!value('procedure'))missing.push('Procedure');if(!value('asa'))missing.push('ASA');return {missing,ready:!missing.length}}
+function renderPatient(){const s=patientState(),box=$('patientRequiredSummary');if(box){box.classList.toggle('ready',s.ready);box.textContent=s.ready?'✓ ข้อมูลหลักพร้อม — ตรวจข้อควรระวัง แล้วบันทึกไป Pre-check':`ยังขาด ${s.missing.length} รายการ: ${s.missing.join(' • ')}`}$('patient')?.classList.toggle('ux-step-complete',isGood($('patientSaveStatus')))}
+function setDetails(open,persist=true){document.querySelectorAll(`#patient ${SECONDARY}`).forEach(el=>el.classList.toggle('patient-secondary-open',!!open));const b=$('patientMoreDetailsBtn');if(b){b.setAttribute('aria-expanded',String(!!open));b.textContent=open?'− ซ่อนรายละเอียดเพิ่มเติม':'＋ รายละเอียดเพิ่มเติม'}if(persist){try{localStorage.setItem('anesvet.patient.details.open',open?'1':'0')}catch(_){}}}
+function revealSecondaryFor(el){const sec=el?.closest?.(SECONDARY);if(sec&&!sec.classList.contains('patient-secondary-open'))setDetails(true,false)}
 
- $('preopQuickActionBtn')?.addEventListener('click',()=>{if($('preopQuickActionBtn')?.dataset.mode==='drugs')root.AnesvetApp?.setTab?.('drugs');else preopNext()});
- const po=$('preopProgress');if(po)new MutationObserver(renderPreop).observe(po,{subtree:true,childList:true,characterData:true,attributes:true});
-}
-root.ANESVET_PATIENT_PREOP_SIMPLIFICATION=Object.freeze({version:'17.11.3',bind,renderPatient,renderPreop,setDetails});
+/* Linked Patient Master stays compact after a patient is selected. */
+function setupPatientMasterCompact(){const panel=q('#patient .patient-master-panel'),banner=$('linkedPatientBanner');if(!panel||!banner)return;if(!$('patientMasterChangeBtn')){const btn=document.createElement('button');btn.id='patientMasterChangeBtn';btn.type='button';btn.className='btn ux-patient-change-btn';btn.textContent='ค้นหา / เปลี่ยน';const unlink=$('unlinkPatientBtn');if(unlink?.parentElement===banner)banner.insertBefore(btn,unlink);else banner.appendChild(btn);btn.addEventListener('click',()=>{patientBrowsing=true;renderPatientMasterCompact();requestAnimationFrame(()=>$('patientMasterSearch')?.focus())})}$('unlinkPatientBtn')?.addEventListener('click',()=>{patientBrowsing=false;setTimeout(renderPatientMasterCompact,0)});$('newPatientMasterBtn')?.addEventListener('click',()=>{patientBrowsing=false;setTimeout(renderPatientMasterCompact,0)});$('patientMasterSearch')?.addEventListener('input',()=>{if(value('patientMasterSearch'))patientBrowsing=true;renderPatientMasterCompact()});new MutationObserver(renderPatientMasterCompact).observe(banner,{attributes:true,attributeFilter:['hidden']});renderPatientMasterCompact()}
+function renderPatientMasterCompact(){const panel=q('#patient .patient-master-panel'),banner=$('linkedPatientBanner');if(!panel||!banner)return;const linked=!banner.hidden;if(!linked)patientBrowsing=false;panel.classList.toggle('ux-linked-patient',linked);panel.classList.toggle('ux-linked-compact',linked&&!patientBrowsing)}
+
+/* Pre-op next-task owner migrated from pilot-efficiency. */
+function preopItemReviewed(item){const cb=item?.querySelector?.('.preop-check');return !!cb?.checked||!!item?.classList?.contains('na')}
+function firstIncompletePreopTarget(){const exam=$('preopExamStatus'),risk=$('preopRiskStatus');if(exam&&!isGood(exam))return q('#preop .preop-exam-panel');if(risk&&!isGood(risk))return q('#preop .preop-risk-panel');return qa('#preop .preop-item').find(item=>!preopItemReviewed(item))||q('#preop .preop-footer')}
+function scrollAndFocus(target){if(!target)return;root.ANESVET_WORKSPACE_OWNER?.openForElement?.(target,{persist:false,scroll:true});const focusable=target.matches?.('input,select,textarea,button')?target:target.querySelector?.('input:not([disabled]),select:not([disabled]),textarea:not([disabled]),button:not([disabled])');setTimeout(()=>{try{focusable?.focus?.({preventScroll:true})}catch(_){focusable?.focus?.()}},80)}
+function preopNext(){scrollAndFocus(firstIncompletePreopTarget())}
+function updatePreopEfficiency(){const page=$('preop'),focus=$('preopFocusIncomplete'),summary=$('preopRemainingSummary'),nextBtn=$('preopNextIncompleteBtn');if(!page||!summary||!nextBtn)return;const items=qa('#preop .preop-item'),remaining=items.filter(item=>!preopItemReviewed(item)).length,examComplete=isGood($('preopExamStatus')),riskComplete=isGood($('preopRiskStatus'));q('#preop .preop-exam-panel')?.classList.toggle('preop-complete-ui',examComplete);q('#preop .preop-risk-panel')?.classList.toggle('preop-complete-ui',riskComplete);if(focus)page.classList.toggle('preop-focus-incomplete',focus.checked);summary.className=`preop-remaining-summary ${remaining===0?'complete':''}`;summary.textContent=remaining===0?'✓ Checklist ครบแล้ว':`เหลือ ${remaining} รายการ`;nextBtn.textContent=remaining===0?'✓ Checklist ครบ • ไปท้ายหน้า':'↓ รายการถัดไปที่ยังไม่เสร็จ';page.classList.toggle('ux-step-complete',isGood($('preopProgress')))}
+function renderPreop(){const progress=$('preopProgress'),title=$('preopQuickTitle'),summary=$('preopQuickSummary'),btn=$('preopQuickActionBtn');if(progress&&title&&summary&&btn){const text=(progress.textContent||'').trim(),m=text.match(/(\d+)\s*\/\s*(\d+)/),done=m?Number(m[1]):0,total=m?Number(m[2]):0,complete=total>0&&done>=total;if(complete){title.textContent='✓ Pre-op checklist reviewed';summary.textContent='ไป Drug Plan / Readiness ต่อได้ โดย safety gate เดิมยังตรวจครบ';btn.textContent='→ ไป Drug Plan';btn.dataset.mode='drugs'}else{title.textContent=done?`เหลือ ${Math.max(0,total-done)} รายการที่ต้องทบทวน`:'เริ่ม Pre-op review';summary.textContent='ทำรายการที่ยังขาดทีละรายการ • ระบบไม่ mark Done หรือ N/A ให้อัตโนมัติ';btn.textContent='↓ ทำรายการถัดไป';btn.dataset.mode='next'}}updatePreopEfficiency()}
+function bind(){if(bind.done)return;bind.done=true;let open=false;try{open=localStorage.getItem('anesvet.patient.details.open')==='1'}catch(_){}setDetails(open,false);setupPatientMasterCompact();renderPatient();renderPreop();$('patientMoreDetailsBtn')?.addEventListener('click',()=>setDetails($('patientMoreDetailsBtn')?.getAttribute('aria-expanded')!=='true'));['patientName','species','weight','patientProcedure','procedure','asa'].forEach(id=>{$(id)?.addEventListener('input',schedule);$(id)?.addEventListener('change',schedule)});$('preopQuickActionBtn')?.addEventListener('click',()=>{$('preopQuickActionBtn')?.dataset.mode==='drugs'?root.AnesvetApp?.setTab?.('drugs'):preopNext()});$('preopNextIncompleteBtn')?.addEventListener('click',preopNext);$('preopFocusIncomplete')?.addEventListener('change',updatePreopEfficiency);const obs=new MutationObserver(schedule);['patientSaveStatus','preopProgress','preopExamStatus','preopRiskStatus'].forEach(id=>{const el=$(id);if(el)obs.observe(el,{attributes:true,childList:true,characterData:true,subtree:true})});qa('#preop .preop-item').forEach(el=>obs.observe(el,{attributes:true,attributeFilter:['class']}));document.addEventListener('change',e=>{if(e.target.closest?.('#preop'))schedule()},true);renderPatient();renderPreop()}
+root.ANESVET_PATIENT_PREOP_SIMPLIFICATION=Object.freeze({version:VERSION,bind,renderPatient,renderPreop,setDetails,revealSecondaryFor,preopNext,firstIncompletePreopTarget,updatePreopEfficiency,renderPatientMasterCompact});
 root.ANESVET_LIFECYCLE_COORDINATOR?.ready(bind);
 })(window);

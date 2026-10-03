@@ -1,9 +1,0 @@
-{
-  "version": "16.19.0",
-  "status": "blocked",
-  "method": "local HTTP server + system Chromium --headless --dump-dom",
-  "timeoutSeconds": 20,
-  "exitCode": 124,
-  "domProduced": false,
-  "notes": "Chromium timed out in the sandbox with D-Bus/service-process errors. This is not counted as a browser smoke PASS. Real-device PWA regression remains required."
-}

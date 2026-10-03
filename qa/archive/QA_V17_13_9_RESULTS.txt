@@ -1,0 +1,41 @@
+ANESVET V17.13.9 — Canonical CSS Ownership Migration I
+
+Contract QA
+- QA_V17_13_9_CANONICAL_CSS_OWNERSHIP.js: 38/38 PASS
+- QA_V17_13_9_STATIC_INTEGRITY.js: 15/15 PASS
+- QA_V17_13_9_CURRENT_WORKFLOW.js: 31/31 PASS
+- QA_V17_13_9_END_TO_END.js: 17/17 PASS
+- QA_V17_13_9_OR_INTERACTION.js: 33/33 PASS
+TOTAL: 134/134 PASS
+
+Syntax / parser
+- startup JS: 69/69 PASS
+- startup + lazy runtime JS union: 76/76 PASS
+- service-worker.js syntax: PASS
+- CSS parser: 4/4 PASS, 0 errors
+
+Service Worker
+- ASSETS: 119
+- JS assets: 75
+- CSS assets: 2
+
+Canonical CSS migration
+- or-speed-hardening.css retired from package
+- or-clinical-interaction.css canonical replacement present
+- repeat-use-r26.css retired from package
+- repeat-presentation-owner.css canonical replacement present
+- both migrated source files preserve V17.13.8 source bytes exactly
+- source marker positions preserved (24/38 and 33/38)
+- normalized anesvet-ui-bundle.css is byte-equivalent to V17.13.8
+- bundle delta is +16 bytes from marker names only
+
+Clinical contracts preserved by regression
+- Induction = Given / details pending
+- editable induction administration time
+- Intubation timestamp-only
+- Fast Vital
+- Quick Drug
+- End Surgery
+- Emergency Return OR ↔ Recovery
+- Recovery / handoff
+- Final Lock / archive verification

@@ -1,0 +1,576 @@
+{
+  "schemaVersion": 1,
+  "release": "17.14.4",
+  "policy": {
+    "startupJsMoveStatus": "moved-platform-clinical-complete-app-foundation-domains-orchestration-and-controllers",
+    "preserveExactStartupOrder": true,
+    "serviceWorkerMustPrecacheStartupAndLazyJs": true,
+    "futureMovesRequireManifestAndQaUpdate": true,
+    "lazyJsMoveStatus": "moved-runtime-knowledge",
+    "movedStartupGroups": [
+      "platform-foundation",
+      "clinical-foundation",
+      "app-foundation-core-utils",
+      "app-foundation-state-storage",
+      "app-foundation-session",
+      "domains-positions-19-23",
+      "orchestration-positions-24-26",
+      "controllers-positions-27-33"
+    ],
+    "appFoundationMigration": "core-utils-positions-9-12-state-storage-13-16-and-session-pair-17-18-moved",
+    "domainsMigration": "positions-19-23-moved-to-runtime-domains",
+    "orchestrationMigration": "positions-24-26-moved-to-runtime-orchestration",
+    "controllersMigration": "positions-27-33-moved-to-runtime-controllers",
+    "postRefactorUxVerification": "keyboard-end-surgery-recovery-startup-verified-mobile-version-authority-fixed",
+    "clinicalUxImprovement": "or-medication-queue-auto-compact-when-current-phase-clear",
+    "clinicalPilotSimulation": "routine-hypotension-recovery-deterministic-production-controller-pass",
+    "pilotEvidenceVersionAuthority": "simulation-pilot-validation-read-current-app-version",
+    "clinicalPilotStressSimulation": "vitals-medication-emergency-session-bfcache-backup-final-lock-stress-pass",
+    "pilotCacheReadiness": "current-build-dynamic-cache-name",
+    "physicalPilotReadiness": "local-only-viewport-keyboard-focus-longtask-memory-bfcache-telemetry"
+  },
+  "groups": {
+    "platform-foundation": {
+      "future_dir": "runtime/platform",
+      "description": "Lifecycle, viewport, workspace and presentation ownership foundation"
+    },
+    "clinical-foundation": {
+      "future_dir": "runtime/clinical",
+      "description": "Drug references, protocol review and clinical workflow foundation"
+    },
+    "app-foundation": {
+      "future_dir": "runtime/core",
+      "description": "App shell, storage, sessions, reliability and shared validation"
+    },
+    "domains": {
+      "future_dir": "runtime/domains",
+      "description": "Patient, OR and recovery domain boundaries plus PWA/dose controller boundaries"
+    },
+    "orchestration": {
+      "future_dir": "runtime/orchestration",
+      "description": "Cross-domain orchestration layers"
+    },
+    "controllers": {
+      "future_dir": "runtime/controllers",
+      "description": "Feature controllers and finalization/archive controllers"
+    },
+    "governance-sync": {
+      "future_dir": "runtime/governance",
+      "description": "Governance, validation, sync, security, review and production diagnostics"
+    },
+    "resilience-models": {
+      "future_dir": "runtime/resilience",
+      "description": "Rescue/freshness, pure utilities and deterministic lifecycle/view models"
+    },
+    "app-core": {
+      "future_dir": "runtime/core",
+      "description": "Main application integration layer"
+    },
+    "safety-workflow": {
+      "future_dir": "runtime/workflows",
+      "description": "Data safety, reconciliation, help and finalization workflow support"
+    },
+    "workflow-refinements": {
+      "future_dir": "runtime/workflows",
+      "description": "Patient/Drug/OR/Recovery workflow refinements and repeat presentation"
+    },
+    "optional-startup": {
+      "future_dir": "runtime/optional",
+      "description": "Simulation, lazy knowledge entrypoint, OR knowledge and mobile design"
+    }
+  },
+  "entrypoints": {
+    "html": "index.html",
+    "serviceWorker": "service-worker.js",
+    "manifest": "manifest.webmanifest",
+    "appCore": "app.js"
+  },
+  "styles": [
+    {
+      "id": "ui-bundle",
+      "path": "assets/css/anesvet-ui-bundle.css",
+      "precache": true
+    },
+    {
+      "id": "or-workspace",
+      "path": "assets/css/or-workspace-restructure.css",
+      "precache": true
+    }
+  ],
+  "icons": [
+    {
+      "id": "app-192",
+      "path": "assets/icons/icon-192.png",
+      "precache": true
+    },
+    {
+      "id": "app-512",
+      "path": "assets/icons/icon-512.png",
+      "precache": true
+    },
+    {
+      "id": "maskable-512",
+      "path": "assets/icons/icon-maskable-512.png",
+      "precache": true
+    }
+  ],
+  "startupModules": [
+    {
+      "order": 1,
+      "path": "runtime/platform/lifecycle-coordinator.js",
+      "group": "platform-foundation",
+      "futurePath": "runtime/platform/lifecycle-coordinator.js"
+    },
+    {
+      "order": 2,
+      "path": "runtime/platform/viewport-coordinator.js",
+      "group": "platform-foundation",
+      "futurePath": "runtime/platform/viewport-coordinator.js"
+    },
+    {
+      "order": 3,
+      "path": "runtime/platform/workspace-owner.js",
+      "group": "platform-foundation",
+      "futurePath": "runtime/platform/workspace-owner.js"
+    },
+    {
+      "order": 4,
+      "path": "runtime/platform/presentation-ownership.js",
+      "group": "platform-foundation",
+      "futurePath": "runtime/platform/presentation-ownership.js"
+    },
+    {
+      "order": 5,
+      "path": "runtime/platform/mobile-or-owner.js",
+      "group": "platform-foundation",
+      "futurePath": "runtime/platform/mobile-or-owner.js"
+    },
+    {
+      "order": 6,
+      "path": "runtime/clinical/drug-dose-reference.js",
+      "group": "clinical-foundation",
+      "futurePath": "runtime/clinical/drug-dose-reference.js"
+    },
+    {
+      "order": 7,
+      "path": "runtime/clinical/protocol-review.js",
+      "group": "clinical-foundation",
+      "futurePath": "runtime/clinical/protocol-review.js"
+    },
+    {
+      "order": 8,
+      "path": "runtime/clinical/clinical-workflow.js",
+      "group": "clinical-foundation",
+      "futurePath": "runtime/clinical/clinical-workflow.js"
+    },
+    {
+      "order": 9,
+      "path": "runtime/core/app-shell.js",
+      "group": "app-foundation",
+      "futurePath": "runtime/core/app-shell.js"
+    },
+    {
+      "order": 10,
+      "path": "runtime/core/case-lifecycle.js",
+      "group": "app-foundation",
+      "futurePath": "runtime/core/case-lifecycle.js"
+    },
+    {
+      "order": 11,
+      "path": "runtime/core/support.js",
+      "group": "app-foundation",
+      "futurePath": "runtime/core/support.js"
+    },
+    {
+      "order": 12,
+      "path": "runtime/core/reliability.js",
+      "group": "app-foundation",
+      "futurePath": "runtime/core/reliability.js"
+    },
+    {
+      "order": 13,
+      "path": "runtime/core/branding.js",
+      "group": "app-foundation",
+      "futurePath": "runtime/core/branding.js"
+    },
+    {
+      "order": 14,
+      "path": "runtime/core/clinical-validation.js",
+      "group": "app-foundation",
+      "futurePath": "runtime/core/clinical-validation.js"
+    },
+    {
+      "order": 15,
+      "path": "runtime/core/case-runtime.js",
+      "group": "app-foundation",
+      "futurePath": "runtime/core/case-runtime.js"
+    },
+    {
+      "order": 16,
+      "path": "runtime/core/core-storage.js",
+      "group": "app-foundation",
+      "futurePath": "runtime/core/core-storage.js"
+    },
+    {
+      "order": 17,
+      "path": "runtime/core/session-coordination.js",
+      "group": "app-foundation",
+      "futurePath": "runtime/core/session-coordination.js"
+    },
+    {
+      "order": 18,
+      "path": "runtime/core/session-controller.js",
+      "group": "app-foundation",
+      "futurePath": "runtime/core/session-controller.js"
+    },
+    {
+      "order": 19,
+      "path": "runtime/domains/pwa-controller.js",
+      "group": "domains",
+      "futurePath": "runtime/domains/pwa-controller.js"
+    },
+    {
+      "order": 20,
+      "path": "runtime/domains/dose-reference-controller.js",
+      "group": "domains",
+      "futurePath": "runtime/domains/dose-reference-controller.js"
+    },
+    {
+      "order": 21,
+      "path": "runtime/domains/patient-domain.js",
+      "group": "domains",
+      "futurePath": "runtime/domains/patient-domain.js"
+    },
+    {
+      "order": 22,
+      "path": "runtime/domains/or-domain.js",
+      "group": "domains",
+      "futurePath": "runtime/domains/or-domain.js"
+    },
+    {
+      "order": 23,
+      "path": "runtime/domains/recovery-domain.js",
+      "group": "domains",
+      "futurePath": "runtime/domains/recovery-domain.js"
+    },
+    {
+      "order": 24,
+      "path": "runtime/orchestration/patient-master-orchestration.js",
+      "group": "orchestration",
+      "futurePath": "runtime/orchestration/patient-master-orchestration.js"
+    },
+    {
+      "order": 25,
+      "path": "runtime/orchestration/or-record-orchestration.js",
+      "group": "orchestration",
+      "futurePath": "runtime/orchestration/or-record-orchestration.js"
+    },
+    {
+      "order": 26,
+      "path": "runtime/orchestration/recovery-orchestration.js",
+      "group": "orchestration",
+      "futurePath": "runtime/orchestration/recovery-orchestration.js"
+    },
+    {
+      "order": 27,
+      "path": "runtime/controllers/patient-master-controller.js",
+      "group": "controllers",
+      "futurePath": "runtime/controllers/patient-master-controller.js"
+    },
+    {
+      "order": 28,
+      "path": "runtime/controllers/preop-controller.js",
+      "group": "controllers",
+      "futurePath": "runtime/controllers/preop-controller.js"
+    },
+    {
+      "order": 29,
+      "path": "runtime/controllers/medication-workspace-controller.js",
+      "group": "controllers",
+      "futurePath": "runtime/controllers/medication-workspace-controller.js"
+    },
+    {
+      "order": 30,
+      "path": "runtime/controllers/or-live-controller.js",
+      "group": "controllers",
+      "futurePath": "runtime/controllers/or-live-controller.js"
+    },
+    {
+      "order": 31,
+      "path": "runtime/controllers/recovery-controller.js",
+      "group": "controllers",
+      "futurePath": "runtime/controllers/recovery-controller.js"
+    },
+    {
+      "order": 32,
+      "path": "runtime/controllers/backup-restore-controller.js",
+      "group": "controllers",
+      "futurePath": "runtime/controllers/backup-restore-controller.js"
+    },
+    {
+      "order": 33,
+      "path": "runtime/controllers/finalization-archive-controller.js",
+      "group": "controllers",
+      "futurePath": "runtime/controllers/finalization-archive-controller.js"
+    },
+    {
+      "order": 34,
+      "path": "procedure-templates.js",
+      "group": "governance-sync",
+      "futurePath": "runtime/governance/procedure-templates.js"
+    },
+    {
+      "order": 35,
+      "path": "validation-center.js",
+      "group": "governance-sync",
+      "futurePath": "runtime/governance/validation-center.js"
+    },
+    {
+      "order": 36,
+      "path": "hospital-protocol-governance.js",
+      "group": "governance-sync",
+      "futurePath": "runtime/governance/hospital-protocol-governance.js"
+    },
+    {
+      "order": 37,
+      "path": "security-baseline.js",
+      "group": "governance-sync",
+      "futurePath": "runtime/governance/security-baseline.js"
+    },
+    {
+      "order": 38,
+      "path": "sync-transport.js",
+      "group": "governance-sync",
+      "futurePath": "runtime/governance/sync-transport.js"
+    },
+    {
+      "order": 39,
+      "path": "sync-foundation.js",
+      "group": "governance-sync",
+      "futurePath": "runtime/governance/sync-foundation.js"
+    },
+    {
+      "order": 40,
+      "path": "case-review-dashboard.js",
+      "group": "governance-sync",
+      "futurePath": "runtime/governance/case-review-dashboard.js"
+    },
+    {
+      "order": 41,
+      "path": "architecture-registry.js",
+      "group": "governance-sync",
+      "futurePath": "runtime/governance/architecture-registry.js"
+    },
+    {
+      "order": 42,
+      "path": "production-pilot.js",
+      "group": "governance-sync",
+      "futurePath": "runtime/governance/production-pilot.js"
+    },
+    {
+      "order": 43,
+      "path": "active-case-rescue.js",
+      "group": "resilience-models",
+      "futurePath": "runtime/resilience/active-case-rescue.js"
+    },
+    {
+      "order": 44,
+      "path": "active-case-freshness.js",
+      "group": "resilience-models",
+      "futurePath": "runtime/resilience/active-case-freshness.js"
+    },
+    {
+      "order": 45,
+      "path": "app-pure-utils.js",
+      "group": "resilience-models",
+      "futurePath": "runtime/resilience/app-pure-utils.js"
+    },
+    {
+      "order": 46,
+      "path": "recovery-handoff-view-model.js",
+      "group": "resilience-models",
+      "futurePath": "runtime/resilience/recovery-handoff-view-model.js"
+    },
+    {
+      "order": 47,
+      "path": "case-lifecycle-model.js",
+      "group": "resilience-models",
+      "futurePath": "runtime/resilience/case-lifecycle-model.js"
+    },
+    {
+      "order": 48,
+      "path": "session-lifecycle-model.js",
+      "group": "resilience-models",
+      "futurePath": "runtime/resilience/session-lifecycle-model.js"
+    },
+    {
+      "order": 49,
+      "path": "or-simplification-controller.js",
+      "group": "resilience-models",
+      "futurePath": "runtime/resilience/or-simplification-controller.js"
+    },
+    {
+      "order": 50,
+      "path": "app.js",
+      "group": "app-core",
+      "futurePath": "runtime/core/app.js"
+    },
+    {
+      "order": 51,
+      "path": "data-resilience.js",
+      "group": "safety-workflow",
+      "futurePath": "runtime/workflows/data-resilience.js"
+    },
+    {
+      "order": 52,
+      "path": "data-safety-2.js",
+      "group": "safety-workflow",
+      "futurePath": "runtime/workflows/data-safety-2.js"
+    },
+    {
+      "order": 53,
+      "path": "medication-reconciliation.js",
+      "group": "safety-workflow",
+      "futurePath": "runtime/workflows/medication-reconciliation.js"
+    },
+    {
+      "order": 54,
+      "path": "help.js",
+      "group": "safety-workflow",
+      "futurePath": "runtime/workflows/help.js"
+    },
+    {
+      "order": 55,
+      "path": "clinical-next-step-controller.js",
+      "group": "safety-workflow",
+      "futurePath": "runtime/workflows/clinical-next-step-controller.js"
+    },
+    {
+      "order": 56,
+      "path": "finalization.js",
+      "group": "safety-workflow",
+      "futurePath": "runtime/workflows/finalization.js"
+    },
+    {
+      "order": 57,
+      "path": "final-archive-assurance.js",
+      "group": "safety-workflow",
+      "futurePath": "runtime/workflows/final-archive-assurance.js"
+    },
+    {
+      "order": 58,
+      "path": "documentation-guardian.js",
+      "group": "safety-workflow",
+      "futurePath": "runtime/workflows/documentation-guardian.js"
+    },
+    {
+      "order": 59,
+      "path": "problem-response-review.js",
+      "group": "safety-workflow",
+      "futurePath": "runtime/workflows/problem-response-review.js"
+    },
+    {
+      "order": 60,
+      "path": "patient-preop-simplification.js",
+      "group": "workflow-refinements",
+      "futurePath": "runtime/workflows/patient-preop-simplification.js"
+    },
+    {
+      "order": 61,
+      "path": "drug-start-simplification.js",
+      "group": "workflow-refinements",
+      "futurePath": "runtime/workflows/drug-start-simplification.js"
+    },
+    {
+      "order": 62,
+      "path": "or-workflow-refinement.js",
+      "group": "workflow-refinements",
+      "futurePath": "runtime/workflows/or-workflow-refinement.js"
+    },
+    {
+      "order": 63,
+      "path": "or-workspace-restructure.js",
+      "group": "workflow-refinements",
+      "futurePath": "runtime/workflows/or-workspace-restructure.js"
+    },
+    {
+      "order": 64,
+      "path": "recovery-end-refinement.js",
+      "group": "workflow-refinements",
+      "futurePath": "runtime/workflows/recovery-end-refinement.js"
+    },
+    {
+      "order": 65,
+      "path": "repeat-presentation-owner.js",
+      "group": "workflow-refinements",
+      "futurePath": "runtime/workflows/repeat-presentation-owner.js"
+    },
+    {
+      "order": 66,
+      "path": "simulation-mode.js",
+      "group": "optional-startup",
+      "futurePath": "runtime/optional/simulation-mode.js"
+    },
+    {
+      "order": 67,
+      "path": "knowledge-loader.js",
+      "group": "optional-startup",
+      "futurePath": "runtime/optional/knowledge-loader.js"
+    },
+    {
+      "order": 68,
+      "path": "or-knowledge.js",
+      "group": "optional-startup",
+      "futurePath": "runtime/optional/or-knowledge.js"
+    },
+    {
+      "order": 69,
+      "path": "mobile-design.js",
+      "group": "optional-startup",
+      "futurePath": "runtime/optional/mobile-design.js"
+    }
+  ],
+  "lazyModules": [
+    {
+      "path": "runtime/knowledge/clinical-knowledge-data.js",
+      "group": "lazy-knowledge",
+      "futurePath": "runtime/knowledge/clinical-knowledge-data.js"
+    },
+    {
+      "path": "runtime/knowledge/ecg-educational-rules.js",
+      "group": "lazy-knowledge",
+      "futurePath": "runtime/knowledge/ecg-educational-rules.js"
+    },
+    {
+      "path": "runtime/knowledge/ecg-visual-atlas-data.js",
+      "group": "lazy-knowledge",
+      "futurePath": "runtime/knowledge/ecg-visual-atlas-data.js"
+    },
+    {
+      "path": "runtime/knowledge/special-patient-knowledge.js",
+      "group": "lazy-knowledge",
+      "futurePath": "runtime/knowledge/special-patient-knowledge.js"
+    },
+    {
+      "path": "runtime/knowledge/comorbidity-knowledge.js",
+      "group": "lazy-knowledge",
+      "futurePath": "runtime/knowledge/comorbidity-knowledge.js"
+    },
+    {
+      "path": "runtime/knowledge/clinical-knowledge-ui.js",
+      "group": "lazy-knowledge",
+      "futurePath": "runtime/knowledge/clinical-knowledge-ui.js"
+    },
+    {
+      "path": "runtime/knowledge/ecg-visual-atlas.js",
+      "group": "lazy-knowledge",
+      "futurePath": "runtime/knowledge/ecg-visual-atlas.js"
+    }
+  ],
+  "futureGroups": {
+    "lazy-knowledge": {
+      "future_dir": "runtime/knowledge",
+      "description": "Clinical knowledge and ECG modules loaded on demand"
+    }
+  }
+}

@@ -1,0 +1,238 @@
+===== qa/current/QA_V17_13_17_APP_FOUNDATION_AUDIT.js =====
+PASS  App foundation remains ten startup modules
+PASS  All app foundation positions remain 9–18
+PASS  All app foundation paths now live under runtime/core
+PASS  All ten app foundation files exist
+PASS  No app foundation root copies remain
+PASS  Session pair remains positions 17–18
+PASS  Session pair paths are canonical
+PASS  Session paths equal declared future paths
+PASS  Session sources contain no relative-path-sensitive loader logic
+PASS  Session coordination retains exported factory
+PASS  Session controller retains exported factory
+PASS  Session controller still depends on canonical app shell
+PASS  Session controller still depends on session coordination
+PASS  Session coordination retains localStorage lock ownership
+PASS  Session coordination retains sessionStorage tab identity
+PASS  Session coordination retains BroadcastChannel support
+PASS  Session controller retains VIEW ONLY safety guard
+PASS  Session controller retains wake ownership recovery
+PASS  Session coordination source is byte-identical to V17.13.16
+PASS  Session controller source is byte-identical to V17.13.16
+PASS  Migration policy records complete app foundation move
+
+21/21 PASS
+===== qa/current/QA_V17_13_17_CANONICAL_CSS_OWNERSHIP_II.js =====
+PASS  Runtime scripts remain 69
+PASS  Bundle retains 38 source markers
+PASS  All bundle markers now point to src/styles folders
+PASS  Every marker resolves to an existing source file
+PASS  Legacy CSS debt reduced from 11 to 9 source names
+PASS  usability-hardening.css source name is retired
+PASS  mobile-first-r27.css source name is retired
+PASS  Canonical workflow assist source exists
+PASS  Canonical mobile workspace source exists
+PASS  Workflow assist migration preserves V17.13.9 bytes
+PASS  Mobile workspace migration preserves V17.13.9 bytes
+PASS  Bundle declarations/cascade are byte-equivalent after marker normalization
+PASS  Remaining 9 legacy-active CSS sources have no inactive class selectors
+PASS  All 13 retired JS owners remain absent from startup
+PASS  All 13 retired JS owners remain preserved in src/legacy-js
+PASS  Save assist CSS contract remains
+PASS  Actionable readiness/finalization CSS contracts remain
+PASS  Return-to-case CSS contract remains
+PASS  Mobile keyboard-open contract remains
+PASS  Mobile identity bridge CSS contract remains
+PASS  Runtime delivery remains two stylesheets
+PASS  Service worker still precaches two runtime CSS assets
+PASS  Induction details-pending contract remains
+PASS  Intubation timestamp-only contract remains
+PASS  Final Lock remains
+
+25/25 PASS
+===== qa/current/QA_V17_13_17_CURRENT_WORKFLOW.js =====
+PASS  Induction start marks prepared induction meds given provisionally
+PASS  Induction start does not create full drug administration records
+PASS  Provisional list persisted in case state
+PASS  Only frozen planned induction meds are provisionally marked
+PASS  Provisional record uses Induction milestone epoch
+PASS  Provisional status explicitly details-pending
+PASS  Induction marking creates audit entry
+PASS  Quick drug button later opens editor rather than recording a new-time administration
+PASS  Later review defaults to provisional Induction time
+PASS  Editable administration time field exists
+PASS  Time input is shown for induction medication review
+PASS  Edited clock converts safely around midnight
+PASS  Edited administration time is used in actual drug record
+PASS  Time adjustment is retained in audit note
+PASS  Confirming actual details completes provisional record
+PASS  Induction review cannot complete with details pending
+PASS  Queue recognizes Given-but-details-pending state
+PASS  Queue labels provisional administration as Given Review
+PASS  Generic quick-med strip redirects provisional induction to review flow
+PASS  Undo restores induction provisional state
+PASS  Quick strip tells user Induction means drugs given
+PASS  Prepared drug button shows Given details pending
+PASS  Prepared drug button is still actionable until details saved
+PASS  Actual completed drug becomes non-actionable in quick strip
+PASS  Intubation remains timestamp-only
+PASS  Fluid, Vent and Airway remain deferred workspaces
+PASS  Current SW cache generation
+PASS  Current workspace assets cached
+PASS  End Surgery preserved
+PASS  Emergency Return preserved
+PASS  Final Lock preserved
+
+31/31 PASS
+===== qa/current/QA_V17_13_17_END_TO_END.js =====
+PASS  Patient gate requires identity/BW/procedure/ASA
+PASS  Drug Plan blocks unconfirmed BW and routes through review
+PASS  Start case freezes protocol/identity before OR
+PASS  Induction marks frozen induction meds Given • details pending
+PASS  Individual induction drug administration time remains editable
+PASS  Intubation remains timestamp-only
+PASS  OR monitor is fixed above secondary charting
+PASS  Surgery end uses audited workflow mutation
+PASS  Extubation enters Recovery through controller
+PASS  Emergency Return preserves explicit Recovery↔OR path
+PASS  Recovery complete goes to End Case
+PASS  Finalization retains explicit final lock path
+PASS  Case lifecycle phase order remains stable
+PASS  Recovery patch preserves first recovery timestamp
+PASS  Session model locks Recovery while Emergency Return active
+PASS  Final sealed case is reload-safe
+PASS  Synthetic completed case produces coherent recovery handoff
+
+17/17 PASS
+===== qa/current/QA_V17_13_17_OR_INTERACTION.js =====
+PASS  Current workspace version
+PASS  Vitals remain fixed above secondary navigation
+PASS  Monitor is no longer a redundant secondary-nav button
+PASS  Secondary nav contains Fluid Vent Airway Meds
+PASS  Secondary panels provide Back to Monitor action
+PASS  Clear safety state auto-compacts
+PASS  Active safety remains distinct
+PASS  Safety state observes current runtime text
+PASS  Fluid main keeps rate hero
+PASS  Fluid main keeps bolus visible
+PASS  Fluid optional actual correction moves under More
+PASS  Fluid blood loss urine blood product move under More
+PASS  Fluid visible glance is Total In + Current Rate
+PASS  Fluid effective/net/history move under More
+PASS  Vent has tap-first mode buttons
+PASS  Vent quick buttons write authoritative airwayVentMode select
+PASS  Authoritative vent select retained but visually hidden
+PASS  Airway shows Intubation timestamp from authoritative milestone
+PASS  Airway Attempts field exists
+PASS  Airway Note field exists
+PASS  Airway Attempts and Note have fresh-state persistence
+PASS  Airway Attempts and Note are in final report
+PASS  Airway autosave watches Attempts and Note
+PASS  Vaporizer discrete 0.5 steps retained
+PASS  O2 simple selector retained
+PASS  Induction given/details-pending semantics preserved
+PASS  Intubation remains timestamp-only
+PASS  Legacy Clinical Simplicity retired from runtime
+PASS  End Surgery preserved
+PASS  Emergency Return preserved
+PASS  Final Lock preserved
+PASS  Current service worker generation
+PASS  Current workspace assets cached
+\n33/33 PASS
+===== qa/current/QA_V17_13_17_PACKAGE_STRUCTURE.js =====
+PASS  Package grouping folders exist
+PASS  Root file count reduced to 56 or fewer
+PASS  No release/owner/QA artifacts remain at root
+PASS  Current QA suite contains nine scripts
+PASS  Production CSS and icons remain grouped
+PASS  Platform runtime folder retains five modules
+PASS  Clinical runtime folder retains three modules
+PASS  Core runtime folder contains all ten app foundation modules
+PASS  App foundation positions 9–18 live under runtime/core
+PASS  No app foundation root copies remain
+PASS  Other 51 startup modules intentionally remain at root
+PASS  Session pair no longer remains at root
+PASS  Runtime knowledge folder retains seven lazy modules
+PASS  Current BUILD_SHA256 and START_HERE remain at root
+PASS  Runtime map exists
+PASS  Retired JS archive remains 13 modules
+PASS  Canonical/legacy CSS source counts remain 29/9
+
+17/17 PASS
+===== qa/current/QA_V17_13_17_RUNTIME_GROUPING_VI.js =====
+PASS  Runtime map release is 17.13.17
+PASS  Runtime map declares complete app foundation move
+PASS  Moved startup groups include session subgroup
+PASS  Startup count remains 69
+PASS  Lazy count remains 7
+PASS  Runtime map startup order exactly matches index
+PASS  Every startup and lazy path exists
+PASS  Platform positions 1–5 remain grouped
+PASS  Clinical positions 6–8 remain grouped
+PASS  All app foundation positions 9–18 live under runtime/core
+PASS  All app paths equal declared future paths
+PASS  No app foundation root copies remain
+PASS  Session pair preserves positions 17–18
+PASS  Other root startup modules total 51
+PASS  Lazy knowledge remains under runtime/knowledge
+PASS  Service Worker precaches all startup modules
+PASS  Service Worker precaches all lazy modules
+PASS  No old session root paths remain in index
+PASS  No old session root paths remain in Service Worker
+PASS  All versioned startup refs use 17.13.17
+PASS  Service Worker cache generation is 17.13.17
+
+21/21 PASS
+===== qa/current/QA_V17_13_17_SESSION_OWNERSHIP.js =====
+PASS  Session pair files exist under runtime/core
+PASS  Old session root copies are absent
+PASS  Session pair remains startup positions 17–18
+PASS  Session pair map paths are canonical
+PASS  Index loads canonical session paths
+PASS  Index preserves coordination before controller
+PASS  Service Worker precaches canonical session paths
+PASS  No old root session paths remain in deployment
+PASS  Session files have no path-sensitive relative loader logic
+PASS  Controller still requires ANESVET_APP_SHELL
+PASS  Controller still requires ANESVET_SESSION_COORDINATION
+PASS  Coordination retains localStorage lock
+PASS  Coordination retains sessionStorage tab identity
+PASS  Coordination retains BroadcastChannel handoff
+PASS  Coordination retains stale-owner verifyOwnership
+PASS  Controller retains VIEW ONLY interaction guard
+PASS  Controller retains pageshow wake verification
+PASS  Controller retains orphaned-session recovery
+PASS  Coordination source matches V17.13.16 hash
+PASS  Controller source matches V17.13.16 hash
+
+20/20 PASS
+===== qa/current/QA_V17_13_17_STATIC_INTEGRITY.js =====
+PASS  69 startup scripts
+PASS  All startup scripts exist
+PASS  All local Service Worker assets exist
+PASS  HTML IDs remain unique
+PASS  First eighteen startup modules retain exact order
+PASS  Ten app foundation modules exist under runtime/core
+PASS  No app foundation root copies remain
+PASS  Session coordination still loads before session controller
+PASS  App shell remains before session controller and app core
+PASS  Core storage remains before session pair
+PASS  OR LIVE and medication controllers remain before app core
+PASS  Finalization remains before repeat presentation owner
+PASS  Fast-entry CSS remains
+PASS  Deployment refs use 17.13.17
+PASS  Current SW cache generation is V17.13.17
+
+15/15 PASS
+
+TOTAL 200/200 PASS
+
+RELEASE HARDENING
+RUNTIME_JS_SYNTAX 76/76 PASS
+SERVICE_WORKER_SYNTAX PASS
+CSS_PARSE 40/40 PASS
+LOGICAL_RUNTIME_COMPARE_V17_13_16 76/76 PASS
+SESSION_SOURCE_PRESERVATION 2/2 PASS
+SERVICE_WORKER_INVENTORY 123 assets / 76 JS / 2 CSS
+ROOT_FILES 56
+PHYSICAL_ANDROID_IPAD_PWA_IME NOT_PERFORMED

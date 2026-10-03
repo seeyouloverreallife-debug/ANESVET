@@ -1,3 +1,0 @@
-ANESVET V15.12.0 Clinical Safety & Reliability
-Base: V15.11.0
-Scope: browser/device hardening, runtime diagnostics, clinical calculation sanity checks, direct Email/Facebook support reporting

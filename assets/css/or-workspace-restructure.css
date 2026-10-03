@@ -1,0 +1,565 @@
+/* ANESVET V17.11.3 — OR LIVE task-based workspace */
+#orlive .or-workspace-nav{
+  display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;
+  margin:10px 0 12px;padding:6px;border:1px solid #b9d3d1;border-radius:16px;
+  background:#eef6f5;
+}
+#orlive .or-workspace-nav button{
+  position:relative;min-width:0;min-height:58px;border:0;border-radius:12px;
+  background:transparent;color:#315b5c;padding:8px 7px;font:inherit;text-align:center;
+  display:grid;align-content:center;gap:2px;cursor:pointer;
+}
+#orlive .or-workspace-nav button>span{font-weight:850;font-size:.92rem}
+#orlive .or-workspace-nav button>small{font-size:.68rem;color:#6c8585;line-height:1.2}
+#orlive .or-workspace-nav button.active{background:#145d56;color:white;box-shadow:0 1px 0 rgba(0,0,0,.04)}
+#orlive .or-workspace-nav button.active>small{color:#d6eeeb}
+#orlive .or-workspace-badge{
+  position:absolute;right:5px;top:4px;padding:2px 5px;border-radius:999px;
+  background:#fff3d6;color:#7c5b06;font-size:.55rem;line-height:1.25;font-weight:900;
+  max-width:74px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+#orlive .or-workspace-badge.done{background:#dcf5e5;color:#24643d}
+#orlive .or-workspace-host{display:block;min-width:0}
+#orlive .or-workspace-panel[hidden]{display:none!important}
+#orlive .or-workspace-panel{display:grid;gap:12px;min-width:0}
+#orlive .or-workspace-section-head{
+  display:flex;align-items:flex-start;justify-content:space-between;gap:12px;
+  padding:12px 14px;border:1px solid #d3e2e0;border-radius:14px;background:#f7fbfa;
+}
+#orlive .or-workspace-section-head span{font-size:.64rem;font-weight:900;letter-spacing:.08em;color:#58807d}
+#orlive .or-workspace-section-head h2,#orlive .or-workspace-section-head h3{margin:2px 0 1px;color:#194c4b}
+#orlive .or-workspace-section-head small{color:#6c8080;line-height:1.35}
+#orlive .or-monitor-heading{display:none}
+#orlive .or-monitor-anesthesia-controls{border:1px solid #c9ddda;border-radius:18px;padding:12px;background:#f7fbfa}
+#orlive .or-monitor-anesthesia-controls>.or-workspace-section-head{border:0;padding:0 0 10px;background:transparent}
+#orlive .or-monitor-control-grid{display:grid;grid-template-columns:.8fr 1fr 1fr;gap:10px;align-items:stretch}
+#orlive .or-monitor-control-grid article{
+  min-width:0;border:1px solid #ccdddb;border-radius:14px;background:white;padding:10px;
+}
+#orlive .or-control-title{display:flex;justify-content:space-between;align-items:baseline;gap:6px;margin-bottom:8px}
+#orlive .or-control-title b{color:#174d49}
+#orlive .or-control-title small{font-size:.68rem;color:#708483;text-align:right}
+#orlive .or-authoritative-control{display:grid!important;gap:4px!important;font-size:.72rem!important;color:#617877!important}
+#orlive .or-authoritative-control input,#orlive .or-authoritative-control select{
+  width:100%;min-width:0;min-height:42px;box-sizing:border-box;border:1px solid #b9cecb;border-radius:10px;
+  background:#fff;color:#173f43;font-size:16px;text-align:center;padding:7px 8px;
+}
+#orlive .or-vap-dial-wrap{position:relative;width:112px;height:112px;margin:2px auto 8px;display:grid;place-items:center}
+#orlive #orMonitorVaporizerRange{position:absolute;inset:0;width:100%;height:100%;opacity:.001;z-index:2;cursor:grab}
+#orlive .or-vap-knob{
+  --or-vap-angle:-135deg;width:86px;height:86px;border-radius:50%;display:grid;place-content:center;text-align:center;
+  background:radial-gradient(circle at 38% 30%,#f8faf9 0 8%,#aeb9b7 46%,#596866 100%);
+  border:6px solid #d6dddc;box-shadow:inset 0 0 0 2px #6d7877,0 2px 6px rgba(0,0,0,.14);
+  color:#143f3e;position:relative;
+}
+#orlive .or-vap-knob:before{
+  content:"";position:absolute;width:4px;height:20px;border-radius:4px;background:#103f3d;
+  left:calc(50% - 2px);top:5px;transform-origin:2px 37px;transform:rotate(var(--or-vap-angle));
+}
+#orlive .or-vap-knob span{font-size:.58rem;font-weight:900;letter-spacing:.08em}
+#orlive .or-vap-knob strong{font-size:1.05rem}
+#orlive .or-flowmeter{position:relative;width:100px;height:112px;margin:2px auto 8px}
+#orlive #orMonitorO2Range{
+  position:absolute;z-index:3;left:0;top:0;width:112px;height:100px;
+  transform:rotate(-90deg) translateX(-112px);transform-origin:top left;opacity:.001;cursor:ns-resize;
+}
+#orlive .or-flow-tube{
+  position:absolute;left:31px;top:2px;width:26px;height:106px;border:2px solid #9eb6b2;border-radius:14px;
+  background:linear-gradient(90deg,#d5e7e3,#fff 48%,#c5d9d5);overflow:hidden;
+}
+#orlive .or-flow-float{
+  --or-o2-level:0%;position:absolute;left:4px;right:4px;height:8px;border-radius:50%;bottom:calc(var(--or-o2-level) - 4px);
+  background:#16836c;border:1px solid #0a5f50;transition:bottom .08s linear;
+}
+#orlive .or-flow-scale{position:absolute;left:64px;top:1px;height:108px;display:flex;flex-direction:column;justify-content:space-between;color:#617977;font-size:.58rem}
+#orlive .or-control-stepper{display:grid;grid-template-columns:36px minmax(0,1fr) 36px;gap:4px;align-items:end}
+#orlive .or-control-stepper>button{min-height:42px;border:1px solid #b9cecb;border-radius:10px;background:#eef7f5;color:#15534d;font-size:1.15rem;font-weight:800}
+#orlive .or-control-stepper .or-authoritative-control{font-size:0!important}
+#orlive .or-monitor-advanced{margin-top:10px;border-top:1px solid #d6e4e2;padding-top:8px}
+#orlive .or-monitor-advanced>summary{cursor:pointer;color:#577271;font-size:.76rem;font-weight:800;min-height:38px;display:flex;align-items:center}
+#orlive .or-monitor-bp-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+#orlive .or-support-workspace>.or-ventilator-workspace{margin:0}
+#orlive .or-support-mode{display:grid;grid-template-columns:minmax(0,320px);margin-bottom:10px}
+#orlive .or-support-mode label{display:grid;gap:5px;font-size:.78rem;font-weight:800;color:#496967}
+#orlive .or-support-mode select{min-height:46px;font-size:16px;border:1px solid #b9cecb;border-radius:10px;padding:8px;background:#fff}
+#orlive .or-support-workspace #ventilatorFields{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+#orlive .or-support-workspace #ventilatorFields[hidden]{display:none!important}
+#orlive .or-support-workspace #orFluidPanelDetails{margin:0}
+#orlive .or-airway-workspace #orAirwayPanelDetails{margin:0}
+#orlive .or-airway-workspace #orAirwayPanelDetails>.or-collapsible-summary{display:none}
+#orlive .or-airway-workspace #orAirwayPanelDetails>.or-collapsible-body{display:block!important}
+#orlive .or-airway-workspace #orAirwayPanelDetails .airway-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+#orlive .or-meds-workspace #orMedicationQueue{display:block!important;margin:0}
+#orlive .or-meds-workspace .or-quick-med-strip{margin:0}
+#orlive .or-meds-workspace #orDocumentationGuardian{margin:0}
+#orlive .or-redundant-status{display:none!important}
+#orlive .or-primary-documentation-note{font-size:.72rem;line-height:1.25;padding:6px 8px!important;max-height:48px;overflow:hidden}
+#orlive .or-primary-flow{margin:0 0 10px}
+#orlive .or-primary-copy>small{line-height:1.35}
+#orlive .or-phase-strip-secondary{margin-top:10px}
+#orlive #orSecondaryDetails{margin-top:14px}
+#orlive #orSecondaryDetails>.or-secondary-details-body>.or-secondary-grid>.or-bp-panel{display:none!important}
+
+@media(max-width:720px){
+  #orlive .or-workspace-nav{gap:4px;margin:6px 0 8px;padding:4px;border-radius:14px}
+  #orlive .or-workspace-nav button{min-height:54px;padding:6px 3px;border-radius:10px}
+  #orlive .or-workspace-nav button>span{font-size:.79rem}
+  #orlive .or-workspace-nav button>small{font-size:.58rem}
+  #orlive .or-workspace-badge{font-size:.49rem;right:2px;top:2px;max-width:58px}
+  #orlive .or-primary-flow{padding:10px 11px!important;border-radius:14px!important;display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;gap:8px!important;align-items:center!important}
+  #orlive .or-primary-copy{min-width:0}
+  #orlive .or-primary-copy>small{display:none!important}
+  #orlive .or-primary-copy>b{font-size:1rem!important;line-height:1.2}
+  #orlive .or-primary-kicker>span:first-child{display:none!important}
+  #orlive .or-primary-step-counter{font-size:.62rem!important}
+  #orlive .or-primary-documentation-note{display:none!important}
+  #orlive .or-primary-buttons{gap:5px!important;display:flex!important;flex-wrap:nowrap!important}
+  #orlive .or-primary-action,#orlive .or-secondary-action{min-height:46px!important;padding:8px 10px!important;font-size:.78rem!important;white-space:normal!important}
+  #orlive #orPrimaryDrugBtn{display:none!important}
+  #orlive #orSecondaryPhaseBtn[data-action="airway-edit"]{display:none!important}
+  #orlive .or-core-safety{margin-bottom:8px}
+  #orlive .or-monitor-control-grid{grid-template-columns:1fr 1fr;gap:8px}
+  #orlive .or-depth-control{grid-column:1/-1}
+  #orlive .or-depth-control .or-control-title{margin-bottom:4px}
+  #orlive .or-depth-control #orDepthSlot{max-width:100%}
+  #orlive .or-depth-control .or-authoritative-control{grid-template-columns:auto 1fr;align-items:center;gap:8px}
+  #orlive .or-vap-dial-wrap{width:104px;height:104px}
+  #orlive .or-vap-knob{width:80px;height:80px}
+  #orlive .or-vap-knob:before{height:18px;transform-origin:2px 34px}
+  #orlive .or-flowmeter{height:104px}
+  #orlive .or-flow-tube{height:98px}
+  #orlive .or-flow-scale{height:100px}
+  #orlive #orMonitorO2Range{width:104px;height:96px;transform:rotate(-90deg) translateX(-104px)}
+  #orlive .or-control-stepper{grid-template-columns:34px minmax(0,1fr) 34px}
+  #orlive .or-control-stepper>button{min-height:44px}
+  #orlive .or-workspace-section-head{padding:10px 11px}
+  #orlive .or-workspace-section-head h2{font-size:1.12rem}
+  #orlive .or-support-workspace #ventilatorFields{grid-template-columns:1fr 1fr}
+  #orlive .or-airway-workspace #orAirwayPanelDetails .airway-grid{grid-template-columns:1fr 1fr}
+  #orlive .or-phase-strip-secondary{display:none!important}
+  #orlive #orSecondaryDetails{margin-top:8px}
+}
+@media(max-width:380px){
+  #orlive .or-workspace-nav button>small{display:none}
+  #orlive .or-monitor-control-grid{grid-template-columns:1fr}
+  #orlive .or-depth-control{grid-column:auto}
+  #orlive .or-airway-workspace #orAirwayPanelDetails .airway-grid{grid-template-columns:1fr}
+}
+
+
+/* V17.11.3 — Induction timestamp + prepared-drug quick taps */
+
+#orlive .or-primary-flow.or-induction-owned{display:none!important}
+
+#orlive .or-induction-quick-strip{
+  margin:0 0 10px;padding:11px 12px;border:1px solid #c8dcda;border-radius:16px;
+  background:#f8fbfa;display:grid;gap:9px;
+}
+#orlive .or-induction-quick-strip[hidden]{display:none!important}
+#orlive .or-induction-quick-head{
+  display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;
+}
+#orlive .or-induction-quick-head>div{display:grid;gap:2px;min-width:0}
+#orlive .or-induction-quick-head span{font-size:.62rem;font-weight:900;letter-spacing:.09em;color:#5c7e7b}
+#orlive .or-induction-quick-head b{font-size:.92rem;color:#174e4a}
+#orlive .or-induction-quick-head small{font-size:.72rem;color:#6c8381;line-height:1.35}
+#orlive .or-induction-timestamp-btn{
+  min-height:48px;min-width:126px;border:1px solid #0f6259;border-radius:12px;
+  background:#125f57;color:#fff;padding:9px 12px;font:inherit;font-weight:900;cursor:pointer;
+}
+#orlive .or-induction-timestamp-btn.done{
+  background:#e5f4ed;color:#246046;border-color:#b7d9c6;cursor:default;
+}
+#orlive .or-prepared-induction-meds{
+  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;
+}
+#orlive .or-prepared-induction-drug{
+  min-width:0;min-height:56px;border:1px solid #bdd4d1;border-radius:12px;
+  background:#fff;color:#184f4c;padding:8px 10px;text-align:left;font:inherit;
+  display:grid;gap:2px;align-content:center;cursor:pointer;
+}
+#orlive .or-prepared-induction-drug b{font-size:.86rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#orlive .or-prepared-induction-drug small{font-size:.68rem;color:#67807e;line-height:1.25}
+#orlive .or-prepared-induction-drug:not(:disabled):active{transform:scale(.985)}
+#orlive .or-prepared-induction-drug:disabled{opacity:.58;cursor:default}
+#orlive .or-prepared-induction-drug.given{background:#eaf6ee;border-color:#b8dcc5;opacity:1;color:#225f3f}
+#orlive .or-prepared-induction-drug.given small{color:#49775b}
+#orlive .or-prepared-induction-drug.saving{opacity:.55}
+#orlive .or-induction-empty{padding:9px 10px;border-radius:10px;background:#f1f5f4;color:#687b79;font-size:.75rem}
+#orlive .or-induction-quick-foot{display:flex;align-items:center;justify-content:space-between;gap:8px}
+#orlive .or-induction-quick-foot>span{font-size:.68rem;color:#687f7c;font-weight:750}
+#orlive .or-induction-quick-foot>.btn{min-height:36px;padding:6px 9px;font-size:.72rem}
+@media(max-width:720px){
+  #orlive .or-induction-quick-strip{padding:9px 10px;gap:7px;margin-bottom:8px}
+  #orlive .or-induction-quick-head{grid-template-columns:1fr auto;gap:7px}
+  #orlive .or-induction-quick-head b{font-size:.82rem}
+  #orlive .or-induction-quick-head small{display:none}
+  #orlive .or-induction-timestamp-btn{min-width:104px;min-height:46px;padding:7px 9px;font-size:.8rem}
+  #orlive .or-prepared-induction-meds{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+  #orlive .or-prepared-induction-drug{min-height:52px;padding:7px 8px}
+  #orlive .or-prepared-induction-drug b{font-size:.8rem}
+  #orlive .or-prepared-induction-drug small{font-size:.62rem}
+  #orlive .or-induction-quick-foot>.btn{min-height:34px}
+}
+@media(max-width:360px){
+  #orlive .or-prepared-induction-meds{grid-template-columns:1fr}
+}
+
+#orlive .or-prepared-induction-drug.pending-details{
+  background:#fff8e8;border-color:#e1c982;color:#684f0d;opacity:1;
+}
+#orlive .or-prepared-induction-drug.pending-details small{color:#806a31}
+#orQuickDrugTimeWrap small{display:block;margin-top:3px;color:#6b7e7c;font-size:.68rem;line-height:1.25}
+#orQuickDrugAdminTime{font-variant-numeric:tabular-nums}
+
+/* V17.13.2 — compact OR summary + top vitals strip + quick gas chips */
+#orlive .or-command-bar{
+  display:grid!important;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:start;
+  padding:10px 12px!important;margin:0 0 8px!important;border-radius:16px!important;
+}
+#orlive .or-command-bar .eyebrow,
+#orlive #orPatientMeta,
+#orlive #orProcedureLine,
+#orlive #orRiskLine,
+#orlive #orTeamLine,
+#orlive #orWorkflowBadge,
+#orlive #orPhaseBadge,
+#orlive #orAsaBadge,
+#orlive .or-knowledge-mini,
+#orlive .context-help-btn,
+#orlive .or-case-clock{display:none!important}
+#orlive .or-patient-line{gap:8px!important;align-items:center!important}
+#orlive .or-patient-line h2{font-size:1.22rem!important;line-height:1.15!important;margin:0!important}
+#orlive .or-timer-block{min-width:0!important;display:flex!important;flex-wrap:wrap!important;justify-content:flex-end!important;align-items:center!important;gap:6px!important;text-align:right!important}
+#orlive .or-timer-block>#orCasePhaseBadge,
+#orlive .or-timer-block>#orTimerState{margin:0!important}
+#orlive .or-tools-menu>summary{min-height:44px!important;padding:8px 11px!important;border-radius:12px!important;background:rgba(255,255,255,.14)!important;border:1px solid rgba(255,255,255,.22)!important;color:#fff!important}
+#orlive .or-tools-menu-body{right:0;left:auto}
+#orlive .or-compact-summary-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:7px}
+#orlive .or-compact-chip{
+  display:inline-flex;align-items:center;max-width:100%;min-height:30px;padding:5px 9px;
+  border-radius:999px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.08);
+  color:#fff;font-size:.73rem;font-weight:850;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+#orlive .or-compact-chip.wide{border-radius:12px;max-width:100%}
+#orlive .or-compact-chip.warn{background:rgba(255,236,193,.14);border-color:rgba(255,224,154,.32);color:#ffe6aa}
+#orlive #orVitalsFocus{
+  margin:0 0 8px!important;padding:10px 12px!important;border-radius:16px!important;
+  grid-template-columns:1fr!important;gap:8px!important;background:linear-gradient(135deg,#f6fcfd,#edf7f9)!important;
+}
+#orlive #orVitalsFocus .or-vitals-focus-head{display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;gap:8px!important;align-items:start!important}
+#orlive #orVitalsFocus .or-vitals-focus-kicker{font-size:.64rem!important}
+#orlive #orVitalsFocus h2{margin:2px 0 0!important;font-size:1.02rem!important;line-height:1.2!important}
+#orlive #orVitalsFocus p{display:none!important}
+#orlive #orVitalsFocus .or-vitals-focus-timing{min-width:0!important;grid-template-columns:1fr 1fr!important;gap:6px!important}
+#orlive #orVitalsFocus .or-vitals-focus-timing>div{padding:7px 8px!important}
+#orlive #orVitalsFocus .or-vitals-focus-timing b{font-size:.75rem!important}
+#orlive #orVitalsFocus .or-vitals-focus-actions{grid-template-columns:1fr 1fr!important;gap:8px!important}
+#orlive #orVitalsFocus .or-vitals-focus-actions>.btn,
+#orlive #orVitalsFocus .or-vitals-save{min-height:48px!important;font-size:.83rem!important}
+#orlive #orVitalsFocus .or-vital-change-summary,
+#orlive #orVitalsFocus .or-vital-save-feedback{grid-column:1/-1}
+#orlive .or-monitor-control-grid.compact{grid-template-columns:1fr!important;gap:10px!important}
+#orlive .or-vaporizer-control,
+#orlive .or-o2-control,
+#orlive .or-depth-control{padding:10px 11px;border:1px solid #d3e1df;border-radius:14px;background:#fff}
+#orlive .or-control-title{display:flex;justify-content:space-between;gap:8px;align-items:center;margin-bottom:7px}
+#orlive .or-control-title b{font-size:.95rem;color:#184f4b}
+#orlive .or-control-title small{font-size:.73rem;color:#6b8482;font-weight:800}
+#orlive .or-choice-strip{display:flex;gap:8px;overflow-x:auto;padding:2px 0 4px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+#orlive .or-choice-strip::-webkit-scrollbar{display:none}
+#orlive .or-choice-chip{
+  flex:0 0 auto;min-width:62px;min-height:40px;padding:0 10px;border-radius:12px;border:1px solid #c5d8d5;
+  background:#f6fbfa;color:#17514c;font:inherit;font-size:.84rem;font-weight:900;cursor:pointer
+}
+#orlive .or-choice-chip.active{background:#175d56;border-color:#175d56;color:#fff;box-shadow:0 7px 16px rgba(23,93,86,.18)}
+#orlive .or-inline-hidden-control,#orlive #orVaporizerSlot,#orlive #orO2Slot{display:none!important}
+#orlive .or-depth-control #orDepthSlot .or-authoritative-control{display:grid;gap:6px}
+#orlive .or-depth-control #orDepthSlot .or-authoritative-control select{min-height:46px;border:1px solid #b9cecb;border-radius:10px;padding:8px;background:#fff;font-size:16px}
+@media(max-width:720px){
+  #orlive .or-command-bar{grid-template-columns:minmax(0,1fr) auto!important;padding:9px 10px!important}
+  #orlive .or-patient-line h2{font-size:1.1rem!important}
+  #orlive .or-compact-chip{font-size:.7rem;min-height:28px;padding:4px 8px}
+  #orlive #orVitalsFocus{padding:9px 10px!important}
+  #orlive #orVitalsFocus .or-vitals-focus-head{grid-template-columns:1fr!important}
+  #orlive #orVitalsFocus .or-vitals-focus-actions{grid-template-columns:1fr 1fr!important}
+  #orlive .or-choice-chip{min-width:56px;min-height:38px;font-size:.79rem}
+}
+
+/* V17.13.2 — OR LIVE mobile-first: monitoring first, secondary charting later */
+#orlive .or-command-bar{
+  padding:8px 10px!important;margin:0 0 6px!important;border-radius:13px!important;
+  grid-template-columns:minmax(0,1fr) auto!important;gap:8px!important;align-items:center!important;
+}
+#orlive .or-patient-line{min-width:0!important;gap:6px!important}
+#orlive .or-patient-line h2{font-size:1.05rem!important;line-height:1.1!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#orlive .or-compact-summary-row{
+  display:flex!important;flex-wrap:nowrap!important;gap:5px!important;margin-top:5px!important;
+  overflow-x:auto!important;scrollbar-width:none!important;-webkit-overflow-scrolling:touch!important;
+}
+#orlive .or-compact-summary-row::-webkit-scrollbar{display:none}
+#orlive .or-compact-chip{
+  flex:0 0 auto!important;min-height:24px!important;padding:3px 7px!important;border-radius:8px!important;
+  font-size:.66rem!important;font-weight:800!important;line-height:1.15!important;
+}
+#orlive .or-compact-chip.wide{max-width:180px!important}
+#orlive .or-timer-block{gap:4px!important;margin:0!important;align-items:center!important}
+#orlive #orTimerState{display:none!important}
+#orlive #orCasePhaseBadge{font-size:.62rem!important;padding:5px 7px!important;min-height:26px!important}
+#orlive .or-case-clock{display:block!important;font-size:.8rem!important;line-height:1!important;margin:0!important;color:#d8eeeb!important;min-width:auto!important}
+#orlive .or-tools-menu>summary{min-height:34px!important;padding:5px 8px!important;font-size:.72rem!important}
+
+/* Save / due strip: useful, but no longer a large hero card. */
+#orlive #orVitalsFocus{
+  display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;gap:7px!important;
+  margin:0 0 6px!important;padding:6px 8px!important;border-radius:12px!important;
+  border:1px solid #b8d3d1!important;background:#edf7f5!important;box-shadow:none!important;
+}
+#orlive #orVitalsFocus .or-vitals-focus-head{display:block!important;min-width:0!important}
+#orlive #orVitalsFocus .or-vitals-focus-head>div:first-child{display:none!important}
+#orlive #orVitalsFocus .or-vitals-focus-timing{
+  display:grid!important;grid-template-columns:1fr 1fr!important;gap:5px!important;min-width:0!important
+}
+#orlive #orVitalsFocus .or-vitals-focus-timing>div{padding:5px 7px!important;border-radius:9px!important;background:#fff!important}
+#orlive #orVitalsFocus .or-vitals-focus-timing span{font-size:.55rem!important;line-height:1!important}
+#orlive #orVitalsFocus .or-vitals-focus-timing b{font-size:.68rem!important;line-height:1.2!important;margin-top:2px!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+#orlive #orVitalsFocus .or-vitals-focus-actions{
+  display:grid!important;grid-template-columns:46px minmax(105px,1fr)!important;gap:5px!important;align-items:stretch!important
+}
+#orlive #orVitalsFocus .or-vitals-focus-actions>.btn,
+#orlive #orVitalsFocus .or-vitals-save{display:block!important;min-height:40px!important;height:40px!important;padding:5px 7px!important;border-radius:9px!important;font-size:.7rem!important}
+#orlive #orVitalsFocus #orCopyLastVitalsBtn{font-size:0!important}
+#orlive #orVitalsFocus #orCopyLastVitalsBtn:after{content:'↻';font-size:1rem!important}
+#orlive #orVitalsFocus #orVitalsFocusSaveBtn{display:block!important;background:#135e56!important;color:#fff!important}
+#orlive #orVitalsFocus .or-vital-change-summary{display:none!important}
+#orlive #orVitalsFocus .or-vital-save-feedback{grid-column:1/-1!important;padding:5px 7px!important;font-size:.65rem!important;min-height:0!important}
+#orlive #orVitalsFocus .or-quick-med-strip{display:none!important}
+
+/* Vital inputs are the first full clinical surface on OR LIVE. */
+#orlive>.or-vital-grid{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:7px!important;margin:0 0 7px!important}
+#orlive>.or-vital-grid .or-vital-card{
+  min-height:88px!important;padding:7px 9px!important;border-radius:12px!important;border-width:1px!important;box-shadow:none!important
+}
+#orlive>.or-vital-grid .or-vital-card>div span{font-size:.78rem!important}
+#orlive>.or-vital-grid .or-vital-card>div small{font-size:.63rem!important}
+#orlive>.or-vital-grid .or-vital-card input{
+  min-height:36px!important;height:36px!important;margin:2px 0!important;padding:0!important;
+  font-size:1.75rem!important;line-height:36px!important
+}
+#orlive>.or-vital-grid .or-vital-card .or-vital-delta{font-size:.62rem!important;line-height:1.15!important}
+#orlive>.or-vital-grid .or-vital-card footer{font-size:.6rem!important;line-height:1.15!important;min-height:0!important;margin-top:2px!important}
+#orlive>.or-vital-grid .or-vital-card.good footer,
+#orlive>.or-vital-grid .or-vital-card.neutral footer{display:none!important}
+
+/* One compact anesthesia card after vitals. */
+#orlive .or-monitor-anesthesia-controls{
+  margin:0 0 7px!important;padding:8px!important;border-radius:12px!important;border:1px solid #c7dbd8!important;
+  background:#f7fbfa!important;box-shadow:none!important
+}
+#orlive .or-monitor-inline-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px;padding:0 2px 6px}
+#orlive .or-monitor-inline-head b{font-size:.8rem;color:#194f4b}
+#orlive .or-monitor-inline-head small{font-size:.62rem;color:#6b817f}
+#orlive .or-monitor-control-grid.compact{display:grid!important;grid-template-columns:1fr!important;gap:6px!important}
+#orlive .or-depth-control,#orlive .or-vaporizer-control,#orlive .or-o2-control{
+  padding:7px 8px!important;border-radius:10px!important;border:1px solid #d6e3e1!important;background:#fff!important
+}
+#orlive .or-control-title{margin-bottom:4px!important}
+#orlive .or-control-title b{font-size:.78rem!important}
+#orlive .or-control-title small{font-size:.64rem!important}
+#orlive .or-depth-control #orDepthSlot .or-authoritative-control{grid-template-columns:72px minmax(0,1fr)!important;align-items:center!important;gap:7px!important;font-size:.65rem!important}
+#orlive .or-depth-control #orDepthSlot .or-authoritative-control select{min-height:36px!important;height:36px!important;padding:4px 7px!important;font-size:14px!important}
+#orlive .or-choice-strip{gap:5px!important;padding:1px 0 2px!important}
+#orlive .or-choice-chip{min-width:48px!important;min-height:34px!important;padding:0 7px!important;border-radius:9px!important;font-size:.72rem!important}
+#orlive .or-monitor-advanced{margin-top:5px!important;padding-top:4px!important}
+#orlive .or-monitor-advanced>summary{min-height:30px!important;font-size:.65rem!important}
+
+/* Milestone is still authoritative, but no longer a hero card above monitoring. */
+#orlive .or-primary-flow{
+  margin:0 0 7px!important;padding:7px 9px!important;border-radius:11px!important;
+  display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;gap:7px!important;align-items:center!important;box-shadow:none!important
+}
+#orlive .or-primary-kicker>span:first-child{display:none!important}
+#orlive .or-primary-step-counter{font-size:.56rem!important;padding:3px 6px!important}
+#orlive .or-primary-copy>b{display:block!important;font-size:.84rem!important;line-height:1.15!important;margin-top:2px!important}
+#orlive .or-primary-copy>small,#orlive .or-primary-documentation-note{display:none!important}
+#orlive .or-primary-buttons{display:flex!important;gap:4px!important}
+#orlive .or-primary-action,#orlive .or-secondary-action{min-height:38px!important;padding:5px 8px!important;border-radius:9px!important;font-size:.68rem!important}
+
+/* Safety stays visible but compact when it has nothing actionable. */
+#orlive .or-core-safety{margin:0 0 7px!important;padding:7px 9px!important;border-radius:11px!important;box-shadow:none!important}
+#orlive .or-core-safety-head{gap:7px!important;align-items:center!important}
+#orlive .or-core-safety-head span{font-size:.54rem!important}
+#orlive .or-core-safety-head b{font-size:.72rem!important}
+#orlive .or-core-safety-summary{font-size:.63rem!important;line-height:1.2!important;margin-top:2px!important}
+#orlive #orCoreSafetyOpenBtn{min-height:32px!important;padding:4px 7px!important;font-size:.64rem!important}
+
+/* Secondary charting navigation — separate Fluid and Vent. */
+#orlive .or-secondary-workspace-nav{
+  display:flex!important;grid-template-columns:none!important;gap:4px!important;overflow-x:auto!important;
+  margin:0 0 7px!important;padding:4px!important;border-radius:11px!important;scrollbar-width:none!important
+}
+#orlive .or-secondary-workspace-nav::-webkit-scrollbar{display:none}
+#orlive .or-secondary-workspace-nav button{
+  flex:1 0 72px!important;min-width:72px!important;min-height:44px!important;padding:5px 4px!important;border-radius:8px!important
+}
+#orlive .or-secondary-workspace-nav button>span{font-size:.72rem!important}
+#orlive .or-secondary-workspace-nav button>small{font-size:.52rem!important}
+#orlive .or-workspace-badge{font-size:.45rem!important;max-width:46px!important}
+#orlive .or-workspace-host[hidden]{display:none!important}
+#orlive .or-workspace-host{margin:0 0 8px!important}
+#orlive .or-workspace-panel{gap:7px!important}
+#orlive .or-workspace-section-head.compact{padding:7px 9px!important;border-radius:10px!important}
+#orlive .or-workspace-section-head.compact span{font-size:.52rem!important}
+#orlive .or-workspace-section-head.compact h2{font-size:.9rem!important;margin:1px 0!important}
+#orlive .or-workspace-section-head.compact small{font-size:.62rem!important}
+
+/* Fluid: rate/bolus first. Secondary balance items collapse under More. */
+#orlive .or-fluid-workspace .or-fluid-simplified{margin:0!important;padding:8px!important;border-radius:11px!important;box-shadow:none!important}
+#orlive .or-fluid-simplified>.or-collapsible-summary{display:none!important}
+#orlive .or-fluid-simplified .section-heading{margin-bottom:6px!important}
+#orlive .or-fluid-simplified .section-heading h2{font-size:.85rem!important;margin:0!important}
+#orlive .or-fluid-simplified .section-heading p{display:none!important}
+#orlive .or-fluid-simplified .fluid-rate-hero{display:grid!important;grid-template-columns:1fr 1fr!important;gap:6px!important}
+#orlive .or-fluid-simplified .fluid-rate-entry{grid-column:1/-1!important;padding:8px!important;border-radius:10px!important}
+#orlive .or-fluid-simplified .fluid-rate-input-row{grid-template-columns:minmax(0,1fr) auto auto!important;gap:5px!important}
+#orlive .or-fluid-simplified .fluid-rate-input-row input{min-height:40px!important;font-size:16px!important}
+#orlive .or-fluid-simplified .fluid-rate-input-row .btn{min-height:40px!important;padding:5px 8px!important;font-size:.7rem!important}
+#orlive .or-fluid-simplified .fluid-total-card{padding:8px!important;border-radius:10px!important;min-height:74px!important}
+#orlive .or-fluid-simplified .fluid-total-card b{font-size:1rem!important}
+#orlive .or-fluid-simplified .fluid-total-card small{font-size:.6rem!important}
+#orlive .or-fluid-simplified .fluid-quick-grid{display:grid!important;grid-template-columns:1fr!important;gap:6px!important;margin-top:6px!important}
+#orlive .or-fluid-simplified .fluid-quick-card{padding:8px!important;border-radius:10px!important}
+#orlive .or-fluid-simplified .quick-add-buttons{gap:4px!important}
+#orlive .or-fluid-simplified .quick-add-buttons button{min-height:36px!important;padding:4px 6px!important;font-size:.7rem!important}
+#orlive .or-fluid-secondary{margin-top:6px!important;border:1px solid #d5e2e0!important;border-radius:10px!important;background:#f8fbfa!important}
+#orlive .or-fluid-secondary>summary{min-height:38px!important;padding:6px 8px!important;cursor:pointer;font-size:.68rem!important;font-weight:800;color:#4f6e6b}
+#orlive .or-fluid-secondary-body{display:grid;gap:6px;padding:0 6px 6px}
+#orlive .or-fluid-simplified .fluid-running-summary{grid-template-columns:1fr 1fr!important;gap:5px!important;margin-top:6px!important}
+#orlive .or-fluid-simplified .fluid-running-summary>div{padding:6px!important;border-radius:9px!important}
+#orlive .or-fluid-simplified .fluid-running-summary span{font-size:.56rem!important}
+#orlive .or-fluid-simplified .fluid-running-summary b{font-size:.78rem!important}
+
+/* Vent: one clean card, separate from fluids and airway. */
+#orlive .or-vent-workspace .or-ventilator-workspace{margin:0!important;padding:9px!important;border-radius:11px!important;box-shadow:none!important}
+#orlive .or-support-mode{margin:0 0 7px!important;grid-template-columns:1fr!important}
+#orlive .or-support-mode label{font-size:.68rem!important}
+#orlive .or-support-mode select{min-height:42px!important;font-size:15px!important}
+#orlive .or-vent-workspace #ventilatorFields{display:grid!important;grid-template-columns:1fr 1fr!important;gap:6px!important}
+#orlive .or-vent-workspace #ventilatorFields[hidden]{display:none!important}
+#orlive .or-vent-workspace #ventilatorFields label{font-size:.66rem!important}
+#orlive .or-vent-workspace #ventilatorFields input{min-height:40px!important;font-size:16px!important;padding:5px 7px!important}
+
+/* Airway: only tube/cuff/difficulty/circuit; ventilation lives in Vent. */
+#orlive .or-airway-workspace .or-airway-simplified{margin:0!important;padding:9px!important;border-radius:11px!important;box-shadow:none!important}
+#orlive .or-airway-simplified>.or-collapsible-summary{display:none!important}
+#orlive .or-airway-simplified .section-heading{display:none!important}
+#orlive .or-airway-simplified .airway-grid{grid-template-columns:1fr 1fr!important;gap:6px!important}
+#orlive .or-airway-simplified .airway-grid label{font-size:.66rem!important}
+#orlive .or-airway-simplified .airway-grid input,#orlive .or-airway-simplified .airway-grid select{min-height:40px!important;font-size:15px!important;padding:5px 7px!important}
+#orlive .or-airway-simplified .airway-actions{margin-top:7px!important}
+#orlive .or-airway-simplified .airway-actions .btn{min-height:40px!important}
+
+/* Induction strip is important only around induction; keep it compact. */
+#orlive .or-induction-quick-strip{padding:7px 8px!important;gap:5px!important;border-radius:11px!important;margin:0 0 7px!important}
+#orlive .or-induction-quick-head{gap:6px!important}
+#orlive .or-induction-quick-head b{font-size:.75rem!important}
+#orlive .or-induction-quick-head small{display:none!important}
+#orlive .or-induction-timestamp-btn{min-width:92px!important;min-height:38px!important;padding:5px 7px!important;font-size:.68rem!important}
+#orlive .or-prepared-induction-drug{min-height:44px!important;padding:5px 7px!important}
+#orlive .or-prepared-induction-drug b{font-size:.72rem!important}
+#orlive .or-prepared-induction-drug small{font-size:.57rem!important}
+#orlive .or-induction-quick-foot{display:none!important}
+
+/* Bottom controls consume less vertical space without changing actions. */
+body[data-av-page=orlive] .av-workspace-header .av-bar{min-height:62px!important;padding:6px 12px!important}
+body[data-av-page=orlive] #avWorkspaceTitle{font-size:17px!important;line-height:20px!important}
+body[data-av-page=orlive] .av-save-status,body[data-av-page=orlive] .av-measurement-status{font-size:11px!important;line-height:16px!important}
+body[data-av-page=orlive] .av-bottom{padding:6px 10px calc(8px + env(safe-area-inset-bottom))!important;gap:5px!important}
+body[data-av-page=orlive] .av-bottom-context{gap:5px!important}
+body[data-av-page=orlive] .av-bottom-context .av-button{min-height:42px!important;padding:5px!important;font-size:12px!important}
+body[data-av-page=orlive] .av-nav{gap:3px!important}
+body[data-av-page=orlive] .av-nav button{min-height:44px!important;font-size:12px!important;padding:4px 2px!important}
+
+@media(max-width:420px){
+  #orlive #orVitalsFocus{grid-template-columns:1fr!important}
+  #orlive #orVitalsFocus .or-vitals-focus-actions{grid-template-columns:42px minmax(0,1fr)!important}
+  #orlive>.or-vital-grid .or-vital-card{min-height:82px!important;padding:6px 8px!important}
+  #orlive>.or-vital-grid .or-vital-card input{height:34px!important;min-height:34px!important;font-size:1.6rem!important;line-height:34px!important}
+  #orlive .or-fluid-simplified .fluid-rate-hero{grid-template-columns:1fr 1fr!important}
+}
+
+/* V17.13.2 — OR LIVE interaction polish */
+/* Monitoring is already persistent above. Secondary nav now contains only secondary work. */
+#orlive .or-secondary-workspace-nav button{
+  flex:1 0 78px!important;min-width:78px!important;
+}
+#orlive .or-workspace-back{
+  flex:0 0 auto;min-height:34px;padding:5px 9px;border:1px solid #c4d8d5;border-radius:9px;
+  background:#fff;color:#19534e;font:inherit;font-size:.66rem;font-weight:850;cursor:pointer;
+}
+#orlive .or-workspace-section-head.compact{align-items:center!important}
+
+/* Clear safety state should not occupy a card-sized block. Active safety still expands normally. */
+#orlive .or-core-safety.or-safety-clear{
+  display:flex!important;align-items:center!important;justify-content:space-between!important;gap:8px!important;
+  padding:5px 8px!important;min-height:34px!important;background:rgba(235,247,244,.9)!important;border-color:#c7ded9!important;
+}
+#orlive .or-core-safety.or-safety-clear .or-core-safety-head{display:flex!important;flex:1!important;min-width:0!important}
+#orlive .or-core-safety.or-safety-clear .or-core-safety-head>div{display:flex!important;align-items:center!important;gap:6px!important;min-width:0!important}
+#orlive .or-core-safety.or-safety-clear .or-core-safety-head span{display:none!important}
+#orlive .or-core-safety.or-safety-clear .or-core-safety-head b{font-size:.65rem!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;color:#47716c!important}
+#orlive .or-core-safety.or-safety-clear .or-core-safety-summary,
+#orlive .or-core-safety.or-safety-clear #orCoreSafetyOpenBtn{display:none!important}
+#orlive .or-core-safety.or-safety-active{border-color:#d8c58d!important}
+
+/* Fluid is now rate + calculated + bolus + two glance values. Everything else is under More. */
+#orlive .or-fluid-legacy-heading{display:none!important}
+#orlive .or-fluid-main{display:grid!important;gap:6px!important}
+#orlive .or-fluid-main .fluid-rate-hero{
+  display:grid!important;grid-template-columns:1fr!important;gap:6px!important;margin:0!important;
+}
+#orlive .or-fluid-main .fluid-rate-entry{grid-column:auto!important;margin:0!important}
+#orlive .or-fluid-main .fluid-total-card.calculated{min-height:58px!important;display:grid!important;grid-template-columns:1fr auto!important;align-items:center!important;gap:6px!important}
+#orlive .or-fluid-main .fluid-total-card.calculated span{font-size:.64rem!important}
+#orlive .or-fluid-main .fluid-total-card.calculated b{font-size:1rem!important}
+#orlive .or-fluid-main>.fluid-quick-card{margin:0!important}
+#orlive .or-fluid-glance{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+#orlive .or-fluid-glance>div{padding:7px 8px;border:1px solid #d4e2df;border-radius:9px;background:#f8fbfa;display:grid;gap:2px}
+#orlive .or-fluid-glance span{font-size:.55rem;color:#6c817f}
+#orlive .or-fluid-glance b{font-size:.78rem;color:#194f4b}
+#orlive .or-fluid-secondary-body>.fluid-total-card.actual{margin:0!important}
+#orlive .or-fluid-secondary-body>.fluid-quick-card{margin:0!important}
+#orlive .or-fluid-secondary-body>#fluidRateHistoryView{margin:0!important}
+
+/* Vent mode is tap-first. The authoritative select stays in DOM but not in the visual workflow. */
+#orlive .or-vent-mode-buttons{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin:0 0 8px}
+#orlive .or-vent-mode-buttons button{
+  min-height:42px;padding:6px 5px;border:1px solid #c6d8d5;border-radius:9px;background:#f7fbfa;color:#245c57;
+  font:inherit;font-size:.68rem;font-weight:850;line-height:1.15;cursor:pointer;
+}
+#orlive .or-vent-mode-buttons button.active{background:#175d56;border-color:#175d56;color:#fff}
+#orlive .or-authoritative-mode{position:absolute!important;width:1px!important;height:1px!important;overflow:hidden!important;clip:rect(0 0 0 0)!important;clip-path:inset(50%)!important;white-space:nowrap!important}
+#orlive .or-vent-workspace #ventilatorFields{margin-top:2px!important}
+
+/* Airway stays light and documents details after the timestamp milestone. */
+#orlive .or-airway-timestamp{
+  min-height:32px;padding:6px 9px;border:1px solid #c8ddd9;border-radius:9px;background:#edf8f5;
+  color:#275e58;font-size:.67rem;font-weight:850;
+}
+#orlive .or-airway-simplified .airway-grid .airway-note-field{grid-column:1/-1}
+#orlive .or-airway-simplified .airway-grid .airway-note-field input{width:100%;box-sizing:border-box}
+
+@media(max-width:420px){
+  #orlive .or-workspace-back{min-height:32px;padding:4px 7px;font-size:.62rem}
+  #orlive .or-vent-mode-buttons{grid-template-columns:1fr 1fr 1fr;gap:4px}
+  #orlive .or-vent-mode-buttons button{min-height:40px;padding:5px 3px;font-size:.62rem}
+  #orlive .or-fluid-glance{grid-template-columns:1fr 1fr}
+}
+/* V17.13.8 — canonical tablet context ownership.
+ * The retired focused-workspace owner used ux-or-context-compact to decide
+ * whether the legacy sticky context row appeared. The state is no longer
+ * emitted. Preserve the current focus-mode tablet result explicitly here. */
+@media (min-width:768px) and (max-width:1179px){
+  body.or-mobile-active #orlive>#orStickyMini{display:none!important}
+}
+

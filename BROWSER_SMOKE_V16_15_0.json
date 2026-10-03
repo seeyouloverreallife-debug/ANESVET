@@ -1,9 +1,0 @@
-{
-  "version": "16.15.0",
-  "status": "blocked",
-  "viewportAttempted": "390x844",
-  "engine": "system Chromium headless",
-  "result": "timeout",
-  "claim": "No browser smoke PASS claimed",
-  "detail": "Chromium did not complete app load in the sandbox and was terminated after timeout. Static/domain QA passed; real-device Android PWA smoke remains required."
-}

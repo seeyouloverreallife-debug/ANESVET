@@ -1,0 +1,24 @@
+ANESVET V17.13.3 — Legacy Presentation Retirement III
+Release QA Summary
+
+Current-release contract suites:
+- QA_V17_13_3_LEGACY_RETIREMENT_III.js: 28/28 PASS
+- QA_V17_13_3_STATIC_INTEGRITY.js: 13/13 PASS
+- QA_V17_13_3_CURRENT_WORKFLOW.js: 31/31 PASS
+- QA_V17_13_3_END_TO_END.js: 17/17 PASS
+- QA_V17_13_3_OR_INTERACTION.js: 33/33 PASS
+- Total: 122/122 PASS
+
+Static runtime syntax:
+- Active runtime JavaScript: 70/70 PASS (node --check)
+
+Release integrity checks:
+- Runtime script count: 70
+- usability-hardening.js absent from runtime and service-worker JS precache
+- mobile-first-r27.js absent from runtime and service-worker JS precache
+- No V17.13.2 deployment references remain in index.html/service-worker.js
+- Retired source files retained in package for traceability
+
+Scope limitation:
+- No real-browser/Playwright or physical Android/iPad/PWA/IME interaction run was available in this environment.
+- Physical-device smoke testing remains required before treating this build as clinically deployed/production-validated.
