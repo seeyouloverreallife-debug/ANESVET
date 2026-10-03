@@ -3738,8 +3738,10 @@ body.av-mobile-design #orlive #orPrimaryActionBtn:disabled{background:#dce7e6!im
   body.av-mobile-design #orlive #orMedicationQueue{padding:8px 12px!important}
   /* Focus removes overlays, not reserved page height. No scroll clamping when
      the IME opens/closes; input visibility is adjusted once after it settles. */
-  body.av-mobile-design.av-editing #avBottom{display:none!important}
   body.av-mobile-design.av-editing .av-workspace-header{position:static!important}
+  body.av-mobile-design.av-editing #avBottom{display:grid!important;bottom:0!important;opacity:.98}
+  body.av-mobile-design.av-editing #avBottom .av-nav button{min-height:42px!important}
+  body.av-mobile-design.av-editing #avBottom .av-bottom-context .av-button{min-height:44px!important}
   body.av-mobile-design.av-editing>main{padding-bottom:calc(var(--av-footer) + 24px + env(safe-area-inset-bottom))!important}
   body.av-mobile-design.av-editing #uxReturnCase{display:none!important}
   body.av-mobile-design.or-mobile-active .toast{bottom:calc(var(--av-footer) + 12px + env(safe-area-inset-bottom))!important;pointer-events:none}
@@ -3751,149 +3753,25 @@ body.av-mobile-design #orlive #orPrimaryActionBtn:disabled{background:#dce7e6!im
 }
 
 
-/* ANESVET V17.11.3 — workflow/IME feedback hardening */
-body.av-mobile-design .toast{
-  z-index:80!important;
-  bottom:calc(var(--av-footer,96px) + 16px + env(safe-area-inset-bottom))!important;
-}
-body.av-mobile-design.av-editing .toast,
-body.av-mobile-design.anesvet-soft-keyboard .toast{
-  bottom:auto!important;
-  top:calc(env(safe-area-inset-top) + 10px)!important;
-}
-body[data-av-page="orlive"] #avContextWorkflow[data-native-target="orSecondaryPhaseBtn"]{
-  font-weight:800;
-}
-
-/* V17.11.3 — calculated amount is the OR default; editing is opt-in */
-.quick-drug-actual-card{display:grid;gap:.65rem;padding:.8rem;border:1px solid var(--line,#d7e1e3);border-radius:14px;background:var(--surface-soft,#f7fafb)}
-.quick-drug-default-dose{display:grid;gap:.12rem}
-.quick-drug-default-dose small{font-size:.7rem;font-weight:800;letter-spacing:.08em;opacity:.68}
-.quick-drug-default-dose strong{font-size:1.55rem;line-height:1.1}
-.quick-drug-default-dose span{font-size:.78rem;opacity:.72}
-.quick-drug-change-toggle{display:flex!important;align-items:center;gap:.55rem;font-weight:700;cursor:pointer}
-.quick-drug-change-toggle input{width:1.1rem;height:1.1rem;flex:0 0 auto}
-#orQuickDrugActualEditWrap[hidden]{display:none!important}
-
-/* V17.11.3 — OR LIVE core-first hierarchy */
-.or-core-safety{display:flex;align-items:center;justify-content:space-between;gap:.75rem;padding:.72rem .9rem;border:1px solid var(--line,#d7e1e3);border-radius:14px;background:var(--surface,#fff);margin:.65rem 0}
-.or-core-safety-head{display:flex;align-items:center;gap:.75rem;min-width:0}
-.or-core-safety-head>div{display:grid;gap:.05rem}.or-core-safety-head span{font-size:.68rem;font-weight:800;letter-spacing:.08em;opacity:.62}.or-core-safety-head b{font-size:.96rem}
-.or-core-safety-summary{font-size:.8rem;opacity:.74;margin-left:auto}
-.or-core-safety.active{border-color:#c98532;background:#fff8ed}.or-core-safety.active .or-core-safety-head b{font-weight:900}
-.or-secondary-details{margin:.65rem 0;border:1px solid var(--line,#d7e1e3);border-radius:16px;background:var(--surface,#fff);overflow:hidden}
-.or-secondary-details>summary{list-style:none;display:flex;justify-content:space-between;align-items:center;gap:.75rem;padding:.82rem 1rem;cursor:pointer}
-.or-secondary-details>summary::-webkit-details-marker{display:none}.or-secondary-details>summary>span:first-child{display:grid;gap:.08rem}.or-secondary-details>summary small{font-size:.76rem;opacity:.66}
-.or-secondary-details-state{font-size:.68rem;font-weight:800;letter-spacing:.05em;opacity:.55}.or-secondary-details[open] .or-secondary-details-state{font-size:0}.or-secondary-details[open] .or-secondary-details-state:after{content:'HIDE DETAILS';font-size:.68rem}
-.or-secondary-details-body{display:grid;gap:.7rem;padding:0 .65rem .75rem}
-.or-secondary-details-body>.or-context-panel,.or-secondary-details-body>.or-phase-tracker-panel,.or-secondary-details-body>.or-secondary-grid,.or-secondary-details-body>.or-collapsible-panel,.or-secondary-details-body>.complication-watch-panel,.or-secondary-details-body>.or-lower-grid{margin-top:0!important;margin-bottom:0!important}
-@media(max-width:720px){.or-core-safety{align-items:flex-start;flex-wrap:wrap}.or-core-safety-summary{order:3;width:100%;margin-left:0}.or-secondary-details>summary{padding:.72rem .8rem}}
-
-/* V17.11.3 — Recovery core-first hierarchy */
-.recovery-secondary-details{margin:.8rem 0;border:1px solid var(--line,#d7e1e3);border-radius:16px;background:var(--surface,#fff);overflow:hidden}
-.recovery-secondary-details>summary{list-style:none;display:flex;justify-content:space-between;align-items:center;gap:.8rem;padding:.85rem 1rem;cursor:pointer}
-.recovery-secondary-details>summary::-webkit-details-marker{display:none}.recovery-secondary-details>summary>span:first-child{display:grid;gap:.08rem}.recovery-secondary-details>summary small{font-size:.76rem;opacity:.66}
-.recovery-secondary-state{font-size:.68rem;font-weight:800;letter-spacing:.05em;opacity:.55}.recovery-secondary-details[open] .recovery-secondary-state{font-size:0}.recovery-secondary-details[open] .recovery-secondary-state:after{content:'HIDE DETAILS';font-size:.68rem}
-.recovery-secondary-body{display:grid;gap:.75rem;padding:0 .7rem .8rem}.recovery-secondary-body>.panel{margin:0!important}
-.recovery-handoff-compact-panel{margin-top:.7rem!important;margin-bottom:.7rem!important}
-.recovery-handoff-compact-panel .recovery-handoff-details:not([open]){margin-bottom:0}
-#recoveryProblemsPanel{margin-top:.7rem!important;margin-bottom:.7rem!important}
-@media(max-width:720px){.recovery-secondary-details>summary{padding:.72rem .8rem}.recovery-secondary-state{white-space:nowrap}.recovery-handoff-compact-panel .section-heading p{display:none}}
-/* V17.11.3 — one obvious next action for the current case */
-.clinical-next-step-card{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin:.75rem 0 1rem;padding:1rem 1.05rem;border:1px solid var(--line,#d7e1e3);border-radius:18px;background:var(--surface,#fff)}
-.clinical-next-step-card>div{display:grid;gap:.18rem}.clinical-next-step-card b{font-size:1.05rem}.clinical-next-step-card small{opacity:.72;line-height:1.35}.clinical-next-step-card .btn{flex:0 0 auto;min-width:170px}
-@media(max-width:720px){.clinical-next-step-card{align-items:stretch;flex-direction:column;padding:.85rem}.clinical-next-step-card .btn{width:100%;min-width:0}}
-
-
-/* V17.11.3 Patient + Pre-op simplification */
-.patient-setup-focus,.preop-quick-state{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px 16px;margin-bottom:12px;border:1px solid var(--line,#d7e2e3);border-radius:16px;background:var(--surface-soft,#f7fbfb)}
-.patient-setup-focus>div,.preop-quick-state>div{display:grid;gap:3px}.patient-setup-focus b,.preop-quick-state b{font-size:1.05rem}.patient-setup-focus small,.preop-quick-state small{color:var(--muted,#64777a)}
-.patient-required-summary{margin:0 0 14px;padding:9px 12px;border-radius:12px;background:#fff7e8;border:1px solid #efd59a;font-weight:700}.patient-required-summary.ready{background:#eef9f2;border-color:#b8dec6}
-#patient .patient-secondary-field:not(.patient-secondary-open){display:none!important}
-.preop-quick-state{margin:12px 0 16px}.preop-quick-state .btn{flex:0 0 auto}
-@media(max-width:720px){.patient-setup-focus,.preop-quick-state{align-items:stretch;flex-direction:column}.patient-setup-focus .btn,.preop-quick-state .btn{width:100%}}
-
-
-/* V17.11.3 Drug Plan + Start Case simplification */
-.drug-workflow-focus{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:15px 17px;margin:0 0 14px;border:1px solid var(--line,#d7e2e3);border-radius:17px;background:var(--surface-soft,#f7fbfb)}
-.drug-workflow-focus[data-tone="good"]{border-color:#b8dec6;background:#f1faf4}.drug-workflow-focus-copy{display:grid;gap:4px}.drug-workflow-focus-copy b{font-size:1.08rem}.drug-workflow-focus-copy small{color:var(--muted,#64777a)}
-.drug-workflow-focus-status{display:flex;align-items:center;justify-content:flex-end;gap:8px;flex-wrap:wrap}
-@media(max-width:720px){.drug-workflow-focus{align-items:stretch;flex-direction:column}.drug-workflow-focus-status{justify-content:stretch}.drug-workflow-focus-status .btn{width:100%;order:3}.drug-workflow-focus-status .status-pill{flex:1;text-align:center}}
-
-
-/* V17.11.3 OR LIVE workflow refinement */
-.or-core-phase-strip{display:flex;align-items:center;gap:7px;margin:0 0 10px;padding:8px 10px;border-radius:13px;background:var(--surface-soft,#f7fbfb);border:1px solid var(--line,#d7e2e3);overflow-x:auto;scrollbar-width:none}
-.or-core-phase-strip::-webkit-scrollbar{display:none}.or-core-phase-strip span{white-space:nowrap;font-size:.76rem;font-weight:700;color:var(--muted,#64777a);padding:5px 7px;border-radius:9px}.or-core-phase-strip span.done{opacity:.7}.or-core-phase-strip span.done::before{content:"✓ ";}.or-core-phase-strip span.active{background:rgba(20,112,116,.12);color:var(--ink,#17383b)}.or-core-phase-strip i{font-style:normal;opacity:.35}
-#orMobileNextBtn.workflow-secondary{opacity:.92}#orMobileNextBtn.workflow-secondary.danger{opacity:1}
-@media(max-width:720px){.or-core-phase-strip{margin-inline:-2px}.or-core-phase-strip span{font-size:.72rem;padding:5px 6px}}
-
-
-/* V17.11.3 Recovery → End Case refinement */
-.recovery-core-phase-strip{display:flex;align-items:center;gap:7px;margin:0 0 10px;padding:8px 10px;border:1px solid var(--line,#d7e2e3);border-radius:13px;background:var(--surface-soft,#f7fbfb);overflow-x:auto;scrollbar-width:none}
-.recovery-core-phase-strip::-webkit-scrollbar{display:none}.recovery-core-phase-strip span{white-space:nowrap;font-size:.76rem;font-weight:700;color:var(--muted,#64777a);padding:5px 7px;border-radius:9px}.recovery-core-phase-strip span.done{opacity:.7}.recovery-core-phase-strip span.done::before{content:"✓ "}.recovery-core-phase-strip span.active{background:rgba(20,112,116,.12);color:var(--ink,#17383b)}.recovery-core-phase-strip i{font-style:normal;opacity:.35}
-#recoveryExitCard:not(.recovery-exit-ready){display:none!important}
-#completeRecoveryBtn.recovery-legacy-hidden{display:none!important}
-@media(max-width:720px){.recovery-core-phase-strip span{font-size:.72rem;padding:5px 6px}}
-
-
-/* V17.11.3 — mobile clinical workflow fixes */
-.or-airway-setup-dialog{width:min(760px,calc(100vw - 20px));max-height:92dvh;border:0;border-radius:20px;padding:0;background:transparent}
-.or-airway-setup-dialog::backdrop{background:rgba(5,25,29,.62)}
-.or-airway-setup-sheet{background:#f7faf9;color:#173f43;border-radius:20px;overflow:auto;max-height:92dvh}
-.or-airway-setup-sheet>header{position:sticky;top:0;z-index:2;display:flex;justify-content:space-between;gap:12px;padding:16px 18px;background:#0d3b3e;color:#fff}
-.or-airway-setup-sheet>header small{letter-spacing:.08em;opacity:.72}.or-airway-setup-sheet>header h2{margin:3px 0}.or-airway-setup-sheet>header p{margin:0;opacity:.8;font-size:.82rem}
-.or-airway-setup-grid{display:grid;gap:12px;padding:14px}.or-airway-setup-grid>section{background:#fff;border:1px solid #d5e3e2;border-radius:14px;padding:13px}.or-airway-setup-grid h3{margin:0 0 10px}
-.or-airway-setup-sheet>footer{position:sticky;bottom:0;display:flex;gap:10px;justify-content:flex-end;padding:12px 14px;background:#f7faf9;border-top:1px solid #d5e3e2}.or-airway-setup-sheet>footer .primary{min-width:180px}
-@media(max-width:600px){
-  #clinicalKnowledgeDialog.ck-dialog{position:fixed!important;inset:0!important;width:100vw!important;max-width:100vw!important;height:100dvh!important;max-height:100dvh!important;margin:0!important;border:0!important;border-radius:0!important;box-sizing:border-box!important}
-  #clinicalKnowledgeDialog .ck-chrome,#clinicalKnowledgeDialog .ck-body{width:100%;max-width:100%;box-sizing:border-box}
-  .or-airway-setup-dialog{position:fixed;inset:0;width:100vw;max-width:100vw;height:100dvh;max-height:100dvh;margin:0;border-radius:0}
-  .or-airway-setup-sheet{height:100dvh;max-height:100dvh;border-radius:0}
-  .or-airway-setup-grid{grid-template-columns:1fr}.or-airway-setup-sheet>footer{padding-bottom:calc(12px + env(safe-area-inset-bottom))}
-  .or-airway-setup-sheet>footer .btn{flex:1;min-width:0}
-  body.or-mobile-active .toast,body.recovery-mobile-active .toast{bottom:auto!important;top:calc(env(safe-area-inset-top) + 76px)!important;max-width:calc(100vw - 28px)!important;font-size:13px!important;padding:8px 11px!important;border-radius:10px!important}
-}
-
-
-/* V17.11.3 — tactile anesthesia hardware controls */
-.anesthesia-hardware-controls{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
-.vaporizer-control,.oxygen-flow-control{min-width:0;border:1px solid #cbdcda;border-radius:16px;padding:12px;background:linear-gradient(180deg,#f8fbfa,#edf4f3)}
-.hardware-label{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:10px}.hardware-label small{color:#647b7d;font-size:.72rem}
-.vaporizer-dial-wrap{position:relative;width:150px;height:150px;margin:0 auto 10px;display:grid;place-items:center}
-.vaporizer-dial-input{position:absolute;inset:0;width:100%;height:100%;opacity:.001;cursor:grab;z-index:2}
-.vaporizer-knob{--dial-angle:-135deg;width:112px;height:112px;border-radius:50%;display:grid;place-content:center;text-align:center;background:radial-gradient(circle at 38% 30%,#f7f8f7 0 8%,#aeb8b6 45%,#566462 100%);border:7px solid #d6dddc;box-shadow:inset 0 0 0 2px #667371,0 3px 8px rgba(0,0,0,.18);position:relative;color:#153e3e}
-.vaporizer-knob:before{content:"";position:absolute;width:4px;height:26px;border-radius:4px;background:#123f3e;left:calc(50% - 2px);top:5px;transform-origin:2px 51px;transform:rotate(var(--dial-angle))}
-.vaporizer-knob span{font-size:.68rem;font-weight:900;letter-spacing:.08em}.vaporizer-knob strong{font-size:1.25rem}
-.hardware-stepper{display:grid;grid-template-columns:44px 1fr 44px;align-items:end;gap:6px}.hardware-stepper button{min-height:44px;border:1px solid #b9cecb;border-radius:10px;background:#fff;font-size:1.35rem;color:#174d49}.hardware-stepper label{display:grid;gap:2px;text-align:center;font-size:.7rem;color:#61797a}.hardware-stepper input{width:100%;box-sizing:border-box;text-align:center;font-size:16px;min-height:44px;border:1px solid #b9cecb;border-radius:10px;background:#fff}
-.flowmeter{position:relative;width:110px;height:150px;margin:0 auto 10px;display:flex;justify-content:center}
-.flowmeter-tube{position:absolute;left:32px;top:5px;width:28px;height:140px;border:2px solid #9eb5b2;border-radius:14px;background:linear-gradient(90deg,#d9e7e4,#fff 45%,#c8dad7);overflow:hidden}
-.flowmeter-float{--flow-level:0%;position:absolute;left:4px;right:4px;height:9px;border-radius:50%;background:#19866f;border:1px solid #0b5f50;bottom:calc(var(--flow-level) - 4px);transition:bottom .08s linear}
-.flowmeter-scale{position:absolute;left:67px;top:2px;height:145px;display:flex;flex-direction:column;justify-content:space-between;color:#5b7273;font-size:.62rem}
-#setupO2Slider{position:absolute;z-index:3;left:0;top:0;width:150px;height:110px;transform:rotate(-90deg) translateX(-150px);transform-origin:top left;opacity:.001;cursor:ns-resize}
-.ventilation-settings{margin-top:4px}
-@media(max-width:600px){.anesthesia-hardware-controls{grid-template-columns:1fr 1fr;gap:8px}.vaporizer-control,.oxygen-flow-control{padding:9px}.vaporizer-dial-wrap{width:126px;height:126px}.vaporizer-knob{width:94px;height:94px}.vaporizer-knob:before{height:22px;transform-origin:2px 42px}.flowmeter{height:126px}.flowmeter-tube{height:118px}.flowmeter-scale{height:123px}.hardware-label{display:grid;gap:1px}.hardware-stepper{grid-template-columns:40px minmax(0,1fr) 40px;gap:4px}.hardware-stepper button{min-height:44px}}
-@media(max-width:360px){.anesthesia-hardware-controls{grid-template-columns:1fr}.vaporizer-dial-wrap,.flowmeter{margin-bottom:6px}}
-
-
-/* V17.11.3 — deterministic mobile sheet + non-blocking feedback */
-.or-airway-setup-dialog[hidden]{display:none!important}
-.or-airway-setup-dialog.is-open{display:flex!important;position:fixed!important;inset:0!important;z-index:10000!important;width:auto!important;height:auto!important;max-width:none!important;max-height:none!important;margin:0!important;padding:0!important;align-items:flex-end!important;justify-content:center!important;background:rgba(4,25,28,.62)!important;border:0!important;border-radius:0!important;box-sizing:border-box!important}
-.or-airway-setup-dialog.is-open .or-airway-setup-sheet{position:relative!important;width:min(760px,100%)!important;height:auto!important;max-height:min(88dvh,900px)!important;margin:0!important;border-radius:20px 20px 0 0!important;overflow:auto!important;overscroll-behavior:contain;background:#f7faf9!important}
-body.airway-setup-open{overflow:hidden!important}
-body.av-mobile-design .toast,
-body.av-mobile-design.or-mobile-active .toast,
-body.av-mobile-design.recovery-mobile-active .toast,
-body.av-mobile-design.av-editing .toast,
-body.av-mobile-design.anesvet-soft-keyboard .toast{
-  left:50%!important;right:auto!important;top:calc(env(safe-area-inset-top) + 72px)!important;bottom:auto!important;
-  width:max-content!important;max-width:min(420px,calc(100vw - 28px))!important;
-  height:auto!important;min-height:0!important;max-height:120px!important;
-  padding:9px 13px!important;margin:0!important;overflow:hidden!important;
-  line-height:1.35!important;white-space:normal!important;border-radius:11px!important;
-  transform:translateX(-50%)!important;box-sizing:border-box!important;z-index:11000!important;
-  pointer-events:none!important;
-}
-@media(max-width:600px){
- .or-airway-setup-dialog.is-open .or-airway-setup-sheet{width:100%!important;max-height:90dvh!important;border-radius:18px 18px 0 0!important}
- body.av-mobile-design .toast,body.av-mobile-design.or-mobile-active .toast,body.av-mobile-design.recovery-mobile-active .toast{font-size:13px!important;max-height:96px!important}
+/* V17.14.5 — physical pilot mobile containment + Recovery scoring. */
+@media(max-width:720px){
+  body.av-mobile-design :is(#orlive,#recovery,.panel,.section-heading,.recovery-focus,.recovery-secondary-body,.or-workspace-panel){min-width:0;max-width:100%}
+  body.av-mobile-design :is(#orlive,#recovery) :is(h1,h2,h3,p,small,b,span,label,.status-pill,.settings-note,.or-medication-queue-more,.recovery-secondary-state){overflow-wrap:anywhere;word-break:normal;max-width:100%}
+  body.av-mobile-design #recovery .table-wrap{max-width:100%;overflow-x:auto;overscroll-behavior-inline:contain}
+  body.av-mobile-design #recovery .dashboard-grid{display:grid!important;grid-template-columns:1fr!important;gap:10px!important}
+  body.av-mobile-design #recovery .recovery-primary-vitals-history{order:2}
+  body.av-mobile-design #recovery .recovery-primary-score{order:3}
+  body.av-mobile-design #recovery .recovery-primary-checklist{order:4}
+  body.av-mobile-design #recovery .recovery-score-panel .section-heading{display:block!important}
+  body.av-mobile-design #recovery .recovery-score-panel .section-heading .btn{display:none!important}
+  body.av-mobile-design #recovery .recovery-score-grid{grid-template-columns:1fr!important;gap:10px!important}
+  body.av-mobile-design #recovery .recovery-score-native{position:absolute!important;width:1px!important;height:1px!important;opacity:0!important;pointer-events:none!important}
+  body.av-mobile-design #recovery .recovery-score-quick{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-top:7px}
+  body.av-mobile-design #recovery .recovery-score-quick:has([data-score-value="NA"]){grid-template-columns:repeat(4,minmax(0,1fr))}
+  body.av-mobile-design #recovery .recovery-score-quick button{min-height:46px;border:1px solid #bfd2d0;border-radius:11px;background:#fff;color:#2d555d;font:inherit;font-weight:750;padding:6px;touch-action:manipulation}
+  body.av-mobile-design #recovery .recovery-score-quick button.active{background:#155f57;color:#fff;border-color:#155f57;box-shadow:0 0 0 3px rgba(21,95,87,.12)}
+  body.av-mobile-design #recovery .recovery-score-primary-save{display:block!important;width:100%;min-height:54px;margin:10px 0 4px;border-radius:12px}
+  body.av-mobile-design #recovery .recovery-score-primary-save:disabled{opacity:.55}
+  body.av-mobile-design[data-av-page=orlive] #orUndoStepBtn:not([hidden]){position:fixed!important;left:12px!important;right:12px!important;bottom:calc(var(--av-footer) + 10px + env(safe-area-inset-bottom))!important;z-index:45!important;width:auto!important;max-width:680px!important;margin:auto!important;min-height:44px!important;border-radius:12px!important;background:#fff7df!important;border:1px solid #e5c86f!important;color:#6b4d00!important;box-shadow:0 8px 24px rgba(0,0,0,.16)!important}
+  body.av-mobile-design.av-editing[data-av-page=orlive] #orUndoStepBtn:not([hidden]){top:calc(env(safe-area-inset-top) + 8px)!important;bottom:auto!important}
 }

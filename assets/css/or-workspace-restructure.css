@@ -534,6 +534,7 @@ body[data-av-page=orlive] .av-nav button{min-height:44px!important;font-size:12p
 /* Vent mode is tap-first. The authoritative select stays in DOM but not in the visual workflow. */
 #orlive .or-vent-mode-buttons{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin:0 0 8px}
 #orlive .or-vent-mode-buttons button{
+  position:relative;z-index:1;pointer-events:auto;touch-action:manipulation;
   min-height:42px;padding:6px 5px;border:1px solid #c6d8d5;border-radius:9px;background:#f7fbfa;color:#245c57;
   font:inherit;font-size:.68rem;font-weight:850;line-height:1.15;cursor:pointer;
 }
@@ -552,7 +553,8 @@ body[data-av-page=orlive] .av-nav button{min-height:44px!important;font-size:12p
 @media(max-width:420px){
   #orlive .or-workspace-back{min-height:32px;padding:4px 7px;font-size:.62rem}
   #orlive .or-vent-mode-buttons{grid-template-columns:1fr 1fr 1fr;gap:4px}
-  #orlive .or-vent-mode-buttons button{min-height:40px;padding:5px 3px;font-size:.62rem}
+  #orlive .or-vent-mode-buttons button{
+  position:relative;z-index:1;pointer-events:auto;touch-action:manipulation;min-height:40px;padding:5px 3px;font-size:.62rem}
   #orlive .or-fluid-glance{grid-template-columns:1fr 1fr}
 }
 /* V17.13.8 — canonical tablet context ownership.

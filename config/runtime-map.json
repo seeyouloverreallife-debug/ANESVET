@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "release": "17.14.4",
+  "release": "17.14.5",
   "policy": {
     "startupJsMoveStatus": "moved-platform-clinical-complete-app-foundation-domains-orchestration-and-controllers",
     "preserveExactStartupOrder": true,
@@ -27,7 +27,8 @@
     "pilotEvidenceVersionAuthority": "simulation-pilot-validation-read-current-app-version",
     "clinicalPilotStressSimulation": "vitals-medication-emergency-session-bfcache-backup-final-lock-stress-pass",
     "pilotCacheReadiness": "current-build-dynamic-cache-name",
-    "physicalPilotReadiness": "local-only-viewport-keyboard-focus-longtask-memory-bfcache-telemetry"
+    "physicalPilotReadiness": "local-only-viewport-keyboard-focus-longtask-memory-bfcache-telemetry",
+    "physicalPilotUxFix": "vent-direct-mode-tramadol-sc-standby-no-autoadvance-bottom-bar-visible-mobile-overflow-recovery-vitals-first-score-tap-controls"
   },
   "groups": {
     "platform-foundation": {
