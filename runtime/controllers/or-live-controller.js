@@ -2,7 +2,7 @@
    Incremental OR LIVE UI/controller extraction. Existing OR domain/orchestration and clinical semantics remain injected and unchanged. */
 (function(root){
 'use strict';
-const VERSION='17.14.6';
+const VERSION='17.14.7';
 function create(ctx={}){
   const $=ctx.$,$$=ctx.$$;
   if(!$||!$$||typeof ctx.getState!=='function')return null;
@@ -30,7 +30,7 @@ function create(ctx={}){
   const currentSettingsObject=ctx.currentSettingsObject||(()=>({})),fillBlankVitalsFromLast=ctx.fillBlankVitalsFromLast||(()=>{}),markMilestone=ctx.markMilestone||(()=>false),openComplicationDialog=ctx.openComplicationDialog||(()=>{});
   const renderRecovery=ctx.renderRecovery||(()=>{}),beginRecovery=ctx.beginRecovery||(()=>false),confirmFn=ctx.confirm||((msg)=>root.confirm?.(msg)??false);
   let airwayWorkflowContext='';
-  /* V17.14.6 canonical Fast Vital interaction owner.
+  /* V17.14.7 canonical Fast Vital interaction owner.
      Migrated from or-speed-hardening.js without changing record semantics. */
   const FAST_FIELDS=Object.freeze([
     {id:'orHr',label:'HR',unit:'bpm'},
@@ -471,7 +471,7 @@ function renderAirwayPanel(){
   if($('orAirwaySummary'))$('orAirwaySummary').textContent=recorded?(bits.join(' • ')||'Intubation recorded'):'ยังไม่ได้บันทึก airway';
   renderOrPrimaryFlow();
 }
-function setVentilationMode(mode,{persist=true}={}){
+function setVentilationMode(mode,{persist=true,focus=false}={}){
   const allowed=['','Spontaneous','Manual PPV','Mechanical ventilation'];
   mode=allowed.includes(String(mode||''))?String(mode||''):'';
   const airway=$('airwayVentMode'),orMirror=$('orVentilation'),master=$('ventilation');
@@ -481,7 +481,8 @@ function setVentilationMode(mode,{persist=true}={}){
   if($('ventilatorFields'))$('ventilatorFields').hidden=!['Manual PPV','Mechanical ventilation'].includes(mode);
   renderAirwayPanel();
   if(persist)save({reason:'ventilation-mode'});
-  try{document.dispatchEvent(new CustomEvent('anesvet:ventilation-mode-changed',{detail:{mode}}))}catch(_){ }
+  try{document.dispatchEvent(new CustomEvent('anesvet:ventilation-mode-changed',{detail:{mode,focus}}))}catch(_){ }
+  root.ANESVET_OR_WORKSPACE?.syncVentEditor?.({mode,focus});
   return mode;
 }
 $('airwayVentMode')?.addEventListener('change',()=>setVentilationMode($('airwayVentMode')?.value||''));

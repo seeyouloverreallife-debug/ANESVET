@@ -1,6 +1,6 @@
-ANESVET V17.14.6 — Physical Pilot UX Fix II
+ANESVET V17.14.7 — Physical Pilot UX Fix III
 
-ล่าสุด: แก้ Vent ให้ OR controller เป็น canonical owner ของ mode และปรับ Recovery ให้ช่องกรอก vitals จริงอยู่ก่อน summary/history; Recovery assessment กลับมาใช้ descriptive selects แบบ minimal.
+ล่าสุด: แก้ Vent จาก root cause บนมือถือจริง และแก้ built-in NSAID ที่หลุดจาก Case Drug Plan
 
 โครงสร้าง runtime
 - runtime/platform/          positions 1–5
@@ -12,29 +12,27 @@ ANESVET V17.14.6 — Physical Pilot UX Fix II
 - root                       startup positions 34–69
 - runtime/knowledge/         lazy knowledge/ECG 7 modules
 
-V17.14.6 Physical Pilot UX Fix II
-- Vent mode buttons เรียก canonical OR controller โดยตรง; Spontaneous / Manual PPV / Mechanical ventilation sync state และเปิด/ปิด RR/PIP/PEEP/VT ตาม mode
-- คง Tramadol SC site-default และ standby/emergency medication filtering จาก V17.14.5
-- Bottom navigation, Undo strip และ mobile overflow fixes จาก V17.14.5 ยังคงอยู่
-- Recovery editable vitals เป็นงานแรก: HR / RR / SpO₂ / Temp / Mentation / Extubation พร้อม Record recovery vitals / Copy last
-- MAP / O₂ support / interval / note / structured assessment ย้ายไว้ใน More observations
-- Latest-vitals summary อยู่หลังช่องกรอก และ record history กลับไปอยู่ secondary details
-- Recovery assessment กลับมาใช้ descriptive selects ที่อธิบายความหมาย 0/1/2/N/A และจัด layout ให้ minimal; ไม่มี numeric-only tap controls
+V17.14.7 Physical Pilot UX Fix III
+- Vent workspace มี editor ของตัวเอง: RR / PIP / PEEP / VT ไม่ย้าย hidden ventilatorFields จาก Airway มาใช้อีก
+- กด Mechanical → canonical OR controller เปลี่ยน mode → แสดง Vent editor → focus RR
+- visible Vent editor sync กลับ authoritative airwayVentRr / airwayPip / airwayPeep / airwayVt
+- Quick Preset builtin_nsaid ถูก map เข้า Case Drug Plan ตาม species: Cat = Meloxicam, Dog = Carprofen
+- Post-anesthetic NSAID เป็น LATER ระหว่าง intra-op และ NEEDS REVIEW ใน emergence/recovery
+- Emergency / standby drugs ยังไม่เข้า routine auto-next
+- ไม่ตั้ง route ใหม่ให้ Meloxicam/Carprofen โดยอัตโนมัติ; ใช้ hospital protocol/การยืนยันตอนบันทึก
 
 Retained clinical contracts
 - Induction prepared meds = Given / details pending
 - administration time แก้ย้อนหลังได้
 - Intubation timestamp-only
+- Tramadol SC site-default
 - Quick Drug / Fast Vital / End Surgery / Emergency Return / Final Lock คงเดิม
 - dose / concentration / alert thresholds / persistence schema ไม่เปลี่ยน
-- Emergency drugs ยังเข้าถึงได้ด้วย explicit selection; เปลี่ยนเฉพาะ auto-suggestion behavior
-
-Physical pilot telemetry จาก V17.14.4 ยังคงอยู่และเป็น opt-in/local-only
 
 QA ปัจจุบันอยู่ใน qa/current/
 เอกสารหลัก
-- docs/audits/PHYSICAL_PILOT_UX_FIX_II_V17_14_6.md
-- docs/architecture/OWNER_MAP_V17_14_6.md
-- docs/releases/RELEASE_V17_14_6_TH.md
+- docs/audits/PHYSICAL_PILOT_UX_FIX_III_V17_14_7.md
+- docs/architecture/OWNER_MAP_V17_14_7.md
+- docs/releases/RELEASE_V17_14_7_TH.md
 
-ข้อจำกัด: V17.14.6 แก้จาก feedback และ screenshots บนอุปกรณ์จริงของผู้ใช้ แต่ build ที่แก้แล้วนี้ยังไม่ได้ re-test บนมือถือเครื่องเดิม จึงยังไม่ถือว่า physical-device acceptance ผ่านจนกว่าจะทดสอบซ้ำ
+ข้อจำกัด: ต้อง re-test V17.14.7 บนมือถือเครื่องเดิมก่อนถือว่า Vent physical acceptance ผ่านจริง

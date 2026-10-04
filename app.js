@@ -39,7 +39,7 @@ const SESSION_TTL_MS=30000;
 const SESSION_HEARTBEAT_MS=5000;
 const DB_NAME='ANESVET_DB';
 const DB_VERSION=2;
-const APP_VERSION='17.14.6';
+const APP_VERSION='17.14.7';
 const SECURITY=window.ANESVET_SECURITY_BASELINE||null;
 const SYNC_FOUNDATION=window.ANESVET_SYNC_FOUNDATION||null;
 const DOSE_REF=window.ANESVET_DOSE_REFERENCE||null;
@@ -3481,7 +3481,7 @@ function currentProtocolDrugDefinitions(){
 }
 function cloneCasePlanDrug(d){return {id:String(d.id||crypto.randomUUID()),name:d.name||'Medication',phase:d.phase||'pre',role:d.role||'',drugClass:d.drugClass||'',mode:d.mode||'mgkg',dose:d.dose??'',conc:d.conc??'',concUnit:d.concUnit||'',route:d.route||'',note:d.note||'',hospitalProtocol:d.hospitalProtocol||'',preparation:d.preparation?JSON.parse(JSON.stringify(d.preparation)):null,standby:!!d.standby,favorite:!!d.favorite}}
 function defaultCaseDrugPlanItems(){
-  const all=currentProtocolDrugDefinitions(),byId=new Map(all.map(d=>[String(d.id),d])),qp=loadQuickPresets(),map={builtin_diazepam:'diazepamDose',builtin_propofol:'propofolDose',builtin_cefazolin:'cefazolinDivisor',builtin_tramadol:'tramadolDose',builtin_convenia:'conveniaDivisor'};
+  const all=currentProtocolDrugDefinitions(),byId=new Map(all.map(d=>[String(d.id),d])),qp=loadQuickPresets(),species=String($('species')?.value||state.species||'').toLowerCase(),nsaidId=species==='cat'?'meloxicamDose':species==='dog'?'carprofenDose':'',map={builtin_diazepam:'diazepamDose',builtin_propofol:'propofolDose',builtin_cefazolin:'cefazolinDivisor',builtin_tramadol:'tramadolDose',builtin_convenia:'conveniaDivisor',...(nsaidId?{builtin_nsaid:nsaidId}:{})};
   const ids=[];for(const phase of ['induction','pre','post'])for(const raw of qp?.[phase]||[]){const id=map[raw]||('library:'+raw);if(byId.has(id)&&!ids.includes(id))ids.push(id)}
   for(const id of ['adrenalineDose','atropineBradyDose','atropineCprDose'])if(byId.has(id)&&!ids.includes(id))ids.push(id);
   return ids.map(id=>cloneCasePlanDrug(byId.get(id)));

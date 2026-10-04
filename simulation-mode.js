@@ -1,11 +1,11 @@
-/* ANESVET V17.14.6 — Simulation Mode
+/* ANESVET V17.14.7 — Simulation Mode
  * UX sandbox for practicing the full anesthesia workflow without creating
  * Patient Master or real Archive records. Simulation may start only when there
  * is no mutable real case. Clinical calculations and alert rules remain native.
  */
 (() => {
   'use strict';
-  const FALLBACK_VERSION='17.14.6';
+  const FALLBACK_VERSION='17.14.7';
   const runtimeVersion=()=>window.AnesvetApp?.version||FALLBACK_VERSION;
   const $=id=>document.getElementById(id);
   const api=()=>window.AnesvetApp||null;

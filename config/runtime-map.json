@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "release": "17.14.6",
+  "release": "17.14.7",
   "policy": {
     "startupJsMoveStatus": "moved-platform-clinical-complete-app-foundation-domains-orchestration-and-controllers",
     "preserveExactStartupOrder": true,
@@ -29,7 +29,8 @@
     "pilotCacheReadiness": "current-build-dynamic-cache-name",
     "physicalPilotReadiness": "local-only-viewport-keyboard-focus-longtask-memory-bfcache-telemetry",
     "physicalPilotUxFix": "vent-direct-mode-tramadol-sc-standby-no-autoadvance-bottom-bar-visible-mobile-overflow-recovery-vitals-first-score-tap-controls",
-    "physicalPilotUxFixII": "vent-canonical-owner-recovery-vitals-entry-first-descriptive-minimal-score"
+    "physicalPilotUxFixII": "vent-canonical-owner-recovery-vitals-entry-first-descriptive-minimal-score",
+    "physicalPilotUxFixIII": "vent-dedicated-editor-direct-focus-and-species-nsaid-case-plan-mapping"
   },
   "groups": {
     "platform-foundation": {

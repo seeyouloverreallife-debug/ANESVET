@@ -287,7 +287,7 @@ body.av-mobile-design #orlive #orPrimaryActionBtn:disabled{background:#dce7e6!im
   body.av-mobile-design.av-editing[data-av-page=orlive] #orUndoStepBtn:not([hidden]){top:calc(env(safe-area-inset-top) + 8px)!important;bottom:auto!important}
 }
 
-/* V17.14.6 — physical pilot Recovery task order + minimal semantic score. */
+/* V17.14.7 — physical pilot Recovery task order + minimal semantic score. */
 @media(max-width:720px){
   body.recovery-mobile-active #recovery.active{display:flex!important;flex-direction:column!important}
   body.recovery-mobile-active #recovery>#recoveryObservationPanel{order:1!important}
