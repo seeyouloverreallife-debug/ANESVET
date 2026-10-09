@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "release": "17.14.7",
+  "release": "17.14.9",
   "policy": {
     "startupJsMoveStatus": "moved-platform-clinical-complete-app-foundation-domains-orchestration-and-controllers",
     "preserveExactStartupOrder": true,
@@ -22,15 +22,15 @@
     "orchestrationMigration": "positions-24-26-moved-to-runtime-orchestration",
     "controllersMigration": "positions-27-33-moved-to-runtime-controllers",
     "postRefactorUxVerification": "keyboard-end-surgery-recovery-startup-verified-mobile-version-authority-fixed",
-    "clinicalUxImprovement": "or-medication-queue-auto-compact-when-current-phase-clear",
+    "clinicalUxImprovement": "or-medication-queue-keeps-pending-plan-visible",
     "clinicalPilotSimulation": "routine-hypotension-recovery-deterministic-production-controller-pass",
     "pilotEvidenceVersionAuthority": "simulation-pilot-validation-read-current-app-version",
     "clinicalPilotStressSimulation": "vitals-medication-emergency-session-bfcache-backup-final-lock-stress-pass",
     "pilotCacheReadiness": "current-build-dynamic-cache-name",
     "physicalPilotReadiness": "local-only-viewport-keyboard-focus-longtask-memory-bfcache-telemetry",
     "physicalPilotUxFix": "vent-direct-mode-tramadol-sc-standby-no-autoadvance-bottom-bar-visible-mobile-overflow-recovery-vitals-first-score-tap-controls",
-    "physicalPilotUxFixII": "vent-canonical-owner-recovery-vitals-entry-first-descriptive-minimal-score",
-    "physicalPilotUxFixIII": "vent-dedicated-editor-direct-focus-and-species-nsaid-case-plan-mapping"
+    "ventMedicationFix": "detached-panel-vent-binding-and-all-pending-planned-medications-visible",
+    "physicalPilotUxFixII": "vent-canonical-owner-recovery-vitals-entry-first-descriptive-minimal-score"
   },
   "groups": {
     "platform-foundation": {

@@ -4,7 +4,7 @@
 const VERSION='17.13.3',$=id=>document.getElementById(id),app=()=>root.AnesvetApp||null,state=()=>app()?.getState?.()||null;
 const active=id=>$(id)?.classList.contains('active');
 const RECOVERY_ENTRY=['recHR','recRR','recMAP','recSpO2','recTemp','recMentation'];
-let pending=false,observer=null;
+let pending=false,observer=null,lastArchiveResult='';
 let lastResumePointerAt=0,shortcutPress=null,rejectShortcutPointerClickUntil=0;
 function activePage(){return document.querySelector('.tabpage.active')?.id||''}
 function resumeActiveCase(source='repeat-shortcut'){const a=app();if(!a)return false;if(typeof a.resumeActiveCase==='function')return a.resumeActiveCase({source});const s=state()||{},target=s.casePhase==='recovery'?'recovery':'orlive';a.setTab?.(target,{force:true});return true}
@@ -49,7 +49,7 @@ function nextRecoveryField(current){const i=RECOVERY_ENTRY.indexOf(current);if(i
 function onRecoveryKey(e){if(!RECOVERY_ENTRY.includes(e.target?.id)||!active('recovery')||e.isComposing||e.ctrlKey||e.metaKey||e.altKey||e.shiftKey||(e.key!=='Enter'&&e.key!=='NumpadEnter'))return;const next=nextRecoveryField(e.target.id);if(!next)return;e.preventDefault();try{next.focus({preventScroll:true})}catch(_){next.focus()}if(next.id==='recordRecoveryVitalsBtn')next.scrollIntoView?.({block:'nearest'})}
 function phaseName(s){if(s?.recoveryCompletedAt||s?.casePhase==='complete')return'End Case';if(s?.casePhase==='recovery'||s?.recoveryStartedAt)return'Recovery';return'OR LIVE'}
 function repaint(){
- const s=state();if(!s)return;
+ const s=state();if(!s)return;revealArchiveResult();
  const done=!!s.recoveryCompletedAt,locked=!!s.caseLocked,patient=(s.patientName||$('patientName')?.value||'').trim();
  ['r25ResumeFromPatient','r25ResumeFromSummary','r25ResumeFromCases'].forEach(id=>{const b=$(id);if(!b)return;b.hidden=!working(s);if(working(s)){const n=phaseName(s);b.textContent='↩ กลับไป '+n;b.title=`กลับเข้าสู่ ${n}${patient?' — '+patient:''} (ไม่เริ่มหรือจบเคสอัตโนมัติ)`}});
  $('endCaseFastFinish')?.classList.toggle('r25-case-locked',locked);$('endCaseFastFinish')?.classList.toggle('r26-sealed',locked);$('recoveryExitCard')?.classList.toggle('r25-done',done);
@@ -68,13 +68,17 @@ function repaint(){
  const row=$('r26NextCase');if(row)row.hidden=!locked;updateReturnShortcut();
 }
 function schedule(){if(pending)return;pending=true;requestAnimationFrame(()=>{pending=false;repaint()})}
+
+function setupFinalDetails(){[['endDocumentationGuardian','endDocumentationDetails','รายละเอียดความครบถ้วนของเวชระเบียน'],['finalArchiveAssurancePanel','endArchiveDetails','สถานะ Lock / Archive / Verify']].forEach(([id,detailId,title])=>{const panel=$(id);if(!panel||$(detailId))return;const detail=document.createElement('details');detail.id=detailId;detail.className='ux-task-details';const summary=document.createElement('summary');summary.textContent=title;detail.append(summary);panel.before(detail);detail.append(panel)});}
+function revealArchiveResult(){const detail=$('endArchiveDetails'),badge=$('finalArchiveAssuranceBadge');if(!detail||!badge)return;const result=badge.textContent.trim();if(result!==lastArchiveResult){lastArchiveResult=result;if(!/WAITING/i.test(result))detail.open=true;}}
+
 function bind(){
- if(bind.done)return;bind.done=true;
+ if(bind.done)return;bind.done=true;setupFinalDetails();
  installReturnActions();simplifyFinalReview();reduceSummaryChoiceOverload();buildNextCase();ensureReturnShortcut();
  document.addEventListener('keydown',onRecoveryKey,true);const recoverySave=$('recordRecoveryVitalsBtn');if(recoverySave)recoverySave.title='บันทึกค่าที่กรอก (Enter จากช่องสุดท้ายจะเลื่อนมาที่ปุ่มนี้ แต่ไม่บันทึกให้อัตโนมัติ)';
  document.addEventListener('pointerdown',rememberShortcutPress,true);document.addEventListener('pointercancel',()=>{shortcutPress=null;rejectShortcutPointerClickUntil=Date.now()+700},true);document.addEventListener('pointerup',handleShortcutPointerEnd,true);
  observer=new MutationObserver(schedule);
- ['casePhaseBadge','timerStateBadge','caseClock','recoveryPhaseBadge','recoveryFocusReadiness','endCaseNextTaskBtn','endCaseReadiness','endRecoveryStatus'].forEach(id=>{const el=$(id);if(el)observer.observe(el,{subtree:true,attributes:true,childList:true,characterData:true})});
+ ['casePhaseBadge','timerStateBadge','caseClock','recoveryPhaseBadge','recoveryFocusReadiness','endCaseNextTaskBtn','endCaseReadiness','endRecoveryStatus','finalArchiveAssuranceBadge'].forEach(id=>{const el=$(id);if(el)observer.observe(el,{subtree:true,attributes:true,childList:true,characterData:true})});
  document.querySelectorAll('.tabpage').forEach(el=>observer.observe(el,{attributes:true,attributeFilter:['class']}));
  document.addEventListener('click',e=>{if(e.target.closest?.('#recovery,#endcase,#casesummary,#patient,#cases,.workflow-tabs,.mobile-workflow-dialog,[data-mobile-tab="recovery"],[data-mobile-tab="endcase"]'))schedule()},true);
  document.addEventListener('change',e=>{if(e.target.closest?.('#endcase,#recovery,#patient'))schedule()},true);

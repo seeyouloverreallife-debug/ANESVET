@@ -1,38 +1,34 @@
-ANESVET V17.14.7 — Physical Pilot UX Fix III
+ANESVET V17.14.9 — Usability Refinement
 
-ล่าสุด: แก้ Vent จาก root cause บนมือถือจริง และแก้ built-in NSAID ที่หลุดจาก Case Drug Plan
+ปรับต่อจาก V17.14.8 ซึ่งแก้ Vent และ Medication queue แล้ว
+ใช้งาน: แตก ZIP แล้วนำไฟล์ไปใช้กับวิธีเปิด/โฮสต์เดิมของ ANESVET
+หลังอัปเดตตรวจว่าเลขเวอร์ชันเป็น V17.14.9 โดยไม่ล้างข้อมูลเว็บไซต์หรือเคส
+ยังไม่ได้อัปโหลดไปเว็บไซต์หรือ GitHub
 
-โครงสร้าง runtime
-- runtime/platform/          positions 1–5
-- runtime/clinical/          positions 6–8
-- runtime/core/              positions 9–18
-- runtime/domains/           positions 19–23
-- runtime/orchestration/     positions 24–26
-- runtime/controllers/       positions 27–33
-- root                       startup positions 34–69
-- runtime/knowledge/         lazy knowledge/ECG 7 modules
+สิ่งที่ปรับ
+- ปุ่มบันทึก Vitals เต็มช่อง สูงอย่างน้อย 48 px อ่านข้อความได้บนมือถือและแท็บเล็ต
+- แยกสถานะบันทึกร่างในเครื่องออกจากยืนยันข้อมูลผู้ป่วย
+- ข้อมูลผู้ป่วยหลัก, น้ำหนักปัจจุบัน, Procedure, ASA และข้อควรระวังอยู่ก่อนรายละเอียดเพิ่มเติม
+- ค้นผู้ป่วยเดิม / อายุ / BCS / ทีมดูแล / Procedure templates เปิดดูได้เมื่อจำเป็น
+- Pre-check แบ่งตรวจร่างกาย / ความเสี่ยง / Checklist และมีปุ่มถัดไปหลักหนึ่งปุ่ม
+- Case Drug Plan อยู่ก่อน Quick Presets และเครื่องคำนวณ พร้อมแก้สีข้อความให้อ่านชัด
+- Meds แสดงยาค้างตามแผนก่อนรายการยาเพิ่มเติม ลดปุ่ม All medications ซ้ำ
+- ช่องปริมาณยาและ Route อยู่ก่อนข้อมูลอ้างอิง แต่ยังต้องยืนยันบันทึกการให้ยาจริง
+- Recovery: หน่วย Temp ไม่แยกบรรทัด, Extubation ใช้ HH:MM, ปุ่มบันทึก assessment อยู่หลังคำตอบและบอกจำนวนที่ยังขาด
+- End Case: พับรายละเอียดที่ซ้ำ แต่รายการค้าง ยา Sign-off และ Final action ยังเข้าถึงได้
+- ผล Archive / Verify เปิดรายละเอียดให้ดูอัตโนมัติเมื่อสถานะเปลี่ยน
+- แก้เส้นทางโหลดฟอนต์ Thai / Inter ใน CSS bundle
 
-V17.14.7 Physical Pilot UX Fix III
-- Vent workspace มี editor ของตัวเอง: RR / PIP / PEEP / VT ไม่ย้าย hidden ventilatorFields จาก Airway มาใช้อีก
-- กด Mechanical → canonical OR controller เปลี่ยน mode → แสดง Vent editor → focus RR
-- visible Vent editor sync กลับ authoritative airwayVentRr / airwayPip / airwayPeep / airwayVt
-- Quick Preset builtin_nsaid ถูก map เข้า Case Drug Plan ตาม species: Cat = Meloxicam, Dog = Carprofen
-- Post-anesthetic NSAID เป็น LATER ระหว่าง intra-op และ NEEDS REVIEW ใน emergence/recovery
-- Emergency / standby drugs ยังไม่เข้า routine auto-next
-- ไม่ตั้ง route ใหม่ให้ Meloxicam/Carprofen โดยอัตโนมัติ; ใช้ hospital protocol/การยืนยันตอนบันทึก
+การตรวจสอบ
+- 615/615 checks ผ่าน ใน 21 QA scripts
+- ทดสอบการแตะและเปิดแอปเต็มที่ 390 และ 1024 px
+- ทดสอบกรอก / ยืนยันผู้ป่วย / Review plan / เปิด Meloxicam / กลับโดยไม่ลงการให้ยา / assessment 10/10
+- N/A ไม่มีเหตุผลยังถูกกัน และเคสที่ไม่พร้อมยัง Final Lock ไม่ได้
+- ทดสอบ Vent save/reload และ Service Worker cache รุ่นใหม่
+- สูตรยา dose / concentration, เกณฑ์ทางคลินิก และรูปแบบข้อมูลเคสเดิมยังคงเดิม
 
-Retained clinical contracts
-- Induction prepared meds = Given / details pending
-- administration time แก้ย้อนหลังได้
-- Intubation timestamp-only
-- Tramadol SC site-default
-- Quick Drug / Fast Vital / End Surgery / Emergency Return / Final Lock คงเดิม
-- dose / concentration / alert thresholds / persistence schema ไม่เปลี่ยน
+รายละเอียด: docs/releases/RELEASE_V17_14_9_TH.md
+ผล QA: qa/current/QA_V17_14_9_RESULTS.txt
+ภาพตรวจหน้าจอ: qa/evidence/UX_V17_14_9
 
-QA ปัจจุบันอยู่ใน qa/current/
-เอกสารหลัก
-- docs/audits/PHYSICAL_PILOT_UX_FIX_III_V17_14_7.md
-- docs/architecture/OWNER_MAP_V17_14_7.md
-- docs/releases/RELEASE_V17_14_7_TH.md
-
-ข้อจำกัด: ต้อง re-test V17.14.7 บนมือถือเครื่องเดิมก่อนถือว่า Vent physical acceptance ผ่านจริง
+ยังต้องลองบนมือถือเครื่องที่ใช้จริง โดยเฉพาะคีย์บอร์ดและขนาดตัวอักษรของอุปกรณ์

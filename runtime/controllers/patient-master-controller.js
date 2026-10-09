@@ -145,7 +145,7 @@ function create(ctx={}){
     patientCache=cache().filter(x=>x.patientId!==p.patientId);patientCache.unshift(p);setCache(patientCache);setPatientField('patientMasterId',p.patientId);state.patientMasterId=p.patientId;renderPatientMaster();renderLinkedPatient();return p;
   }
   function syncAsaCards(){const selected=$('asa')?.value||'';$$('.asa-card').forEach(c=>c.classList.toggle('selected',!!selected&&c.dataset.asa===selected));if($('selectedAsaBadge'))$('selectedAsaBadge').textContent=selected?`ASA ${selected}${$('emergency')?.checked?'-E':''}`:'ASA —'}
-  function updatePatientSaveStatus(){const el=$('patientSaveStatus');if(!el)return;if(state.patientSaved){el.className='status-pill good';el.textContent='SAVED'}else{el.className='status-pill warn';el.textContent='NOT SAVED'}}
+  function updatePatientSaveStatus(){const el=$('patientSaveStatus');if(!el)return;if(state.patientSaved){el.className='status-pill good';el.textContent='ยืนยันข้อมูลแล้ว'}else{el.className='status-pill warn';el.textContent='ยังไม่ยืนยันข้อมูล'}}
   function renderPatientRiskBanner(){
     const parts=[],allergy=$('patientAllergies')?.value.trim(),disease=$('patientComorbidities')?.value.trim(),caution=$('patientPrecautions')?.value.trim();if(allergy)parts.push(`ALLERGY: ${allergy}`);if(disease)parts.push(`DISEASE: ${disease}`);if(caution)parts.push(`CAUTION: ${caution}`);
     const structured=ctx.preopRiskSummaryLabels?.({compact:true})||[];if(structured.length)parts.push(`RISK: ${structured.slice(0,5).join(', ')}${structured.length>5?` +${structured.length-5}`:''}`);

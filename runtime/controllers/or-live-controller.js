@@ -2,7 +2,7 @@
    Incremental OR LIVE UI/controller extraction. Existing OR domain/orchestration and clinical semantics remain injected and unchanged. */
 (function(root){
 'use strict';
-const VERSION='17.14.7';
+const VERSION='17.14.9';
 function create(ctx={}){
   const $=ctx.$,$$=ctx.$$;
   if(!$||!$$||typeof ctx.getState!=='function')return null;
@@ -30,7 +30,7 @@ function create(ctx={}){
   const currentSettingsObject=ctx.currentSettingsObject||(()=>({})),fillBlankVitalsFromLast=ctx.fillBlankVitalsFromLast||(()=>{}),markMilestone=ctx.markMilestone||(()=>false),openComplicationDialog=ctx.openComplicationDialog||(()=>{});
   const renderRecovery=ctx.renderRecovery||(()=>{}),beginRecovery=ctx.beginRecovery||(()=>false),confirmFn=ctx.confirm||((msg)=>root.confirm?.(msg)??false);
   let airwayWorkflowContext='';
-  /* V17.14.7 canonical Fast Vital interaction owner.
+  /* V17.14.9 canonical Fast Vital interaction owner.
      Migrated from or-speed-hardening.js without changing record semantics. */
   const FAST_FIELDS=Object.freeze([
     {id:'orHr',label:'HR',unit:'bpm'},
@@ -260,24 +260,24 @@ function renderOrMedicationQueue(){
   const panel=$('orMedicationQueue'),list=$('orMedicationQueueList'),badge=$('orMedicationQueueBadge'),next=$('orMedicationQueueNextBtn'),all=$('orMedicationQueueAllBtn'),hint=$('orMedicationQueueHint'),toggle=$('orMedicationQueueToggleBtn');if(!panel||!list||!badge||!next)return;
   const started=!!state.caseStartedAt,{rows,review,later,documented}=medicationQueueSummary();panel.hidden=!started||!rows.length||state.caseLocked;
   if(panel.hidden){medicationQueueUserExpanded=false;return;}
-  const needsReview=review.length>0,expanded=needsReview||medicationQueueUserExpanded;
+  const needsReview=review.length>0,hasPendingPlan=needsReview||later.length>0,expanded=hasPendingPlan||medicationQueueUserExpanded;
   panel.classList.toggle('compact',!expanded);
   list.hidden=!expanded;
   const actions=panel.querySelector('.or-medication-queue-actions');if(actions)actions.hidden=!expanded;
-  if(toggle){toggle.hidden=needsReview;toggle.textContent=expanded?'Hide plan':'View plan';toggle.setAttribute('aria-expanded',expanded?'true':'false');}
+  if(toggle){toggle.hidden=hasPendingPlan;toggle.textContent=expanded?'Hide plan':'View plan';toggle.setAttribute('aria-expanded',expanded?'true':'false');}
   if(review.length&&later.length){badge.textContent=`${review.length} NEED REVIEW • ${later.length} LATER`;badge.className='status-pill warn';}
   else if(review.length){badge.textContent=`${review.length} NEED REVIEW`;badge.className='status-pill warn';}
   else if(later.length){badge.textContent=`CURRENT CLEAR • ${later.length} LATER`;badge.className='status-pill neutral';}
   else{badge.textContent='CURRENT CLEAR • PLAN DOCUMENTED';badge.className='status-pill good';}
   if(hint){
     if(review.length)hint.textContent=`${documented.length} documented • ${review.length} planned administration${review.length===1?'':'s'} need review/documentation for the current or earlier phase${later.length?` • ${later.length} planned for later`:''}.`;
-    else if(later.length)hint.textContent=`Current phase clear • ${later.length} planned medication${later.length===1?' is':'s are'} saved for a later phase. Open only when you need the full plan.`;
+    else if(later.length)hint.textContent=`${later.length} planned medication${later.length===1?'':'s'} for a later phase • Record administration when given; planned timing is a reference.`;
     else hint.textContent=`Current phase clear • all ${rows.length} routine planned medication${rows.length===1?'':'s'} documented. Open only when you need the full plan.`;
   }
-  let budget=6,html='';
-  const g1=renderMedicationQueueGroup('NEEDS REVIEW',review,'review',Math.min(4,budget));html+=g1.html;budget-=g1.shown;
-  const g2=renderMedicationQueueGroup('LATER',later,'later',Math.min(2,budget));html+=g2.html;budget-=g2.shown;
-  const g3=renderMedicationQueueGroup('DOCUMENTED',documented,'documented',Math.min(2,budget));html+=g3.html;budget-=g3.shown;
+  let html='';
+  html+=renderMedicationQueueGroup('NEEDS REVIEW',review,'review',review.length).html;
+  html+=renderMedicationQueueGroup('PLANNED • LATER PHASE',later,'later',later.length).html;
+  html+=renderMedicationQueueGroup('DOCUMENTED',documented,'documented',2).html;
   list.innerHTML=html||'<div class="empty-state compact">No routine planned medications to review.</div>';
   next.hidden=!review.length;next.disabled=!review.length;next.textContent=review.length?`💉 Review next • ${review[0].item.name}`:'✓ Current phase clear';
   if(all)all.textContent=review.length?'All medications':'Open medication workspace';
@@ -471,7 +471,7 @@ function renderAirwayPanel(){
   if($('orAirwaySummary'))$('orAirwaySummary').textContent=recorded?(bits.join(' • ')||'Intubation recorded'):'ยังไม่ได้บันทึก airway';
   renderOrPrimaryFlow();
 }
-function setVentilationMode(mode,{persist=true,focus=false}={}){
+function setVentilationMode(mode,{persist=true}={}){
   const allowed=['','Spontaneous','Manual PPV','Mechanical ventilation'];
   mode=allowed.includes(String(mode||''))?String(mode||''):'';
   const airway=$('airwayVentMode'),orMirror=$('orVentilation'),master=$('ventilation');
@@ -481,8 +481,7 @@ function setVentilationMode(mode,{persist=true,focus=false}={}){
   if($('ventilatorFields'))$('ventilatorFields').hidden=!['Manual PPV','Mechanical ventilation'].includes(mode);
   renderAirwayPanel();
   if(persist)save({reason:'ventilation-mode'});
-  try{document.dispatchEvent(new CustomEvent('anesvet:ventilation-mode-changed',{detail:{mode,focus}}))}catch(_){ }
-  root.ANESVET_OR_WORKSPACE?.syncVentEditor?.({mode,focus});
+  try{document.dispatchEvent(new CustomEvent('anesvet:ventilation-mode-changed',{detail:{mode}}))}catch(_){ }
   return mode;
 }
 $('airwayVentMode')?.addEventListener('change',()=>setVentilationMode($('airwayVentMode')?.value||''));
@@ -599,7 +598,7 @@ function renderOrLive(){
     const diff=renderOrVitalChangeState();
     if($('orVitalsFocusSaveBtn')){
       const due=$('orRecordNowBtn')?.classList.contains('due');$('orVitalsFocusSaveBtn').classList.toggle('due',due);
-      $('orVitalsFocusSaveBtn').textContent=due?'🔴 SAVE VITALS • DUE':latest?(diff.changed?`＋ SAVE • ${diff.changed} CHANGED`:(diff.blank?`＋ SAVE • ${diff.blank} BLANK`:'＋ SAVE • UNCHANGED')):'＋ SAVE FIRST SET';
+      $('orVitalsFocusSaveBtn').textContent='＋ บันทึก Vitals';$('orVitalsFocusSaveBtn').setAttribute('aria-label',due?'บันทึก Vitals ถึงเวลาบันทึกแล้ว':latest?`บันทึก Vitals เปลี่ยน ${diff.changed} ช่อง ว่าง ${diff.blank} ช่อง`:'บันทึก Vitals ชุดแรก');
     }
     renderOrQuickMedStrip();
   }else{renderOrVitalChangeState();}

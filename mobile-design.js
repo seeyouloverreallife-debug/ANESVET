@@ -1,7 +1,8 @@
-/* ANESVET V17.14.7: mobile shell only. Never infer or write clinical evidence. */
+/* ANESVET V17.14.9: mobile shell only. Never infer or write clinical evidence. */
 (() => {
   'use strict';
   const $=id=>document.getElementById(id);
+  const q=(selector,scope=document)=>scope?.querySelector(selector)||null;
   const app=()=>window.AnesvetApp;
   const labels={start:'เริ่มใช้งาน',casehub:'เคส',more:'เพิ่มเติม',patient:'ข้อมูลผู้ป่วย',casesummary:'สรุปเคส',preop:'Pre-check',plan:'แผนวางยา',drugs:'ยา / Drug Plan',orlive:'OR LIVE',recovery:'Recovery',endcase:'ปิดเคส',cases:'คลังเคส',settings:'ตั้งค่า',record:'บันทึกทั้งหมด',trends:'Trends',timeline:'Timeline',events:'เหตุการณ์',dashboard:'Advanced'};
   const active=()=>document.querySelector('.tabpage.active')?.id||'patient';
@@ -104,7 +105,10 @@
   }
   function contextMeds(){if(active()==='recovery')nativeClick('recoveryMobileMedicationBtn');else nativeClick('orQuickMedAllBtn');}
   function stylesReady(){return Array.from(document.querySelectorAll('link[data-av-style]')).every(el=>el.dataset.avStyle==='ready');}
-  function install(){
+
+function setupMedicationFormOrder(){const editor=$('orQuickDrugSingleEditor');if(!editor||$('orQuickDrugReferenceDetails'))return;const fields=q('.quick-drug-fields',editor),fill=q('.quick-drug-fill-row',editor),calc=$('orQuickDrugCalculation');if(fields&&calc)calc.after(fields);if(fields&&fill)fields.after(fill);const reference=$('orQuickDrugDoseReference'),info=Array.from(editor.children).find(el=>el.tagName==='P'&&!el.id);if(reference||info){const details=document.createElement('details');details.id='orQuickDrugReferenceDetails';details.className='ux-task-details';const summary=document.createElement('summary');summary.textContent='ดูข้อมูลอ้างอิงและวิธีกรอกปริมาณยา';details.append(summary);if(reference)details.append(reference);if(info)details.append(info);const note=$('orQuickDrugNote')?.closest('label');if(note)note.after(details);else editor.append(details);}}
+
+  function install(){setupMedicationFormOrder();
     document.body.classList.add('av-mobile-design');
     for(const el of document.querySelectorAll('.or-vital-card input'))el.placeholder='—';
     // Move native auxiliary controls into their existing sheet; keep IDs and listeners.
@@ -121,15 +125,9 @@
       group.after(hints);
       const fill=$('orCopyLastVitalsBtn');if(fill)group.append(fill);
     }
-    // Preserve native IDs/listeners and all planned rows, with an explicit
-    // expandable count rather than a long queue competing with measured vitals.
-    const queue=$('orMedicationQueue');
-    if(queue){
-      const details=document.createElement('details');details.id='avMedicationDetails';details.className='av-medication-details';
-      const summary=document.createElement('summary'),label=document.createElement('span');label.textContent='รายการยา · เปิดทบทวน';summary.append(label);
-      const badge=$('orMedicationQueueBadge');if(badge)summary.append(badge);
-      const children=Array.from(queue.children);details.append(summary);children.forEach(child=>details.append(child));queue.append(details);
-    }
+    // The OR controller owns queue expansion. A second closed details wrapper
+    // would hide pending planned medications even when the native list is open.
+    // Keep the native queue intact, including its badge and documented-plan toggle.
     const practice=$('simulationWelcomeCard');if(practice)$('more')?.append(practice);
     document.addEventListener('click',e=>{
       const b=e.target.closest('[data-av-route],[data-av-action],[data-av-native],[data-av-knowledge]');if(!b||b.disabled)return;
