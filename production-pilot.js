@@ -1,10 +1,10 @@
-/* ANESVET V17.14.11 — Production Pilot & Real-device Reliability
+/* ANESVET V17.14.13 — Production Pilot & Real-device Reliability
    Technical acceptance instrumentation only. No clinical calculations, decisions,
    thresholds, medication semantics, or record payloads are changed by this module. */
 (function(root){
 'use strict';
 
-const FALLBACK_VERSION='17.14.11';
+const FALLBACK_VERSION='17.14.13';
 const runtimeVersion=()=>root.AnesvetApp?.version||FALLBACK_VERSION;
 const ACCEPTANCE_KEY='anesvet_v16_17_pilot_acceptance';
 const LIFECYCLE_KEY='anesvet_v16_17_lifecycle_log';

@@ -1,0 +1,204 @@
+[
+  {
+    "width": 320,
+    "height": 844,
+    "errors": [],
+    "phase": "emergence",
+    "title": {
+      "text": "Emergence",
+      "width": 0,
+      "height": 139.078125,
+      "left": 26,
+      "right": 26,
+      "top": 272.15625,
+      "bottom": 411.234375
+    },
+    "card": {
+      "text": "STEP 4 OF 5 • EMERGENCE\nEmergence\n🫁 Extubation → Recovery\n↶ Undo • Surgery end",
+      "width": 288,
+      "height": 183.078125,
+      "left": 16,
+      "right": 304,
+      "top": 236.15625,
+      "bottom": 419.234375
+    },
+    "buttons": [
+      {
+        "text": "🫁 Extubation → Recovery",
+        "width": 80.453125,
+        "height": 82.6875,
+        "left": 33,
+        "right": 113.453125,
+        "top": 286.34375,
+        "bottom": 369.03125
+      },
+      {
+        "text": "↶ Undo • Surgery end",
+        "width": 176.546875,
+        "height": 44,
+        "left": 117.453125,
+        "right": 294,
+        "top": 305.6875,
+        "bottom": 349.6875
+      }
+    ],
+    "due": "FIRST DUE +1273:44",
+    "overflow": false
+  },
+  {
+    "width": 390,
+    "height": 844,
+    "errors": [],
+    "phase": "emergence",
+    "title": {
+      "text": "Emergence",
+      "width": 0,
+      "height": 139.078125,
+      "left": 26,
+      "right": 26,
+      "top": 272.15625,
+      "bottom": 411.234375
+    },
+    "card": {
+      "text": "STEP 4 OF 5 • EMERGENCE\nEmergence\n🫁 Extubation → Recovery\n↶ Undo • Surgery end",
+      "width": 358,
+      "height": 183.078125,
+      "left": 16,
+      "right": 374,
+      "top": 236.15625,
+      "bottom": 419.234375
+    },
+    "buttons": [
+      {
+        "text": "🫁 Extubation → Recovery",
+        "width": 150.453125,
+        "height": 47.34375,
+        "left": 33,
+        "right": 183.453125,
+        "top": 304.015625,
+        "bottom": 351.359375
+      },
+      {
+        "text": "↶ Undo • Surgery end",
+        "width": 176.546875,
+        "height": 44,
+        "left": 187.453125,
+        "right": 364,
+        "top": 305.6875,
+        "bottom": 349.6875
+      }
+    ],
+    "due": "FIRST DUE +1273:44",
+    "overflow": false
+  },
+  {
+    "width": 1024,
+    "height": 844,
+    "errors": [],
+    "phase": "emergence",
+    "title": {
+      "text": "Emergence",
+      "width": 517.140625,
+      "height": 15.453125,
+      "left": 28,
+      "right": 545.140625,
+      "top": 1021.328125,
+      "bottom": 1036.78125
+    },
+    "card": {
+      "text": "STEP 4 OF 5 • EMERGENCE\nEmergence\n🫁 Extubation → Recovery\n💉 Medications\n↶ Undo • Surgery end",
+      "width": 988,
+      "height": 60,
+      "left": 18,
+      "right": 1006,
+      "top": 985.0625,
+      "bottom": 1045.0625
+    },
+    "buttons": [
+      {
+        "text": "🫁 Extubation → Recovery",
+        "width": 158.875,
+        "height": 38,
+        "left": 552.140625,
+        "right": 711.015625,
+        "top": 996.0625,
+        "bottom": 1034.0625
+      },
+      {
+        "text": "💉 Medications",
+        "width": 100.4375,
+        "height": 38,
+        "left": 715.015625,
+        "right": 815.453125,
+        "top": 996.0625,
+        "bottom": 1034.0625
+      },
+      {
+        "text": "↶ Undo • Surgery end",
+        "width": 176.546875,
+        "height": 44,
+        "left": 819.453125,
+        "right": 996,
+        "top": 993.0625,
+        "bottom": 1037.0625
+      }
+    ],
+    "due": "FIRST DUE +1273:44",
+    "overflow": false
+  },
+  {
+    "width": 844,
+    "height": 390,
+    "errors": [],
+    "phase": "emergence",
+    "title": {
+      "text": "Emergence",
+      "width": 337.140625,
+      "height": 15.453125,
+      "left": 28,
+      "right": 365.140625,
+      "top": 917.046875,
+      "bottom": 932.5
+    },
+    "card": {
+      "text": "STEP 4 OF 5 • EMERGENCE\nEmergence\n🫁 Extubation → Recovery\n💉 Medications\n↶ Undo • Surgery end",
+      "width": 808,
+      "height": 60,
+      "left": 18,
+      "right": 826,
+      "top": 880.78125,
+      "bottom": 940.78125
+    },
+    "buttons": [
+      {
+        "text": "🫁 Extubation → Recovery",
+        "width": 158.875,
+        "height": 38,
+        "left": 372.140625,
+        "right": 531.015625,
+        "top": 891.78125,
+        "bottom": 929.78125
+      },
+      {
+        "text": "💉 Medications",
+        "width": 100.4375,
+        "height": 38,
+        "left": 535.015625,
+        "right": 635.453125,
+        "top": 891.78125,
+        "bottom": 929.78125
+      },
+      {
+        "text": "↶ Undo • Surgery end",
+        "width": 176.546875,
+        "height": 44,
+        "left": 639.453125,
+        "right": 816,
+        "top": 888.78125,
+        "bottom": 932.78125
+      }
+    ],
+    "due": "FIRST DUE +1273:44",
+    "overflow": false
+  }
+]

@@ -1,9 +1,9 @@
-/* ANESVET V17.14.11 — OR LIVE interaction polish + clean secondary charting.
- * Presentation/navigation only. Existing clinical fields remain authoritative.
+/* ANESVET V17.14.13 — OR LIVE workspaces and machine setting documentation.
+ * Native clinical fields remain authoritative; saves are handled by the app owner.
  * Moves existing DOM controls into four task-based workspaces without cloning state. */
 (function(root){
 'use strict';
-const VERSION='17.14.11';
+const VERSION='17.14.13';
 const $=id=>document.getElementById(id);
 const q=(sel,scope=document)=>scope?.querySelector?.(sel)||null;
 root.ANESVET_PRESENTATION_OWNERSHIP?.claim?.('orlive.layout','or-workspace-v17130');
@@ -40,11 +40,11 @@ function setControlValue(kind,value){
 }
 function renderHardware(){
   const vap=$('orVaporizer'),o2=$('orO2');
-  const vv=clamp(safeNumber(vap?.value,0),0,5),ov=clamp(safeNumber(o2?.value,0),0,10);
-  const read=$('orMonitorVaporizerReadout');if(read)read.textContent=vv<=0?'OFF':`${vv.toFixed(1)}%`;
-  const flowRead=$('orMonitorO2Readout');if(flowRead)flowRead.textContent=ov<=0?'Room air / off':`${ov.toFixed(1)} L/min`;
-  qa('[data-vap-value]').forEach(b=>b.classList.toggle('active',Math.abs(safeNumber(b.dataset.vapValue)-vv)<0.051));
-  qa('[data-o2-value]').forEach(b=>b.classList.toggle('active',Math.abs(safeNumber(b.dataset.o2Value)-ov)<0.051));
+  const vv=vap?.value.trim()===''?null:Number(vap?.value),ov=o2?.value.trim()===''?null:Number(o2?.value);
+  const read=$('orMonitorVaporizerReadout');if(read)read.textContent=vv===null||!Number.isFinite(vv)?'ยังไม่ระบุ':vv===0?'0.0% • OFF':root.ANESVET_OR_DOMAIN.gasValueText('vaporizer',vv);
+  const flowRead=$('orMonitorO2Readout');if(flowRead)flowRead.textContent=ov===null||!Number.isFinite(ov)?'ยังไม่ระบุ':root.ANESVET_OR_DOMAIN.gasValueText('o2flow',ov);
+  for(const [kind,value]of[['vap',vv],['o2',ov]])qa(`[data-${kind}-value]`).forEach(b=>{const active=value!==null&&Number.isFinite(value)&&Math.abs(Number(b.dataset[kind+'Value'])-value)<0.00001;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active))});
+  root.AnesvetApp?.gasSettings?.render?.();
 }
 function bindHardware(){
   const vap=$('orVaporizer'),o2=$('orO2');
@@ -52,6 +52,7 @@ function bindHardware(){
   qa('[data-o2-value]').forEach(b=>b.addEventListener('click',()=>setControlValue('o2',b.dataset.o2Value)));
   vap?.addEventListener('input',renderHardware);
   o2?.addEventListener('input',renderHardware);
+  $('orGasSaveBtn')?.addEventListener('click',()=>root.AnesvetApp?.gasSettings?.record?.());
   renderHardware();
 }
 function setStep(kind,delta){
@@ -195,13 +196,13 @@ function buildMonitorControls(){
   card.innerHTML=`<div class="or-monitor-inline-head"><b>Anesthesia</b><small>Depth • Vaporizer • O₂</small></div>
   <div class="or-monitor-control-grid compact">
     <article class="or-depth-control"><div class="or-control-title"><b>Depth</b><small>anesthetic depth</small></div><div id="orDepthSlot"></div></article>
-    <article class="or-vaporizer-control"><div class="or-control-title"><b>Vaporizer</b><small id="orMonitorVaporizerReadout">OFF</small></div><div class="or-choice-strip" id="orVaporizerChoices">${choiceStrip([5,4.5,4,3.5,3,2.5,2,1.5,1,0.5,0],'vap')}</div><div id="orVaporizerSlot"></div></article>
-    <article class="or-o2-control"><div class="or-control-title"><b>O₂ flow</b><small id="orMonitorO2Readout">Off</small></div><div class="or-choice-strip" id="orO2Choices">${choiceStrip([3,2.5,2,1.5,1,0.5,0],'o2')}</div><div id="orO2Slot"></div></article>
-  </div><details id="orMonitorAdvancedBp" class="or-monitor-advanced"><summary>SAP / DAP (optional)</summary><div id="orAdvancedBpSlot" class="or-monitor-bp-grid"></div></details>`;
+    <article class="or-vaporizer-control"><div class="or-control-title"><b>Vaporizer</b><small id="orMonitorVaporizerReadout">OFF</small></div><div class="or-choice-strip" id="orVaporizerChoices">${choiceStrip([5,4.5,4,3.5,3,2.5,2,1.5,1,0.5,0],'vap')}</div><details class="or-setting-exact"><summary>กรอกค่าเอง (%)</summary><div id="orVaporizerSlot"></div></details></article>
+    <article class="or-o2-control"><div class="or-control-title"><b>O₂ flow</b><small id="orMonitorO2Readout">Off</small></div><div class="or-choice-strip" id="orO2Choices">${choiceStrip([3,2.5,2,1.5,1,0.5,0],'o2')}</div><details class="or-setting-exact"><summary>กรอกค่าเอง (L/min)</summary><div id="orO2Slot"></div></details></article>
+  </div><div class="or-gas-documentation"><p id="orGasPending" role="status" aria-live="polite"></p><details class="or-setting-note"><summary>หมายเหตุ (ถ้ามี)</summary><label>หมายเหตุการปรับค่า<input id="orGasNote" type="text" maxlength="500" placeholder="เหตุผล / รายละเอียด"></label></details><button id="orGasSaveBtn" type="button" disabled>บันทึกการปรับยาสลบ / O₂</button><small>บันทึกค่าเครื่องแยกจาก Vitals • ค่าที่เลือกต้องตรงกับเครื่องจริง</small><details id="orGasHistoryDetails"><summary>ประวัติการปรับค่าเครื่อง (<span id="orGasHistoryCount">0</span>)</summary><div id="orGasHistory"></div></details></div><details id="orMonitorAdvancedBp" class="or-monitor-advanced"><summary>SAP / DAP (optional)</summary><div id="orAdvancedBpSlot" class="or-monitor-bp-grid"></div></details>`;
   const depth=labelFor('orDepth'),vap=labelFor('orVaporizer'),o2=labelFor('orO2'),sap=labelFor('orSap'),dap=labelFor('orDap');
   if(depth){depth.classList.add('or-authoritative-control');q('#orDepthSlot',card).appendChild(depth)}
-  if(vap){vap.classList.add('or-authoritative-control','or-inline-hidden-control');q('#orVaporizerSlot',card).appendChild(vap)}
-  if(o2){o2.classList.add('or-authoritative-control','or-inline-hidden-control');q('#orO2Slot',card).appendChild(o2)}
+  if(vap){vap.classList.add('or-authoritative-control');$('orVaporizer').min='0';$('orVaporizer').max='5';$('orVaporizer').step='any';q('#orVaporizerSlot',card).appendChild(vap)}
+  if(o2){o2.classList.add('or-authoritative-control');$('orO2').min='0';$('orO2').max='10';$('orO2').step='any';q('#orO2Slot',card).appendChild(o2)}
   if(sap)q('#orAdvancedBpSlot',card).appendChild(sap);
   if(dap)q('#orAdvancedBpSlot',card).appendChild(dap);
   const legacyVent=labelFor('orVentilation');if(legacyVent){legacyVent.hidden=true;legacyVent.classList.add('or-compat-control')}
@@ -398,7 +399,7 @@ function init(){
   updateBadges();syncCompactSummary();syncSafetyCompact();renderInductionQuickStrip();
   setView('monitor');
 }
-const api=Object.freeze({version:VERSION,init,setView,getView:()=>current,updateBadges,renderInductionQuickStrip,syncSafetyCompact});
+const api=Object.freeze({version:VERSION,init,setView,renderHardware,getView:()=>current,updateBadges,renderInductionQuickStrip,syncSafetyCompact});
 root.ANESVET_OR_WORKSPACE=api;
 if(root.ANESVET_LIFECYCLE_COORDINATOR?.ready)root.ANESVET_LIFECYCLE_COORDINATOR.ready(init);
 else if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});

@@ -39,7 +39,7 @@ const SESSION_TTL_MS=30000;
 const SESSION_HEARTBEAT_MS=5000;
 const DB_NAME='ANESVET_DB';
 const DB_VERSION=2;
-const APP_VERSION='17.14.11';
+const APP_VERSION='17.14.13';
 const SECURITY=window.ANESVET_SECURITY_BASELINE||null;
 const SYNC_FOUNDATION=window.ANESVET_SYNC_FOUNDATION||null;
 const DOSE_REF=window.ANESVET_DOSE_REFERENCE||null;
@@ -2007,6 +2007,40 @@ function getProtocolAudit(){
 function addProtocolAudit(action,detail='',actor=''){const a=getProtocolAudit(),identity=SECURITY?.activeIdentity?.()||null,auth=SECURITY?.auditContext?.(actor)||null;a.push({epoch:Date.now(),clock:formatClock(),action,detail,actor:String(actor||identity?.displayName||''),...(auth?{actorId:auth.actorId,actorRole:auth.actorRole,staffCode:auth.staffCode||'',sessionId:auth.sessionId||'',deviceId:auth.deviceId||'',authMethod:auth.authMethod,authenticatedAt:auth.authenticatedAt,...(auth.reauthenticated?{reauthenticated:true}:{})}: {})});localStorage.setItem(PROTOCOL_AUDIT_KEY,JSON.stringify(a.slice(-500)))}
 
 function clinicalActorContext(){const a=SECURITY?.auditContext?.()||null;return a?{actorId:a.actorId,actorName:a.actorName||SECURITY?.activeIdentity?.()?.displayName||'',actorRole:a.actorRole,staffCode:a.staffCode||'',sessionId:a.sessionId||'',deviceId:a.deviceId||'',authMethod:a.authMethod||'local-pin'}:null}
+
+function anesthesiaSettingEvents(){return (state.events||[]).filter(e=>e.gasSettingChange?.version===1)}
+function anesthesiaSettingDraft(){return OR_DOMAIN.gasChangeDraft(state.records||[],state.events||[],{vaporizer:$('vaporizer')?.value,o2flow:$('o2flow')?.value})}
+function renderAnesthesiaSettings(){
+ const btn=$('orGasSaveBtn'),pending=$('orGasPending');if(!btn||!pending)return;
+ const note=$('orGasNote'),caseId=String(state.caseId||'');if(note&&note.dataset.caseId!==caseId){note.value='';note.dataset.caseId=caseId}
+ const draft=anesthesiaSettingDraft();
+ btn.disabled=!draft.ok||!!state.caseLocked||!sessionActive()||!state.caseStartedAt;
+ pending.textContent=!state.caseStartedAt?'เริ่มเคสก่อนบันทึกค่าเครื่อง':draft.reason==='invalid'?'ตรวจค่าที่กรอก: Vaporizer 0–5% / O₂ 0–10 L/min':draft.ok?OR_DOMAIN.gasChangeText(draft):'ไม่มีค่าที่เปลี่ยนจากรายการล่าสุด';
+ pending.classList.toggle('pending',draft.ok);
+ const events=anesthesiaSettingEvents(),history=$('orGasHistory'),count=$('orGasHistoryCount');
+ if(count)count.textContent=String(events.length);
+ if(history)history.innerHTML=events.length?events.slice().reverse().map(e=>`<div class="or-gas-history-row"><b>${escapeHtml(e.clock||formatClock(e.epoch))} • ${escapeHtml(formatShortElapsed(e.elapsedMs||0))}</b><span>${escapeHtml(OR_DOMAIN.gasChangeText(e.gasSettingChange))}</span>${e.note?`<small>${escapeHtml(e.note)}</small>`:''}</div>`).join(''):'<p>ยังไม่มีรายการปรับค่าเครื่อง</p>';
+}
+function recordAnesthesiaSettings(){
+ if(!clinicalWriteAllowed())return false;
+ if(!state.caseStartedAt){toast('เริ่มเคสก่อนบันทึกค่าเครื่อง');return false}
+ const draft=anesthesiaSettingDraft();if(!draft.ok){toast(draft.reason==='invalid'?'ตรวจค่า Vaporizer / O₂ ที่กรอก':'ไม่มีค่าที่เปลี่ยนจากรายการล่าสุด');return false}
+ const epoch=Date.now(),documentedBy=clinicalActorContext(),note=String($('orGasNote')?.value||'').trim();
+ const ev={id:crypto.randomUUID?crypto.randomUUID():String(epoch+Math.random()),epoch,elapsedMs:currentElapsed(),clock:formatClock(epoch),category:'Anesthesia',name:'ปรับยาสลบ / O₂',dose:OR_DOMAIN.gasChangeText(draft),route:'',note,gasSettingChange:{version:1,before:draft.before,after:draft.after,changes:draft.changes},...(documentedBy?{documentedBy}:{})};
+ const oldEvents=state.events,oldAudit=(state.auditTrail||[]).slice();
+ state.events=[...(oldEvents||[]),ev].sort((a,b)=>a.epoch-b.epoch);addAudit('ANESTHESIA_SETTINGS_RECORDED',ev.dose);
+ if(!save({reason:'anesthesia-settings'})){
+   // A checkpoint failure can occur after the primary write. Keep a committed event
+   // visible in that case; never report success or allow a second identical event.
+   let committed=false;try{committed=JSON.parse(localStorage.getItem(CURRENT_KEY)||'null')?.events?.some(e=>e.id===ev.id)===true}catch(_){}
+   if(!committed){state.events=oldEvents;state.auditTrail=oldAudit}
+   renderEvents();renderProcedureTimeline();renderAnesthesiaSettings();toast('บันทึกยังไม่สมบูรณ์ — ตรวจสถานะการบันทึก');return false;
+ }
+ if($('orGasNote'))$('orGasNote').value='';
+ renderEvents();renderProcedureTimeline();renderTrends();renderOrLive();
+ toast(`✓ บันทึกค่าเครื่องแล้ว • ${ev.clock}`);return ev;
+}
+
 function currentSnapshot(note=''){
   const documentedBy=clinicalActorContext();
   return {
@@ -2307,13 +2341,14 @@ $('recordNowBtn').addEventListener('click',()=>addRecord(''));
 
 function recordAlert(r){return OR_DOMAIN.recordAlert(r,{species:$('species').value,classifyAlert:WF.classifyAlert,defaultAlertProtocol:WF.defaultAlertProtocol})}
 function renderRecords(){
+  renderAnesthesiaSettings();
   const body=$('recordBody');body.innerHTML='';
   const records=state.records||[];
   $('recordEmpty').style.display=records.length?'none':'block';
   $('recordCountText').textContent=`${records.length} record${records.length===1?'':'s'}`;
   records.forEach((r,i)=>{
     const tr=document.createElement('tr');if(recordAlert(r))tr.classList.add('alert');
-    const fields=['hr','rr','sap','map','dap','spo2','etco2','temp','vaporizer','fluidRate'];
+    const fields=['hr','rr','sap','map','dap','spo2','etco2','temp','vaporizer','o2flow','fluidRate'];
     tr.innerHTML=`<td>${i+1}</td><td>${formatElapsed(r.elapsedMs)}</td><td>${escapeHtml(r.clock)}</td>`+
       fields.map(f=>`<td class="${['sap','dap'].includes(f)?'sap-dap-helper ':''}${recordCorrectionCount(r.id,f)?'corrected-cell':''}" title="${recordCorrectionCount(r.id,f)?'Corrected value — see history':''}">${f==='temp'?(r[f]==null||r[f]===''?'':tempStoredFToDisplay(r[f])):(r[f]??'')}${recordCorrectionCount(r.id,f)?'<span class="correction-badge">C</span>':''}</td>`).join('')+
       `<td class="note">${escapeHtml(r.note||'')}</td><td><div class="record-actions"><button class="record-correct-btn" data-id="${escapeHtml(r.id)}">Correct</button><button class="delete-btn" data-id="${escapeHtml(r.id)}">✕</button></div></td>`;
@@ -2632,6 +2667,7 @@ function populateResponseSelect(){const sel=$('responseEventSelect');if(!sel)ret
 $('captureResponseBtn')?.addEventListener('click',()=>{const id=$('responseEventSelect').value;if(!id){toast('เลือก intervention ก่อน');return}const ev=(state.events||[]).find(e=>String(e.id)===String(id));if(!ev)return;const now=currentSnapshot(''),resp={id:crypto.randomUUID?crypto.randomUUID():String(Date.now()),eventId:id,eventName:ev.name,eventElapsed:ev.elapsedMs,capturedElapsed:now.elapsedMs,map:now.map,hr:now.hr,spo2:now.spo2,etco2:now.etco2,temp:now.temp,note:$('responseNote').value.trim()};state.responses=state.responses||[];state.responses.push(resp);$('responseNote').value='';save();renderResponses();toast('Response captured')});
 function renderResponses(){populateResponseSelect();const el=$('responseList'),arr=state.responses||[];if(!el)return;if(!arr.length){el.className='response-list empty-state';el.textContent='ยังไม่มี response tracking';return}el.className='response-list';el.innerHTML=arr.map(r=>`<div class="response-card"><b>${escapeHtml(r.eventName)} → response at +${escapeHtml(formatShortElapsed(r.capturedElapsed-r.eventElapsed))}</b><span>MAP ${r.map??'—'} • HR ${r.hr??'—'} • SpO₂ ${r.spo2??'—'} • ETCO₂ ${r.etco2??'—'} • Temp ${r.temp==null?'—':tempTextF(r.temp)}${r.note?' • '+escapeHtml(r.note):''}</span></div>`).join('')}
 function renderEvents(){
+  renderAnesthesiaSettings();
   renderResponses();renderComplications();renderDrugAdministrationAudit();
   const events=state.events||[];
   $('eventCountText').textContent=`${events.length} event${events.length===1?'':'s'}`;
@@ -3109,9 +3145,11 @@ function buildPdfReport(){
   const recs=state.records||[];
   if($('reportUnifiedTimeline'))$('reportUnifiedTimeline').innerHTML=reportUnifiedTimelineHtml();
   $('reportRecordTable').innerHTML=recs.length?`<table class="report-table">
-    <thead><tr><th>#</th><th>Elapsed</th><th>HR</th><th>RR</th><th>SAP</th><th>MAP</th><th>DAP</th><th>SpO₂</th><th>ETCO₂</th><th>Temp ${tempSymbol()}</th><th>Vap%</th><th>Fluid</th><th>Note</th></tr></thead>
-    <tbody>${recs.map((r,i)=>`<tr><td>${i+1}</td><td>${formatShortElapsed(r.elapsedMs)}</td><td>${r.hr??''}</td><td>${r.rr??''}</td><td>${r.sap??''}</td><td>${r.map??''}</td><td>${r.dap??''}</td><td>${r.spo2??''}</td><td>${r.etco2??''}</td><td>${r.temp==null||r.temp===''?'':tempStoredFToDisplay(r.temp)}</td><td>${r.vaporizer??''}</td><td>${r.fluidRate??''}</td><td class="note">${escapeHtml(r.note||'')}</td></tr>`).join('')}</tbody>
+    <thead><tr><th>#</th><th>Elapsed</th><th>HR</th><th>RR</th><th>SAP</th><th>MAP</th><th>DAP</th><th>SpO₂</th><th>ETCO₂</th><th>Temp ${tempSymbol()}</th><th>Vap%</th><th>O₂ L/min</th><th>Fluid</th><th>Note</th></tr></thead>
+    <tbody>${recs.map((r,i)=>`<tr><td>${i+1}</td><td>${formatShortElapsed(r.elapsedMs)}</td><td>${r.hr??''}</td><td>${r.rr??''}</td><td>${r.sap??''}</td><td>${r.map??''}</td><td>${r.dap??''}</td><td>${r.spo2??''}</td><td>${r.etco2??''}</td><td>${r.temp==null||r.temp===''?'':tempStoredFToDisplay(r.temp)}</td><td>${r.vaporizer??''}</td><td>${r.o2flow??''}</td><td>${r.fluidRate??''}</td><td class="note">${escapeHtml(r.note||'')}</td></tr>`).join('')}</tbody>
   </table>`:'<div>ไม่มี Record</div>';
+
+  if($('reportGasSettings'))$('reportGasSettings').innerHTML=anesthesiaSettingEvents().length?`<table class="report-table"><thead><tr><th>Clock</th><th>Elapsed</th><th>ค่าเดิม → ค่าใหม่</th><th>Note</th></tr></thead><tbody>${anesthesiaSettingEvents().map(e=>`<tr><td>${escapeHtml(e.clock)}</td><td>${escapeHtml(formatShortElapsed(e.elapsedMs))}</td><td>${escapeHtml(OR_DOMAIN.gasChangeText(e.gasSettingChange))}</td><td>${escapeHtml(e.note||'')}</td></tr>`).join('')}</tbody></table>`:'ยังไม่มีรายการปรับค่าเครื่อง';
 
   const charts=[
     ['Blood pressure',$('chartBP')],['Heart rate',$('chartHR')],['SpO₂',$('chartSpO2')],
@@ -3201,8 +3239,8 @@ function exportRecordsCsv(){
   downloadBlob(csv,'text/csv;charset=utf-8',caseBase()+'_records.csv');
 }
 function exportEventsCsv(){
-  const head=['No','Elapsed','Clock','Category','Name','Dose_Amount','Route','Note','DrugAdministrationId','ComplicationId'];
-  const rows=(state.events||[]).map((e,i)=>[i+1,formatElapsed(e.elapsedMs),e.clock,e.category,e.name,e.dose,e.route,e.note,e.drugAdministrationId||'',e.complicationId||'']);
+  const head=['No','Elapsed','Clock','Category','Name','Dose_Amount','Route','Note','DrugAdministrationId','ComplicationId','Vaporizer_before_pct','Vaporizer_after_pct','O2_before_Lmin','O2_after_Lmin'];
+  const rows=(state.events||[]).map((e,i)=>[i+1,formatElapsed(e.elapsedMs),e.clock,e.category,e.name,e.dose,e.route,e.note,e.drugAdministrationId||'',e.complicationId||'',e.gasSettingChange?.before?.vaporizer,e.gasSettingChange?.after?.vaporizer,e.gasSettingChange?.before?.o2flow,e.gasSettingChange?.after?.o2flow]);
   const csv='\ufeff'+[head,...rows].map(row=>row.map(csvEscape).join(',')).join('\n');
   downloadBlob(csv,'text/csv;charset=utf-8',caseBase()+'_events.csv');
 }
@@ -4244,6 +4282,7 @@ BOOT?.mark?.('public-api-publishing');
 window.AnesvetApp=Object.freeze({
   version:APP_VERSION,
   getState:()=>state,
+  gasSettings:Object.freeze({render:()=>renderAnesthesiaSettings(),record:()=>recordAnesthesiaSettings()}),
   startupStatus:()=>({primaryUnreadable:startupPrimaryUnreadable,recoveredOnlyInMemory:startupRecoveredOnlyInMemory,restoreReview:restoreJournalNeedsReview(),freshnessBlocked:CASE_FRESHNESS.isBlocked(),freshnessReason:CASE_FRESHNESS.reason(),sessionActive:sessionActive()}),
   save:(options)=>save(options),
   audit:(action,detail,actor='')=>addAudit(action,detail,actor),

@@ -1,0 +1,9 @@
+(()=>{
+'use strict';
+const VITAL_KEYS=['hr','rr','sap','map','dap','spo2','etco2','temp','vaporizer','o2flow','fluidRate','fluidTotal','depth','ventilation','note'];
+function vitalSnapshotSignature(r){if(!r)return '';return VITAL_KEYS.map(k=>`${k}:${r[k]===null||r[k]===undefined?'':String(r[k]).trim()}`).join('|')}
+function recentExactVitalDuplicate(records,snap,guardMs=12000){const last=(records||[]).at(-1);if(!last)return null;const delta=Number(snap?.epoch||Date.now())-Number(last.epoch||0);if(delta<0||delta>guardMs)return null;return vitalSnapshotSignature(last)===vitalSnapshotSignature(snap)?{record:last,delta}:null}
+function vitalRecordSummary(r,{formatTemp=v=>String(v)}={}){if(!r)return '—';const bits=[`HR ${r.hr??'—'}`,`RR ${r.rr??'—'}`,`MAP ${r.map??'—'}`,`SpO₂ ${r.spo2??'—'}%`,`ETCO₂ ${r.etco2??'—'}`,`Temp ${r.temp==null?'—':formatTemp(r.temp)}`];if(r.vaporizer!==null&&r.vaporizer!==''&&r.vaporizer!==undefined)bits.push(`Vaporizer ${r.vaporizer}%`);return bits.join(' • ')}
+function recordAlert(r,{species='',classifyAlert,defaultAlertProtocol}={}){const num=v=>v===null||v===''||v===undefined?null:Number(v),hr=num(r?.hr),rr=num(r?.rr),map=num(r?.map),spo2=num(r?.spo2),et=num(r?.etco2),temp=num(r?.temp);const hrCritical=hr!==null&&(species==='cat'?(hr<90||hr>225):(hr<40||hr>190));const rrCritical=rr!==null&&(species==='cat'?(rr<7):(rr<6));if(hrCritical||rrCritical)return true;if(typeof classifyAlert!=='function')return false;const protocol=r?.alertProtocol||(typeof defaultAlertProtocol==='function'?defaultAlertProtocol():undefined);return Object.entries({map,spo2,etco2:et,temp}).some(([k,v])=>classifyAlert(k,v,protocol)==='danger')}
+window.ANESVET_OR_DOMAIN=Object.freeze({VITAL_KEYS,vitalSnapshotSignature,recentExactVitalDuplicate,vitalRecordSummary,recordAlert});
+})();

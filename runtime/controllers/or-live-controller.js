@@ -2,7 +2,7 @@
    Incremental OR LIVE UI/controller extraction. Existing OR domain/orchestration and clinical semantics remain injected and unchanged. */
 (function(root){
 'use strict';
-const VERSION='17.14.11';
+const VERSION='17.14.13';
 function create(ctx={}){
   const $=ctx.$,$$=ctx.$$;
   if(!$||!$$||typeof ctx.getState!=='function')return null;
@@ -30,7 +30,7 @@ function create(ctx={}){
   const currentSettingsObject=ctx.currentSettingsObject||(()=>({})),fillBlankVitalsFromLast=ctx.fillBlankVitalsFromLast||(()=>{}),markMilestone=ctx.markMilestone||(()=>false),openComplicationDialog=ctx.openComplicationDialog||(()=>{});
   const renderRecovery=ctx.renderRecovery||(()=>{}),beginRecovery=ctx.beginRecovery||(()=>false),confirmFn=ctx.confirm||((msg)=>root.confirm?.(msg)??false);
   let airwayWorkflowContext='';
-  /* V17.14.11 canonical Fast Vital interaction owner.
+  /* V17.14.13 canonical Fast Vital interaction owner.
      Migrated from or-speed-hardening.js without changing record semantics. */
   const FAST_FIELDS=Object.freeze([
     {id:'orHr',label:'HR',unit:'bpm'},
@@ -551,6 +551,7 @@ function renderOrLive(){
   if(!$('orlive'))return;
   renderOrPhaseTracker();
   syncOrFromMain();
+  root.ANESVET_OR_WORKSPACE?.renderHardware?.();
   const st=thresholds(),species=$('species').value,name=$('patientName').value.trim()||'Unnamed patient',breed=$('breed').value.trim(),weight=getVal('weight',0);
   $('orPatientName').textContent=name;$('orPatientMeta').textContent=`${species==='cat'?'Cat':species==='dog'?'Dog':'—'}${$('sex')?.value?' • '+({male:'M',female:'F'}[$('sex').value]||''):''}${$('reproductiveStatus')?.value?' '+({intact:'intact',neutered:'neutered',spayed:'spayed'}[$('reproductiveStatus').value]||''):''}${breed?' • '+breed:''}${$('age')?.value?' • '+$('age').value:''} • ${weight??'—'} kg`;
   $('orAsaBadge').textContent=`ASA ${$('asa').value}${$('emergency').checked?'-E':''}`;
@@ -574,7 +575,7 @@ function renderOrLive(){
   const latest=latestRecord();$('orLastRecord').textContent=latest?`${latest.clock} • ${formatShortElapsed(latest.elapsedMs)}`:'—';
   if(latest){
     const due=latest.epoch+Number($('recordInterval').value||5)*60000,delta=due-Date.now();
-    $('orNextDue').textContent=delta<=0?`DUE +${Math.floor(Math.abs(delta)/60000)}:${pad(Math.floor((Math.abs(delta)%60000)/1000))}`:`in ${Math.floor(delta/60000)}:${pad(Math.floor((delta%60000)/1000))}`;
+    $('orNextDue').textContent=delta<=0?`DUE +${formatShortElapsed(Math.abs(delta))}`:`in ${Math.floor(delta/60000)}:${pad(Math.floor((delta%60000)/1000))}`;
     $('orNextDueClock').textContent=`clock ${formatClock(due)}`;
     $('orRecordNowBtn').classList.toggle('due',delta<=0);
 
@@ -583,7 +584,7 @@ function renderOrLive(){
     const interval=Number($('recordInterval').value||5)*60000;
     if(state.caseStartedAt){
       const remaining=interval-currentElapsed(),dueNow=remaining<=0;
-      $('orNextDue').textContent=dueNow?`FIRST DUE +${Math.floor(Math.abs(remaining)/60000)}:${pad(Math.floor((Math.abs(remaining)%60000)/1000))}`:`first in ${Math.floor(remaining/60000)}:${pad(Math.floor((remaining%60000)/1000))}`;
+      $('orNextDue').textContent=dueNow?`FIRST DUE +${formatShortElapsed(Math.abs(remaining))}`:`first in ${Math.floor(remaining/60000)}:${pad(Math.floor((remaining%60000)/1000))}`;
       $('orNextDueClock').textContent=`case + ${Math.round(interval/60000)} min`;
       $('orRecordNowBtn').classList.toggle('due',dueNow);$('orRecordNowBtn').textContent=dueNow?'🔴 FIRST RECORD DUE':`＋ RECORD FIRST SET • ${Math.floor(remaining/60000)}:${pad(Math.floor((remaining%60000)/1000))}`;
     }else{$('orNextDue').textContent='Starts with case';$('orNextDueClock').textContent='—';$('orRecordNowBtn').classList.remove('due');$('orRecordNowBtn').textContent='＋ RECORD FIRST SET'}

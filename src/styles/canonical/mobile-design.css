@@ -435,3 +435,26 @@ body.av-mobile-design #orQuickDrugDialog [hidden]{display:none!important}
  body.av-mobile-design #orQuickDrugDialog .quick-drug-sticky-actions{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important}
  body.av-mobile-design #orQuickDrugDialog .quick-drug-sticky-actions .btn{min-width:0!important;width:100%!important}
 }
+
+/* V17.14.12: workflow heading gets its own row; inline Undo stays below the footer. */
+body.av-mobile-design #orlive .or-primary-flow{
+ grid-template-columns:minmax(0,1fr)!important;align-items:stretch!important;gap:10px!important;
+}
+body.av-mobile-design #orlive .or-primary-copy{width:100%!important;min-width:0!important}
+body.av-mobile-design #orlive #orPrimaryActionTitle{
+ font-size:16px!important;line-height:1.45!important;white-space:normal!important;
+ word-break:normal!important;overflow-wrap:normal!important;
+}
+body.av-mobile-design #orlive .or-primary-buttons{
+ display:flex!important;flex-wrap:wrap!important;gap:8px!important;width:100%!important;min-width:0!important;
+}
+body.av-mobile-design #orlive .or-primary-buttons>button,
+body.av-mobile-design #orlive .or-primary-buttons>#orUndoStepBtn:not([hidden]){
+ flex:1 1 140px!important;align-self:stretch!important;width:auto!important;max-width:100%!important;
+ min-width:0!important;min-height:48px!important;padding:10px 12px!important;font-size:14px!important;
+ line-height:1.45!important;white-space:normal!important;word-break:normal!important;
+ overflow-wrap:normal!important;box-sizing:border-box!important;z-index:auto!important;
+}
+body.av-mobile-design #orlive .or-primary-buttons>[hidden]{display:none!important}
+
+@media(min-width:760px){body.av-mobile-design #orlive .or-primary-buttons>#orUndoStepBtn:not([hidden]){max-width:260px!important}}

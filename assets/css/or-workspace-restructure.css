@@ -581,3 +581,24 @@ body[data-av-page=orlive] .av-nav button{min-height:44px!important;font-size:12p
 
 #orlive #orVitalsFocus{grid-template-columns:minmax(0,1fr)!important}
 #orlive .or-meds-workspace:has(#orMedicationQueue:not([hidden])) #orQuickMedAllBtn{display:none!important}
+
+/* V17.14.13: record machine settings independently from measured vitals. */
+#orlive #orVaporizerSlot,#orlive #orO2Slot{display:block!important}
+#orlive .or-setting-exact{margin-top:8px}
+#orlive .or-setting-exact summary,#orlive .or-setting-note summary,#orlive #orGasHistoryDetails>summary{min-height:44px;display:flex;align-items:center;gap:4px;cursor:pointer;font-weight:700;font-size:.88rem;list-style:revert}
+#orlive .or-setting-exact input{min-height:48px;width:100%;box-sizing:border-box}
+#orlive .or-gas-documentation{border-top:1px solid #c5d8d6;margin-top:10px;padding-top:10px;display:grid;gap:8px;min-width:0}
+#orlive #orGasPending{margin:0;color:#3c6260;font-size:.88rem;line-height:1.5;overflow-wrap:anywhere}
+#orlive #orGasPending.pending{font-weight:700}
+#orlive #orGasSaveBtn{width:100%;min-height:48px;background:#155b53;color:white;border:0;border-radius:12px;padding:10px 12px;font:inherit;font-weight:750;line-height:1.5;white-space:normal;box-sizing:border-box}
+#orlive #orGasSaveBtn:disabled{background:#dce7e5;color:#526b68;opacity:1}
+#orlive #orGasSaveBtn:focus-visible,#orlive .or-setting-exact summary:focus-visible,#orlive #orGasHistoryDetails summary:focus-visible{outline:3px solid #0b9185;outline-offset:3px}
+#orlive .or-gas-documentation>small{color:#536d6a;font-size:.8rem;line-height:1.5}
+#orlive .or-setting-note label{display:grid;gap:6px;font-size:.85rem}
+#orlive #orGasNote{width:100%;min-height:48px;box-sizing:border-box}
+#orlive .or-gas-history-row{display:grid;gap:5px;padding:10px 0;border-top:1px solid #d3e0de;font-size:.86rem;line-height:1.5;overflow-wrap:anywhere}
+#orlive .or-gas-history-row b{color:#23534e}
+#reportGasSettings .report-table{font-size:9px;table-layout:fixed}
+#reportGasSettings th:nth-child(1),#reportGasSettings th:nth-child(2){width:12%}
+#reportGasSettings th:nth-child(3){width:50%}
+#reportGasSettings td:nth-child(3),#reportGasSettings td:nth-child(4){text-align:left}

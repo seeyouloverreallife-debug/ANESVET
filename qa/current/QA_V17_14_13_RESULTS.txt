@@ -1,0 +1,1125 @@
+ANESVET V17.14.13 — OR Anesthesia / O₂ Adjustment Log
+Source: ANESVET-V17.14.12-OR-WORKFLOW-LAYOUT-FIX.zip
+Source SHA256: 701672060ddb5c67f377ad6d6dc5b9c253179a5361ecb6ea200409d7f7ef4307
+Current QA: 1137/1137 PASS across 25 scripts
+New gas settings regression: 145/145 PASS at 320x844, 390x844, 1024x844
+JavaScript syntax: 78/78 PASS
+CSS parsing: 40/40 PASS
+Changed production JS: app.js, or-workspace-restructure.js, runtime/controllers/or-live-controller.js, runtime/domains/or-domain.js
+Other production JS byte-identical beyond version identifiers.
+All 38 canonical/legacy CSS sources and the existing CSS bundle unchanged.
+Workspace CSS extended for exact inputs, separate settings save, history, and report table.
+Synthetic cases, isolated local browser contexts. No website deployment.
+Physical device validation remains outstanding.
+
+QA_V17_14_13_APP_FOUNDATION_AUDIT.js: 21/21 PASS
+QA_V17_14_13_CANONICAL_CSS_OWNERSHIP_II.js: 25/25 PASS
+QA_V17_14_13_CLINICAL_PILOT_SIMULATION.js: 25/25 PASS
+QA_V17_14_13_CONTROLLERS_DEPENDENCY_AUDIT.js: 34/34 PASS
+QA_V17_14_13_CURRENT_WORKFLOW.js: 31/31 PASS
+QA_V17_14_13_DEVICE_TELEMETRY.js: 25/25 PASS
+QA_V17_14_13_DOMAINS_DEPENDENCY_AUDIT.js: 28/28 PASS
+QA_V17_14_13_END_TO_END.js: 17/17 PASS
+QA_V17_14_13_GAS_SETTINGS_BROWSER.js: 145/145 PASS
+QA_V17_14_13_INDUCTION_KEYBOARD_BROWSER.js: 132/132 PASS
+QA_V17_14_13_OR_FEEDBACK_BROWSER.js: 60/60 PASS
+QA_V17_14_13_OR_INTERACTION.js: 33/33 PASS
+QA_V17_14_13_OR_MEDICATION_FOCUS.js: 34/34 PASS
+QA_V17_14_13_ORCHESTRATION_DEPENDENCY_AUDIT.js: 30/30 PASS
+QA_V17_14_13_PACKAGE_STRUCTURE.js: 26/26 PASS
+QA_V17_14_13_PHYSICAL_PILOT_UX_FIX_I.js: 26/26 PASS
+QA_V17_14_13_PHYSICAL_PILOT_UX_FIX_II.js: 36/36 PASS
+QA_V17_14_13_POST_REFACTOR_UX.js: 34/34 PASS
+QA_V17_14_13_RUNTIME_GROUPING_IX.js: 24/24 PASS
+QA_V17_14_13_SESSION_OWNERSHIP.js: 20/20 PASS
+QA_V17_14_13_STATIC_INTEGRITY.js: 21/21 PASS
+QA_V17_14_13_STRESS_EDGE_CASES.js: 23/23 PASS
+QA_V17_14_13_USABILITY_BROWSER.js: 66/66 PASS
+QA_V17_14_13_VENT_MEDICATION_BROWSER.js: 36/36 PASS
+QA_V17_14_13_WORKFLOW_LAYOUT_BROWSER.js: 185/185 PASS
+
+Captured suite output:
+QA_V17_14_13_APP_FOUNDATION_AUDIT.js
+PASS  App foundation remains ten startup modules
+PASS  All app foundation positions remain 9–18
+PASS  All app foundation paths now live under runtime/core
+PASS  All ten app foundation files exist
+PASS  No app foundation root copies remain
+PASS  Session pair remains positions 17–18
+PASS  Session pair paths are canonical
+PASS  Session paths equal declared future paths
+PASS  Session sources contain no relative-path-sensitive loader logic
+PASS  Session coordination retains exported factory
+PASS  Session controller retains exported factory
+PASS  Session controller still depends on canonical app shell
+PASS  Session controller still depends on session coordination
+PASS  Session coordination retains localStorage lock ownership
+PASS  Session coordination retains sessionStorage tab identity
+PASS  Session coordination retains BroadcastChannel support
+PASS  Session controller retains VIEW ONLY safety guard
+PASS  Session controller retains wake ownership recovery
+PASS  Session coordination source is byte-identical to V17.13.16
+PASS  Session controller source is byte-identical to V17.13.16
+PASS  Migration policy records complete app foundation move
+
+21/21 PASS
+
+QA_V17_14_13_CANONICAL_CSS_OWNERSHIP_II.js
+PASS  Runtime scripts remain 69
+PASS  Bundle retains 38 source markers
+PASS  All bundle markers now point to src/styles folders
+PASS  Every marker resolves to an existing source file
+PASS  Legacy CSS debt reduced from 11 to 9 source names
+PASS  usability-hardening.css source name is retired
+PASS  mobile-first-r27.css source name is retired
+PASS  Canonical workflow assist source exists
+PASS  Canonical mobile workspace source exists
+PASS  Workflow assist migration preserves V17.13.9 bytes
+PASS  Mobile workspace migration preserves V17.13.9 bytes
+PASS  Bundle retains physical-pilot mobile UX rules
+PASS  Remaining 9 legacy-active CSS sources have no inactive class selectors
+PASS  All 13 retired JS owners remain absent from startup
+PASS  All 13 retired JS owners remain preserved in src/legacy-js
+PASS  Save assist CSS contract remains
+PASS  Actionable readiness/finalization CSS contracts remain
+PASS  Return-to-case CSS contract remains
+PASS  Mobile keyboard-open contract remains
+PASS  Mobile identity bridge CSS contract remains
+PASS  Runtime delivery remains two stylesheets
+PASS  Service worker still precaches two runtime CSS assets
+PASS  Induction details-pending contract remains
+PASS  Intubation timestamp-only contract remains
+PASS  Final Lock remains
+
+25/25 PASS
+
+QA_V17_14_13_CLINICAL_PILOT_SIMULATION.js
+PASS  Release is V17.14.13
+PASS  Simulation Mode no longer hard-codes V17.3.1
+PASS  Production Pilot no longer hard-codes V16.21.0 as runtime version
+PASS  Validation Center no longer hard-codes V16.21.0 as runtime version
+PASS  Pilot readiness evidence is build-scoped
+PASS  Validation active run is build-scoped
+PASS  Pilot: case starts in induction
+PASS  Pilot: prepared induction meds become details-pending
+PASS  Pilot: Intubation timestamp records without forcing airway detail
+PASS  Pilot: Surgery start moves case intraop
+PASS  Pilot: stable vital set records all six core metrics
+PASS  Pilot: MAP 45 is critical/danger under frozen alert protocol
+PASS  Pilot: intraop actual medication can coexist with deferred induction detail
+PASS  Pilot: MAP 72 returns to good classification
+PASS  Pilot: Surgery end moves to emergence and timestamps end
+PASS  Pilot: Extubation moves directly to Recovery
+PASS  Pilot: milestone order is clinically coherent
+PASS  Pilot: workflow transitions are audited
+PASS  Pilot: complete Recovery evidence becomes READY
+PASS  Pilot: emergency return blocks Recovery completion
+PASS  Pilot: recovery completion patch transitions to complete
+PASS  Pilot: routine dog scenario remains available
+PASS  Pilot: cat spay scenario remains available
+PASS  Pilot: brachycephalic scenario retains airway risk seed
+PASS  Pilot: Simulation remains sandboxed away from Patient Master/archive
+
+25/25 PASS
+
+QA_V17_14_13_CONTROLLERS_DEPENDENCY_AUDIT.js
+PASS  Controller group contains seven modules
+PASS  Controller orders remain 27–33
+PASS  Controller paths live under runtime/controllers
+PASS  Controller paths equal future paths
+PASS  Controller files exist
+PASS  Controller root copies are absent
+PASS  Index startup positions 27–33 point to controller folder
+PASS  Service Worker precaches all controller paths
+PASS  No controller contains relative/path-sensitive loader logic
+PASS  Patient Master changes only save-status wording
+PASS  Pre-op source preserved
+PASS  Medication workspace physical-pilot fixes are scoped
+PASS  OR LIVE V17.14.13 delta is scoped to canonical ventilation ownership + existing focused queue
+PASS  Recovery V17.14.13 delta is scoped to vitals-first layout + descriptive score
+PASS  Backup/Restore source preserved
+PASS  Finalization/Archive source preserved
+PASS  Patient Master keeps injected domain/orchestration boundary
+PASS  Patient Master keeps anesthesia-history behavior
+PASS  Pre-op keeps structured exam fields
+PASS  Pre-op keeps BOAS risk detail contract
+PASS  Medication workspace keeps current-weight safety dependency
+PASS  Medication workspace keeps explicit save navigation model
+PASS  OR LIVE keeps prepared-induction details-pending contract
+PASS  OR LIVE keeps timestamp-only intubation mutation
+PASS  OR LIVE keeps Fast Vital field ownership
+PASS  Recovery keeps injected domain/orchestration boundary
+PASS  Recovery keeps emergency return to OR
+PASS  Backup keeps integrity/restore journal safeguards
+PASS  Backup keeps fail-closed recovery marker
+PASS  Finalization keeps dual sign-off contract
+PASS  Finalization keeps locked-record guard
+PASS  Deployment has no legacy root controller refs
+PASS  Controller versioned refs use 17.14.13
+PASS  Runtime map policy records controller migration
+
+34/34 PASS
+
+QA_V17_14_13_CURRENT_WORKFLOW.js
+PASS  Induction start marks prepared induction meds given provisionally
+PASS  Induction start does not create full drug administration records
+PASS  Provisional list persisted in case state
+PASS  Only frozen planned induction meds are provisionally marked
+PASS  Provisional record uses Induction milestone epoch
+PASS  Provisional status explicitly details-pending
+PASS  Induction marking creates audit entry
+PASS  Quick drug button later opens editor rather than recording a new-time administration
+PASS  Later review defaults to provisional Induction time
+PASS  Editable administration time field exists
+PASS  Time input is shown for induction medication review
+PASS  Edited clock converts safely around midnight
+PASS  Edited administration time is used in actual drug record
+PASS  Time adjustment is retained in audit note
+PASS  Confirming actual details completes provisional record
+PASS  Induction review cannot complete with details pending
+PASS  Queue recognizes Given-but-details-pending state
+PASS  Queue labels provisional administration as Given Review
+PASS  Generic quick-med strip redirects provisional induction to review flow
+PASS  Undo restores induction provisional state
+PASS  Quick strip tells user Induction means drugs given
+PASS  Prepared drug button shows Given details pending
+PASS  Prepared drug button is still actionable until details saved
+PASS  Actual completed drug becomes non-actionable in quick strip
+PASS  Intubation remains timestamp-only
+PASS  Fluid, Vent and Airway remain deferred workspaces
+PASS  Current SW cache generation
+PASS  Current workspace assets cached
+PASS  End Surgery preserved
+PASS  Emergency Return preserved
+PASS  Final Lock preserved
+
+31/31 PASS
+
+QA_V17_14_13_DEVICE_TELEMETRY.js
+PASS  Telemetry release is V17.14.13
+PASS  Runtime policy records physical-pilot telemetry
+PASS  Production Pilot uses current fallback version
+PASS  Device telemetry has a dedicated local-only storage key
+PASS  Telemetry event history is bounded
+PASS  UI exposes device telemetry summary
+PASS  UI exposes opt-in telemetry, manual capture and reset controls
+PASS  Pilot report explicitly says typed values are not collected
+PASS  Telemetry is opt-in before continuous viewport/focus writes
+PASS  Telemetry observes VisualViewport resize/scroll
+PASS  Telemetry observes focus without reading field values
+PASS  Telemetry records long tasks when PerformanceObserver is available
+PASS  Telemetry records BFCache restores and resume events
+PASS  Readiness includes telemetry capability and event-loop probe
+PASS  Pilot snapshot exports device telemetry V2
+PASS  Service worker delivers current Production Pilot generation
+PASS  Continuous device telemetry defaults OFF
+PASS  Runtime telemetry API exposes only technical helpers
+PASS  Runtime sample captures keyboard inset from VisualViewport
+PASS  Runtime telemetry stores a bounded technical event
+PASS  Runtime telemetry does not mutate clinical case state
+PASS  Telemetry snapshot does not contain patient/case payload
+PASS  Telemetry reset clears captured technical events
+PASS  Opt-in start records one baseline device sample
+PASS  Opt-in telemetry can be stopped without touching clinical state
+
+25/25 PASS
+
+QA_V17_14_13_DOMAINS_DEPENDENCY_AUDIT.js
+PASS  Domains group contains five startup modules
+PASS  Domains preserve startup positions 19–23
+PASS  Domains use canonical runtime/domains paths
+PASS  Domain paths equal declared future paths
+PASS  All domain files exist
+PASS  No domain root copies remain
+PASS  Index loads all five canonical domain paths
+PASS  Service Worker precaches all five canonical domain paths
+PASS  No old domain root paths remain in deployment
+PASS  Domain sources contain no path-sensitive import/fetch/currentScript logic
+PASS  PWA default Service Worker URL remains document-relative
+PASS  PWA still requires canonical app shell
+PASS  PWA still subscribes to lifecycle pageshow restore
+PASS  PWA update registration still bypasses HTTP cache
+PASS  Dose reference controller still requires app shell
+PASS  Dose reference controller remains presentation/reference only
+PASS  Patient domain export remains
+PASS  OR domain export remains
+PASS  Recovery domain export remains
+PASS  App integration still consumes all domain/controller globals
+PASS  PWA source differs only by release stamp from V17.13.18
+PASS  Dose reference source is byte-identical to V17.13.17
+PASS  Patient domain source is byte-identical to V17.13.17
+PASS  OR vital signature, duplicate prevention and alert classification match V17.14.12
+PASS  Recovery domain source is byte-identical to V17.13.17
+PASS  Patient normalizeKey behavior remains stable
+PASS  OR duplicate-vital guard behavior remains stable
+PASS  Recovery readiness behavior remains stable
+
+28/28 PASS
+
+QA_V17_14_13_END_TO_END.js
+PASS  Patient gate requires identity/BW/procedure/ASA
+PASS  Drug Plan blocks unconfirmed BW and routes through review
+PASS  Start case freezes protocol/identity before OR
+PASS  Induction marks frozen induction meds Given • details pending
+PASS  Individual induction drug administration time remains editable
+PASS  Intubation remains timestamp-only
+PASS  OR monitor is fixed above secondary charting
+PASS  Surgery end uses audited workflow mutation
+PASS  Extubation enters Recovery through controller
+PASS  Emergency Return preserves explicit Recovery↔OR path
+PASS  Recovery complete goes to End Case
+PASS  Finalization retains explicit final lock path
+PASS  Case lifecycle phase order remains stable
+PASS  Recovery patch preserves first recovery timestamp
+PASS  Session model locks Recovery while Emergency Return active
+PASS  Final sealed case is reload-safe
+PASS  Synthetic completed case produces coherent recovery handoff
+
+17/17 PASS
+
+QA_V17_14_13_GAS_SETTINGS_BROWSER.js
+145/145 PASS
+
+QA_V17_14_13_INDUCTION_KEYBOARD_BROWSER.js
+PASS 360x844 a workspace entry exists in ordinary Tab order
+PASS 360x844 Tab reaches Fluid while Monitor is selected
+PASS 360x844 keyboard activation opens Fluid
+PASS 360x844 Right arrow activates Vent and moves focus
+PASS 360x844 End reaches the last workspace
+PASS 360x844 Home returns to the first workspace
+PASS 360x844 Left wraps to Meds
+PASS 360x844 workspace selection announces one pressed action
+PASS 360x844 all workspace controls identify their labelled regions
+PASS 360x844 Back to Monitor restores focus to a visible menu action
+PASS 360x844 Monitor leaves one keyboard entry and no false selection
+PASS 360x844 default milestone time is current and clock agrees with epoch
+PASS 360x844 default milestone elapsed time uses the running timer
+PASS 360x844 native Induction retains two pending details without full administrations
+PASS 360x844 prepared manual induction drug opens the native editor
+PASS 360x844 editor retains the original medication time
+PASS 360x844 fixed planned medication hides the duplicate selector
+PASS 360x844 manual amount remains editable and preparation retains the plan
+PASS 360x844 review completion differs from recording actual medication
+PASS 360x844 review cannot complete with pending details
+PASS 360x844 blank amount still cannot create a full administration
+PASS 360x844 cancelled confirmation keeps the original pending details
+PASS 360x844 manual confirmation records exact actual, route and recorder
+PASS 360x844 saving details keeps the provisional timestamp
+PASS 360x844 next calculated drug retains its original calculated amount
+PASS 360x844 complete calculated defaults hide manual controls and redundant fill
+PASS 360x844 change-actual control still opens the original amount field
+PASS 360x844 changed calculated amount is recorded with its audit note
+PASS 360x844 edited administration time is explicit and audited
+PASS 360x844 both pending details complete without duplicate administrations
+PASS 360x844 explicit review completion closes the editor and preserves records
+PASS 360x844 reload preserves both administrations, confirmed times and review
+PASS 360x844 no browser error or horizontal overflow
+PASS 390x844 a workspace entry exists in ordinary Tab order
+PASS 390x844 Tab reaches Fluid while Monitor is selected
+PASS 390x844 keyboard activation opens Fluid
+PASS 390x844 Right arrow activates Vent and moves focus
+PASS 390x844 End reaches the last workspace
+PASS 390x844 Home returns to the first workspace
+PASS 390x844 Left wraps to Meds
+PASS 390x844 workspace selection announces one pressed action
+PASS 390x844 all workspace controls identify their labelled regions
+PASS 390x844 Back to Monitor restores focus to a visible menu action
+PASS 390x844 Monitor leaves one keyboard entry and no false selection
+PASS 390x844 default milestone time is current and clock agrees with epoch
+PASS 390x844 default milestone elapsed time uses the running timer
+PASS 390x844 native Induction retains two pending details without full administrations
+PASS 390x844 prepared manual induction drug opens the native editor
+PASS 390x844 editor retains the original medication time
+PASS 390x844 fixed planned medication hides the duplicate selector
+PASS 390x844 manual amount remains editable and preparation retains the plan
+PASS 390x844 review completion differs from recording actual medication
+PASS 390x844 review cannot complete with pending details
+PASS 390x844 blank amount still cannot create a full administration
+PASS 390x844 cancelled confirmation keeps the original pending details
+PASS 390x844 manual confirmation records exact actual, route and recorder
+PASS 390x844 saving details keeps the provisional timestamp
+PASS 390x844 next calculated drug retains its original calculated amount
+PASS 390x844 complete calculated defaults hide manual controls and redundant fill
+PASS 390x844 change-actual control still opens the original amount field
+PASS 390x844 changed calculated amount is recorded with its audit note
+PASS 390x844 edited administration time is explicit and audited
+PASS 390x844 both pending details complete without duplicate administrations
+PASS 390x844 explicit review completion closes the editor and preserves records
+PASS 390x844 reload preserves both administrations, confirmed times and review
+PASS 390x844 no browser error or horizontal overflow
+PASS 1024x844 a workspace entry exists in ordinary Tab order
+PASS 1024x844 Tab reaches Fluid while Monitor is selected
+PASS 1024x844 keyboard activation opens Fluid
+PASS 1024x844 Right arrow activates Vent and moves focus
+PASS 1024x844 End reaches the last workspace
+PASS 1024x844 Home returns to the first workspace
+PASS 1024x844 Left wraps to Meds
+PASS 1024x844 workspace selection announces one pressed action
+PASS 1024x844 all workspace controls identify their labelled regions
+PASS 1024x844 Back to Monitor restores focus to a visible menu action
+PASS 1024x844 Monitor leaves one keyboard entry and no false selection
+PASS 1024x844 default milestone time is current and clock agrees with epoch
+PASS 1024x844 default milestone elapsed time uses the running timer
+PASS 1024x844 native Induction retains two pending details without full administrations
+PASS 1024x844 prepared manual induction drug opens the native editor
+PASS 1024x844 editor retains the original medication time
+PASS 1024x844 fixed planned medication hides the duplicate selector
+PASS 1024x844 manual amount remains editable and preparation retains the plan
+PASS 1024x844 review completion differs from recording actual medication
+PASS 1024x844 review cannot complete with pending details
+PASS 1024x844 blank amount still cannot create a full administration
+PASS 1024x844 cancelled confirmation keeps the original pending details
+PASS 1024x844 manual confirmation records exact actual, route and recorder
+PASS 1024x844 saving details keeps the provisional timestamp
+PASS 1024x844 next calculated drug retains its original calculated amount
+PASS 1024x844 complete calculated defaults hide manual controls and redundant fill
+PASS 1024x844 change-actual control still opens the original amount field
+PASS 1024x844 changed calculated amount is recorded with its audit note
+PASS 1024x844 edited administration time is explicit and audited
+PASS 1024x844 both pending details complete without duplicate administrations
+PASS 1024x844 explicit review completion closes the editor and preserves records
+PASS 1024x844 reload preserves both administrations, confirmed times and review
+PASS 1024x844 no browser error or horizontal overflow
+PASS 844x390 a workspace entry exists in ordinary Tab order
+PASS 844x390 Tab reaches Fluid while Monitor is selected
+PASS 844x390 keyboard activation opens Fluid
+PASS 844x390 Right arrow activates Vent and moves focus
+PASS 844x390 End reaches the last workspace
+PASS 844x390 Home returns to the first workspace
+PASS 844x390 Left wraps to Meds
+PASS 844x390 workspace selection announces one pressed action
+PASS 844x390 all workspace controls identify their labelled regions
+PASS 844x390 Back to Monitor restores focus to a visible menu action
+PASS 844x390 Monitor leaves one keyboard entry and no false selection
+PASS 844x390 default milestone time is current and clock agrees with epoch
+PASS 844x390 default milestone elapsed time uses the running timer
+PASS 844x390 native Induction retains two pending details without full administrations
+PASS 844x390 prepared manual induction drug opens the native editor
+PASS 844x390 editor retains the original medication time
+PASS 844x390 fixed planned medication hides the duplicate selector
+PASS 844x390 manual amount remains editable and preparation retains the plan
+PASS 844x390 review completion differs from recording actual medication
+PASS 844x390 review cannot complete with pending details
+PASS 844x390 blank amount still cannot create a full administration
+PASS 844x390 cancelled confirmation keeps the original pending details
+PASS 844x390 manual confirmation records exact actual, route and recorder
+PASS 844x390 saving details keeps the provisional timestamp
+PASS 844x390 next calculated drug retains its original calculated amount
+PASS 844x390 complete calculated defaults hide manual controls and redundant fill
+PASS 844x390 change-actual control still opens the original amount field
+PASS 844x390 changed calculated amount is recorded with its audit note
+PASS 844x390 edited administration time is explicit and audited
+PASS 844x390 both pending details complete without duplicate administrations
+PASS 844x390 explicit review completion closes the editor and preserves records
+PASS 844x390 reload preserves both administrations, confirmed times and review
+PASS 844x390 no browser error or horizontal overflow
+132/132 PASS
+
+QA_V17_14_13_OR_FEEDBACK_BROWSER.js
+PASS 360 Induction keeps the native confirmed milestone
+PASS 360 one-line action confirmation uses natural height
+PASS 360 Undo remains inline and at least 44 px high
+PASS 360 Undo uses a neutral surface and compact width
+PASS 360 Undo does not cover the next clinical action
+PASS 360 Intubation is reachable with native timestamp-only behavior
+PASS 360 wrapped action confirmation is compact and retains its full text
+PASS 360 the compact Undo button still reverses the original transition
+PASS 360 typing and keyboard styles cannot stretch confirmation
+PASS 360 typing cannot turn Undo back into a floating orange bar
+PASS 360 Save records the original six measured values once
+PASS 360 Save shows one compact visual confirmation
+PASS 360 Save feedback does not change the reading position
+PASS 360 duplicate prevention still rejects a repeated identical record
+PASS 360 duplicate warning text remains complete
+PASS 360 Intubation Undo retains measurements under the original policy
+PASS 360 longer warning text remains complete
+PASS 360 confirmation dismisses on the existing timer
+PASS 360 Recovery confirmation also stays compact
+PASS 360 no browser errors or horizontal overflow
+PASS 390 Induction keeps the native confirmed milestone
+PASS 390 one-line action confirmation uses natural height
+PASS 390 Undo remains inline and at least 44 px high
+PASS 390 Undo uses a neutral surface and compact width
+PASS 390 Undo does not cover the next clinical action
+PASS 390 Intubation is reachable with native timestamp-only behavior
+PASS 390 wrapped action confirmation is compact and retains its full text
+PASS 390 the compact Undo button still reverses the original transition
+PASS 390 typing and keyboard styles cannot stretch confirmation
+PASS 390 typing cannot turn Undo back into a floating orange bar
+PASS 390 Save records the original six measured values once
+PASS 390 Save shows one compact visual confirmation
+PASS 390 Save feedback does not change the reading position
+PASS 390 duplicate prevention still rejects a repeated identical record
+PASS 390 duplicate warning text remains complete
+PASS 390 Intubation Undo retains measurements under the original policy
+PASS 390 longer warning text remains complete
+PASS 390 confirmation dismisses on the existing timer
+PASS 390 Recovery confirmation also stays compact
+PASS 390 no browser errors or horizontal overflow
+PASS 1024 Induction keeps the native confirmed milestone
+PASS 1024 one-line action confirmation uses natural height
+PASS 1024 Undo remains inline and at least 44 px high
+PASS 1024 Undo uses a neutral surface and compact width
+PASS 1024 Undo does not cover the next clinical action
+PASS 1024 Intubation is reachable with native timestamp-only behavior
+PASS 1024 wrapped action confirmation is compact and retains its full text
+PASS 1024 the compact Undo button still reverses the original transition
+PASS 1024 typing and keyboard styles cannot stretch confirmation
+PASS 1024 typing cannot turn Undo back into a floating orange bar
+PASS 1024 Save records the original six measured values once
+PASS 1024 Save shows one compact visual confirmation
+PASS 1024 Save feedback does not change the reading position
+PASS 1024 duplicate prevention still rejects a repeated identical record
+PASS 1024 duplicate warning text remains complete
+PASS 1024 Intubation Undo retains measurements under the original policy
+PASS 1024 longer warning text remains complete
+PASS 1024 confirmation dismisses on the existing timer
+PASS 1024 Recovery confirmation also stays compact
+PASS 1024 no browser errors or horizontal overflow
+60/60 PASS
+
+QA_V17_14_13_OR_INTERACTION.js
+PASS  Current workspace version
+PASS  Vitals remain fixed above secondary navigation
+PASS  Monitor is no longer a redundant secondary-nav button
+PASS  Secondary nav contains Fluid Vent Airway Meds
+PASS  Secondary panels provide Back to Monitor action
+PASS  Clear safety state auto-compacts
+PASS  Active safety remains distinct
+PASS  Safety state observes current runtime text
+PASS  Fluid main keeps rate hero
+PASS  Fluid main keeps bolus visible
+PASS  Fluid optional actual correction moves under More
+PASS  Fluid blood loss urine blood product move under More
+PASS  Fluid visible glance is Total In + Current Rate
+PASS  Fluid effective/net/history move under More
+PASS  Vent has tap-first mode buttons
+PASS  Vent quick buttons write authoritative airwayVentMode select
+PASS  Authoritative vent select retained but visually hidden
+PASS  Airway shows Intubation timestamp from authoritative milestone
+PASS  Airway Attempts field exists
+PASS  Airway Note field exists
+PASS  Airway Attempts and Note have fresh-state persistence
+PASS  Airway Attempts and Note are in final report
+PASS  Airway autosave watches Attempts and Note
+PASS  Vaporizer discrete 0.5 steps retained
+PASS  O2 simple selector retained
+PASS  Induction given/details-pending semantics preserved
+PASS  Intubation remains timestamp-only
+PASS  Legacy Clinical Simplicity retired from runtime
+PASS  End Surgery preserved
+PASS  Emergency Return preserved
+PASS  Final Lock preserved
+PASS  Current service worker generation
+PASS  Current workspace assets cached
+\n33/33 PASS
+
+QA_V17_14_13_OR_MEDICATION_FOCUS.js
+PASS  Release is V17.14.13
+PASS  Service Worker cache is V17.14.13
+PASS  Runtime policy records visible pending plan
+PASS  Medication queue toggle exists
+PASS  Medication queue toggle controls the list
+PASS  Queue has local presentation expansion state
+PASS  User expansion setter only changes presentation state
+PASS  Current and later pending medications force expanded queue
+PASS  Queue compacts only when not expanded
+PASS  Compact queue hides row list
+PASS  Compact queue hides action row
+PASS  Pending plan hides collapse toggle
+PASS  Toggle announces expanded state
+PASS  Clear current phase is explicit in badge
+PASS  No-review next-planned action is hidden
+PASS  Full medication workspace remains available
+PASS  Collapsed state resets when queue is not applicable
+PASS  Toggle binding is owned by OR LIVE controller
+PASS  Queue renderer does not write clinical state
+PASS  Queue renderer does not alter dose calculations
+PASS  CSS hides list/actions reliably despite author display rules
+PASS  Compact queue has dedicated presentation rule
+PASS  Mobile compact queue remains explicitly styled
+PASS  Runtime bundle contains focused queue CSS
+PASS  Medication review safety remains primary
+PASS  Induction details-pending contract remains
+PASS  End Surgery workflow remains
+PASS  Emergency Return path remains outside queue change
+PASS  Runtime: later-only plan stays expanded
+PASS  Runtime: later-only plan cannot collapse and is not auto-next
+PASS  Runtime: fully documented plan compacts
+PASS  Runtime: user can expand a clear-phase plan
+PASS  Runtime: current-phase review forces full queue
+PASS  Runtime: current-phase review cannot be collapsed
+
+34/34 PASS
+
+QA_V17_14_13_ORCHESTRATION_DEPENDENCY_AUDIT.js
+PASS  Orchestration group contains three modules
+PASS  Orchestration preserves positions 24–26
+PASS  Orchestration uses canonical runtime paths
+PASS  Orchestration paths equal declared future paths
+PASS  All orchestration files exist
+PASS  No orchestration root copies remain
+PASS  Index loads canonical orchestration paths
+PASS  Service Worker precaches canonical orchestration paths
+PASS  No old orchestration root paths remain in deployment
+PASS  Orchestration sources contain no path-sensitive loader logic
+PASS  Patient orchestration export remains
+PASS  OR record orchestration export remains
+PASS  Recovery orchestration export remains
+PASS  Patient orchestration source is byte-identical to V17.13.18
+PASS  OR orchestration source is byte-identical to V17.13.18
+PASS  Recovery orchestration source is byte-identical to V17.13.18
+PASS  Patient resolveActivePatient follows merge target
+PASS  Patient findMergeTargets excludes retired records
+PASS  Patient retireRecord preserves audit reason
+PASS  Patient restoreRecord clears retirement state
+PASS  Patient mergeRecords retains newest weight and merge audit
+PASS  OR commitVital still blocks duplicates
+PASS  OR commitVital still sorts records chronologically
+PASS  OR deleteVital still removes requested record
+PASS  OR applyCorrection still records auditable correction
+PASS  Recovery appendScore remains append-only
+PASS  Recovery beginPatch preserves first recovery timestamp
+PASS  Recovery completePatch still closes case phase
+PASS  Recovery applyPatch still mutates target deterministically
+PASS  Migration policy records orchestration move
+
+30/30 PASS
+
+QA_V17_14_13_PACKAGE_STRUCTURE.js
+PASS  Package grouping folders exist
+PASS  Root file count reduced to 41 or fewer
+PASS  No release/owner/QA artifacts remain at root
+PASS  Current QA suite contains twenty-five scripts including independent gas settings regression
+PASS  Production CSS and icons remain grouped
+PASS  Platform runtime folder retains five modules
+PASS  Clinical runtime folder retains three modules
+PASS  Core runtime folder contains all ten app foundation modules
+PASS  App foundation positions 9–18 live under runtime/core
+PASS  No app foundation root copies remain
+PASS  Domains runtime folder contains five modules
+PASS  Domain positions 19–23 live under runtime/domains
+PASS  No domain root copies remain
+PASS  Orchestration runtime folder contains three modules
+PASS  Orchestration positions 24–26 live under runtime/orchestration
+PASS  No orchestration root copies remain
+PASS  Controllers runtime folder contains seven modules
+PASS  Controller positions 27–33 live under runtime/controllers
+PASS  No controller root copies remain
+PASS  Other 36 startup modules intentionally remain at root
+PASS  Session pair no longer remains at root
+PASS  Runtime knowledge folder retains seven lazy modules
+PASS  Current BUILD_SHA256 and START_HERE remain at root
+PASS  Runtime map exists
+PASS  Retired JS archive remains 13 modules
+PASS  Canonical/legacy CSS source counts remain 29/9
+
+26/26 PASS
+
+QA_V17_14_13_PHYSICAL_PILOT_UX_FIX_I.js
+PASS  Release is V17.14.13
+PASS  Physical pilot UX policy remains recorded
+PASS  Vent workspace remains tap-first
+PASS  Vent buttons retain active/aria state
+PASS  Built-in Tramadol plan defaults to SC
+PASS  Frozen quick Tramadol defaults to SC
+PASS  Legacy blank-route Tramadol gets SC fallback
+PASS  Quick editor uses effective route for one-tap readiness
+PASS  Quick editor applies effective route preset
+PASS  Standby detector recognizes emergency phase
+PASS  Auto quick strip excludes standby/emergency
+PASS  Favorites do not reintroduce standby meds
+PASS  Auto-next excludes standby unless emergency context
+PASS  Emergency medications remain accessible in full workspace
+PASS  Bottom bar remains displayed while editing
+PASS  Editing bottom bar is compacted instead of removed
+PASS  Mobile overflow containment remains present
+PASS  Workflow undo strip remains visible above mobile bottom bar
+PASS  Recovery layout organizer remains present
+PASS  Recovery still requires explicit score completion before save
+PASS  Recovery score still preserves descriptive option labels
+PASS  Runtime bundle retains physical-pilot containment CSS
+PASS  Clinical dose calculation function remains present
+PASS  Drug administration still requires explicit route/by/concentration
+PASS  Emergency Return contract remains
+PASS  Final Lock remains present
+
+26/26 PASS
+
+QA_V17_14_13_PHYSICAL_PILOT_UX_FIX_II.js
+PASS  Release is V17.14.13
+PASS  Physical Pilot UX Fix II policy is recorded
+PASS  OR LIVE controller owns canonical ventilation setter
+PASS  Ventilation setter synchronizes airway, OR mirror, and master controls
+PASS  Ventilation setter controls ventilator field visibility
+PASS  Ventilation setter is exported by OR controller
+PASS  Vent workspace calls canonical OR owner instead of relying on select event chain
+PASS  Vent workspace provides visible selected-mode feedback
+PASS  Manual and Mechanical fields remain explicitly visible when selected
+PASS  Runtime: canonical ventilation setter changes all three controls and field visibility
+PASS  Recovery has a dedicated editable vitals entry panel
+PASS  Recovery primary vitals include recHR
+PASS  Recovery primary vitals include recRR
+PASS  Recovery primary vitals include recSpO2
+PASS  Recovery primary vitals include recTemp
+PASS  Recovery primary vitals include recMentation
+PASS  Recovery primary vitals include recExtubation
+PASS  Recovery primary panel has direct Record vitals action
+PASS  Recovery primary panel has direct Copy last action
+PASS  Secondary Recovery observations are grouped under More observations
+PASS  Recovery organizer moves editable vitals before quick summary
+PASS  Recovery record history remains secondary rather than replacing entry fields
+PASS  Mobile order puts editable vitals before Recovery summary
+PASS  Mobile summary no longer duplicates latest-vitals dashboard
+PASS  Primary Recovery inputs use two-column mobile entry grid
+PASS  Recovery due state mirrors into primary entry panel
+PASS  Recovery assessment retains descriptive 0/1/2 meanings
+PASS  Recovery assessment explains score meaning in plain language
+PASS  Quick numeric-only Recovery score controls are no longer installed
+PASS  Mobile Recovery score keeps native selects visible
+PASS  Mobile Recovery score uses compact label + descriptive-select rows
+PASS  Recovery score save still blocks incomplete assessment
+PASS  Recovery clinical record requirements remain HR/RR + SpO2/Temp or N/A
+PASS  Emergency Return contract remains
+PASS  Final Lock remains present
+PASS  Bundled mobile CSS contains Fix II Recovery ordering
+
+36/36 PASS
+
+QA_V17_14_13_POST_REFACTOR_UX.js
+PASS  Release is V17.14.13
+PASS  Public app API exposes authoritative APP_VERSION
+PASS  Mobile home reads version from app API
+PASS  Mobile home no longer hard-codes V17.11.3
+PASS  Current visible build refs use V17.14.13
+PASS  Service Worker cache generation is V17.14.13
+PASS  Viewport coordinator still owns VisualViewport resize
+PASS  Mobile viewport owner still observes focus in/out
+PASS  Mobile viewport owner still computes keyboard offset
+PASS  Mobile shell avoids rerender while active field owns focus
+PASS  Tab navigation releases editable focus before viewport reset
+PASS  Recovery/End Case navigation keeps two-frame viewport settle
+PASS  Workspace disclosure avoids forced scroll while editing
+PASS  OR mobile dock keeps next action visible
+PASS  OR mobile dock explicitly maps surgery-end
+PASS  Mobile context prioritizes secondary End Surgery action
+PASS  Mobile End Surgery remains reachable even when native secondary is hidden
+PASS  Mobile End Surgery retains confirmation wording
+PASS  Recovery controller keeps Emergency Return action
+PASS  Recovery controller returns to Recovery after emergency path
+PASS  Recovery completion still routes to End Case
+PASS  Recovery refinement still listens to shared viewport event
+PASS  Recovery next-task keeps End Case target after completion
+PASS  Repeat presentation owner keeps explicit End Case navigation
+PASS  Startup has matching dark HTML and manifest backgrounds
+PASS  Critical startup CSS remains inline before runtime styles
+PASS  Boot hides legacy main layout before CSS arrives
+PASS  Startup logo is preloaded and boot logo uses startup asset
+PASS  Boot screen itself uses dark gradient instead of white fallback
+PASS  Startup error path remains recoverable
+PASS  UX verification policy is recorded
+PASS  Induction details-pending contract remains
+PASS  Intubation remains timestamp-only
+PASS  Final Lock remains present
+
+34/34 PASS
+
+QA_V17_14_13_RUNTIME_GROUPING_IX.js
+PASS  Runtime map release is 17.14.13
+PASS  Runtime map declares orchestration grouping move
+PASS  Moved startup groups include domains, orchestration and controllers
+PASS  Startup count remains 69
+PASS  Lazy count remains 7
+PASS  Runtime map startup order exactly matches index
+PASS  Every startup and lazy path exists
+PASS  Platform positions 1–5 remain grouped
+PASS  Clinical positions 6–8 remain grouped
+PASS  All app foundation positions 9–18 live under runtime/core
+PASS  Domain positions 19–23 remain grouped
+PASS  Orchestration positions 24–26 remain grouped
+PASS  All orchestration paths equal declared future paths
+PASS  No orchestration root copies remain
+PASS  Controller positions 27–33 are grouped
+PASS  All controller paths equal declared future paths
+PASS  No controller root copies remain
+PASS  Other root startup modules total 36
+PASS  Lazy knowledge remains under runtime/knowledge
+PASS  Service Worker precaches all startup modules
+PASS  Service Worker precaches all lazy modules
+PASS  No old orchestration root paths remain in deployment
+PASS  All versioned startup refs use 17.14.13
+PASS  Service Worker cache generation is 17.14.13
+
+24/24 PASS
+
+QA_V17_14_13_SESSION_OWNERSHIP.js
+PASS  Session pair files exist under runtime/core
+PASS  Old session root copies are absent
+PASS  Session pair remains startup positions 17–18
+PASS  Session pair map paths are canonical
+PASS  Index loads canonical session paths
+PASS  Index preserves coordination before controller
+PASS  Service Worker precaches canonical session paths
+PASS  No old root session paths remain in deployment
+PASS  Session files have no path-sensitive relative loader logic
+PASS  Controller still requires ANESVET_APP_SHELL
+PASS  Controller still requires ANESVET_SESSION_COORDINATION
+PASS  Coordination retains localStorage lock
+PASS  Coordination retains sessionStorage tab identity
+PASS  Coordination retains BroadcastChannel handoff
+PASS  Coordination retains stale-owner verifyOwnership
+PASS  Controller retains VIEW ONLY interaction guard
+PASS  Controller retains pageshow wake verification
+PASS  Controller retains orphaned-session recovery
+PASS  Coordination source matches V17.13.16 hash
+PASS  Controller source matches V17.13.16 hash
+
+20/20 PASS
+
+QA_V17_14_13_STATIC_INTEGRITY.js
+PASS  69 startup scripts
+PASS  All startup scripts exist
+PASS  All local Service Worker assets exist
+PASS  HTML IDs remain unique
+PASS  First thirty-three startup modules retain exact order
+PASS  Ten app foundation modules exist under runtime/core
+PASS  Five domain modules exist under runtime/domains
+PASS  Three orchestration modules exist under runtime/orchestration
+PASS  Seven controller modules exist under runtime/controllers
+PASS  No orchestration root copies remain
+PASS  Orchestration preserves positions 24–26
+PASS  Session coordination still loads before session controller
+PASS  App shell remains before session controller and app core
+PASS  OR orchestration remains before OR LIVE controller
+PASS  Recovery orchestration remains before Recovery controller
+PASS  Patient orchestration remains before Patient controller
+PASS  OR LIVE and medication controllers remain before app core
+PASS  Finalization remains before repeat presentation owner
+PASS  Fast-entry CSS remains
+PASS  Deployment refs use 17.14.13
+PASS  Current SW cache generation is V17.14.13
+
+21/21 PASS
+
+QA_V17_14_13_STRESS_EDGE_CASES.js
+PASS  Stress: Production Pilot cache check is current-build dynamic
+PASS  Stress: Production Pilot expected cache resolves to current release
+PASS  Stress: 720 serial OR vital records persist in chronological order
+PASS  Stress: exact vital duplicate inside guard window is rejected
+PASS  Stress: clinically changed vital set inside guard window is accepted
+PASS  Stress: correction keeps record count and appends immutable audit correction
+PASS  Stress: near-duplicate medication requires explicit confirmation
+PASS  Stress: confirmed repeat medication and retrospective entry remain chronological
+PASS  Stress: void retains original administration and adds audit event
+PASS  Stress: 10 Emergency Return cycles preserve original Recovery start and recover mode
+PASS  Stress: Recovery completion remains blocked during active Emergency Return
+PASS  Stress: freshness guard establishes on hydrated payload
+PASS  Stress: external case change permanently blocks stale writer
+PASS  Stress: first session becomes active owner
+PASS  Stress: second fresh tab starts view-only
+PASS  Stress: explicit takeover transfers shared owner
+PASS  Stress: stale owner can be recovered after TTL
+PASS  Stress: freeze flush and BFCache persisted restore callbacks both fire
+PASS  Stress: large backup payload passes SHA-256 payload + clinical integrity
+PASS  Stress: single-field tamper in large active case is detected
+PASS  Stress: eligible simulation Final Lock seals record and creates checksum
+PASS  Stress: second Final Lock call is blocked after sealed state
+PASS  Stress: unresolved alert blocks Final Lock
+
+23/23 PASS
+
+QA_V17_14_13_USABILITY_BROWSER.js
+PASS 390 lookup and secondary fields initially collapsed
+PASS 390 patient lookup opens by touch
+PASS 390 current BW, procedure and cautions remain visible
+PASS 390 ASA descriptions stay available for all five choices
+PASS 390 draft storage differs from patient confirmation
+PASS 390 missing identity does not confirm patient or leave setup
+PASS 390 additional details open without duplicate fields
+PASS 390 focus coordinator opens a hidden secondary target
+PASS 390 original save confirms current BW and enters pre-check
+PASS 390 pre-check groups do not mark clinical checks automatically
+PASS 390 next task opens the missing physical exam
+PASS 390 case plan precedes both optional drug workspaces
+PASS 390 drug workflow uses readable foreground and background
+PASS 390 one primary action routes through original plan owner
+PASS 390 review records native plan confirmation without starting case
+PASS 390 Quick Presets can still be opened
+PASS 390 disclosures toggle by keyboard without focus reopening them
+PASS 390 Vitals save is a readable full-size touch target
+PASS 390 actual fields precede optional medication reference
+PASS 390 medication editor retains selected route and explicit save
+PASS 390 back closes editor without medication administration
+PASS 390 Temp units stay inline and extubation placeholder fits
+PASS 390 assessment save follows all five domains and blocks incomplete input
+PASS 390 assessment progress becomes complete
+PASS 390 original score semantics persist 10/10
+PASS 390 N/A without reason still cannot save a score
+PASS 390 pending medications, sign-off and blockers stay visible
+PASS 390 incomplete case cannot final-lock
+PASS 390 full documentation review remains reachable
+PASS 390 archive result reveals verification details
+PASS 390 runtime DOM has unique IDs and no horizontal overflow
+PASS 390 bundled Thai and Latin fonts load
+PASS 390 full application has no browser errors
+PASS 1024 lookup and secondary fields initially collapsed
+PASS 1024 patient lookup opens by touch
+PASS 1024 current BW, procedure and cautions remain visible
+PASS 1024 ASA descriptions stay available for all five choices
+PASS 1024 draft storage differs from patient confirmation
+PASS 1024 missing identity does not confirm patient or leave setup
+PASS 1024 additional details open without duplicate fields
+PASS 1024 focus coordinator opens a hidden secondary target
+PASS 1024 original save confirms current BW and enters pre-check
+PASS 1024 pre-check groups do not mark clinical checks automatically
+PASS 1024 next task opens the missing physical exam
+PASS 1024 case plan precedes both optional drug workspaces
+PASS 1024 drug workflow uses readable foreground and background
+PASS 1024 one primary action routes through original plan owner
+PASS 1024 review records native plan confirmation without starting case
+PASS 1024 Quick Presets can still be opened
+PASS 1024 disclosures toggle by keyboard without focus reopening them
+PASS 1024 Vitals save is a readable full-size touch target
+PASS 1024 actual fields precede optional medication reference
+PASS 1024 medication editor retains selected route and explicit save
+PASS 1024 back closes editor without medication administration
+PASS 1024 Temp units stay inline and extubation placeholder fits
+PASS 1024 assessment save follows all five domains and blocks incomplete input
+PASS 1024 assessment progress becomes complete
+PASS 1024 original score semantics persist 10/10
+PASS 1024 N/A without reason still cannot save a score
+PASS 1024 pending medications, sign-off and blockers stay visible
+PASS 1024 incomplete case cannot final-lock
+PASS 1024 full documentation review remains reachable
+PASS 1024 archive result reveals verification details
+PASS 1024 runtime DOM has unique IDs and no horizontal overflow
+PASS 1024 bundled Thai and Latin fonts load
+PASS 1024 full application has no browser errors
+66/66 PASS
+
+QA_V17_14_13_VENT_MEDICATION_BROWSER.js
+PASS 390 Mechanical tap updates canonical mode
+PASS 390 Mechanical displays editable fields
+PASS 390 RR receives focus
+PASS 390 rerender keeps fields visible and saved
+PASS 390 Spontaneous hides settings
+PASS 390 Manual PPV opens settings and retains values
+PASS 390 later-only Meloxicam remains visible
+PASS 390 phase label retained and no standby suggestion
+PASS 390 Record opens selected planned medication without recording automatically
+PASS 390 future-phase medication is not auto-next
+PASS 390 all pending planned rows visible
+PASS 390 no unplanned medication invented
+PASS 390 locked case hides actionable queue
+PASS 390 no browser errors
+PASS 1024 Mechanical tap updates canonical mode
+PASS 1024 Mechanical displays editable fields
+PASS 1024 RR receives focus
+PASS 1024 rerender keeps fields visible and saved
+PASS 1024 Spontaneous hides settings
+PASS 1024 Manual PPV opens settings and retains values
+PASS 1024 later-only Meloxicam remains visible
+PASS 1024 phase label retained and no standby suggestion
+PASS 1024 Record opens selected planned medication without recording automatically
+PASS 1024 future-phase medication is not auto-next
+PASS 1024 all pending planned rows visible
+PASS 1024 no unplanned medication invented
+PASS 1024 locked case hides actionable queue
+PASS 1024 no browser errors
+PASS Full application starts with current release
+PASS Full application saves ventilation controls
+PASS Ventilation persists across full application reload
+PASS Current service worker cache is installed
+PASS Full mobile shell keeps planned medication accessible
+PASS Full application opens Meloxicam administration editor
+PASS Editor preserves selected plan route and requires explicit administration
+PASS Full application has no browser errors
+36/36 PASS
+
+QA_V17_14_13_WORKFLOW_LAYOUT_BROWSER.js
+PASS 320x844 a recently started case counts to its actual first record deadline
+PASS 320x844 start-induction stays reachable by real touch through the footer
+PASS 320x844 start-induction heading has its own readable row
+PASS 320x844 start-induction actions stay inside the card below the heading
+PASS 320x844 start-induction native actions have complete text and at least 48 px touch targets
+PASS 320x844 start-induction action buttons do not overlap
+PASS 320x844 airway stays reachable by real touch through the footer
+PASS 320x844 airway heading has its own readable row
+PASS 320x844 airway actions stay inside the card below the heading
+PASS 320x844 airway native actions have complete text and at least 48 px touch targets
+PASS 320x844 airway action buttons do not overlap
+PASS 320x844 surgery-start stays reachable by real touch through the footer
+PASS 320x844 surgery-start heading has its own readable row
+PASS 320x844 surgery-start actions stay inside the card below the heading
+PASS 320x844 surgery-start native actions have complete text and at least 48 px touch targets
+PASS 320x844 surgery-start action buttons do not overlap
+PASS 320x844 surgery-end stays reachable by real touch through the footer
+PASS 320x844 surgery-end heading has its own readable row
+PASS 320x844 surgery-end actions stay inside the card below the heading
+PASS 320x844 surgery-end native actions have complete text and at least 48 px touch targets
+PASS 320x844 surgery-end action buttons do not overlap
+PASS 320x844 Surgery end retains the native Emergence and Extubation action
+PASS 320x844 an old paused case displays overdue hours, minutes and seconds
+PASS 320x844 duration presentation retains the original timer value
+PASS 320x844 inline Undo cannot intercept the footer workflow action
+PASS 320x844 inline Undo cannot intercept footer Save or navigation
+PASS 320x844 larger text heading has its own readable row
+PASS 320x844 larger text actions stay inside the card below the heading
+PASS 320x844 larger text native actions have complete text and at least 48 px touch targets
+PASS 320x844 larger text action buttons do not overlap
+PASS 320x844 responsive Undo still reverses Surgery end only
+PASS 320x844 first Vitals save still records exactly one measured set
+PASS 320x844 next due uses the newly saved record rather than total case age
+PASS 320x844 reload retains long elapsed time and the actual Vitals record
+PASS 320x844 Extubation still requires the native confirmation
+PASS 320x844 confirmed Extubation still enters Recovery with Vitals retained
+PASS 320x844 no browser errors or horizontal overflow
+PASS 360x844 a recently started case counts to its actual first record deadline
+PASS 360x844 start-induction stays reachable by real touch through the footer
+PASS 360x844 start-induction heading has its own readable row
+PASS 360x844 start-induction actions stay inside the card below the heading
+PASS 360x844 start-induction native actions have complete text and at least 48 px touch targets
+PASS 360x844 start-induction action buttons do not overlap
+PASS 360x844 airway stays reachable by real touch through the footer
+PASS 360x844 airway heading has its own readable row
+PASS 360x844 airway actions stay inside the card below the heading
+PASS 360x844 airway native actions have complete text and at least 48 px touch targets
+PASS 360x844 airway action buttons do not overlap
+PASS 360x844 surgery-start stays reachable by real touch through the footer
+PASS 360x844 surgery-start heading has its own readable row
+PASS 360x844 surgery-start actions stay inside the card below the heading
+PASS 360x844 surgery-start native actions have complete text and at least 48 px touch targets
+PASS 360x844 surgery-start action buttons do not overlap
+PASS 360x844 surgery-end stays reachable by real touch through the footer
+PASS 360x844 surgery-end heading has its own readable row
+PASS 360x844 surgery-end actions stay inside the card below the heading
+PASS 360x844 surgery-end native actions have complete text and at least 48 px touch targets
+PASS 360x844 surgery-end action buttons do not overlap
+PASS 360x844 Surgery end retains the native Emergence and Extubation action
+PASS 360x844 an old paused case displays overdue hours, minutes and seconds
+PASS 360x844 duration presentation retains the original timer value
+PASS 360x844 inline Undo cannot intercept the footer workflow action
+PASS 360x844 inline Undo cannot intercept footer Save or navigation
+PASS 360x844 larger text heading has its own readable row
+PASS 360x844 larger text actions stay inside the card below the heading
+PASS 360x844 larger text native actions have complete text and at least 48 px touch targets
+PASS 360x844 larger text action buttons do not overlap
+PASS 360x844 responsive Undo still reverses Surgery end only
+PASS 360x844 first Vitals save still records exactly one measured set
+PASS 360x844 next due uses the newly saved record rather than total case age
+PASS 360x844 reload retains long elapsed time and the actual Vitals record
+PASS 360x844 Extubation still requires the native confirmation
+PASS 360x844 confirmed Extubation still enters Recovery with Vitals retained
+PASS 360x844 no browser errors or horizontal overflow
+PASS 390x844 a recently started case counts to its actual first record deadline
+PASS 390x844 start-induction stays reachable by real touch through the footer
+PASS 390x844 start-induction heading has its own readable row
+PASS 390x844 start-induction actions stay inside the card below the heading
+PASS 390x844 start-induction native actions have complete text and at least 48 px touch targets
+PASS 390x844 start-induction action buttons do not overlap
+PASS 390x844 airway stays reachable by real touch through the footer
+PASS 390x844 airway heading has its own readable row
+PASS 390x844 airway actions stay inside the card below the heading
+PASS 390x844 airway native actions have complete text and at least 48 px touch targets
+PASS 390x844 airway action buttons do not overlap
+PASS 390x844 surgery-start stays reachable by real touch through the footer
+PASS 390x844 surgery-start heading has its own readable row
+PASS 390x844 surgery-start actions stay inside the card below the heading
+PASS 390x844 surgery-start native actions have complete text and at least 48 px touch targets
+PASS 390x844 surgery-start action buttons do not overlap
+PASS 390x844 surgery-end stays reachable by real touch through the footer
+PASS 390x844 surgery-end heading has its own readable row
+PASS 390x844 surgery-end actions stay inside the card below the heading
+PASS 390x844 surgery-end native actions have complete text and at least 48 px touch targets
+PASS 390x844 surgery-end action buttons do not overlap
+PASS 390x844 Surgery end retains the native Emergence and Extubation action
+PASS 390x844 an old paused case displays overdue hours, minutes and seconds
+PASS 390x844 duration presentation retains the original timer value
+PASS 390x844 inline Undo cannot intercept the footer workflow action
+PASS 390x844 inline Undo cannot intercept footer Save or navigation
+PASS 390x844 larger text heading has its own readable row
+PASS 390x844 larger text actions stay inside the card below the heading
+PASS 390x844 larger text native actions have complete text and at least 48 px touch targets
+PASS 390x844 larger text action buttons do not overlap
+PASS 390x844 responsive Undo still reverses Surgery end only
+PASS 390x844 first Vitals save still records exactly one measured set
+PASS 390x844 next due uses the newly saved record rather than total case age
+PASS 390x844 reload retains long elapsed time and the actual Vitals record
+PASS 390x844 Extubation still requires the native confirmation
+PASS 390x844 confirmed Extubation still enters Recovery with Vitals retained
+PASS 390x844 no browser errors or horizontal overflow
+PASS 1024x844 a recently started case counts to its actual first record deadline
+PASS 1024x844 start-induction stays reachable by real touch through the footer
+PASS 1024x844 start-induction heading has its own readable row
+PASS 1024x844 start-induction actions stay inside the card below the heading
+PASS 1024x844 start-induction native actions have complete text and at least 48 px touch targets
+PASS 1024x844 start-induction action buttons do not overlap
+PASS 1024x844 airway stays reachable by real touch through the footer
+PASS 1024x844 airway heading has its own readable row
+PASS 1024x844 airway actions stay inside the card below the heading
+PASS 1024x844 airway native actions have complete text and at least 48 px touch targets
+PASS 1024x844 airway action buttons do not overlap
+PASS 1024x844 surgery-start stays reachable by real touch through the footer
+PASS 1024x844 surgery-start heading has its own readable row
+PASS 1024x844 surgery-start actions stay inside the card below the heading
+PASS 1024x844 surgery-start native actions have complete text and at least 48 px touch targets
+PASS 1024x844 surgery-start action buttons do not overlap
+PASS 1024x844 surgery-end stays reachable by real touch through the footer
+PASS 1024x844 surgery-end heading has its own readable row
+PASS 1024x844 surgery-end actions stay inside the card below the heading
+PASS 1024x844 surgery-end native actions have complete text and at least 48 px touch targets
+PASS 1024x844 surgery-end action buttons do not overlap
+PASS 1024x844 Surgery end retains the native Emergence and Extubation action
+PASS 1024x844 an old paused case displays overdue hours, minutes and seconds
+PASS 1024x844 duration presentation retains the original timer value
+PASS 1024x844 inline Undo cannot intercept the footer workflow action
+PASS 1024x844 inline Undo cannot intercept footer Save or navigation
+PASS 1024x844 larger text heading has its own readable row
+PASS 1024x844 larger text actions stay inside the card below the heading
+PASS 1024x844 larger text native actions have complete text and at least 48 px touch targets
+PASS 1024x844 larger text action buttons do not overlap
+PASS 1024x844 responsive Undo still reverses Surgery end only
+PASS 1024x844 first Vitals save still records exactly one measured set
+PASS 1024x844 next due uses the newly saved record rather than total case age
+PASS 1024x844 reload retains long elapsed time and the actual Vitals record
+PASS 1024x844 Extubation still requires the native confirmation
+PASS 1024x844 confirmed Extubation still enters Recovery with Vitals retained
+PASS 1024x844 no browser errors or horizontal overflow
+PASS 844x390 a recently started case counts to its actual first record deadline
+PASS 844x390 start-induction stays reachable by real touch through the footer
+PASS 844x390 start-induction heading has its own readable row
+PASS 844x390 start-induction actions stay inside the card below the heading
+PASS 844x390 start-induction native actions have complete text and at least 48 px touch targets
+PASS 844x390 start-induction action buttons do not overlap
+PASS 844x390 airway stays reachable by real touch through the footer
+PASS 844x390 airway heading has its own readable row
+PASS 844x390 airway actions stay inside the card below the heading
+PASS 844x390 airway native actions have complete text and at least 48 px touch targets
+PASS 844x390 airway action buttons do not overlap
+PASS 844x390 surgery-start stays reachable by real touch through the footer
+PASS 844x390 surgery-start heading has its own readable row
+PASS 844x390 surgery-start actions stay inside the card below the heading
+PASS 844x390 surgery-start native actions have complete text and at least 48 px touch targets
+PASS 844x390 surgery-start action buttons do not overlap
+PASS 844x390 surgery-end stays reachable by real touch through the footer
+PASS 844x390 surgery-end heading has its own readable row
+PASS 844x390 surgery-end actions stay inside the card below the heading
+PASS 844x390 surgery-end native actions have complete text and at least 48 px touch targets
+PASS 844x390 surgery-end action buttons do not overlap
+PASS 844x390 Surgery end retains the native Emergence and Extubation action
+PASS 844x390 an old paused case displays overdue hours, minutes and seconds
+PASS 844x390 duration presentation retains the original timer value
+PASS 844x390 inline Undo cannot intercept the footer workflow action
+PASS 844x390 inline Undo cannot intercept footer Save or navigation
+PASS 844x390 larger text heading has its own readable row
+PASS 844x390 larger text actions stay inside the card below the heading
+PASS 844x390 larger text native actions have complete text and at least 48 px touch targets
+PASS 844x390 larger text action buttons do not overlap
+PASS 844x390 responsive Undo still reverses Surgery end only
+PASS 844x390 first Vitals save still records exactly one measured set
+PASS 844x390 next due uses the newly saved record rather than total case age
+PASS 844x390 reload retains long elapsed time and the actual Vitals record
+PASS 844x390 Extubation still requires the native confirmation
+PASS 844x390 confirmed Extubation still enters Recovery with Vitals retained
+PASS 844x390 no browser errors or horizontal overflow
+185/185 PASS
