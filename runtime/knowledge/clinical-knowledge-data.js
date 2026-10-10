@@ -11422,6 +11422,1074 @@ const data={
     }
   ]
 };
+const anesthesiaBasics={
+  "contentVersion": "2026-10-10.basics.1",
+  "reviewedAt": "2026-10-10",
+  "reviewStatus": "สรุปเพื่อการเรียนรู้จากแหล่งอ้างอิง · ยังรอการทบทวนโดยผู้เชี่ยวชาญอิสระ",
+  "sources": {
+    "BASIC_TERMS": {
+      "title": "Merck Veterinary Manual — Glossary",
+      "kind": "guideline / professional reference",
+      "url": "https://www.merckvetmanual.com/resourcespages/glossary",
+      "accessed": "2026-10-10"
+    },
+    "BASIC_PLAN": {
+      "title": "AAHA 2020 — Phase 1: Preanesthesia",
+      "kind": "guideline / professional reference",
+      "url": "https://www.aaha.org/resources/2020-aaha-anesthesia-and-monitoring-guidelines-for-dogs-and-cats/phase-1-preanesthesia/",
+      "accessed": "2026-10-10"
+    },
+    "BASIC_EVAL": {
+      "title": "AAHA 2020 — Preanesthetic Evaluation and Plan Considerations",
+      "kind": "guideline / professional reference",
+      "url": "https://www.aaha.org/resources/2020-aaha-anesthesia-and-monitoring-guidelines-for-dogs-and-cats/phase-1-preanesthesia/step-1-preanesthetic-planning/",
+      "accessed": "2026-10-10"
+    },
+    "BASIC_HOME": {
+      "title": "AAHA 2020 — Anesthesia Begins at Home",
+      "kind": "guideline / professional reference",
+      "url": "https://www.aaha.org/resources/2020-aaha-anesthesia-and-monitoring-guidelines-for-dogs-and-cats/phase-2-day-of-anesthesia/step-1-anesthesia-begins-at-home/",
+      "accessed": "2026-10-10"
+    },
+    "BASIC_PATIENT": {
+      "title": "AAHA 2020 — Patient Preparation",
+      "kind": "guideline / professional reference",
+      "url": "https://www.aaha.org/resources/2020-aaha-anesthesia-and-monitoring-guidelines-for-dogs-and-cats/phase-2-day-of-anesthesia/step-3-patient-preparation/",
+      "accessed": "2026-10-10"
+    },
+    "BASIC_EQUIPMENT": {
+      "title": "AAHA 2020 — Equipment Preparation",
+      "kind": "guideline / professional reference",
+      "url": "https://www.aaha.org/resources/2020-aaha-anesthesia-and-monitoring-guidelines-for-dogs-and-cats/phase-2-day-of-anesthesia/step-2-equipment-preparation/",
+      "accessed": "2026-10-10"
+    },
+    "BASIC_PROTOCOL": {
+      "title": "AAHA 2020 — Anesthetic Protocols",
+      "kind": "guideline / professional reference",
+      "url": "https://www.aaha.org/resources/2020-aaha-anesthesia-and-monitoring-guidelines-for-dogs-and-cats/phase-2-day-of-anesthesia/step-4-anesthetic-protocol/",
+      "accessed": "2026-10-10"
+    },
+    "BASIC_PAIN": {
+      "title": "AAHA 2022 — Pain Management Guidelines",
+      "kind": "guideline / professional reference",
+      "url": "https://www.aaha.org/resources/2022-aaha-pain-management-guidelines-for-dogs-and-cats/",
+      "accessed": "2026-10-10"
+    },
+    "BASIC_MONITOR": {
+      "title": "ACVAA 2025 — Small Animal Anesthesia and Sedation Monitoring Guidelines",
+      "kind": "guideline / professional reference",
+      "url": "https://doi.org/10.1016/j.vaa.2025.03.015",
+      "accessed": "2026-10-10"
+    },
+    "BASIC_ERRORS": {
+      "title": "FDA — Veterinary Medication Errors",
+      "kind": "guideline / professional reference",
+      "url": "https://www.fda.gov/animal-veterinary/product-safety-information/veterinary-medication-errors",
+      "accessed": "2026-10-10"
+    }
+  },
+  "lessons": [
+    {
+      "id": "basics-meaning",
+      "title": "รู้จักการวางยา",
+      "intro": "เข้าใจความต่างของยาซึม การระงับปวด และยาสลบ ก่อนอ่านแผนยา",
+      "summary": [
+        {
+          "text": "ยาซึม การระงับปวด และยาสลบ มีเป้าหมายต่างกัน",
+          "refs": [
+            {
+              "source": "BASIC_TERMS",
+              "locator": "Glossary: analgesia, anesthesia, sedative"
+            }
+          ]
+        },
+        {
+          "text": "แผนวางยาครอบคลุมก่อนวางยา ระหว่างทำหัตถการ และช่วงฟื้นตัว",
+          "refs": [
+            {
+              "source": "BASIC_PLAN",
+              "locator": "Individualized Anesthetic/Analgesic Plan; ASA Status; Prior to anesthesia"
+            }
+          ]
+        }
+      ],
+      "diagram": {
+        "kind": "compare",
+        "caption": "สามเป้าหมายที่ต้องพิจารณาร่วมกัน ไม่ใช่ลำดับเพิ่มความแรงของยา",
+        "items": [
+          [
+            "ยาซึม",
+            "สงบ / ง่วง"
+          ],
+          [
+            "ระงับปวด",
+            "ลดความเจ็บปวด"
+          ],
+          [
+            "ยาสลบ",
+            "สูญเสียการรับรู้ระหว่างหัตถการ"
+          ]
+        ]
+      },
+      "sections": [
+        {
+          "title": "คำพื้นฐานที่ควรรู้",
+          "claims": [
+            {
+              "text": "Sedation คือการทำให้สงบหรือง่วง ส่วน analgesia คือการลดความเจ็บปวดและอาจเกิดได้โดยผู้ป่วยยังรู้สึกตัว",
+              "refs": [
+                {
+                  "source": "BASIC_TERMS",
+                  "locator": "Glossary: analgesia, anesthesia, sedative"
+                }
+              ]
+            },
+            {
+              "text": "General anesthesia ใช้สำหรับการสูญเสียการรับรู้โดยรวมระหว่างหัตถการ ส่วน local anesthesia ระงับความรู้สึกเฉพาะบริเวณ การเลือกวิธีเป็นส่วนหนึ่งของแผนเฉพาะผู้ป่วย",
+              "refs": [
+                {
+                  "source": "BASIC_TERMS",
+                  "locator": "Glossary: analgesia, anesthesia, sedative"
+                },
+                {
+                  "source": "BASIC_PLAN",
+                  "locator": "Individualized Anesthetic/Analgesic Plan; ASA Status; Prior to anesthesia"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "ทำไมต้องคิดเรื่องความเจ็บปวดแยกจากการหลับ",
+          "claims": [
+            {
+              "text": "ควรประเมินความปวดซ้ำตามบริบทและพฤติกรรม การผสมวิธีระงับปวดหลายแบบช่วยจัดการความปวดที่มีหลายกลไก",
+              "refs": [
+                {
+                  "source": "BASIC_PAIN",
+                  "locator": "Assessment; Multimodal Approach; Pharmacological Interventions"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "การดูแลไม่ได้จบเมื่อหยุดยาสลบ",
+          "claims": [
+            {
+              "text": "เตรียมทั้งบุคลากร อุปกรณ์ แผนระงับปวด และการเฝ้าระวังช่วงฟื้นตัวตั้งแต่ก่อนเริ่มเคส",
+              "refs": [
+                {
+                  "source": "BASIC_PLAN",
+                  "locator": "Individualized Anesthetic/Analgesic Plan; ASA Status; Prior to anesthesia"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "watch": [
+        {
+          "text": "ผู้ป่วยที่ซึมลึกยังอาจต้องได้รับการช่วยดูแลทางเดินหายใจและการหายใจ",
+          "refs": [
+            {
+              "source": "BASIC_MONITOR",
+              "locator": "Veterinary Anaesthesia and Analgesia 52 (2025), 377–385: circulation, oxygenation, ventilation, temperature, recovery and sedation"
+            }
+          ]
+        },
+        {
+          "text": "ความสงบหรือการไม่เคลื่อนไหวอย่างเดียวไม่ใช่เครื่องยืนยันว่าแผนระงับปวดเพียงพอ",
+          "refs": [
+            {
+              "source": "BASIC_PAIN",
+              "locator": "Assessment; Multimodal Approach; Pharmacological Interventions"
+            }
+          ]
+        }
+      ],
+      "checklist": [
+        {
+          "text": "อธิบายได้ว่าแผนนี้ต้องการความสงบ การระงับปวด และการควบคุมการรับรู้อย่างไร",
+          "refs": [
+            {
+              "source": "BASIC_TERMS",
+              "locator": "Glossary: analgesia, anesthesia, sedative"
+            }
+          ]
+        },
+        {
+          "text": "รู้ว่าใครจะเฝ้าระวังระหว่างทำหัตถการและช่วงฟื้น",
+          "refs": [
+            {
+              "source": "BASIC_PLAN",
+              "locator": "Individualized Anesthetic/Analgesic Plan; ASA Status; Prior to anesthesia"
+            }
+          ]
+        }
+      ],
+      "relatedGuides": [
+        "depth",
+        "recovery"
+      ],
+      "keywords": [
+        "sedation",
+        "analgesia",
+        "general anesthesia",
+        "local anesthesia",
+        "ยาซึม",
+        "ยาชา"
+      ],
+      "references": [
+        {
+          "source": "BASIC_TERMS",
+          "locator": "Glossary: analgesia, anesthesia, sedative"
+        },
+        {
+          "source": "BASIC_PLAN",
+          "locator": "Individualized Anesthetic/Analgesic Plan; ASA Status; Prior to anesthesia"
+        },
+        {
+          "source": "BASIC_MONITOR",
+          "locator": "Veterinary Anaesthesia and Analgesia 52 (2025), 377–385: circulation, oxygenation, ventilation, temperature, recovery and sedation"
+        },
+        {
+          "source": "BASIC_PAIN",
+          "locator": "Assessment; Multimodal Approach; Pharmacological Interventions"
+        }
+      ]
+    },
+    {
+      "id": "basics-assessment",
+      "title": "ประเมินผู้ป่วยก่อนวางยา",
+      "intro": "ทบทวนประวัติ ตรวจร่างกาย ผลตรวจ และความหมายของ ASA",
+      "summary": [
+        {
+          "text": "ความเสี่ยงต้องประเมินจากผู้ป่วยรายนั้น",
+          "refs": [
+            {
+              "source": "BASIC_EVAL",
+              "locator": "History; Physical examination; Age; Breed/Size; Diagnostic evaluation"
+            }
+          ]
+        },
+        {
+          "text": "ASA ใช้สื่อสารสภาพผู้ป่วยและช่วยวางแผน",
+          "refs": [
+            {
+              "source": "BASIC_PLAN",
+              "locator": "Individualized Anesthetic/Analgesic Plan; ASA Status; Prior to anesthesia"
+            }
+          ]
+        }
+      ],
+      "diagram": {
+        "kind": "flow",
+        "caption": "ข้อมูลแต่ละส่วนใช้ร่วมกันในการวางแผน",
+        "items": [
+          [
+            "ประวัติ",
+            "โรค / ยา / วางยาครั้งก่อน"
+          ],
+          [
+            "ตรวจร่างกาย",
+            "สภาพปัจจุบัน"
+          ],
+          [
+            "ผลตรวจ + ASA",
+            "แผนเฉพาะเคส"
+          ]
+        ]
+      },
+      "sections": [
+        {
+          "title": "ซักประวัติให้ครบ",
+          "claims": [
+            {
+              "text": "ถามโรคประจำตัว อาการผิดปกติ ยาทุกชนิดและอาหารเสริม รวมถึงปฏิกิริยาหรือปัญหาจากการวางยาครั้งก่อน",
+              "refs": [
+                {
+                  "source": "BASIC_EVAL",
+                  "locator": "History; Physical examination; Age; Breed/Size; Diagnostic evaluation"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "ตรวจร่างกายและเลือกผลตรวจ",
+          "claims": [
+            {
+              "text": "บันทึกการตรวจร่างกายและประเมินใหม่หากอาการเปลี่ยน ชนิดของผลตรวจเพิ่มเติมขึ้นกับประวัติ การตรวจ และหัตถการ",
+              "refs": [
+                {
+                  "source": "BASIC_EVAL",
+                  "locator": "History; Physical examination; Age; Breed/Size; Diagnostic evaluation"
+                }
+              ]
+            },
+            {
+              "text": "อายุ ขนาดตัว และลักษณะทางเดินหายใจ เช่น สุนัขหน้าสั้น เป็นบริบทที่ต้องนำมาคิดร่วมกัน",
+              "refs": [
+                {
+                  "source": "BASIC_EVAL",
+                  "locator": "History; Physical examination; Age; Breed/Size; Diagnostic evaluation"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "ASA บอกอะไร",
+          "claims": [
+            {
+              "text": "ASA จัดสภาพผู้ป่วยเป็นระดับ 1–5 ตั้งแต่สุขภาพดีจนถึงวิกฤตที่อาจไม่รอดหากไม่รักษา สัตวแพทย์ใช้ร่วมกับการประเมินและความจำเป็นในการแก้สภาพผู้ป่วยก่อนวางยา",
+              "refs": [
+                {
+                  "source": "BASIC_PLAN",
+                  "locator": "Individualized Anesthetic/Analgesic Plan; ASA Status; Prior to anesthesia"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "watch": [
+        {
+          "text": "ผลเลือดที่อยู่ในช่วงอ้างอิงไม่ได้แทนการซักประวัติและตรวจร่างกาย",
+          "refs": [
+            {
+              "source": "BASIC_EVAL",
+              "locator": "History; Physical examination; Age; Breed/Size; Diagnostic evaluation"
+            }
+          ]
+        },
+        {
+          "text": "ภาวะที่กระทบความพร้อม เช่น ขาดน้ำ หัวใจล้มเหลว หรือการหายใจผิดปกติ ต้องได้รับการประเมินก่อนเริ่ม",
+          "refs": [
+            {
+              "source": "BASIC_PLAN",
+              "locator": "Individualized Anesthetic/Analgesic Plan; ASA Status; Prior to anesthesia"
+            }
+          ]
+        }
+      ],
+      "checklist": [
+        {
+          "text": "มีประวัติยาและเหตุการณ์วางยาครั้งก่อนที่ตรวจสอบได้",
+          "refs": [
+            {
+              "source": "BASIC_EVAL",
+              "locator": "History; Physical examination; Age; Breed/Size; Diagnostic evaluation"
+            }
+          ]
+        },
+        {
+          "text": "เข้าใจเหตุผลของผลตรวจและระดับ ASA ที่สัตวแพทย์กำหนด",
+          "refs": [
+            {
+              "source": "BASIC_PLAN",
+              "locator": "Individualized Anesthetic/Analgesic Plan; ASA Status; Prior to anesthesia"
+            }
+          ]
+        }
+      ],
+      "relatedGuides": [
+        "hypotension",
+        "airway"
+      ],
+      "keywords": [
+        "ASA",
+        "risk",
+        "history",
+        "blood test",
+        "ความเสี่ยง",
+        "ตรวจเลือด"
+      ],
+      "references": [
+        {
+          "source": "BASIC_EVAL",
+          "locator": "History; Physical examination; Age; Breed/Size; Diagnostic evaluation"
+        },
+        {
+          "source": "BASIC_PLAN",
+          "locator": "Individualized Anesthetic/Analgesic Plan; ASA Status; Prior to anesthesia"
+        }
+      ]
+    },
+    {
+      "id": "basics-preparation",
+      "title": "เตรียมผู้ป่วย",
+      "intro": "การงดอาหาร ยาที่ใช้อยู่ น้ำหนัก และการเตรียมพร้อมเฉพาะราย",
+      "summary": [
+        {
+          "text": "การงดอาหารและการให้ยาประจำต้องมีคำสั่งเฉพาะผู้ป่วย",
+          "refs": [
+            {
+              "source": "BASIC_HOME",
+              "locator": "Fasting; Recommendations for Chronic Medications the Day of Anesthesia"
+            }
+          ]
+        },
+        {
+          "text": "ใช้น้ำหนักที่ชั่งในวันวางยาและประเมินความพร้อมปัจจุบัน",
+          "refs": [
+            {
+              "source": "BASIC_PATIENT",
+              "locator": "Patient-specific stabilization, accurate weight, IV catheter, emergency calculations"
+            }
+          ]
+        }
+      ],
+      "diagram": {
+        "kind": "flow",
+        "caption": "เตรียมตามคำสั่ง แล้วตรวจยืนยันข้อมูลในวันทำหัตถการ",
+        "items": [
+          [
+            "ก่อนมา",
+            "อาหาร / ยาประจำ"
+          ],
+          [
+            "เมื่อถึงโรงพยาบาล",
+            "น้ำหนัก / ตรวจสภาพ"
+          ],
+          [
+            "ก่อนเริ่ม",
+            "ความพร้อม / IV / แผนฉุกเฉิน"
+          ]
+        ]
+      },
+      "sections": [
+        {
+          "title": "งดอาหารและยาประจำ",
+          "claims": [
+            {
+              "text": "ระยะงดอาหารไม่ได้เหมือนกันทุกเคส ผู้ป่วยเบาหวานหรืออายุน้อยต้องได้รับแผนเฉพาะ บันทึกเวลาที่กินอาหารและได้รับยาครั้งล่าสุด",
+              "refs": [
+                {
+                  "source": "BASIC_HOME",
+                  "locator": "Fasting; Recommendations for Chronic Medications the Day of Anesthesia"
+                }
+              ]
+            },
+            {
+              "text": "อย่าหยุดหรือให้ยาประจำตามความเคยชิน ควรยืนยันคำสั่งสำหรับยาที่ผู้ป่วยใช้อยู่และข้อยกเว้นของเคสนั้น",
+              "refs": [
+                {
+                  "source": "BASIC_HOME",
+                  "locator": "Fasting; Recommendations for Chronic Medications the Day of Anesthesia"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "เมื่อมาถึงโรงพยาบาล",
+          "claims": [
+            {
+              "text": "ชั่งน้ำหนักอย่างถูกต้องในวันวางยา ประเมินและแก้ภาวะที่ยังไม่พร้อมตามสัตวแพทย์ผู้รับผิดชอบ",
+              "refs": [
+                {
+                  "source": "BASIC_PATIENT",
+                  "locator": "Patient-specific stabilization, accurate weight, IV catheter, emergency calculations"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "เตรียมการช่วยเหลือไว้ล่วงหน้า",
+          "claims": [
+            {
+              "text": "การมี IV catheter ช่วยให้เข้าถึงเส้นเลือดเพื่อให้ยา สารน้ำ หรือยาฉุกเฉิน ควรเตรียมบันทึกและการคำนวณฉุกเฉินเฉพาะราย",
+              "refs": [
+                {
+                  "source": "BASIC_PATIENT",
+                  "locator": "Patient-specific stabilization, accurate weight, IV catheter, emergency calculations"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "watch": [
+        {
+          "text": "ผู้ป่วยฉุกเฉินต้องให้ทีมประเมินความเร่งด่วนร่วมกับความเสี่ยง แทนการใช้เวลางดอาหารของเคสทั่วไปเป็นเงื่อนไขเดียว",
+          "refs": [
+            {
+              "source": "BASIC_PLAN",
+              "locator": "Individualized Anesthetic/Analgesic Plan; ASA Status; Prior to anesthesia"
+            },
+            {
+              "source": "BASIC_HOME",
+              "locator": "Fasting; Recommendations for Chronic Medications the Day of Anesthesia"
+            }
+          ]
+        },
+        {
+          "text": "สภาพผู้ป่วยอาจเปลี่ยนได้หลังตรวจครั้งแรก ต้องแจ้งทีมเมื่อพบการเปลี่ยนแปลง",
+          "refs": [
+            {
+              "source": "BASIC_EVAL",
+              "locator": "History; Physical examination; Age; Breed/Size; Diagnostic evaluation"
+            }
+          ]
+        }
+      ],
+      "checklist": [
+        {
+          "text": "บอกเวลาอาหาร น้ำ และยาครั้งล่าสุดได้ และมีแผนที่ทีมยืนยัน",
+          "refs": [
+            {
+              "source": "BASIC_HOME",
+              "locator": "Fasting; Recommendations for Chronic Medications the Day of Anesthesia"
+            }
+          ]
+        },
+        {
+          "text": "มีน้ำหนักปัจจุบันและแผนเข้าถึงเส้นเลือด/ช่วยเหลือฉุกเฉิน",
+          "refs": [
+            {
+              "source": "BASIC_PATIENT",
+              "locator": "Patient-specific stabilization, accurate weight, IV catheter, emergency calculations"
+            }
+          ]
+        }
+      ],
+      "relatedGuides": [
+        "regurgitation",
+        "recovery"
+      ],
+      "keywords": [
+        "fasting",
+        "IV catheter",
+        "weight",
+        "งดอาหาร",
+        "เบาหวาน",
+        "น้ำหนัก"
+      ],
+      "references": [
+        {
+          "source": "BASIC_HOME",
+          "locator": "Fasting; Recommendations for Chronic Medications the Day of Anesthesia"
+        },
+        {
+          "source": "BASIC_PATIENT",
+          "locator": "Patient-specific stabilization, accurate weight, IV catheter, emergency calculations"
+        },
+        {
+          "source": "BASIC_PLAN",
+          "locator": "Individualized Anesthetic/Analgesic Plan; ASA Status; Prior to anesthesia"
+        },
+        {
+          "source": "BASIC_EVAL",
+          "locator": "History; Physical examination; Age; Breed/Size; Diagnostic evaluation"
+        }
+      ]
+    },
+    {
+      "id": "basics-equipment",
+      "title": "เตรียมเครื่องและอุปกรณ์",
+      "intro": "เข้าใจ O₂, Vaporizer, วงจรหายใจ และการตรวจความพร้อม",
+      "summary": [
+        {
+          "text": "เครื่องและวงจรหายใจต้องตรวจการทำงานก่อนใช้",
+          "refs": [
+            {
+              "source": "BASIC_EQUIPMENT",
+              "locator": "Equipment safety checks; Steps 2a–2e; breathing circuit and pressure safety"
+            }
+          ]
+        },
+        {
+          "text": "O₂ flow และ Vaporizer เป็นคนละค่า",
+          "refs": [
+            {
+              "source": "BASIC_EQUIPMENT",
+              "locator": "Equipment safety checks; Steps 2a–2e; breathing circuit and pressure safety"
+            }
+          ]
+        }
+      ],
+      "diagram": {
+        "kind": "flow",
+        "caption": "ภาพแสดงหน้าที่ของส่วนประกอบ ไม่ใช่ผังต่อวงจรจริงหรือคู่มือทดสอบแรงดัน",
+        "items": [
+          [
+            "แหล่ง O₂ + flowmeter",
+            "ส่งก๊าซ / กำหนดอัตราไหล"
+          ],
+          [
+            "Vaporizer",
+            "เติมไอยาสลบ"
+          ],
+          [
+            "วงจร + ทางเดินหายใจ",
+            "นำก๊าซสู่ผู้ป่วย / จัดการ CO₂"
+          ]
+        ]
+      },
+      "sections": [
+        {
+          "title": "รู้หน้าที่ของค่าที่บันทึก",
+          "claims": [
+            {
+              "text": "O₂ flow มีหน่วย L/min ส่วน Vaporizer แสดงเปอร์เซ็นต์ที่ตั้งบนเครื่อง ทั้งสองต้องอ่านจากอุปกรณ์จริงและบันทึกแยกกัน",
+              "refs": [
+                {
+                  "source": "BASIC_EQUIPMENT",
+                  "locator": "Equipment safety checks; Steps 2a–2e; breathing circuit and pressure safety"
+                }
+              ]
+            },
+            {
+              "text": "การปรับ Vaporizer มีผลต่อก๊าซในวงจรโดยขึ้นกับชนิดวงจรและอัตราไหล จึงต้องดูการตอบสนองของผู้ป่วยร่วมด้วย",
+              "refs": [
+                {
+                  "source": "BASIC_EQUIPMENT",
+                  "locator": "Equipment safety checks; Steps 2a–2e; breathing circuit and pressure safety"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "เลือกวงจรและอุปกรณ์ให้เหมาะ",
+          "claims": [
+            {
+              "text": "วงจร rebreathing ใช้ลิ้นทางเดียวและสารดูดซับ CO₂ ส่วน non-rebreathing ใช้การไหลของก๊าซเพื่อช่วยระบายก๊าซที่หายใจออก เลือกอุปกรณ์โดยคำนึงถึงแรงต้านและ dead space",
+              "refs": [
+                {
+                  "source": "BASIC_EQUIPMENT",
+                  "locator": "Equipment safety checks; Steps 2a–2e; breathing circuit and pressure safety"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "ตรวจความพร้อมก่อนต่อผู้ป่วย",
+          "claims": [
+            {
+              "text": "ใช้รายการตรวจอุปกรณ์: แหล่ง O₂, เครื่อง/วงจร, Vaporizer, การรั่ว, เครื่องวัดแรงดัน, pop-off, ระบบกำจัดก๊าซ และอุปกรณ์ใส่ท่อ ทำตามคู่มือเครื่องและการฝึกของทีม",
+              "refs": [
+                {
+                  "source": "BASIC_EQUIPMENT",
+                  "locator": "Equipment safety checks; Steps 2a–2e; breathing circuit and pressure safety"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "watch": [
+        {
+          "text": "ไม่ควรใช้ oxygen flush กับผู้ป่วยที่ต่อ non-rebreathing circuit เพราะอาจเกิดแรงดันสูงที่ทางเดินหายใจ",
+          "refs": [
+            {
+              "source": "BASIC_EQUIPMENT",
+              "locator": "Equipment safety checks; Steps 2a–2e; breathing circuit and pressure safety"
+            }
+          ]
+        },
+        {
+          "text": "pop-off และการระบายก๊าซต้องอยู่ในสภาพเหมาะกับการใช้งานขณะนั้น ป้องกันการค้างของแรงดัน",
+          "refs": [
+            {
+              "source": "BASIC_EQUIPMENT",
+              "locator": "Equipment safety checks; Steps 2a–2e; breathing circuit and pressure safety"
+            }
+          ]
+        }
+      ],
+      "checklist": [
+        {
+          "text": "แยกได้ว่าค่าใดเป็น O₂ flow และค่าใดเป็น Vaporizer",
+          "refs": [
+            {
+              "source": "BASIC_EQUIPMENT",
+              "locator": "Equipment safety checks; Steps 2a–2e; breathing circuit and pressure safety"
+            }
+          ]
+        },
+        {
+          "text": "ระบุชนิดวงจรและผู้ตรวจความพร้อมของเครื่องได้",
+          "refs": [
+            {
+              "source": "BASIC_EQUIPMENT",
+              "locator": "Equipment safety checks; Steps 2a–2e; breathing circuit and pressure safety"
+            }
+          ]
+        }
+      ],
+      "relatedGuides": [
+        "airway",
+        "lowetco2"
+      ],
+      "keywords": [
+        "oxygen",
+        "O2",
+        "vaporizer",
+        "circuit",
+        "leak",
+        "pop-off",
+        "ออกซิเจน",
+        "ตรวจรั่ว"
+      ],
+      "references": [
+        {
+          "source": "BASIC_EQUIPMENT",
+          "locator": "Equipment safety checks; Steps 2a–2e; breathing circuit and pressure safety"
+        }
+      ]
+    },
+    {
+      "id": "basics-medication",
+      "title": "พื้นฐานการใช้ยาอย่างถูกต้อง",
+      "intro": "เข้าใจบทบาทยา น้ำหนัก ความเข้มข้น และหน่วยก่อนคำนวณ",
+      "summary": [
+        {
+          "text": "เลือกยาตามผลที่ต้องการและผู้ป่วย ไม่ใช่ชื่อยาอย่างเดียว",
+          "refs": [
+            {
+              "source": "BASIC_PROTOCOL",
+              "locator": "Steps 4a–4e: analgesia, premedication, induction, maintenance and recovery"
+            }
+          ]
+        },
+        {
+          "text": "mg กับ mL เป็นคนละหน่วย ต้องตรวจฉลากและคำสั่งก่อนให้ยา",
+          "refs": [
+            {
+              "source": "BASIC_ERRORS",
+              "locator": "Decimal points; abbreviations and symbols; labels and packaging"
+            }
+          ]
+        }
+      ],
+      "diagram": {
+        "kind": "flow",
+        "caption": "หลักการตรวจหน่วย เมื่อคำสั่งเป็น mg/kg และความเข้มข้นเป็น mg/mL; ไม่ใช่การเลือกขนาดยา",
+        "items": [
+          [
+            "mg/kg × kg",
+            "ได้จำนวน mg"
+          ],
+          [
+            "mg ÷ mg/mL",
+            "ได้ปริมาตร mL"
+          ],
+          [
+            "ตรวจซ้ำ",
+            "คำสั่ง / ฉลาก / route / หน่วย"
+          ]
+        ]
+      },
+      "sections": [
+        {
+          "title": "เข้าใจบทบาทก่อนเลือกยา",
+          "claims": [
+            {
+              "text": "Premedication, induction และ maintenance เป็นช่วงต่างกันของแผน ยาที่เหมาะขึ้นกับผลที่ต้องการ สภาพผู้ป่วย และยาที่ได้รับไปแล้ว",
+              "refs": [
+                {
+                  "source": "BASIC_PROTOCOL",
+                  "locator": "Steps 4a–4e: analgesia, premedication, induction, maintenance and recovery"
+                }
+              ]
+            },
+            {
+              "text": "แผนระงับปวดอาจผสมยาและวิธีหลายชนิดตามความปวดและข้อจำกัดเฉพาะราย",
+              "refs": [
+                {
+                  "source": "BASIC_PAIN",
+                  "locator": "Assessment; Multimodal Approach; Pharmacological Interventions"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "น้ำหนักและความเข้มข้น",
+          "claims": [
+            {
+              "text": "ใช้ค่าน้ำหนักที่ตรวจยืนยันในวันนั้น ส่วนผู้ป่วยอ้วนหรือรูปร่างผิดปกติให้สัตวแพทย์กำหนดน้ำหนักที่ใช้คำนวณ",
+              "refs": [
+                {
+                  "source": "BASIC_PATIENT",
+                  "locator": "Patient-specific stabilization, accurate weight, IV catheter, emergency calculations"
+                }
+              ]
+            },
+            {
+              "text": "ตรวจชื่อยา ความแรงบนฉลาก และหน่วยของคำสั่ง หากเป็น mg/kg และ mg/mL จึงใช้ความสัมพันธ์ตามภาพ หน่วยอื่นต้องแปลงให้ตรงก่อน",
+              "refs": [
+                {
+                  "source": "BASIC_ERRORS",
+                  "locator": "Decimal points; abbreviations and symbols; labels and packaging"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "อ่านหน่วยและทศนิยมให้ชัด",
+          "claims": [
+            {
+              "text": "ตรวจหน่วย mg, microgram และ mL ให้ตรงกัน เขียนศูนย์นำหน้าทศนิยม และหลีกเลี่ยงตัวย่อหรือรูปแบบตัวเลขที่ทำให้คำสั่งคลาดเคลื่อน",
+              "refs": [
+                {
+                  "source": "BASIC_ERRORS",
+                  "locator": "Decimal points; abbreviations and symbols; labels and packaging"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "watch": [
+        {
+          "text": "ชื่อหรือบรรจุภัณฑ์คล้ายกันอาจทำให้หยิบยาผิด ต้องอ่านฉลากทุกครั้ง",
+          "refs": [
+            {
+              "source": "BASIC_ERRORS",
+              "locator": "Decimal points; abbreviations and symbols; labels and packaging"
+            }
+          ]
+        },
+        {
+          "text": "ค่าคำนวณเป็นข้อมูลที่ต้องตรวจร่วมกับคำสั่ง ไม่ใช่หลักฐานว่าให้ยาไปแล้ว",
+          "refs": [
+            {
+              "source": "BASIC_ERRORS",
+              "locator": "Decimal points; abbreviations and symbols; labels and packaging"
+            }
+          ]
+        }
+      ],
+      "checklist": [
+        {
+          "text": "ตรวจชื่อผู้ป่วย ชื่อยา ปริมาณ หน่วย route และคำสั่งก่อนให้",
+          "refs": [
+            {
+              "source": "BASIC_ERRORS",
+              "locator": "Decimal points; abbreviations and symbols; labels and packaging"
+            }
+          ]
+        },
+        {
+          "text": "อธิบายได้ว่าปริมาณยาและปริมาตรที่เตรียมสัมพันธ์กันอย่างไร",
+          "refs": [
+            {
+              "source": "BASIC_ERRORS",
+              "locator": "Decimal points; abbreviations and symbols; labels and packaging"
+            }
+          ]
+        }
+      ],
+      "relatedGuides": [
+        "anaphylaxis",
+        "recovery"
+      ],
+      "keywords": [
+        "dose",
+        "mg/kg",
+        "mg/mL",
+        "microgram",
+        "concentration",
+        "ความเข้มข้น",
+        "ขนาดยา"
+      ],
+      "references": [
+        {
+          "source": "BASIC_PROTOCOL",
+          "locator": "Steps 4a–4e: analgesia, premedication, induction, maintenance and recovery"
+        },
+        {
+          "source": "BASIC_ERRORS",
+          "locator": "Decimal points; abbreviations and symbols; labels and packaging"
+        },
+        {
+          "source": "BASIC_PAIN",
+          "locator": "Assessment; Multimodal Approach; Pharmacological Interventions"
+        },
+        {
+          "source": "BASIC_PATIENT",
+          "locator": "Patient-specific stabilization, accurate weight, IV catheter, emergency calculations"
+        }
+      ]
+    },
+    {
+      "id": "basics-monitoring",
+      "title": "รู้จักค่าที่ต้องเฝ้าระวัง",
+      "intro": "อ่านตัวเลขร่วมกับผู้ป่วยจริง และเตรียมการดูแลช่วงฟื้น",
+      "summary": [
+        {
+          "text": "SpO₂ ดู oxygenation; ETCO₂ ช่วยดู ventilation",
+          "refs": [
+            {
+              "source": "BASIC_MONITOR",
+              "locator": "Veterinary Anaesthesia and Analgesia 52 (2025), 377–385: circulation, oxygenation, ventilation, temperature, recovery and sedation"
+            }
+          ]
+        },
+        {
+          "text": "ใช้ค่าจากเครื่องร่วมกับการตรวจผู้ป่วยและแนวโน้ม",
+          "refs": [
+            {
+              "source": "BASIC_MONITOR",
+              "locator": "Veterinary Anaesthesia and Analgesia 52 (2025), 377–385: circulation, oxygenation, ventilation, temperature, recovery and sedation"
+            }
+          ]
+        }
+      ],
+      "diagram": {
+        "kind": "compare",
+        "caption": "คำถามสองข้อที่ต่างกัน ต้องประเมินร่วมกัน",
+        "items": [
+          [
+            "SpO₂",
+            "เลือดมีความอิ่มตัวของ O₂ เป็นอย่างไร"
+          ],
+          [
+            "ETCO₂ + waveform",
+            "ก๊าซ CO₂ ที่หายใจออกเป็นอย่างไร"
+          ]
+        ]
+      },
+      "sections": [
+        {
+          "title": "หัวใจ การไหลเวียน และอุณหภูมิ",
+          "claims": [
+            {
+              "text": "HR/ECG บอกอัตราและจังหวะหัวใจ ต้องดู pulse และ BP ร่วมกัน อุณหภูมิเป็นอีกค่าที่ต้องติดตาม",
+              "refs": [
+                {
+                  "source": "BASIC_MONITOR",
+                  "locator": "Veterinary Anaesthesia and Analgesia 52 (2025), 377–385: circulation, oxygenation, ventilation, temperature, recovery and sedation"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "ออกซิเจนกับการระบายอากาศต่างกัน",
+          "claims": [
+            {
+              "text": "SpO₂ ประเมินความอิ่มตัวของออกซิเจนในเลือด ส่วน ETCO₂ และ capnogram ให้ข้อมูลก๊าซ CO₂ ที่หายใจออกและการทำงานของระบบหายใจ",
+              "refs": [
+                {
+                  "source": "BASIC_MONITOR",
+                  "locator": "Veterinary Anaesthesia and Analgesia 52 (2025), 377–385: circulation, oxygenation, ventilation, temperature, recovery and sedation"
+                }
+              ]
+            },
+            {
+              "text": "RR อย่างเดียวไม่ได้บอกว่าระบายอากาศเพียงพอ ตรวจการขยับทรวงอก ทางเดินหายใจ และสัญญาณจากเครื่องร่วมกัน",
+              "refs": [
+                {
+                  "source": "BASIC_MONITOR",
+                  "locator": "Veterinary Anaesthesia and Analgesia 52 (2025), 377–385: circulation, oxygenation, ventilation, temperature, recovery and sedation"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "เตรียมช่วงฟื้นตัว",
+          "claims": [
+            {
+              "text": "เฝ้าระวังต่อหลังหยุดยาสลบ โดยดูทางเดินหายใจ การหายใจ ความรู้สึกตัว อุณหภูมิ และความปวด พร้อมกำหนดผู้รับช่วงดูแล",
+              "refs": [
+                {
+                  "source": "BASIC_PROTOCOL",
+                  "locator": "Steps 4a–4e: analgesia, premedication, induction, maintenance and recovery"
+                },
+                {
+                  "source": "BASIC_PAIN",
+                  "locator": "Assessment; Multimodal Approach; Pharmacological Interventions"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "watch": [
+        {
+          "text": "SpO₂ ที่ดูดีระหว่างให้ออกซิเจนไม่ได้ยืนยันว่าการระบาย CO₂ เพียงพอ",
+          "refs": [
+            {
+              "source": "BASIC_MONITOR",
+              "locator": "Veterinary Anaesthesia and Analgesia 52 (2025), 377–385: circulation, oxygenation, ventilation, temperature, recovery and sedation"
+            }
+          ]
+        },
+        {
+          "text": "เมื่อค่าผิดปกติ ให้ตรวจผู้ป่วยและคุณภาพสัญญาณแล้วแจ้งผู้รับผิดชอบ ไม่ตีความจากตัวเลขเดียว",
+          "refs": [
+            {
+              "source": "BASIC_MONITOR",
+              "locator": "Veterinary Anaesthesia and Analgesia 52 (2025), 377–385: circulation, oxygenation, ventilation, temperature, recovery and sedation"
+            }
+          ]
+        }
+      ],
+      "checklist": [
+        {
+          "text": "แยก oxygenation ออกจาก ventilation ได้",
+          "refs": [
+            {
+              "source": "BASIC_MONITOR",
+              "locator": "Veterinary Anaesthesia and Analgesia 52 (2025), 377–385: circulation, oxygenation, ventilation, temperature, recovery and sedation"
+            }
+          ]
+        },
+        {
+          "text": "รู้ว่าจะส่งต่อข้อมูลอะไรและใครจะดูแลในช่วงฟื้น",
+          "refs": [
+            {
+              "source": "BASIC_PROTOCOL",
+              "locator": "Steps 4a–4e: analgesia, premedication, induction, maintenance and recovery"
+            }
+          ]
+        }
+      ],
+      "relatedGuides": [
+        "hypoxemia",
+        "hypercapnia",
+        "hypothermia",
+        "recovery"
+      ],
+      "keywords": [
+        "SpO2",
+        "ETCO2",
+        "HR",
+        "BP",
+        "temperature",
+        "capnography",
+        "ฟื้นตัว",
+        "มอนิเตอร์"
+      ],
+      "references": [
+        {
+          "source": "BASIC_MONITOR",
+          "locator": "Veterinary Anaesthesia and Analgesia 52 (2025), 377–385: circulation, oxygenation, ventilation, temperature, recovery and sedation"
+        },
+        {
+          "source": "BASIC_PROTOCOL",
+          "locator": "Steps 4a–4e: analgesia, premedication, induction, maintenance and recovery"
+        },
+        {
+          "source": "BASIC_PAIN",
+          "locator": "Assessment; Multimodal Approach; Pharmacological Interventions"
+        }
+      ]
+    }
+  ]
+};
+data.basics=anesthesiaBasics.lessons;
+data.basicsReview={contentVersion:anesthesiaBasics.contentVersion,reviewedAt:anesthesiaBasics.reviewedAt,reviewStatus:anesthesiaBasics.reviewStatus};
+Object.assign(data.sources,anesthesiaBasics.sources);
 function freeze(x){if(x&&typeof x==="object"){Object.values(x).forEach(freeze);Object.freeze(x)}return x}
 root.ANESVET_KNOWLEDGE_DATA=freeze(data);if(typeof module!=="undefined"&&module.exports)module.exports=root.ANESVET_KNOWLEDGE_DATA;
 })(typeof globalThis!=="undefined"?globalThis:this);

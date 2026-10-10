@@ -65,3 +65,24 @@
 /* Special-patient phase navigation stays within the knowledge dialog. */
 .ck-phase-nav{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0}.ck-phase-nav .btn{min-height:44px;white-space:normal}.ck-phase{scroll-margin-top:150px}
 @media(max-width:600px){.ck-phase-nav .btn{flex:1 1 120px}}
+
+/* V17.14.14: beginner lessons live only in the read-only knowledge dialog. */
+.ck-basics-summary{padding:12px 16px;background:#e8f5f0;border:1px solid #add4c7;border-radius:12px;margin:16px 0}
+.ck-basics-summary h4{margin-top:0}
+.ck-basics-figure{margin:16px 0}
+.ck-basics-diagram{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.ck-basics-diagram>div{position:relative;display:grid;gap:6px;padding:14px 10px;background:#fff;border:1px solid #b6d1cf;border-radius:12px;text-align:center;min-width:0}
+.ck-basics-diagram b{font-size:15px;color:#185b53}.ck-basics-diagram span{font-size:13px;line-height:1.5}
+.ck-basics-diagram.flow>div:not(:last-child)::after{content:'→';position:absolute;right:-13px;top:calc(50% - 12px);color:#247266;background:#f7fafb;z-index:1}
+.ck-basics-diagram.compare{grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+.ck-basics-figure figcaption{font-size:12px;color:#526d73;line-height:1.5;margin-top:8px}
+.ck-basics-watch,.ck-basics-check{margin:16px 0;border-radius:12px;padding:12px 16px;background:#fff;border:1px solid #cfdfdf}
+.ck-basics-watch{border-left:4px solid #9b7424;background:#fffbef}
+.ck-basics-watch h4,.ck-basics-check h4{margin-top:0}
+.ck-basics-pagination{display:flex;flex-wrap:wrap;gap:10px;margin:20px 0}
+.ck-basics-pagination button{min-height:48px;flex:1;white-space:normal}
+.ck-basics-lesson h3:focus{outline:3px solid #23796c;outline-offset:4px}
+.ck-tabs button{min-height:48px;white-space:normal;line-height:1.4}
+.preop-basics-link{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:12px 0}
+.preop-basics-link button{min-height:48px;white-space:normal}.preop-basics-link small{color:#4c6866;font-size:13px}
+@media(max-width:600px){.ck-basics-diagram.flow{grid-template-columns:1fr;gap:18px}.ck-basics-diagram.flow>div:not(:last-child)::after{content:'↓';right:calc(50% - 8px);top:auto;bottom:-18px}.ck-basics-diagram.compare{grid-template-columns:1fr}.ck-basics-list .ck-list-item{padding:14px}.preop-basics-link button{width:100%}}

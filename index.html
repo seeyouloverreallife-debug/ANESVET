@@ -7,7 +7,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="description" content="ANESVET V17.14.13 — Clinical Knowledge System">
+  <meta name="description" content="ANESVET V17.14.14 — Clinical Knowledge System">
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="preload" as="image" href="./assets/startup/logo.png" fetchpriority="high">
   <link rel="preload" as="image" href="./assets/startup/glow.svg">
@@ -78,14 +78,14 @@ body.av-booting>main{display:none!important}
 @media(max-width:392px){.av-boot-trace{width:310.5px;height:47.7px}.av-boot .av-boot-trace img{transform:scale(.9);transform-origin:top left}.av-boot-note>span{max-width:180px}.av-boot-utility{padding-left:16px;padding-right:16px;font-size:11px}.av-boot-utility small{font-size:11px}}
 @media(prefers-reduced-motion:reduce){.av-boot .av-progress:after,.av-boot-brand,.av-boot-utility,.av-boot-bottom{animation:none!important}}
   </style>
-  <link rel="stylesheet" href="./assets/css/anesvet-ui-bundle.css?v=17.14.13" media="print" data-av-style="pending" onload="this.media='all';this.dataset.avStyle='ready'" onerror="this.dataset.avStyle='error'">
-  <link rel="stylesheet" href="./assets/css/or-workspace-restructure.css?v=17.14.13">
-  <title>ANESVET V17.14.13</title>
+  <link rel="stylesheet" href="./assets/css/anesvet-ui-bundle.css?v=17.14.14" media="print" data-av-style="pending" onload="this.media='all';this.dataset.avStyle='ready'" onerror="this.dataset.avStyle='error'">
+  <link rel="stylesheet" href="./assets/css/or-workspace-restructure.css?v=17.14.14">
+  <title>ANESVET V17.14.14</title>
 </head>
 <body class="av-booting av-mobile-design">
 <section id="avBoot" class="av-boot" aria-labelledby="avBootTitle" aria-live="polite" aria-busy="true">
   <img class="av-boot-glow" src="./assets/startup/glow.svg" alt="" width="393" height="640">
-  <div class="av-boot-utility"><span><img src="./assets/startup/system.svg" alt="" width="7" height="7">Clinical monitoring system</span><small>MOBILE · V17.14.13</small></div>
+  <div class="av-boot-utility"><span><img src="./assets/startup/system.svg" alt="" width="7" height="7">Clinical monitoring system</span><small>MOBILE · V17.14.14</small></div>
   <div class="av-boot-brand">
     <span class="av-boot-category"><i aria-hidden="true"></i>Veterinary anesthesia</span>
     <div class="av-brand-moment"><img class="av-boot-logo" fetchpriority="high" src="./assets/startup/logo.png" alt="ANESVET" width="220" height="220"><img class="av-boot-ring" src="./assets/startup/ring.svg" alt="" width="176" height="176"></div>
@@ -100,7 +100,7 @@ body.av-booting>main{display:none!important}
 </section>
 <noscript><style>.av-boot,main{display:none}.av-booting>.topbar{visibility:visible}</style><p>โปรดเปิด JavaScript เพื่อใช้ ANESVET</p></noscript>
 <header class="av-workspace-header">
-  <div class="av-utility"><button type="button" class="session-safe" data-av-route="start" aria-label="หน้าเริ่มใช้งาน"><img src="./assets/system-indicator.svg" alt="" width="7" height="7">ANESVET</button><span>V17.14.13</span></div>
+  <div class="av-utility"><button type="button" class="session-safe" data-av-route="start" aria-label="หน้าเริ่มใช้งาน"><img src="./assets/system-indicator.svg" alt="" width="7" height="7">ANESVET</button><span>V17.14.14</span></div>
   <div class="av-bar"><div class="av-bar-copy"><h2 id="avWorkspaceTitle">ANESVET</h2><small id="avWorkspaceCase">กำลังเปิดข้อมูล</small><small id="avMeasurementStatus" class="av-measurement-status" role="status" aria-live="polite" hidden></small><small id="avWorkspaceStatus" class="av-save-status" role="status" aria-live="polite"></small></div><button id="avHeaderTools" class="av-square session-safe" data-av-action="tools" type="button" aria-label="เมนูเพิ่มเติม">⋯</button></div>
 </header>
 <header class="topbar">
@@ -108,7 +108,7 @@ body.av-booting>main{display:none!important}
     <img class="brand-logo" src="./assets/icons/icon-192.png" alt="ANESVET logo">
     <div>
       <div class="eyebrow">GENOVI PET CARE • DIGITAL ANESTHESIA RECORD</div>
-      <h1>ANESVET <span>V17.14.13</span></h1>
+      <h1>ANESVET <span>V17.14.14</span></h1>
       <div id="appHospitalName" class="app-hospital-name" hidden></div>
     </div>
   </div>
@@ -302,7 +302,7 @@ body.av-booting>main{display:none!important}
     <div class="av-home-content"><h1 id="avHomeTitle">เริ่มใช้งาน</h1><p id="avHomeSubtitle">กลับทำเคสต่อ หรือเลือกงานใหม่</p><p id="avHomeState" role="status" hidden></p>
       <section id="avHomeCase" class="av-card" hidden><b id="avHomeCaseKicker" class="av-kicker">เคสปัจจุบัน</b><h2 id="avHomePatient"></h2><p><span id="avHomeMeta"></span><br><span id="avHomeProcedure"></span></p><div class="av-case-phase"><span id="avHomePhase"></span><small id="avHomeSaved"></small></div><button class="av-button session-safe" type="button" data-av-route="casehub">ดูข้อมูลเคส</button></section>
       <section id="avHomeEmpty" class="av-card"><b class="av-kicker">ยังไม่มีเคสที่เปิดอยู่</b><h2>เริ่มจากข้อมูลผู้ป่วย</h2><p>เลือกผู้ป่วยจากทะเบียนหรือสร้างใหม่<br>แล้วทบทวน Pre-check ก่อนเข้า OR</p></section>
-      <section class="av-card"><h3 class="av-card-title">ความรู้และเครื่องมือ</h3><button class="av-button session-safe" type="button" data-av-knowledge="guides">เปิดคลังความรู้</button><small>แนวทางวางยา · โรคประจำตัว · ECG</small></section>
+      <section class="av-card"><h3 class="av-card-title">ความรู้และเครื่องมือ</h3><button class="av-button session-safe" type="button" data-av-knowledge="basics">เปิดคลังความรู้</button><small>พื้นฐานก่อนวางยา · แนวทาง · ECG</small></section>
     </div>
     <div class="av-home-actions"><button id="avHomePrimary" class="av-button av-button-primary session-safe" type="button" data-av-action="continue">สร้างเคสใหม่</button><div class="av-action-pair"><button id="avHomeNew" class="av-button" type="button" data-av-action="new" hidden>สร้างเคสใหม่</button><button class="av-button session-safe" type="button" data-av-route="cases">คลังเคส</button></div></div>
   </section>
@@ -310,7 +310,7 @@ body.av-booting>main{display:none!important}
 <section id="clinicalNextStepCard" class="clinical-next-step-card" aria-live="polite">
   <div><span class="eyebrow">CLINICAL NEXT STEP</span><b id="clinicalNextStepTitle">ตรวจข้อมูลเคส</b><small id="clinicalNextStepSummary">ANESVET จะพาไปยังงานถัดไปโดยใช้ safety gate เดิม</small></div>
   <button id="clinicalNextStepBtn" class="btn primary session-safe" type="button">→ ทำต่อ</button>
-</section><div class="av-menu-list"><button class="av-menu-item session-safe" type="button" data-av-route="patient"><span><b>ข้อมูลผู้ป่วย</b><small>ค้นหา เชื่อมประวัติ และบันทึกข้อมูลเคส</small></span><i aria-hidden="true">›</i></button><button class="av-menu-item session-safe" type="button" data-av-route="preop"><span><b>Pre-check</b><small>ผลตรวจ ความเสี่ยง และความพร้อมก่อนวางยา</small></span><i aria-hidden="true">›</i></button><button class="av-menu-item session-safe" type="button" data-av-route="drugs"><span><b>ยา / Drug Plan</b><small>น้ำหนัก ความเข้มข้นยา แผนยา และการคำนวณ</small></span><i aria-hidden="true">›</i></button><button class="av-menu-item session-safe" type="button" data-av-route="plan"><span><b>แผนวางยา</b><small>หัตถการ ทีม และแผนเฉพาะเคส</small></span><i aria-hidden="true">›</i></button><button class="av-menu-item session-safe" type="button" data-av-route="casesummary"><span><b>สรุปเคส</b><small>ทบทวนข้อมูลก่อนเริ่ม</small></span><i aria-hidden="true">›</i></button><button class="av-menu-item session-safe" type="button" data-av-action="continue"><span><b>ทำเคสนี้ต่อ</b><small>กลับไปช่วงงานปัจจุบัน</small></span><i aria-hidden="true">›</i></button></div></section><section id="more" class="tabpage av-more" aria-labelledby="avMoreTitle"><h2 id="avMoreTitle">เพิ่มเติม</h2><div class="av-menu-list"><button class="av-menu-item session-safe" type="button" data-av-route="start"><span><b>หน้าเริ่มใช้งาน</b><small>กลับทำเคสต่อ หรือเริ่มงานใหม่</small></span><i aria-hidden="true">›</i></button><button class="av-menu-item session-safe" type="button" data-av-route="cases"><span><b>คลังเคส</b><small>ค้นหาเคส ดูประวัติ และ Working Copy</small></span><i aria-hidden="true">›</i></button><button class="av-menu-item session-safe" type="button" data-av-knowledge="guides"><span><b>ความรู้และ ECG</b><small>แนวทางวางยา สุนัขหน้าสั้น และโรคประจำตัว</small></span><i aria-hidden="true">›</i></button><button class="av-menu-item session-safe" type="button" data-av-route="drugs"><span><b>ยาและ Dose Reference</b><small>แผนยา เครื่องคำนวณ และความเข้มข้น</small></span><i aria-hidden="true">›</i></button><button class="av-menu-item session-safe" type="button" data-av-route="endcase"><span><b>End Case / ส่งต่อ</b><small>ทบทวนเอกสาร ลงนาม ปิดเคส และ Export</small></span><i aria-hidden="true">›</i></button><button class="av-menu-item session-safe" type="button" data-av-route="record"><span><b>บันทึกและการแก้ไข</b><small>Vitals และประวัติการแก้ข้อมูล</small></span><i aria-hidden="true">›</i></button><button class="av-menu-item session-safe" type="button" data-av-route="events"><span><b>เหตุการณ์ / ปัญหา</b><small>บันทึกการรักษาและติดตามผล</small></span><i aria-hidden="true">›</i></button><button class="av-menu-item session-safe" type="button" data-av-route="trends"><span><b>Trends</b><small>ดูแนวโน้มข้อมูลที่บันทึก</small></span><i aria-hidden="true">›</i></button><button class="av-menu-item session-safe" type="button" data-av-route="timeline"><span><b>Timeline</b><small>ขั้นตอนและเหตุการณ์ของเคส</small></span><i aria-hidden="true">›</i></button><button class="av-menu-item session-safe" type="button" data-av-action="identity"><span><b>ผู้ใช้งาน / Identity</b><small>Session เปลี่ยนผู้ใช้ และ PIN</small></span><i aria-hidden="true">›</i></button><button class="av-menu-item session-safe" type="button" data-av-route="cases"><span><b>สำรองและตรวจข้อมูล</b><small>Backup Restore และความสมบูรณ์ของข้อมูล</small></span><i aria-hidden="true">›</i></button><button class="av-menu-item session-safe" type="button" data-av-route="settings"><span><b>ตั้งค่า</b><small>โรงพยาบาล ยา Protocol และ Template</small></span><i aria-hidden="true">›</i></button><button class="av-menu-item session-safe" type="button" data-av-native="openSimulationBtn"><span><b>โหมดฝึกและเครื่องมือ</b><small>ทดลอง Workflow โดยใช้ข้อมูลจำลอง</small></span><i aria-hidden="true">›</i></button><button class="av-menu-item session-safe" type="button" data-av-native="openHelpCenterBtn"><span><b>วิธีใช้</b><small>คู่มือและการแนะนำขั้นตอน</small></span><i aria-hidden="true">›</i></button><button class="av-menu-item session-safe" type="button" data-av-native="mobileWorkflowMenuBtn"><span><b>เครื่องมือทั้งหมด</b><small>เปิดเมนูขั้นตอนและเครื่องมือเดิม</small></span><i aria-hidden="true">›</i></button><button class="av-menu-item session-safe" type="button" data-av-route="dashboard"><span><b>Advanced</b><small>Legacy monitoring</small></span><i aria-hidden="true">›</i></button><button class="av-menu-item session-safe" type="button" data-av-action="diagnostic"><span><b>รายงานปัญหาโปรแกรม</b><small>ตรวจข้อมูลการทำงานของโปรแกรม</small></span><i aria-hidden="true">›</i></button></div></section>
+</section><div class="av-menu-list"><button class="av-menu-item session-safe" type="button" data-av-route="patient"><span><b>ข้อมูลผู้ป่วย</b><small>ค้นหา เชื่อมประวัติ และบันทึกข้อมูลเคส</small></span><i aria-hidden="true">›</i></button><button class="av-menu-item session-safe" type="button" data-av-route="preop"><span><b>Pre-check</b><small>ผลตรวจ ความเสี่ยง และความพร้อมก่อนวางยา</small></span><i aria-hidden="true">›</i></button><button class="av-menu-item session-safe" type="button" data-av-route="drugs"><span><b>ยา / Drug Plan</b><small>น้ำหนัก ความเข้มข้นยา แผนยา และการคำนวณ</small></span><i aria-hidden="true">›</i></button><button class="av-menu-item session-safe" type="button" data-av-route="plan"><span><b>แผนวางยา</b><small>หัตถการ ทีม และแผนเฉพาะเคส</small></span><i aria-hidden="true">›</i></button><button class="av-menu-item session-safe" type="button" data-av-route="casesummary"><span><b>สรุปเคส</b><small>ทบทวนข้อมูลก่อนเริ่ม</small></span><i aria-hidden="true">›</i></button><button class="av-menu-item session-safe" type="button" data-av-action="continue"><span><b>ทำเคสนี้ต่อ</b><small>กลับไปช่วงงานปัจจุบัน</small></span><i aria-hidden="true">›</i></button></div></section><section id="more" class="tabpage av-more" aria-labelledby="avMoreTitle"><h2 id="avMoreTitle">เพิ่มเติม</h2><div class="av-menu-list"><button class="av-menu-item session-safe" type="button" data-av-route="start"><span><b>หน้าเริ่มใช้งาน</b><small>กลับทำเคสต่อ หรือเริ่มงานใหม่</small></span><i aria-hidden="true">›</i></button><button class="av-menu-item session-safe" type="button" data-av-route="cases"><span><b>คลังเคส</b><small>ค้นหาเคส ดูประวัติ และ Working Copy</small></span><i aria-hidden="true">›</i></button><button class="av-menu-item session-safe" type="button" data-av-knowledge="basics"><span><b>ความรู้และ ECG</b><small>แนวทางวางยา สุนัขหน้าสั้น และโรคประจำตัว</small></span><i aria-hidden="true">›</i></button><button class="av-menu-item session-safe" type="button" data-av-route="drugs"><span><b>ยาและ Dose Reference</b><small>แผนยา เครื่องคำนวณ และความเข้มข้น</small></span><i aria-hidden="true">›</i></button><button class="av-menu-item session-safe" type="button" data-av-route="endcase"><span><b>End Case / ส่งต่อ</b><small>ทบทวนเอกสาร ลงนาม ปิดเคส และ Export</small></span><i aria-hidden="true">›</i></button><button class="av-menu-item session-safe" type="button" data-av-route="record"><span><b>บันทึกและการแก้ไข</b><small>Vitals และประวัติการแก้ข้อมูล</small></span><i aria-hidden="true">›</i></button><button class="av-menu-item session-safe" type="button" data-av-route="events"><span><b>เหตุการณ์ / ปัญหา</b><small>บันทึกการรักษาและติดตามผล</small></span><i aria-hidden="true">›</i></button><button class="av-menu-item session-safe" type="button" data-av-route="trends"><span><b>Trends</b><small>ดูแนวโน้มข้อมูลที่บันทึก</small></span><i aria-hidden="true">›</i></button><button class="av-menu-item session-safe" type="button" data-av-route="timeline"><span><b>Timeline</b><small>ขั้นตอนและเหตุการณ์ของเคส</small></span><i aria-hidden="true">›</i></button><button class="av-menu-item session-safe" type="button" data-av-action="identity"><span><b>ผู้ใช้งาน / Identity</b><small>Session เปลี่ยนผู้ใช้ และ PIN</small></span><i aria-hidden="true">›</i></button><button class="av-menu-item session-safe" type="button" data-av-route="cases"><span><b>สำรองและตรวจข้อมูล</b><small>Backup Restore และความสมบูรณ์ของข้อมูล</small></span><i aria-hidden="true">›</i></button><button class="av-menu-item session-safe" type="button" data-av-route="settings"><span><b>ตั้งค่า</b><small>โรงพยาบาล ยา Protocol และ Template</small></span><i aria-hidden="true">›</i></button><button class="av-menu-item session-safe" type="button" data-av-native="openSimulationBtn"><span><b>โหมดฝึกและเครื่องมือ</b><small>ทดลอง Workflow โดยใช้ข้อมูลจำลอง</small></span><i aria-hidden="true">›</i></button><button class="av-menu-item session-safe" type="button" data-av-native="openHelpCenterBtn"><span><b>วิธีใช้</b><small>คู่มือและการแนะนำขั้นตอน</small></span><i aria-hidden="true">›</i></button><button class="av-menu-item session-safe" type="button" data-av-native="mobileWorkflowMenuBtn"><span><b>เครื่องมือทั้งหมด</b><small>เปิดเมนูขั้นตอนและเครื่องมือเดิม</small></span><i aria-hidden="true">›</i></button><button class="av-menu-item session-safe" type="button" data-av-route="dashboard"><span><b>Advanced</b><small>Legacy monitoring</small></span><i aria-hidden="true">›</i></button><button class="av-menu-item session-safe" type="button" data-av-action="diagnostic"><span><b>รายงานปัญหาโปรแกรม</b><small>ตรวจข้อมูลการทำงานของโปรแกรม</small></span><i aria-hidden="true">›</i></button></div></section>
   <section id="patient" class="tabpage active">
     <section class="patient-hero">
       <div>
@@ -1132,6 +1132,8 @@ body.av-booting>main{display:none!important}
         </div>
         <div class="page-help-actions"><button class="context-help-btn session-safe" type="button" data-help-topic="preop" aria-label="วิธีใช้ Pre-check">?</button><span id="preopProgress" class="status-pill warn">0/15 REVIEWED</span></div>
       </div>
+
+      <div class="preop-basics-link"><button id="preopOpenBasicsBtn" type="button" class="btn session-safe" data-open-clinical-knowledge="basics">📖 พื้นฐานก่อนวางยาสลบ</button><small>ทบทวนความรู้ก่อนตรวจความพร้อมของผู้ป่วย</small></div>
 
       <div id="preopEfficiencyTools" class="preop-efficiency-tools" aria-label="Pre-check quick tools">
         <button id="preopNextIncompleteBtn" type="button" class="btn preop-next-incomplete">↓ รายการถัดไปที่ยังไม่เสร็จ</button>
@@ -3307,7 +3309,7 @@ body.av-booting>main{display:none!important}
     </div>
 
     <section class="help-about-card">
-      <div><small>ABOUT</small><b>ANESVET V17.14.13</b><p>Veterinary anesthesia workflow, monitoring record and clinical decision-support. ไม่ใช่ continuous physiologic monitor และไม่แทน clinical judgment หรือ source monitor data.</p></div>
+      <div><small>ABOUT</small><b>ANESVET V17.14.14</b><p>Veterinary anesthesia workflow, monitoring record and clinical decision-support. ไม่ใช่ continuous physiologic monitor และไม่แทน clinical judgment หรือ source monitor data.</p></div>
       <button id="helpOpenSettingsBtn" class="btn session-safe" type="button">Settings</button>
     </section>
     <div class="workflow-dialog-actions help-center-actions"><button id="helpCenterCloseBottomBtn" class="btn session-safe" type="button">Close</button></div>
@@ -3649,7 +3651,7 @@ Tramadol"></textarea><small>แสดง shortcut ไป Medication workspace �
 <script id="anesvetBootSentinel">
 (function(){
 'use strict';
-const VERSION='17.14.13';
+const VERSION='17.14.14';
 const STORAGE_KEY='anesvet_v17_2_5_boot_diagnostic';
 const startedAt=Date.now();
 const stages=[];
@@ -3856,75 +3858,75 @@ setTimeout(()=>{if(!stages.some(x=>x.stage==='patient-master-bound'))issue('star
 setTimeout(()=>{if(!ready&&stages.some(x=>x.stage==='patient-master-bound')){mark('startup-incomplete-watchdog',currentStage());issue('startup','Startup did not finish after 12 seconds',currentStage())}},12000);
 })();
 </script>
-<script defer src="./runtime/platform/lifecycle-coordinator.js?v=17.14.13"></script>
-<script defer src="./runtime/platform/viewport-coordinator.js?v=17.14.13"></script>
-  <script defer src="./runtime/platform/workspace-owner.js?v=17.14.13"></script>
-  <script defer src="./runtime/platform/presentation-ownership.js?v=17.14.13"></script>
-  <script defer src="./runtime/platform/mobile-or-owner.js?v=17.14.13"></script>
-<script defer src="./runtime/clinical/drug-dose-reference.js?v=17.14.13"></script>
-<script defer src="./runtime/clinical/protocol-review.js?v=17.14.13"></script>
-<script defer src="./runtime/clinical/clinical-workflow.js?v=17.14.13"></script>
-<script defer src="./runtime/core/app-shell.js?v=17.14.13"></script>
-<script defer src="./runtime/core/case-lifecycle.js?v=17.14.13"></script>
-<script defer src="./runtime/core/support.js?v=17.14.13"></script>
-<script defer src="./runtime/core/reliability.js?v=17.14.13"></script>
-<script defer src="./runtime/core/branding.js?v=17.14.13"></script>
-<script defer src="./runtime/core/clinical-validation.js?v=17.14.13"></script>
-<script defer src="./runtime/core/case-runtime.js?v=17.14.13"></script>
-<script defer src="./runtime/core/core-storage.js?v=17.14.13"></script>
-<script defer src="./runtime/core/session-coordination.js?v=17.14.13"></script>
-<script defer src="./runtime/core/session-controller.js?v=17.14.13"></script>
-<script defer src="./runtime/domains/pwa-controller.js?v=17.14.13"></script>
-<script defer src="./runtime/domains/dose-reference-controller.js?v=17.14.13"></script>
-<script defer src="./runtime/domains/patient-domain.js?v=17.14.13"></script>
-<script defer src="./runtime/domains/or-domain.js?v=17.14.13"></script>
-<script defer src="./runtime/domains/recovery-domain.js?v=17.14.13"></script>
-<script defer src="./runtime/orchestration/patient-master-orchestration.js?v=17.14.13"></script>
-<script defer src="./runtime/orchestration/or-record-orchestration.js?v=17.14.13"></script>
-<script defer src="./runtime/orchestration/recovery-orchestration.js?v=17.14.13"></script>
-<script defer src="./runtime/controllers/patient-master-controller.js?v=17.14.13"></script>
-<script defer src="./runtime/controllers/preop-controller.js?v=17.14.13"></script>
-<script defer src="./runtime/controllers/medication-workspace-controller.js?v=17.14.13"></script>
-<script defer src="./runtime/controllers/or-live-controller.js?v=17.14.13"></script>
-<script defer src="./runtime/controllers/recovery-controller.js?v=17.14.13"></script>
-<script defer src="./runtime/controllers/backup-restore-controller.js?v=17.14.13"></script>
-<script defer src="./runtime/controllers/finalization-archive-controller.js?v=17.14.13"></script>
-<script defer src="./procedure-templates.js?v=17.14.13"></script>
-<script defer src="./validation-center.js?v=17.14.13"></script>
-<script defer src="./hospital-protocol-governance.js?v=17.14.13"></script>
-<script defer src="./security-baseline.js?v=17.14.13"></script>
-<script defer src="./sync-transport.js?v=17.14.13"></script>
-<script defer src="./sync-foundation.js?v=17.14.13"></script>
-<script defer src="./case-review-dashboard.js?v=17.14.13"></script>
-<script defer src="./architecture-registry.js?v=17.14.13"></script>
-<script defer src="./production-pilot.js?v=17.14.13"></script>
-<script defer src="./active-case-rescue.js?v=17.14.13"></script>
-<script defer src="./active-case-freshness.js?v=17.14.13"></script>
-<script defer src="./app-pure-utils.js?v=17.14.13"></script>
-<script src="./recovery-handoff-view-model.js?v=17.14.13"></script>
-  <script src="./case-lifecycle-model.js?v=17.14.13"></script>
-  <script src="./session-lifecycle-model.js?v=17.14.13"></script>
-  <script defer src="./or-simplification-controller.js?v=17.14.13"></script>
-  <script defer src="./app.js?v=17.14.13"></script>
-<script defer src="./data-resilience.js?v=17.14.13"></script>
-<script defer src="./data-safety-2.js?v=17.14.13"></script>
-<script defer src="./medication-reconciliation.js?v=17.14.13"></script>
-<script defer src="./help.js?v=17.14.13"></script>
-<script defer src="./clinical-next-step-controller.js?v=17.14.13"></script>
-<script defer src="./finalization.js?v=17.14.13"></script>
-<script defer src="./final-archive-assurance.js?v=17.14.13"></script>
-<script defer src="./documentation-guardian.js?v=17.14.13"></script>
-<script defer src="./problem-response-review.js?v=17.14.13"></script>
+<script defer src="./runtime/platform/lifecycle-coordinator.js?v=17.14.14"></script>
+<script defer src="./runtime/platform/viewport-coordinator.js?v=17.14.14"></script>
+  <script defer src="./runtime/platform/workspace-owner.js?v=17.14.14"></script>
+  <script defer src="./runtime/platform/presentation-ownership.js?v=17.14.14"></script>
+  <script defer src="./runtime/platform/mobile-or-owner.js?v=17.14.14"></script>
+<script defer src="./runtime/clinical/drug-dose-reference.js?v=17.14.14"></script>
+<script defer src="./runtime/clinical/protocol-review.js?v=17.14.14"></script>
+<script defer src="./runtime/clinical/clinical-workflow.js?v=17.14.14"></script>
+<script defer src="./runtime/core/app-shell.js?v=17.14.14"></script>
+<script defer src="./runtime/core/case-lifecycle.js?v=17.14.14"></script>
+<script defer src="./runtime/core/support.js?v=17.14.14"></script>
+<script defer src="./runtime/core/reliability.js?v=17.14.14"></script>
+<script defer src="./runtime/core/branding.js?v=17.14.14"></script>
+<script defer src="./runtime/core/clinical-validation.js?v=17.14.14"></script>
+<script defer src="./runtime/core/case-runtime.js?v=17.14.14"></script>
+<script defer src="./runtime/core/core-storage.js?v=17.14.14"></script>
+<script defer src="./runtime/core/session-coordination.js?v=17.14.14"></script>
+<script defer src="./runtime/core/session-controller.js?v=17.14.14"></script>
+<script defer src="./runtime/domains/pwa-controller.js?v=17.14.14"></script>
+<script defer src="./runtime/domains/dose-reference-controller.js?v=17.14.14"></script>
+<script defer src="./runtime/domains/patient-domain.js?v=17.14.14"></script>
+<script defer src="./runtime/domains/or-domain.js?v=17.14.14"></script>
+<script defer src="./runtime/domains/recovery-domain.js?v=17.14.14"></script>
+<script defer src="./runtime/orchestration/patient-master-orchestration.js?v=17.14.14"></script>
+<script defer src="./runtime/orchestration/or-record-orchestration.js?v=17.14.14"></script>
+<script defer src="./runtime/orchestration/recovery-orchestration.js?v=17.14.14"></script>
+<script defer src="./runtime/controllers/patient-master-controller.js?v=17.14.14"></script>
+<script defer src="./runtime/controllers/preop-controller.js?v=17.14.14"></script>
+<script defer src="./runtime/controllers/medication-workspace-controller.js?v=17.14.14"></script>
+<script defer src="./runtime/controllers/or-live-controller.js?v=17.14.14"></script>
+<script defer src="./runtime/controllers/recovery-controller.js?v=17.14.14"></script>
+<script defer src="./runtime/controllers/backup-restore-controller.js?v=17.14.14"></script>
+<script defer src="./runtime/controllers/finalization-archive-controller.js?v=17.14.14"></script>
+<script defer src="./procedure-templates.js?v=17.14.14"></script>
+<script defer src="./validation-center.js?v=17.14.14"></script>
+<script defer src="./hospital-protocol-governance.js?v=17.14.14"></script>
+<script defer src="./security-baseline.js?v=17.14.14"></script>
+<script defer src="./sync-transport.js?v=17.14.14"></script>
+<script defer src="./sync-foundation.js?v=17.14.14"></script>
+<script defer src="./case-review-dashboard.js?v=17.14.14"></script>
+<script defer src="./architecture-registry.js?v=17.14.14"></script>
+<script defer src="./production-pilot.js?v=17.14.14"></script>
+<script defer src="./active-case-rescue.js?v=17.14.14"></script>
+<script defer src="./active-case-freshness.js?v=17.14.14"></script>
+<script defer src="./app-pure-utils.js?v=17.14.14"></script>
+<script src="./recovery-handoff-view-model.js?v=17.14.14"></script>
+  <script src="./case-lifecycle-model.js?v=17.14.14"></script>
+  <script src="./session-lifecycle-model.js?v=17.14.14"></script>
+  <script defer src="./or-simplification-controller.js?v=17.14.14"></script>
+  <script defer src="./app.js?v=17.14.14"></script>
+<script defer src="./data-resilience.js?v=17.14.14"></script>
+<script defer src="./data-safety-2.js?v=17.14.14"></script>
+<script defer src="./medication-reconciliation.js?v=17.14.14"></script>
+<script defer src="./help.js?v=17.14.14"></script>
+<script defer src="./clinical-next-step-controller.js?v=17.14.14"></script>
+<script defer src="./finalization.js?v=17.14.14"></script>
+<script defer src="./final-archive-assurance.js?v=17.14.14"></script>
+<script defer src="./documentation-guardian.js?v=17.14.14"></script>
+<script defer src="./problem-response-review.js?v=17.14.14"></script>
 
-  <script defer src="./patient-preop-simplification.js?v=17.14.13"></script>
-  <script defer src="./drug-start-simplification.js?v=17.14.13"></script>
-  <script defer src="./or-workflow-refinement.js?v=17.14.13"></script>
-  <script defer src="./or-workspace-restructure.js?v=17.14.13"></script>
-  <script defer src="./recovery-end-refinement.js?v=17.14.13"></script>
-<script defer src="./repeat-presentation-owner.js?v=17.14.13"></script>
-<script defer src="./simulation-mode.js?v=17.14.13"></script>
-<script defer src="./knowledge-loader.js?v=17.14.13"></script>
-<script defer src="./or-knowledge.js?v=17.14.13"></script>
-<script defer src="./mobile-design.js?v=17.14.13" onerror="document.body.classList.add('av-boot-error');document.body.classList.remove('av-booting');document.getElementById('avBootTitle').textContent='เปิดหน้าจอไม่สำเร็จ';document.getElementById('avBootStatus').textContent='ลองเปิดอีกครั้ง ข้อมูลเคสเดิมยังอยู่ในเครื่อง';document.getElementById('avBootErrorActions').hidden=false;document.getElementById('avBootRetry').onclick=()=>location.reload();document.getElementById('avBootReview').disabled=true"></script>
+  <script defer src="./patient-preop-simplification.js?v=17.14.14"></script>
+  <script defer src="./drug-start-simplification.js?v=17.14.14"></script>
+  <script defer src="./or-workflow-refinement.js?v=17.14.14"></script>
+  <script defer src="./or-workspace-restructure.js?v=17.14.14"></script>
+  <script defer src="./recovery-end-refinement.js?v=17.14.14"></script>
+<script defer src="./repeat-presentation-owner.js?v=17.14.14"></script>
+<script defer src="./simulation-mode.js?v=17.14.14"></script>
+<script defer src="./knowledge-loader.js?v=17.14.14"></script>
+<script defer src="./or-knowledge.js?v=17.14.14"></script>
+<script defer src="./mobile-design.js?v=17.14.14" onerror="document.body.classList.add('av-boot-error');document.body.classList.remove('av-booting');document.getElementById('avBootTitle').textContent='เปิดหน้าจอไม่สำเร็จ';document.getElementById('avBootStatus').textContent='ลองเปิดอีกครั้ง ข้อมูลเคสเดิมยังอยู่ในเครื่อง';document.getElementById('avBootErrorActions').hidden=false;document.getElementById('avBootRetry').onclick=()=>location.reload();document.getElementById('avBootReview').disabled=true"></script>
 </body>
 </html>

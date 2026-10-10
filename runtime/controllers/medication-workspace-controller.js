@@ -2,7 +2,7 @@
    Incremental controller extraction. Medication calculation/safety semantics remain injected and unchanged. */
 (function(root){
 'use strict';
-const VERSION='17.14.13';
+const VERSION='17.14.14';
 
 function create(ctx={}){
   const $=ctx.$, $$=ctx.$$;
