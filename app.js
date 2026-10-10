@@ -39,7 +39,7 @@ const SESSION_TTL_MS=30000;
 const SESSION_HEARTBEAT_MS=5000;
 const DB_NAME='ANESVET_DB';
 const DB_VERSION=2;
-const APP_VERSION='17.14.9';
+const APP_VERSION='17.14.11';
 const SECURITY=window.ANESVET_SECURITY_BASELINE||null;
 const SYNC_FOUNDATION=window.ANESVET_SYNC_FOUNDATION||null;
 const DOSE_REF=window.ANESVET_DOSE_REFERENCE||null;
@@ -2279,7 +2279,7 @@ function renderRecordPreview(){
 
 function showOrVitalSavedFeedback(record){
   const box=$('orVitalSaveFeedback'),btn=$('orVitalsFocusSaveBtn');if(!record)return;const msg=`✓ SAVED ${record.clock}`;
-  if(box){box.textContent=`${msg} • ${vitalRecordSummary(record)}`;box.hidden=false;box.classList.remove('flash');void box.offsetWidth;box.classList.add('flash');clearTimeout(showOrVitalSavedFeedback._t);showOrVitalSavedFeedback._t=setTimeout(()=>{box.hidden=true;box.classList.remove('flash')},2400)}
+  if(box){box.textContent=`${msg} • ${vitalRecordSummary(record)}`;box.hidden=document.body.classList.contains('av-mobile-design');box.classList.remove('flash');void box.offsetWidth;box.classList.add('flash');clearTimeout(showOrVitalSavedFeedback._t);showOrVitalSavedFeedback._t=setTimeout(()=>{box.hidden=true;box.classList.remove('flash')},2400)}
   if(btn){const old=btn.textContent;btn.textContent=msg;btn.classList.add('saved-flash');clearTimeout(showOrVitalSavedFeedback._b);showOrVitalSavedFeedback._b=setTimeout(()=>{btn.classList.remove('saved-flash');updateOrVitalWorkspace?.()},1600)}
 }
 function updateOrVitalWorkspace(){renderOrLive()}
@@ -2590,7 +2590,7 @@ $('complicationCloseBtn')?.addEventListener('click',closeComplicationDialog);$('
 
 function addEvent({category,name,dose='',route='',note='',meta={},epoch=null,elapsedMs=null,clock=null}){
   if(!ensureTimerStarted())return false;
-  const eventEpoch=Number.isFinite(Number(epoch))?Number(epoch):Date.now(),eventElapsed=Number.isFinite(Number(elapsedMs))?Number(elapsedMs):currentElapsed(),eventClock=clock||formatClock(eventEpoch);
+  const eventEpoch=epoch!=null&&epoch!==''&&Number.isFinite(Number(epoch))?Number(epoch):Date.now(),eventElapsed=elapsedMs!=null&&elapsedMs!==''&&Number.isFinite(Number(elapsedMs))?Number(elapsedMs):currentElapsed(),eventClock=clock||formatClock(eventEpoch);
   const documentedBy=clinicalActorContext();
   const ev={
     id:crypto.randomUUID?crypto.randomUUID():String(Date.now()+Math.random()),

@@ -1,0 +1,40 @@
+{
+  "initial": [
+    {
+      "tabIndex": 0,
+      "text": "Fluid\nRate + bolus"
+    },
+    {
+      "tabIndex": -1,
+      "text": "Vent\nRR + PIP"
+    },
+    {
+      "tabIndex": -1,
+      "text": "Airway\nET tube\nPENDING"
+    },
+    {
+      "tabIndex": -1,
+      "text": "Meds\nReview"
+    }
+  ],
+  "errors": [],
+  "open": true,
+  "basis": "Administration time: recorded administration 21:04:07 • Current BW 3 kg • Frozen qa-synthetic",
+  "provisional": [
+    {
+      "id": "3e9cf72e-b1b6-4350-bf0b-8ec50d7e88d0",
+      "drugId": "propofolDose",
+      "drug": "Propofol",
+      "epoch": 1791641047335,
+      "elapsedMs": 1216,
+      "clock": "21:04:07",
+      "plannedMl": null,
+      "route": "IV",
+      "concentration": "10 mg/mL",
+      "status": "given-details-pending",
+      "createdAt": 1791641047338,
+      "completedAt": null
+    }
+  ],
+  "records": 0
+}

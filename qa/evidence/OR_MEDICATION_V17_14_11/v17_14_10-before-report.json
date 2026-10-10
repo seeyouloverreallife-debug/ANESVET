@@ -1,0 +1,42 @@
+{
+  "initial": [
+    {
+      "tabIndex": -1,
+      "text": "Fluid\nRate + bolus"
+    },
+    {
+      "tabIndex": -1,
+      "text": "Vent\nRR + PIP"
+    },
+    {
+      "tabIndex": -1,
+      "text": "Airway\nET tube\nPENDING"
+    },
+    {
+      "tabIndex": -1,
+      "text": "Meds\nReview"
+    }
+  ],
+  "errors": [
+    "tapTime is not defined"
+  ],
+  "open": false,
+  "basis": "",
+  "provisional": [
+    {
+      "id": "9eb2698f-5ff3-45fe-8e06-0786f53a8e63",
+      "drugId": "propofolDose",
+      "drug": "Propofol",
+      "epoch": 1791640560353,
+      "elapsedMs": 0,
+      "clock": "07:00:00",
+      "plannedMl": null,
+      "route": "IV",
+      "concentration": "10 mg/mL",
+      "status": "given-details-pending",
+      "createdAt": 1791640560353,
+      "completedAt": null
+    }
+  ],
+  "records": 0
+}

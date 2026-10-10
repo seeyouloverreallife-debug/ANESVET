@@ -1,0 +1,35 @@
+ANESVET V17.14.9 — Usability Refinement
+Source: ANESVET-V17.14.8-VENT-MEDICATION-FIX.zip
+Source SHA256: 434c1609373f54d0535cec7469684ad0766aee213740ecaf2c9ba3f0b193627d
+Current QA: 615/615 PASS across 21 scripts
+Real-browser usability: 66/66 PASS at 390 and 1024 px
+Real-browser Vent / Medication: 36/36 PASS
+JavaScript syntax: 78/78 PASS (includes SW and build utility)
+CSS parsing: 40/40 PASS
+
+The suite was run against the final runtime files before packaging; no runtime edits followed.
+UI changes only; clinical formulas, data schema and safety conditions retained.
+Local synthetic cases, isolated browser contexts, no user case edits.
+No GitHub or website deployment. Physical-device acceptance remains outstanding.
+
+QA_V17_14_9_APP_FOUNDATION_AUDIT.js: 21/21 PASS
+QA_V17_14_9_CANONICAL_CSS_OWNERSHIP_II.js: 25/25 PASS
+QA_V17_14_9_CLINICAL_PILOT_SIMULATION.js: 25/25 PASS
+QA_V17_14_9_CONTROLLERS_DEPENDENCY_AUDIT.js: 34/34 PASS
+QA_V17_14_9_CURRENT_WORKFLOW.js: 31/31 PASS
+QA_V17_14_9_DEVICE_TELEMETRY.js: 25/25 PASS
+QA_V17_14_9_DOMAINS_DEPENDENCY_AUDIT.js: 28/28 PASS
+QA_V17_14_9_END_TO_END.js: 17/17 PASS
+QA_V17_14_9_OR_INTERACTION.js: 30/30 PASS
+QA_V17_14_9_OR_MEDICATION_FOCUS.js: 33/33 PASS
+QA_V17_14_9_ORCHESTRATION_DEPENDENCY_AUDIT.js: 34/34 PASS
+QA_V17_14_9_PACKAGE_STRUCTURE.js: 26/26 PASS
+QA_V17_14_9_PHYSICAL_PILOT_UX_FIX_I.js: 26/26 PASS
+QA_V17_14_9_PHYSICAL_PILOT_UX_FIX_II.js: 36/36 PASS
+QA_V17_14_9_POST_REFACTOR_UX.js: 34/34 PASS
+QA_V17_14_9_RUNTIME_GROUPING_IX.js: 24/24 PASS
+QA_V17_14_9_SESSION_OWNERSHIP.js: 20/20 PASS
+QA_V17_14_9_STATIC_INTEGRITY.js: 21/21 PASS
+QA_V17_14_9_STRESS_EDGE_CASES.js: 23/23 PASS
+QA_V17_14_9_USABILITY_BROWSER.js: 66/66 PASS
+QA_V17_14_9_VENT_MEDICATION_BROWSER.js: 36/36 PASS

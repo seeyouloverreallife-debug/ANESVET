@@ -1,4 +1,4 @@
-/* ANESVET V17.14.9: mobile shell only. Never infer or write clinical evidence. */
+/* ANESVET V17.14.11: mobile shell only. Never infer or write clinical evidence. */
 (() => {
   'use strict';
   const $=id=>document.getElementById(id);

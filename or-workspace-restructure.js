@@ -1,14 +1,14 @@
-/* ANESVET V17.14.9 — OR LIVE interaction polish + clean secondary charting.
+/* ANESVET V17.14.11 — OR LIVE interaction polish + clean secondary charting.
  * Presentation/navigation only. Existing clinical fields remain authoritative.
  * Moves existing DOM controls into four task-based workspaces without cloning state. */
 (function(root){
 'use strict';
-const VERSION='17.14.9';
+const VERSION='17.14.11';
 const $=id=>document.getElementById(id);
 const q=(sel,scope=document)=>scope?.querySelector?.(sel)||null;
 root.ANESVET_PRESENTATION_OWNERSHIP?.claim?.('orlive.layout','or-workspace-v17130');
 const qa=(sel,scope=document)=>[...(scope?.querySelectorAll?.(sel)||[])];
-let current='monitor';
+let current='monitor',lastSecondary='fluid';
 
 function make(tag,attrs={},html=''){
   const el=document.createElement(tag);
@@ -167,15 +167,17 @@ function updateBadges(){
 
 function setView(view,{scroll=false}={}){
   if(!['monitor','fluid','vent','airway','meds'].includes(view))view='monitor';
-  current=view;
   const host=$('orWorkspaceHost');if(!host)return false;
+  const restoreNav=view==='monitor'&&host.contains(document.activeElement);
+  current=view;if(view!=='monitor')lastSecondary=view;
   host.dataset.view=view;
   host.hidden=view==='monitor';
   qa('[data-or-workspace-panel]',host).forEach(p=>{p.hidden=p.dataset.orWorkspacePanel!==view});
   qa('[data-or-workspace]', $('orWorkspaceNav')).forEach(b=>{
     const active=b.dataset.orWorkspace===view;
-    b.classList.toggle('active',active);b.setAttribute('aria-selected',String(active));b.tabIndex=active?0:-1;
+    b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active));b.tabIndex=b.dataset.orWorkspace===lastSecondary?0:-1;
   });
+  if(restoreNav)q(`[data-or-workspace="${lastSecondary}"]`,$('orWorkspaceNav'))?.focus({preventScroll:true});
   if(view==='fluid'){$('orFluidPanelDetails')?.setAttribute('open','')}
   if(view==='airway'){$('orAirwayPanelDetails')?.setAttribute('open','')}
   updateBadges();
@@ -346,16 +348,17 @@ function init(){
 
   // Workflow remains authoritative but visually secondary to monitoring.
   if(primary)monitorControls.after(primary);
+  const undo=$('orUndoStepBtn'),workflowButtons=q('.or-primary-buttons',primary);if(undo&&workflowButtons)workflowButtons.appendChild(undo);
   const inductionQuick=buildInductionQuickStrip();
   if(primary)primary.after(inductionQuick);else monitorControls.after(inductionQuick);
   if(safety)inductionQuick.after(safety);
   if(phase)phase.classList.add('or-phase-strip-secondary');
 
-  const nav=make('nav',{id:'orWorkspaceNav',class:'or-workspace-nav or-secondary-workspace-nav','aria-label':'OR LIVE secondary workspace'});
-  nav.innerHTML=`<button type="button" data-or-workspace="fluid" aria-selected="false"><span>Fluid</span><small>Rate + bolus</small><b id="orWorkspaceFluidBadge" class="or-workspace-badge" hidden></b></button>
-  <button type="button" data-or-workspace="vent" aria-selected="false"><span>Vent</span><small>RR + PIP</small><b id="orWorkspaceVentBadge" class="or-workspace-badge" hidden></b></button>
-  <button type="button" data-or-workspace="airway" aria-selected="false"><span>Airway</span><small>ET tube</small><b id="orWorkspaceAirwayBadge" class="or-workspace-badge">PENDING</b></button>
-  <button type="button" data-or-workspace="meds" aria-selected="false"><span>Meds</span><small>Review</small><b id="orWorkspaceMedsBadge" class="or-workspace-badge" hidden></b></button>`;
+  const nav=make('nav',{id:'orWorkspaceNav',class:'or-workspace-nav or-secondary-workspace-nav',role:'toolbar','aria-label':'OR LIVE secondary workspace'});
+  nav.innerHTML=`<button type="button" data-or-workspace="fluid" aria-pressed="false"><span>Fluid</span><small>Rate + bolus</small><b id="orWorkspaceFluidBadge" class="or-workspace-badge" hidden></b></button>
+  <button type="button" data-or-workspace="vent" aria-pressed="false"><span>Vent</span><small>RR + PIP</small><b id="orWorkspaceVentBadge" class="or-workspace-badge" hidden></b></button>
+  <button type="button" data-or-workspace="airway" aria-pressed="false"><span>Airway</span><small>ET tube</small><b id="orWorkspaceAirwayBadge" class="or-workspace-badge">PENDING</b></button>
+  <button type="button" data-or-workspace="meds" aria-pressed="false"><span>Meds</span><small>Review</small><b id="orWorkspaceMedsBadge" class="or-workspace-badge" hidden></b></button>`;
   (safety||inductionQuick||primary||monitorControls).after(nav);
 
   const host=make('div',{id:'orWorkspaceHost',class:'or-workspace-host'});nav.after(host);
@@ -363,6 +366,11 @@ function init(){
   host.appendChild(buildVent());
   host.appendChild(buildAirway());
   host.appendChild(buildMeds());
+  qa('[data-or-workspace]',nav).forEach(b=>{
+    const view=b.dataset.orWorkspace,panel=q(`[data-or-workspace-panel="${view}"]`,host);
+    b.id=`orWorkspaceTab-${view}`;b.setAttribute('aria-controls',`orWorkspacePanel-${view}`);
+    if(panel){panel.id=`orWorkspacePanel-${view}`;panel.setAttribute('role','region');panel.setAttribute('aria-labelledby',b.id)}
+  });
 
   // Old combined status row is redundant with the top Save/Next Due strip.
   q('#orlive .or-status-row')?.classList.add('or-redundant-status');
@@ -373,8 +381,8 @@ function init(){
   host.addEventListener('click',e=>{if(e.target.closest?.('[data-or-back-monitor]'))setView('monitor',{scroll:true})});
   nav.addEventListener('keydown',e=>{
     const buttons=qa('[data-or-workspace]',nav),i=buttons.indexOf(document.activeElement);
-    if(i<0||!['ArrowLeft','ArrowRight'].includes(e.key))return;
-    e.preventDefault();const next=(i+(e.key==='ArrowRight'?1:-1)+buttons.length)%buttons.length;buttons[next].focus();setView(buttons[next].dataset.orWorkspace,{scroll:false});
+    if(i<0||!['ArrowLeft','ArrowRight','Home','End'].includes(e.key))return;
+    e.preventDefault();const next=e.key==='Home'?0:e.key==='End'?buttons.length-1:(i+(e.key==='ArrowRight'?1:-1)+buttons.length)%buttons.length;buttons[next].focus();setView(buttons[next].dataset.orWorkspace,{scroll:false});
   });
 
   bindHardware();syncCompactSummary();syncSafetyCompact();

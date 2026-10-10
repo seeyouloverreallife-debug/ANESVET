@@ -1,0 +1,362 @@
+[
+  {
+    "name": "before",
+    "y": 0,
+    "body": "av-mobile-design or-mobile-active",
+    "header": 6,
+    "headerRect": {
+      "top": 0,
+      "height": 65
+    },
+    "save": {
+      "top": 555.15625,
+      "bottom": 603.15625,
+      "width": 338,
+      "height": 48,
+      "text": "＋ บันทึก Vitals",
+      "position": "static",
+      "display": "block",
+      "background": "rgb(19, 94, 86)"
+    },
+    "feedback": {
+      "top": 0,
+      "bottom": 0,
+      "width": 0,
+      "height": 0,
+      "text": "✓ Vitals saved",
+      "position": "fixed",
+      "display": "none",
+      "background": "rgb(12, 128, 88)"
+    },
+    "undo": {
+      "top": 0,
+      "bottom": 0,
+      "width": 0,
+      "height": 0,
+      "text": "↶ Undo • last workflow step",
+      "position": "fixed",
+      "display": "none",
+      "background": "rgb(255, 255, 255)"
+    },
+    "toast": {
+      "top": 72,
+      "bottom": 88,
+      "width": 24,
+      "height": 16,
+      "text": "",
+      "position": "fixed",
+      "display": "block",
+      "background": "rgb(24, 43, 45)"
+    },
+    "action": {
+      "top": 0,
+      "bottom": 0,
+      "width": 0,
+      "height": 0,
+      "text": "▶ Start induction",
+      "position": "static",
+      "display": "block",
+      "background": "rgb(22, 77, 70)"
+    }
+  },
+  {
+    "name": "induction",
+    "y": 0,
+    "body": "av-mobile-design or-mobile-active",
+    "header": 6,
+    "headerRect": {
+      "top": 0,
+      "height": 65
+    },
+    "save": {
+      "top": 555.15625,
+      "bottom": 603.15625,
+      "width": 338,
+      "height": 48,
+      "text": "＋ บันทึก Vitals",
+      "position": "static",
+      "display": "block",
+      "background": "rgb(19, 94, 86)"
+    },
+    "feedback": {
+      "top": 0,
+      "bottom": 0,
+      "width": 0,
+      "height": 0,
+      "text": "✓ Vitals saved",
+      "position": "fixed",
+      "display": "none",
+      "background": "rgb(12, 128, 88)"
+    },
+    "undo": {
+      "top": 647.609375,
+      "bottom": 691.609375,
+      "width": 193.984375,
+      "height": 44,
+      "text": "↶ Undo • Start induction",
+      "position": "static",
+      "display": "block",
+      "background": "rgb(246, 251, 249)"
+    },
+    "toast": {
+      "top": 72,
+      "bottom": 108.296875,
+      "width": 206.71875,
+      "height": 36.296875,
+      "text": "Induction timestamp saved",
+      "position": "fixed",
+      "display": "block",
+      "background": "rgb(24, 43, 45)"
+    },
+    "action": {
+      "top": 650.609375,
+      "bottom": 688.609375,
+      "width": 89.765625,
+      "height": 38,
+      "text": "🫁 Intubation",
+      "position": "static",
+      "display": "block",
+      "background": "rgb(22, 77, 70)"
+    }
+  },
+  {
+    "name": "intubation",
+    "y": 0,
+    "body": "av-mobile-design or-mobile-active",
+    "header": 6,
+    "headerRect": {
+      "top": 0,
+      "height": 65
+    },
+    "save": {
+      "top": 555.15625,
+      "bottom": 603.15625,
+      "width": 338,
+      "height": 48,
+      "text": "＋ บันทึก Vitals",
+      "position": "static",
+      "display": "block",
+      "background": "rgb(19, 94, 86)"
+    },
+    "feedback": {
+      "top": 0,
+      "bottom": 0,
+      "width": 0,
+      "height": 0,
+      "text": "✓ Vitals saved",
+      "position": "fixed",
+      "display": "none",
+      "background": "rgb(12, 128, 88)"
+    },
+    "undo": {
+      "top": 647.609375,
+      "bottom": 691.609375,
+      "width": 162.375,
+      "height": 44,
+      "text": "↶ Undo • Intubation",
+      "position": "static",
+      "display": "block",
+      "background": "rgb(246, 251, 249)"
+    },
+    "toast": {
+      "top": 72,
+      "bottom": 128.59375,
+      "width": 362,
+      "height": 56.59375,
+      "text": "Intubation timestamp saved • รายละเอียด airway ค่อยลงเมื่อ stable",
+      "position": "fixed",
+      "display": "block",
+      "background": "rgb(24, 43, 45)"
+    },
+    "action": {
+      "top": 650.609375,
+      "bottom": 688.609375,
+      "width": 101.171875,
+      "height": 38,
+      "text": "▶ Surgery start",
+      "position": "static",
+      "display": "block",
+      "background": "rgb(22, 77, 70)"
+    }
+  },
+  {
+    "name": "editing",
+    "y": 350,
+    "body": "av-mobile-design or-mobile-active av-editing or-fast-entry-active",
+    "header": -344,
+    "headerRect": {
+      "top": -350,
+      "height": 65
+    },
+    "save": {
+      "top": 236.21875,
+      "bottom": 284.21875,
+      "width": 338,
+      "height": 48,
+      "text": "＋ บันทึก Vitals",
+      "position": "static",
+      "display": "block",
+      "background": "rgb(19, 94, 86)"
+    },
+    "feedback": {
+      "top": 0,
+      "bottom": 0,
+      "width": 0,
+      "height": 0,
+      "text": "✓ Vitals saved",
+      "position": "fixed",
+      "display": "none",
+      "background": "rgb(12, 128, 88)"
+    },
+    "undo": {
+      "top": 328.671875,
+      "bottom": 372.671875,
+      "width": 162.375,
+      "height": 44,
+      "text": "↶ Undo • Intubation",
+      "position": "static",
+      "display": "block",
+      "background": "rgb(246, 251, 249)"
+    },
+    "toast": {
+      "top": 72,
+      "bottom": 128.59375,
+      "width": 362,
+      "height": 56.59375,
+      "text": "Intubation timestamp saved • รายละเอียด airway ค่อยลงเมื่อ stable",
+      "position": "fixed",
+      "display": "block",
+      "background": "rgb(24, 43, 45)"
+    },
+    "action": {
+      "top": 331.671875,
+      "bottom": 369.671875,
+      "width": 101.171875,
+      "height": 38,
+      "text": "▶ Surgery start",
+      "position": "static",
+      "display": "block",
+      "background": "rgb(22, 77, 70)"
+    }
+  },
+  {
+    "name": "saved",
+    "y": 350,
+    "body": "av-mobile-design or-mobile-active",
+    "header": 6,
+    "headerRect": {
+      "top": 0,
+      "height": 65
+    },
+    "save": {
+      "top": 244.7760772705078,
+      "bottom": 293.2551574707031,
+      "width": 341.37353515625,
+      "height": 48.47908020019531,
+      "text": "＋ บันทึก Vitals",
+      "position": "static",
+      "display": "block",
+      "background": "rgb(19, 94, 86)"
+    },
+    "feedback": {
+      "top": 0,
+      "bottom": 0,
+      "width": 0,
+      "height": 0,
+      "text": "✓ SAVED 20:47:43 • HR 120 • RR 18 • MAP 80 • SpO₂ 98% • ETCO₂ 38 • Temp 38.0°C",
+      "position": "fixed",
+      "display": "none",
+      "background": "rgb(12, 128, 88)"
+    },
+    "undo": {
+      "top": 337.46875,
+      "bottom": 381.46875,
+      "width": 162.375,
+      "height": 44,
+      "text": "↶ Undo • Intubation",
+      "position": "static",
+      "display": "block",
+      "background": "rgb(246, 251, 249)"
+    },
+    "toast": {
+      "top": 72,
+      "bottom": 108.296875,
+      "width": 197.359375,
+      "height": 36.296875,
+      "text": "✓ Vitals saved • 20:47:43",
+      "position": "fixed",
+      "display": "block",
+      "background": "rgb(24, 43, 45)"
+    },
+    "action": {
+      "top": 340.46875,
+      "bottom": 378.46875,
+      "width": 101.171875,
+      "height": 38,
+      "text": "▶ Surgery start",
+      "position": "static",
+      "display": "block",
+      "background": "rgb(22, 77, 70)"
+    }
+  },
+  {
+    "name": "settled",
+    "y": 350,
+    "body": "av-mobile-design or-mobile-active",
+    "header": 6,
+    "headerRect": {
+      "top": 0,
+      "height": 65
+    },
+    "save": {
+      "top": 245.015625,
+      "bottom": 293.015625,
+      "width": 338,
+      "height": 48,
+      "text": "＋ บันทึก Vitals",
+      "position": "static",
+      "display": "block",
+      "background": "rgb(19, 94, 86)"
+    },
+    "feedback": {
+      "top": 0,
+      "bottom": 0,
+      "width": 0,
+      "height": 0,
+      "text": "✓ SAVED 20:47:43 • HR 120 • RR 18 • MAP 80 • SpO₂ 98% • ETCO₂ 38 • Temp 38.0°C",
+      "position": "fixed",
+      "display": "none",
+      "background": "rgb(12, 128, 88)"
+    },
+    "undo": {
+      "top": 337.46875,
+      "bottom": 381.46875,
+      "width": 162.375,
+      "height": 44,
+      "text": "↶ Undo • Intubation",
+      "position": "static",
+      "display": "block",
+      "background": "rgb(246, 251, 249)"
+    },
+    "toast": {
+      "top": 72,
+      "bottom": 108.296875,
+      "width": 197.359375,
+      "height": 36.296875,
+      "text": "✓ Vitals saved • 20:47:43",
+      "position": "fixed",
+      "display": "block",
+      "background": "rgb(24, 43, 45)"
+    },
+    "action": {
+      "top": 340.46875,
+      "bottom": 378.46875,
+      "width": 101.171875,
+      "height": 38,
+      "text": "▶ Surgery start",
+      "position": "static",
+      "display": "block",
+      "background": "rgb(22, 77, 70)"
+    }
+  }
+]
