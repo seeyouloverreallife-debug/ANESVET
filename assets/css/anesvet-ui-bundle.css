@@ -3507,6 +3507,27 @@ body.or-fullscreen #anesvetIssueFloatingBtn:not([hidden]){display:inline-flex!im
 .preop-basics-link button{min-height:48px;white-space:normal}.preop-basics-link small{color:#4c6866;font-size:13px}
 @media(max-width:600px){.ck-basics-diagram.flow{grid-template-columns:1fr;gap:18px}.ck-basics-diagram.flow>div:not(:last-child)::after{content:'↓';right:calc(50% - 8px);top:auto;bottom:-18px}.ck-basics-diagram.compare{grid-template-columns:1fr}.ck-basics-list .ck-list-item{padding:14px}.preop-basics-link button{width:100%}}
 
+/* V17.14.15: the reader has its own spacing, independent of the app shell. */
+.ck-dialog .ck-body,.ck-quick-dialog .ck-body{box-sizing:border-box;width:100%;min-width:0;margin:0;padding:24px;line-height:1.7}
+.ck-header>div{min-width:0;overflow-wrap:anywhere}
+.ck-dialog .ck-body>:first-child,.ck-quick-dialog .ck-body>:first-child{margin-top:0}
+.ck-body :is(article,section,details,figure,nav){min-width:0;max-width:100%;box-sizing:border-box}
+.ck-body .btn{max-width:100%;white-space:normal;overflow-wrap:anywhere}
+.ck-list-item{line-height:1.65;gap:6px}
+.ck-body h3{line-height:1.5}.ck-body h4{line-height:1.6}
+.ck-body .ck-search-label{margin-top:16px}
+@media(max-width:600px){
+ .ck-dialog .ck-body,.ck-quick-dialog .ck-body{padding:20px max(20px,env(safe-area-inset-right)) 24px max(20px,env(safe-area-inset-left))}
+ .ck-header{padding:14px max(16px,env(safe-area-inset-right)) 12px max(16px,env(safe-area-inset-left))}
+ .ck-tabs{padding:8px max(12px,env(safe-area-inset-right)) 8px max(12px,env(safe-area-inset-left))}
+ .ck-body h3{font-size:20px;margin:12px 0}
+ .ck-list{gap:12px}
+ .ck-tree-head{flex-wrap:wrap}
+ .ck-phase-nav .btn{flex-basis:100%}
+ .ck-body .ck-basics-pagination button{flex-basis:120px}
+ .ck-footer{padding-right:max(20px,env(safe-area-inset-right));padding-left:max(20px,env(safe-area-inset-left))}
+}
+
 /* === SOURCE: src/styles/canonical/mobile-design.css === */
 @font-face{font-family:Inter;font-style:normal;font-weight:400;font-display:swap;src:url('../fonts/inter-400.ttf') format('truetype')}
 /* Figma mobile release. All clinical inputs, controllers and evidence retain their original IDs. */
