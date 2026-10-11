@@ -1,0 +1,1058 @@
+{
+  "version": "17.14.20",
+  "reviewedAt": "2026-10-11",
+  "status": "Source-checked; independent clinical signoff pending",
+  "sources": {
+    "aaha_induction": {
+      "title": "AAHA 2020 · IV induction",
+      "url": "https://www.aaha.org/resources/2020-aaha-anesthesia-and-monitoring-guidelines-for-dogs-and-cats/drug-combinations/induction-iv/",
+      "locator": "IV Induction Protocols, single-page chart, drug row and footnote",
+      "reviewedAt": "2026-10-11"
+    },
+    "aaha_sedation": {
+      "title": "AAHA 2020 · Premedication / sedation",
+      "url": "https://www.aaha.org/wp-content/uploads/globalassets/02-guidelines/2020-anesthesia/aahaanesthesiaguidelines_premedicationandsedation2.pdf",
+      "locator": "Anxiolytic, Sedation, and Premedication Drug Combinations, p.1",
+      "reviewedAt": "2026-10-11"
+    },
+    "merck_pain": {
+      "title": "Merck · Analgesics (updated September 2024)",
+      "url": "https://www.merckvetmanual.com/therapeutics/pain-assessment-and-management/analgesics-used-in-animals",
+      "locator": "Selected Analgesics for Use in Dogs / Cats; intermittent dosage column",
+      "reviewedAt": "2026-10-11"
+    },
+    "recover": {
+      "title": "RECOVER 2024 · CPR",
+      "url": "https://onlinelibrary.wiley.com/doi/10.1111/vec.13391",
+      "locator": "Table 2, CPR dosing chart and ALS drug recommendations",
+      "reviewedAt": "2026-10-11"
+    },
+    "enovat": {
+      "title": "ENOVAT 2025 guideline · published 2026",
+      "url": "https://onlinelibrary.wiley.com/doi/10.1111/jsap.70072",
+      "locator": "Table 5, IV peri-operative surgical antimicrobial prophylaxis",
+      "reviewedAt": "2026-10-11"
+    },
+    "merck_gi": {
+      "title": "Merck · Antiemetic drugs (updated June 2025)",
+      "url": "https://www.merckvetmanual.com/pharmacology/systemic-pharmacotherapeutics-of-the-digestive-system/drugs-used-to-control-or-stimulate-vomiting-in-monogastric-animals",
+      "locator": "Antiemetic Drugs table and drug-specific paragraphs",
+      "reviewedAt": "2026-10-11"
+    },
+    "merck_diuretic": {
+      "title": "Merck · Diuretics",
+      "url": "https://www.merckvetmanual.com/pharmacology/systemic-pharmacotherapeutics-of-the-cardiovascular-system/diuretics-for-use-in-animals",
+      "locator": "Clinical Use of Furosemide in Animals",
+      "reviewedAt": "2026-10-11"
+    },
+    "merck_seizure": {
+      "title": "Merck · Epilepsy (updated October 2025)",
+      "url": "https://www.merckvetmanual.com/nervous-system/epilepsy-in-small-animals/epilepsy-in-small-animals",
+      "locator": "Specific Antiseizure Medications: Phenobarbital / Levetiracetam",
+      "reviewedAt": "2026-10-11"
+    }
+  },
+  "references": [
+    {
+      "id": "propofol-1",
+      "drug": "propofol",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "นำสลบทาง IV",
+      "routes": [
+        "IV"
+      ],
+      "min": 2,
+      "max": 6,
+      "unit": "mg",
+      "source": "aaha_induction",
+      "note": "ปรับช้า ๆ ตามผล (titrate to effect) ยาที่ให้ก่อนหน้าหรือโรคร่วมอาจทำให้ต้องใช้ต่ำกว่าช่วงนี้ ผล mL ไม่ใช่คำสั่งให้ทั้งหมดในครั้งเดียว",
+      "schedule": "",
+      "kind": "single",
+      "text": ""
+    },
+    {
+      "id": "etomidate-2",
+      "drug": "etomidate",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "นำสลบทาง IV",
+      "routes": [
+        "IV"
+      ],
+      "min": 1,
+      "max": 3,
+      "unit": "mg",
+      "source": "aaha_induction",
+      "note": "ปรับช้า ๆ ตามผล (titrate to effect) ยาที่ให้ก่อนหน้าหรือโรคร่วมอาจทำให้ต้องใช้ต่ำกว่าช่วงนี้ ผล mL ไม่ใช่คำสั่งให้ทั้งหมดในครั้งเดียว · Etomidate: พิจารณาภาวะต่อมหมวกไตและสูตรผลิตภัณฑ์",
+      "schedule": "",
+      "kind": "single",
+      "text": ""
+    },
+    {
+      "id": "alfaxalone-3",
+      "drug": "alfaxalone",
+      "species": [
+        "dog"
+      ],
+      "purpose": "นำสลบทาง IV",
+      "routes": [
+        "IV"
+      ],
+      "min": 1,
+      "max": 3,
+      "unit": "mg",
+      "source": "aaha_induction",
+      "note": "ปรับช้า ๆ ตามผล (titrate to effect) ยาที่ให้ก่อนหน้าหรือโรคร่วมอาจทำให้ต้องใช้ต่ำกว่าช่วงนี้ ผล mL ไม่ใช่คำสั่งให้ทั้งหมดในครั้งเดียว",
+      "schedule": "",
+      "kind": "single",
+      "text": ""
+    },
+    {
+      "id": "alfaxalone-4",
+      "drug": "alfaxalone",
+      "species": [
+        "cat"
+      ],
+      "purpose": "นำสลบทาง IV",
+      "routes": [
+        "IV"
+      ],
+      "min": 2,
+      "max": 5,
+      "unit": "mg",
+      "source": "aaha_induction",
+      "note": "ปรับช้า ๆ ตามผล (titrate to effect) ยาที่ให้ก่อนหน้าหรือโรคร่วมอาจทำให้ต้องใช้ต่ำกว่าช่วงนี้ ผล mL ไม่ใช่คำสั่งให้ทั้งหมดในครั้งเดียว",
+      "schedule": "",
+      "kind": "single",
+      "text": ""
+    },
+    {
+      "id": "ketamine-5",
+      "drug": "ketamine",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "นำสลบร่วมกับ midazolam หรือ diazepam",
+      "routes": [
+        "IV"
+      ],
+      "min": 2,
+      "max": 5,
+      "unit": "mg",
+      "source": "aaha_induction",
+      "note": "ปรับช้า ๆ ตามผล (titrate to effect) ยาที่ให้ก่อนหน้าหรือโรคร่วมอาจทำให้ต้องใช้ต่ำกว่าช่วงนี้ ผล mL ไม่ใช่คำสั่งให้ทั้งหมดในครั้งเดียว · ไม่ใช่สูตร ketamine เดี่ยวหรือขนาดรวมของยาผสม",
+      "schedule": "",
+      "kind": "single",
+      "text": ""
+    },
+    {
+      "id": "midazolam-6",
+      "drug": "midazolam",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "ร่วม induction กับ ketamine",
+      "routes": [
+        "IV"
+      ],
+      "min": 0.1,
+      "max": 0.4,
+      "unit": "mg",
+      "source": "aaha_induction",
+      "note": "เป็นขนาดของ benzodiazepine ในสูตรร่วม ไม่ใช่ขนาดรวมยาผสม",
+      "schedule": "",
+      "kind": "single",
+      "text": ""
+    },
+    {
+      "id": "diazepam-7",
+      "drug": "diazepam",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "ร่วม induction กับ ketamine",
+      "routes": [
+        "IV"
+      ],
+      "min": 0.1,
+      "max": 0.4,
+      "unit": "mg",
+      "source": "aaha_induction",
+      "note": "เป็นขนาดของ benzodiazepine ในสูตรร่วม ไม่ใช่ขนาดรวมยาผสม",
+      "schedule": "",
+      "kind": "single",
+      "text": ""
+    },
+    {
+      "id": "midazolam-8",
+      "drug": "midazolam",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "ยาร่วมในสูตร sedation",
+      "routes": [
+        "IV",
+        "IM"
+      ],
+      "min": 0.2,
+      "max": 0.2,
+      "unit": "mg",
+      "source": "aaha_sedation",
+      "note": "พิจารณายาร่วมและสุขภาพผู้ป่วยตามตารางต้นทาง",
+      "schedule": "",
+      "kind": "single",
+      "text": ""
+    },
+    {
+      "id": "dexmedetomidine-9",
+      "drug": "dexmedetomidine",
+      "species": [
+        "dog"
+      ],
+      "purpose": "ร่วมสูตร sedation ระดับปานกลาง",
+      "routes": [
+        "IM"
+      ],
+      "min": 3,
+      "max": 7,
+      "unit": "mcg",
+      "source": "aaha_sedation",
+      "note": "เลือกตามผู้ป่วยและยาร่วม ไม่ใช่ใช้ช่วงนี้กับทุกการให้ alpha-2",
+      "schedule": "",
+      "kind": "single",
+      "text": ""
+    },
+    {
+      "id": "dexmedetomidine-10",
+      "drug": "dexmedetomidine",
+      "species": [
+        "cat"
+      ],
+      "purpose": "ร่วมสูตร sedation ระดับปานกลาง",
+      "routes": [
+        "IM"
+      ],
+      "min": 3,
+      "max": 10,
+      "unit": "mcg",
+      "source": "aaha_sedation",
+      "note": "เลือกตามผู้ป่วยและยาร่วม ไม่ใช่ใช้ช่วงนี้กับทุกการให้ alpha-2",
+      "schedule": "",
+      "kind": "single",
+      "text": ""
+    },
+    {
+      "id": "dexmedetomidine-11",
+      "drug": "dexmedetomidine",
+      "species": [
+        "dog"
+      ],
+      "purpose": "ร่วมสูตร sedation ระดับลึก",
+      "routes": [
+        "IM"
+      ],
+      "min": 7,
+      "max": 15,
+      "unit": "mcg",
+      "source": "aaha_sedation",
+      "note": "ต้องประเมินผลต่อหัวใจและการไหลเวียน รวมถึงยาร่วม",
+      "schedule": "",
+      "kind": "single",
+      "text": ""
+    },
+    {
+      "id": "dexmedetomidine-12",
+      "drug": "dexmedetomidine",
+      "species": [
+        "cat"
+      ],
+      "purpose": "ร่วมสูตร sedation ระดับลึก",
+      "routes": [
+        "IM"
+      ],
+      "min": 10,
+      "max": 20,
+      "unit": "mcg",
+      "source": "aaha_sedation",
+      "note": "ต้องประเมินผลต่อหัวใจและการไหลเวียน รวมถึงยาร่วม",
+      "schedule": "",
+      "kind": "single",
+      "text": ""
+    },
+    {
+      "id": "acepromazine-13",
+      "drug": "acepromazine",
+      "species": [
+        "dog"
+      ],
+      "purpose": "ร่วมสูตร sedation ระดับปานกลาง",
+      "routes": [
+        "IM"
+      ],
+      "min": 0.01,
+      "max": 0.03,
+      "unit": "mg",
+      "source": "aaha_sedation",
+      "note": "ต้นทางระบุเพดานตัวยารวม 2–3 mg; อ่านประกอบและกำหนดขนาดเอง",
+      "schedule": "",
+      "kind": "read",
+      "text": ""
+    },
+    {
+      "id": "acepromazine-14",
+      "drug": "acepromazine",
+      "species": [
+        "cat"
+      ],
+      "purpose": "ร่วมสูตร sedation ระดับปานกลาง",
+      "routes": [
+        "IM"
+      ],
+      "min": 0.025,
+      "max": 0.1,
+      "unit": "mg",
+      "source": "aaha_sedation",
+      "note": "ต้นทางระบุเพดานตัวยารวม 1 mg; อ่านประกอบและกำหนดขนาดเอง",
+      "schedule": "",
+      "kind": "read",
+      "text": ""
+    },
+    {
+      "id": "gabapentin-15",
+      "drug": "gabapentin",
+      "species": [
+        "dog"
+      ],
+      "purpose": "ลด fear / anxiety / stress ก่อนมาโรงพยาบาล",
+      "routes": [
+        "PO"
+      ],
+      "min": 20,
+      "max": 40,
+      "unit": "mg",
+      "source": "aaha_sedation",
+      "note": "ก่อนมา 2–3 ชั่วโมง · ใช้เฉพาะยาน้ำที่ทราบความเข้มข้น ไม่คำนวณจำนวนแคปซูล",
+      "schedule": "",
+      "kind": "single",
+      "text": ""
+    },
+    {
+      "id": "gabapentin-16",
+      "drug": "gabapentin",
+      "species": [
+        "cat"
+      ],
+      "purpose": "ลด fear / anxiety / stress ก่อนมาโรงพยาบาล",
+      "routes": [
+        "PO"
+      ],
+      "min": null,
+      "max": null,
+      "unit": "mg",
+      "source": "aaha_sedation",
+      "note": "ต้นทางเป็น mg/ตัว จึงไม่แปลงเป็น mg/kg อัตโนมัติ",
+      "schedule": "",
+      "kind": "read",
+      "text": "50–150 mg/แมว · ก่อนมา 2–3 ชั่วโมง"
+    },
+    {
+      "id": "buprenorphine-17",
+      "drug": "buprenorphine",
+      "species": [
+        "dog"
+      ],
+      "purpose": "แก้ปวดเฉียบพลัน · สูตรฉีดมาตรฐาน",
+      "routes": [
+        "IV",
+        "IM"
+      ],
+      "min": 0.005,
+      "max": 0.03,
+      "unit": "mg",
+      "source": "merck_pain",
+      "note": "ใช้กับสูตรมาตรฐาน 0.3 mg/mL ในต้นทาง ไม่ใช่สูตรออกฤทธิ์ยาวหรือสูตรเข้มข้นเฉพาะแมว",
+      "schedule": "ทุก 4–6 ชั่วโมง",
+      "kind": "single",
+      "text": ""
+    },
+    {
+      "id": "buprenorphine-18",
+      "drug": "buprenorphine",
+      "species": [
+        "cat"
+      ],
+      "purpose": "แก้ปวดเฉียบพลัน · สูตรฉีดมาตรฐาน",
+      "routes": [
+        "IV",
+        "IM",
+        "OTM"
+      ],
+      "min": 0.01,
+      "max": 0.03,
+      "unit": "mg",
+      "source": "merck_pain",
+      "note": "ไม่ใช้ช่วงนี้กับสูตรออกฤทธิ์ยาวหรือผลิตภัณฑ์เข้มข้นเฉพาะแมว",
+      "schedule": "ทุก 4–8 ชั่วโมง",
+      "kind": "single",
+      "text": ""
+    },
+    {
+      "id": "butorphanol-19",
+      "drug": "butorphanol",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "แก้ปวดเฉียบพลัน",
+      "routes": [
+        "IV",
+        "IM",
+        "SC"
+      ],
+      "min": 0.2,
+      "max": 0.4,
+      "unit": "mg",
+      "source": "merck_pain",
+      "note": "",
+      "schedule": "ทุก 1–2 ชั่วโมง",
+      "kind": "single",
+      "text": ""
+    },
+    {
+      "id": "methadone-20",
+      "drug": "methadone",
+      "species": [
+        "dog"
+      ],
+      "purpose": "แก้ปวดเฉียบพลัน",
+      "routes": [
+        "IV",
+        "IM",
+        "SC"
+      ],
+      "min": 0.1,
+      "max": 1,
+      "unit": "mg",
+      "source": "merck_pain",
+      "note": "",
+      "schedule": "ทุก 4–8 ชั่วโมง",
+      "kind": "single",
+      "text": ""
+    },
+    {
+      "id": "methadone-21",
+      "drug": "methadone",
+      "species": [
+        "cat"
+      ],
+      "purpose": "แก้ปวดเฉียบพลัน",
+      "routes": [
+        "IV",
+        "IM",
+        "SC"
+      ],
+      "min": 0.05,
+      "max": 0.5,
+      "unit": "mg",
+      "source": "merck_pain",
+      "note": "",
+      "schedule": "ทุก 4–6 ชั่วโมง",
+      "kind": "single",
+      "text": ""
+    },
+    {
+      "id": "morphine-22",
+      "drug": "morphine",
+      "species": [
+        "dog"
+      ],
+      "purpose": "แก้ปวดเฉียบพลัน",
+      "routes": [
+        "IV",
+        "IM",
+        "SC"
+      ],
+      "min": 0.5,
+      "max": 1,
+      "unit": "mg",
+      "source": "merck_pain",
+      "note": "IV ต้องให้ช้า ไม่ใช่ขนาด epidural",
+      "schedule": "",
+      "kind": "single",
+      "text": ""
+    },
+    {
+      "id": "morphine-23",
+      "drug": "morphine",
+      "species": [
+        "cat"
+      ],
+      "purpose": "แก้ปวดเฉียบพลัน",
+      "routes": [
+        "IV",
+        "IM",
+        "SC"
+      ],
+      "min": 0.1,
+      "max": 0.25,
+      "unit": "mg",
+      "source": "merck_pain",
+      "note": "IV ต้องให้ช้า ติดตามอุณหภูมิ",
+      "schedule": "ทุก 2–4 ชั่วโมง",
+      "kind": "single",
+      "text": ""
+    },
+    {
+      "id": "carprofen-24",
+      "drug": "carprofen",
+      "species": [
+        "dog"
+      ],
+      "purpose": "ขนาดรวมต่อวัน",
+      "routes": [
+        "PO",
+        "SC",
+        "IV"
+      ],
+      "min": null,
+      "max": null,
+      "unit": "mg",
+      "source": "merck_pain",
+      "note": "ขนาดต่อวันอาจแบ่งให้ จึงไม่เติมเป็นขนาดต่อครั้ง",
+      "schedule": "",
+      "kind": "read",
+      "text": "4.4 mg/kg/วัน"
+    },
+    {
+      "id": "carprofen-25",
+      "drug": "carprofen",
+      "species": [
+        "cat"
+      ],
+      "purpose": "แก้ปวด · เพียงหนึ่งครั้ง",
+      "routes": [
+        "SC",
+        "IV"
+      ],
+      "min": 4,
+      "max": 4,
+      "unit": "mg",
+      "source": "merck_pain",
+      "note": "เพียงหนึ่งครั้ง ตรวจฉลาก/การอนุญาตในประเทศก่อนใช้ ห้ามนำไปให้ซ้ำ",
+      "schedule": "",
+      "kind": "single",
+      "text": ""
+    },
+    {
+      "id": "meloxicam-26",
+      "drug": "meloxicam",
+      "species": [
+        "dog"
+      ],
+      "purpose": "ขนาดเริ่มต้น",
+      "routes": [
+        "PO",
+        "IV",
+        "SC"
+      ],
+      "min": 0.2,
+      "max": 0.2,
+      "unit": "mg",
+      "source": "merck_pain",
+      "note": "ตรวจภาวะไต การไหลเวียน ยาร่วม และฉลากในประเทศ",
+      "schedule": "",
+      "kind": "single",
+      "text": ""
+    },
+    {
+      "id": "meloxicam-27",
+      "drug": "meloxicam",
+      "species": [
+        "dog"
+      ],
+      "purpose": "ขนาดต่อเนื่อง",
+      "routes": [
+        "PO"
+      ],
+      "min": 0.1,
+      "max": 0.1,
+      "unit": "mg",
+      "source": "merck_pain",
+      "note": "ใช้ตามแผนที่กำหนด ไม่ใช่ขนาดเริ่มต้น",
+      "schedule": "ทุก 24 ชั่วโมง",
+      "kind": "single",
+      "text": ""
+    },
+    {
+      "id": "meloxicam-28",
+      "drug": "meloxicam",
+      "species": [
+        "cat"
+      ],
+      "purpose": "ฉีดครั้งเดียว",
+      "routes": [
+        "SC"
+      ],
+      "min": 0.3,
+      "max": 0.3,
+      "unit": "mg",
+      "source": "merck_pain",
+      "note": "ตรวจฉลากในประเทศ · ผลิตภัณฑ์สหรัฐฯ เตือนการใช้ซ้ำสัมพันธ์กับไตวายและเสียชีวิต",
+      "schedule": "",
+      "kind": "single",
+      "text": ""
+    },
+    {
+      "id": "bupivacaine-29",
+      "drug": "bupivacaine",
+      "species": [
+        "dog"
+      ],
+      "purpose": "ฉีดเฉพาะที่ · สูตรธรรมดา",
+      "routes": [
+        "LOCAL"
+      ],
+      "min": 1,
+      "max": 2,
+      "unit": "mg",
+      "source": "merck_pain",
+      "note": "ห้าม IV; ต้องรวมยาชาทุกจุดและตรวจเพดานที่เหมาะกับผู้ป่วย ไม่ใช่ขนาดต่อจุดหรือสูตร liposomal",
+      "schedule": "",
+      "kind": "read",
+      "text": ""
+    },
+    {
+      "id": "bupivacaine-30",
+      "drug": "bupivacaine",
+      "species": [
+        "cat"
+      ],
+      "purpose": "ฉีดเฉพาะที่ · สูตรธรรมดา",
+      "routes": [
+        "LOCAL"
+      ],
+      "min": 1.1,
+      "max": 1.1,
+      "unit": "mg",
+      "source": "merck_pain",
+      "note": "ห้าม IV; รวมยาชาทุกจุดและกำหนดขนาดเอง ไม่ใช่ขนาดต่อจุด",
+      "schedule": "",
+      "kind": "read",
+      "text": ""
+    },
+    {
+      "id": "epinephrine-31",
+      "drug": "epinephrine",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "CPR · vasoconstriction",
+      "routes": [
+        "IV",
+        "IO"
+      ],
+      "min": 0.01,
+      "max": 0.01,
+      "unit": "mg",
+      "source": "recover",
+      "note": "ใช้บริบทหัวใจหยุดเต้น ไม่ใช่โดสรักษาแพ้หรือความดันต่ำทั่วไป · RECOVER 2024 ไม่แนะนำ high-dose epinephrine ระหว่าง CPR",
+      "schedule": "",
+      "kind": "single",
+      "text": ""
+    },
+    {
+      "id": "atropine-32",
+      "drug": "atropine",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "CPR · vagolytic",
+      "routes": [
+        "IV",
+        "IO"
+      ],
+      "min": 0.04,
+      "max": 0.054,
+      "unit": "mg",
+      "source": "recover",
+      "note": "ใช้บริบท CPR ตามข้อบ่งใช้ ไม่ใช่ premedication หรือ bradycardia ทั่วไป · หากเลือกใช้ ให้ครั้งเดียวช่วงต้นของเหตุการณ์ CPR ไม่ให้ซ้ำ",
+      "schedule": "",
+      "kind": "single",
+      "text": ""
+    },
+    {
+      "id": "naloxone-33",
+      "drug": "naloxone",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "CPR · ต้าน opioid",
+      "routes": [
+        "IV",
+        "IO"
+      ],
+      "min": 0.04,
+      "max": 0.04,
+      "unit": "mg",
+      "source": "recover",
+      "note": "ใช้เมื่อเกี่ยวข้องกับ opioid ในภาวะหัวใจหยุดเต้น ไม่ใช่การ reverse ระหว่างฟื้นทั่วไป",
+      "schedule": "",
+      "kind": "single",
+      "text": ""
+    },
+    {
+      "id": "atipamezole-34",
+      "drug": "atipamezole",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "CPR · ต้าน alpha-2",
+      "routes": [
+        "IV",
+        "IO"
+      ],
+      "min": 100,
+      "max": 100,
+      "unit": "mcg",
+      "source": "recover",
+      "note": "ใช้บริบท CPR ไม่ใช่สูตร reverse IM ตามปริมาณ dexmedetomidine ที่ให้",
+      "schedule": "",
+      "kind": "single",
+      "text": ""
+    },
+    {
+      "id": "flumazenil-35",
+      "drug": "flumazenil",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "CPR · ต้าน benzodiazepine",
+      "routes": [
+        "IV",
+        "IO"
+      ],
+      "min": 0.01,
+      "max": 0.01,
+      "unit": "mg",
+      "source": "recover",
+      "note": "ใช้บริบท CPR ไม่ใช่การ reverse ระหว่างฟื้นทั่วไป",
+      "schedule": "",
+      "kind": "single",
+      "text": ""
+    },
+    {
+      "id": "cefazolin-36",
+      "drug": "cefazolin",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "ป้องกันการติดเชื้อรอบผ่าตัดเมื่อมีข้อบ่งใช้",
+      "routes": [
+        "IV"
+      ],
+      "min": 22,
+      "max": 25,
+      "unit": "mg",
+      "source": "enovat",
+      "note": "ใช้เมื่อมีข้อบ่งใช้ prophylaxis ตามชนิดผ่าตัดและแนวทางโรงพยาบาล ไม่ใช่โดสรักษาการติดเชื้อทั่วไป",
+      "schedule": "ช่วง redosing ในตาราง: 2 ชั่วโมง",
+      "kind": "single",
+      "text": ""
+    },
+    {
+      "id": "amoxicillin-clavulanate-37",
+      "drug": "amoxicillin-clavulanate",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "ป้องกันการติดเชื้อรอบผ่าตัดเมื่อมีข้อบ่งใช้",
+      "routes": [
+        "IV"
+      ],
+      "min": 20,
+      "max": 20,
+      "unit": "mg",
+      "source": "enovat",
+      "note": "ใช้เมื่อมีข้อบ่งใช้ prophylaxis · ตารางระบุผลิตภัณฑ์ผสม 20 mg/kg แต่ไม่แยกฐาน amoxicillin กับตัวยารวมในแถวนี้ ต้องยืนยันฐานความแรงกับฉลากและแนวทางโรงพยาบาลก่อนกำหนดขนาดต่อครั้ง",
+      "schedule": "ช่วง redosing ในตาราง: 1.5 ชั่วโมง",
+      "kind": "read",
+      "text": ""
+    },
+    {
+      "id": "ampicillin-38",
+      "drug": "ampicillin",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "ป้องกันการติดเชื้อรอบผ่าตัดเมื่อมีข้อบ่งใช้",
+      "routes": [
+        "IV"
+      ],
+      "min": 20,
+      "max": 20,
+      "unit": "mg",
+      "source": "enovat",
+      "note": "ใช้เมื่อมีข้อบ่งใช้ prophylaxis ตามชนิดผ่าตัดและแนวทางโรงพยาบาล ไม่ใช่โดสรักษาการติดเชื้อทั่วไป",
+      "schedule": "ช่วง redosing ในตาราง: 1.5 ชั่วโมง",
+      "kind": "single",
+      "text": ""
+    },
+    {
+      "id": "metronidazole-39",
+      "drug": "metronidazole",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "ป้องกันการติดเชื้อรอบผ่าตัดเมื่อมีข้อบ่งใช้",
+      "routes": [
+        "IV"
+      ],
+      "min": 15,
+      "max": 15,
+      "unit": "mg",
+      "source": "enovat",
+      "note": "ใช้เมื่อมีข้อบ่งใช้ prophylaxis ตามชนิดผ่าตัดและแนวทางโรงพยาบาล ไม่ใช่โดสรักษาการติดเชื้อทั่วไป · ใช้เสริมยาหลักเฉพาะการผ่าตัดที่เข้าลำไส้ใหญ่",
+      "schedule": "ช่วง redosing ในตาราง: 8 ชั่วโมง",
+      "kind": "single",
+      "text": ""
+    },
+    {
+      "id": "maropitant-40",
+      "drug": "maropitant",
+      "species": [
+        "dog"
+      ],
+      "purpose": "อาเจียนเฉียบพลัน · สูตรฉีด",
+      "routes": [
+        "SC"
+      ],
+      "min": 1,
+      "max": 1,
+      "unit": "mg",
+      "source": "merck_gi",
+      "note": "ต้นทาง: สุนัขอายุ ≥8 สัปดาห์ ตรวจฉลากผลิตภัณฑ์",
+      "schedule": "ทุก 24 ชั่วโมง",
+      "kind": "single",
+      "text": ""
+    },
+    {
+      "id": "maropitant-41",
+      "drug": "maropitant",
+      "species": [
+        "cat"
+      ],
+      "purpose": "อาเจียน · สูตรฉีด",
+      "routes": [
+        "SC"
+      ],
+      "min": 1,
+      "max": 1,
+      "unit": "mg",
+      "source": "merck_gi",
+      "note": "ต้นทาง: แมวอายุ ≥16 สัปดาห์ ตรวจฉลากผลิตภัณฑ์",
+      "schedule": "ทุก 24 ชั่วโมง",
+      "kind": "single",
+      "text": ""
+    },
+    {
+      "id": "ondansetron-42",
+      "drug": "ondansetron",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "ลดอาเจียน · ฉีด IV",
+      "routes": [
+        "IV"
+      ],
+      "min": 0.1,
+      "max": 0.15,
+      "unit": "mg",
+      "source": "merck_gi",
+      "note": "",
+      "schedule": "ทุก 8–12 ชั่วโมง",
+      "kind": "single",
+      "text": ""
+    },
+    {
+      "id": "ondansetron-43",
+      "drug": "ondansetron",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "ลดอาเจียน · รับประทาน",
+      "routes": [
+        "PO"
+      ],
+      "min": 0.1,
+      "max": 0.2,
+      "unit": "mg",
+      "source": "merck_gi",
+      "note": "คำนวณเฉพาะยาน้ำ ไม่ใช่จำนวนเม็ด",
+      "schedule": "ทุก 12–24 ชั่วโมง",
+      "kind": "single",
+      "text": ""
+    },
+    {
+      "id": "metoclopramide-44",
+      "drug": "metoclopramide",
+      "species": [
+        "dog"
+      ],
+      "purpose": "ลดอาเจียน / prokinetic",
+      "routes": [
+        "IM",
+        "SC",
+        "PO"
+      ],
+      "min": 0.1,
+      "max": 0.5,
+      "unit": "mg",
+      "source": "merck_gi",
+      "note": "ห้ามเมื่อสงสัยทางเดินอาหารอุดตันหรือทะลุ ไม่ใช่อัตรา CRI",
+      "schedule": "ทุก 6–8 ชั่วโมง",
+      "kind": "single",
+      "text": ""
+    },
+    {
+      "id": "diphenhydramine-45",
+      "drug": "diphenhydramine",
+      "species": [
+        "dog"
+      ],
+      "purpose": "ลดอาเจียนจาก motion sickness",
+      "routes": [
+        "PO"
+      ],
+      "min": 2,
+      "max": 4,
+      "unit": "mg",
+      "source": "merck_gi",
+      "note": "บริบทนี้ไม่ใช่โดสฉีดหรือการรักษา anaphylaxis",
+      "schedule": "ทุก 6–8 ชั่วโมง",
+      "kind": "single",
+      "text": ""
+    },
+    {
+      "id": "furosemide-46",
+      "drug": "furosemide",
+      "species": [
+        "dog"
+      ],
+      "purpose": "ภาวะ cardiogenic pulmonary edema รุนแรง",
+      "routes": [
+        "IV",
+        "IM",
+        "SC"
+      ],
+      "min": 2,
+      "max": 4,
+      "unit": "mg",
+      "source": "merck_diuretic",
+      "note": "ต้องติดตามการตอบสนอง ไตและอิเล็กโทรไลต์ ไม่ใช้กับภาวะขาดน้ำทั่วไป",
+      "schedule": "ช่วงในต้นทาง: 1–6 ชั่วโมง; ปรับตามผล",
+      "kind": "single",
+      "text": ""
+    },
+    {
+      "id": "furosemide-47",
+      "drug": "furosemide",
+      "species": [
+        "cat"
+      ],
+      "purpose": "ภาวะ cardiogenic pulmonary edema รุนแรง",
+      "routes": [
+        "IV",
+        "IM",
+        "SC"
+      ],
+      "min": 0.5,
+      "max": 2,
+      "unit": "mg",
+      "source": "merck_diuretic",
+      "note": "ต้องติดตามการตอบสนอง ไตและอิเล็กโทรไลต์ ไม่ใช้กับภาวะขาดน้ำทั่วไป",
+      "schedule": "ช่วงในต้นทาง: 1–8 ชั่วโมง; ปรับตามผล",
+      "kind": "single",
+      "text": ""
+    },
+    {
+      "id": "phenobarbital-48",
+      "drug": "phenobarbital",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "ควบคุมชักต่อเนื่อง",
+      "routes": [
+        "PO"
+      ],
+      "min": 2,
+      "max": 5,
+      "unit": "mg",
+      "source": "merck_seizure",
+      "note": "ต้องติดตามระดับยาและตับ ไม่ใช่ loading dose สำหรับชักฉุกเฉิน",
+      "schedule": "ทุก 12 ชั่วโมง",
+      "kind": "single",
+      "text": ""
+    },
+    {
+      "id": "levetiracetam-49",
+      "drug": "levetiracetam",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "ควบคุมชักต่อเนื่อง · immediate release",
+      "routes": [
+        "PO"
+      ],
+      "min": 20,
+      "max": 60,
+      "unit": "mg",
+      "source": "merck_seizure",
+      "note": "ไม่ใช้ช่วงนี้กับ extended release; คำนวณเฉพาะยาน้ำ",
+      "schedule": "ทุก 8 ชั่วโมง",
+      "kind": "single",
+      "text": ""
+    },
+    {
+      "id": "levetiracetam-50",
+      "drug": "levetiracetam",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "status epilepticus / cluster seizures · IV",
+      "routes": [
+        "IV"
+      ],
+      "min": 30,
+      "max": 60,
+      "unit": "mg",
+      "source": "merck_seizure",
+      "note": "ให้ IV ช่วง 5–15 นาทีตามต้นทาง พร้อมติดตามผู้ป่วย",
+      "schedule": "",
+      "kind": "single",
+      "text": ""
+    }
+  ]
+}
