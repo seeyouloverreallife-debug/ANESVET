@@ -1,9 +1,9 @@
-/* ANESVET V17.14.15 — lazy clinical knowledge loader.
+/* ANESVET V17.14.19 — lazy clinical knowledge loader.
    Keeps knowledge assets available offline via service-worker precache while
    removing their parse/initialization cost from the critical app startup path. */
 (()=>{
 'use strict';
-const VERSION='17.14.15';
+const VERSION='17.14.19';
 const FILES=[
  'runtime/knowledge/clinical-knowledge-data.js','runtime/knowledge/ecg-educational-rules.js','runtime/knowledge/ecg-visual-atlas-data.js',
  'runtime/knowledge/special-patient-knowledge.js','runtime/knowledge/comorbidity-knowledge.js','runtime/knowledge/clinical-knowledge-ui.js','runtime/knowledge/ecg-visual-atlas.js'
@@ -20,5 +20,9 @@ async function open(tab='guides'){const api=await ensure();api.open(tab);return 
 async function openQuick(topic=''){const api=await ensure();if(topic)api.openQuick(topic);else api.open('guides');return api;}
 
 document.addEventListener('click',event=>{const b=event.target.closest?.('[data-open-clinical-knowledge]');if(!b)return;event.preventDefault();event.stopPropagation();open(b.dataset.openClinicalKnowledge||'guides').catch(console.error);});
-window.ANESVET_KNOWLEDGE_LOADER=Object.freeze({version:VERSION,ensure,open,openQuick});
+document.addEventListener('click',event=>{const b=event.target.closest?.('[data-open-quick-calculator]');if(!b)return;event.preventDefault();openCalculator(b.dataset.quickDrug||'').catch(console.error);});
+document.addEventListener('click',event=>{const b=event.target.closest?.('[data-open-cri-calculator]');if(!b)return;event.preventDefault();openCRICalculator(b.dataset.criDrug||'').catch(console.error);});
+async function openCRICalculator(name=''){const api=await ensure();api.openCRICalculator(name);return api;}
+async function openCalculator(name=''){const api=await ensure();api.openCalculator(name);return api;}
+window.ANESVET_KNOWLEDGE_LOADER=Object.freeze({version:VERSION,ensure,open,openQuick,openCalculator,openCRICalculator});
 })();

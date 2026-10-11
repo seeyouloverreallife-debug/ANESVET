@@ -107,3 +107,45 @@
  .ck-body .ck-basics-pagination button{flex-basis:120px}
  .ck-footer{padding-right:max(20px,env(safe-area-inset-right));padding-left:max(20px,env(safe-area-inset-left))}
 }
+
+/* V17.14.16: a scratch calculator with no patient-documentation controls. */
+.qdc-dialog [hidden]{display:none!important}
+.qdc-dialog>.ck-header{position:sticky;top:0;z-index:3}
+.qdc-dialog .qdc-intro{margin:0 0 20px}
+.qdc-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.qdc-grid label,.qdc-copy{display:flex;flex-direction:column;gap:6px;font-size:14px;font-weight:600;min-width:0}
+.qdc-wide{grid-column:1/-1}.qdc-pair{display:grid;grid-template-columns:minmax(0,1fr) 140px;gap:12px}
+.qdc-dialog :is(input,select,textarea){font:inherit;box-sizing:border-box;width:100%;min-width:0;min-height:48px;padding:10px 12px;border:1px solid #b7cdd2;border-radius:10px;background:#fff;color:#173e46}
+.qdc-dialog input[aria-invalid=true],.qdc-dialog select[aria-invalid=true]{border:2px solid #a62d36}
+.qdc-dialog .qdc-grid p{margin:0}
+.qdc-actions{display:flex;flex-wrap:wrap;gap:10px;margin:18px 0}
+.qdc-actions .btn{min-height:48px;flex:1}
+.qdc-error{color:#9d2532;font-weight:600}
+.qdc-result{padding:18px;background:#e8f5f0;border:2px solid #81b6a7;border-radius:14px;margin:20px 0;scroll-margin-top:110px;outline-offset:4px}
+.qdc-result-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.qdc-result-grid span{display:block;font-size:13px}.qdc-result-grid strong{display:block;font-size:26px;line-height:1.5;overflow-wrap:anywhere}.qdc-result-grid small{font-size:16px}
+.qdc-result summary{min-height:44px;cursor:pointer}
+.qdc-copy textarea{font-size:14px;line-height:1.6;resize:vertical}
+.ck-calculator-entry{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 18px}.ck-calculator-entry small{font-size:13px;color:#526d73}
+@media(max-width:600px){
+ #quickDrugCalculatorDialog.qdc-dialog{position:fixed;inset:0;width:100%;max-width:100%;height:100dvh;max-height:100dvh;margin:0;border:0;border-radius:0}
+ .qdc-grid{grid-template-columns:1fr;gap:16px}.qdc-pair{grid-template-columns:minmax(0,1fr) 108px;gap:10px}
+ .qdc-result-grid{grid-template-columns:1fr;gap:14px}.qdc-result{padding:16px}
+ .qdc-result-grid strong{font-size:25px}.qdc-actions .btn{flex-basis:120px}
+}
+
+/* V17.14.18: reference choice stays inside the scratch calculator. */
+.qdc-references{margin:0;padding:14px;border-color:#9fbfb9;background:#f5faf8}
+.qdc-references>summary{min-height:44px;cursor:pointer;font-weight:700;overflow-wrap:anywhere}
+.qdc-references #qdcRefDetail{display:grid;gap:12px;margin-top:14px}
+.qdc-references label{gap:6px}.qdc-ref-range{font-size:20px;font-weight:700;color:#14584e}
+.qdc-references .btn{min-height:48px;width:100%;margin-top:4px}
+.qdc-result-reference{font-size:13px;line-height:1.6;overflow-wrap:anywhere;border-top:1px solid #b8d7ca;padding-top:12px;white-space:normal}
+
+/* V17.14.19: CRI and per-dose fields use separate forms and units. */
+.qdc-modes{display:flex;gap:8px;margin:0 0 20px;flex-wrap:wrap}
+.qdc-dialog .qdc-modes .btn{flex:1;min-height:48px;background:#fff;color:#183c45;transition:none}.qdc-dialog .qdc-modes [aria-pressed=true]{background:#15584e;color:#fff;border-color:#15584e}
+.cri-unit-pair{grid-template-columns:minmax(0,1fr) 160px}
+.cri-recipe{padding:12px 14px;background:#fff;border:1px solid #b2cdc3;border-radius:10px;margin:16px 0}
+.cri-recipe h3{font-size:18px;line-height:1.5}.cri-recipe p{overflow-wrap:anywhere}
+@media(max-width:600px){.cri-unit-pair{grid-template-columns:1fr}.qdc-modes .btn{flex-basis:120px}}
