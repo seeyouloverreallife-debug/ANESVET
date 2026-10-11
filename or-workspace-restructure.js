@@ -1,9 +1,9 @@
-/* ANESVET V17.14.20 — OR LIVE workspaces and machine setting documentation.
+/* ANESVET V17.14.21 — OR LIVE workspaces and machine setting documentation.
  * Native clinical fields remain authoritative; saves are handled by the app owner.
  * Moves existing DOM controls into four task-based workspaces without cloning state. */
 (function(root){
 'use strict';
-const VERSION='17.14.20';
+const VERSION='17.14.21';
 const $=id=>document.getElementById(id);
 const q=(sel,scope=document)=>scope?.querySelector?.(sel)||null;
 root.ANESVET_PRESENTATION_OWNERSHIP?.claim?.('orlive.layout','or-workspace-v17130');

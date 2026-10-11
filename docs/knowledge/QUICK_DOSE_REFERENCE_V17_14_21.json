@@ -1,0 +1,6002 @@
+{
+  "sources": {
+    "aaha_induction": {
+      "title": "AAHA 2020 · IV induction",
+      "url": "https://www.aaha.org/resources/2020-aaha-anesthesia-and-monitoring-guidelines-for-dogs-and-cats/drug-combinations/induction-iv/",
+      "locator": "IV Induction Protocols, single-page chart, drug row and footnote",
+      "reviewedAt": "2026-10-11",
+      "evidenceType": "guideline",
+      "publicationYear": 2020,
+      "updatedAt": null,
+      "registerUrl": "https://www.aaha.org/for-veterinary-professionals/aaha-guidelines/"
+    },
+    "aaha_sedation": {
+      "title": "AAHA 2020 · Premedication / sedation",
+      "url": "https://www.aaha.org/wp-content/uploads/globalassets/02-guidelines/2020-anesthesia/aahaanesthesiaguidelines_premedicationandsedation2.pdf",
+      "locator": "Anxiolytic, Sedation, and Premedication Drug Combinations, p.1",
+      "reviewedAt": "2026-10-11",
+      "evidenceType": "guideline",
+      "publicationYear": 2020,
+      "updatedAt": null,
+      "registerUrl": "https://www.aaha.org/for-veterinary-professionals/aaha-guidelines/"
+    },
+    "merck_pain": {
+      "title": "Merck · Analgesics (updated September 2024)",
+      "url": "https://www.merckvetmanual.com/therapeutics/pain-assessment-and-management/analgesics-used-in-animals",
+      "locator": "Selected Analgesics for Use in Dogs / Cats; intermittent dosage column",
+      "reviewedAt": "2026-10-11",
+      "evidenceType": "manual",
+      "publicationYear": null,
+      "updatedAt": "2024-09"
+    },
+    "recover": {
+      "title": "RECOVER 2024 · CPR",
+      "url": "https://onlinelibrary.wiley.com/doi/10.1111/vec.13391",
+      "locator": "Table 2, CPR dosing chart and ALS drug recommendations",
+      "reviewedAt": "2026-10-11",
+      "evidenceType": "guideline",
+      "publicationYear": 2024,
+      "updatedAt": null
+    },
+    "enovat": {
+      "title": "ENOVAT 2025 guideline · published 2026",
+      "url": "https://onlinelibrary.wiley.com/doi/10.1111/jsap.70072",
+      "locator": "Table 5, IV peri-operative surgical antimicrobial prophylaxis",
+      "reviewedAt": "2026-10-11",
+      "evidenceType": "guideline",
+      "publicationYear": 2026,
+      "updatedAt": null
+    },
+    "merck_gi": {
+      "title": "Merck · Antiemetic drugs (updated June 2025)",
+      "url": "https://www.merckvetmanual.com/pharmacology/systemic-pharmacotherapeutics-of-the-digestive-system/drugs-used-to-control-or-stimulate-vomiting-in-monogastric-animals",
+      "locator": "Antiemetic Drugs table and drug-specific paragraphs",
+      "reviewedAt": "2026-10-11",
+      "evidenceType": "manual",
+      "publicationYear": null,
+      "updatedAt": "2025-06"
+    },
+    "merck_diuretic": {
+      "title": "Merck · Diuretics",
+      "url": "https://www.merckvetmanual.com/pharmacology/systemic-pharmacotherapeutics-of-the-cardiovascular-system/diuretics-for-use-in-animals",
+      "locator": "Clinical Use of Furosemide in Animals",
+      "reviewedAt": "2026-10-11",
+      "evidenceType": "manual",
+      "publicationYear": null,
+      "updatedAt": null
+    },
+    "merck_seizure": {
+      "title": "Merck · Epilepsy (updated October 2025)",
+      "url": "https://www.merckvetmanual.com/nervous-system/epilepsy-in-small-animals/epilepsy-in-small-animals",
+      "locator": "Specific Antiseizure Medications: Phenobarbital / Levetiracetam",
+      "reviewedAt": "2026-10-11",
+      "evidenceType": "manual",
+      "publicationYear": null,
+      "updatedAt": "2025-10"
+    },
+    "bsava2020": {
+      "title": "BSAVA Small Animal Formulary · Part A · 10th ed. (2020)",
+      "url": "https://www.bsava.com/article/latest-edition-of-the-bsava-formulary-now-available/",
+      "locator": "ตำรา PDF ที่แนบในโครงการ · ดูหน้าในแต่ละบริบท; ลิงก์เปิดข้อมูลหนังสือ ไม่ใช่เนื้อหาโดสออนไลน์",
+      "reviewedAt": "2026-10-11",
+      "kind": "attached-textbook",
+      "filename": "BSAVA Small Animal Formulary, Part A, Canine and Feline, 10th Edition (VetBooks.ir).pdf",
+      "sha256": "8353d05edeca67d4de6dcc73532d67fa618db17775fcc06e88ddfa2fdfedd896",
+      "publicationYear": 2020,
+      "evidenceType": "textbook",
+      "updatedAt": null
+    },
+    "vmd_marbo": {
+      "title": "VMD · Marfloquin 5 mg · SPC revised October 2025",
+      "url": "https://www.vmd.defra.gov.uk/productinformationdatabase/files/SPC_Documents/SPC_429839.PDF",
+      "locator": "§3.2–3.5, 3.9 · PDF หน้า 1–4 · oral product",
+      "reviewedAt": "2026-10-11",
+      "evidenceType": "label",
+      "publicationYear": null,
+      "updatedAt": "2025-10"
+    },
+    "vmd_amodip": {
+      "title": "VMD · Amodip · SPC September 2025",
+      "url": "https://www.vmd.defra.gov.uk/productinformationdatabase/files/SPC_Documents/SPC_753508.PDF",
+      "locator": "§3.3, 3.5, 3.9 · PDF หน้า 1–4",
+      "reviewedAt": "2026-10-11",
+      "evidenceType": "label",
+      "publicationYear": null,
+      "updatedAt": "2025-09"
+    },
+    "merck_critical": {
+      "title": "Merck · Rule of 20 (updated February 2026)",
+      "url": "https://www.merckvetmanual.com/emergency-medicine-and-critical-care/monitoring-the-critically-ill-small-animal/monitoring-the-critically-ill-small-animal-using-the-rule-of-20",
+      "locator": "Blood pressure / vasopressor IV CRI paragraph",
+      "reviewedAt": "2026-10-11",
+      "evidenceType": "manual",
+      "publicationYear": null,
+      "updatedAt": "2026-02"
+    },
+    "aaha_pain2022": {
+      "title": "AAHA 2022 · Pain Management",
+      "url": "https://www.aaha.org/resources/2022-aaha-pain-management-guidelines-for-dogs-and-cats/acute-vs-chronic-pain/",
+      "locator": "Chronic pain tier 3 · tramadol efficacy and feline taste",
+      "reviewedAt": "2026-10-11",
+      "evidenceType": "guideline",
+      "publicationYear": 2022,
+      "updatedAt": null
+    },
+    "iscaid_skin2025": {
+      "title": "ISCAID 2025 · Canine pyoderma",
+      "url": "https://doi.org/10.1111/vde.13342",
+      "locator": "Tables 14–15 · pp.266–268 · PDF pages 33–35; Table 15 fluoroquinolone comments",
+      "reviewedAt": "2026-10-11",
+      "evidenceType": "guideline",
+      "publicationYear": 2025,
+      "updatedAt": null,
+      "registerUrl": "https://www.iscaid.org/guidelines",
+      "fullTextUrl": "https://www.amrvetcollective.com/assets/guidelines/ISCAID_canine_skin_disease_2025.pdf"
+    },
+    "iscaid_uti2019": {
+      "title": "ISCAID 2019 · Urinary infection",
+      "url": "https://www.amrvetcollective.com/assets/guidelines/ISCAID_Urinary_2019.pdf",
+      "locator": "Table 3 · pp.11–12 · PDF pages 5–6",
+      "reviewedAt": "2026-10-11",
+      "evidenceType": "guideline",
+      "publicationYear": 2019,
+      "updatedAt": null,
+      "registerUrl": "https://www.iscaid.org/guidelines",
+      "reviewNote": "ยังเป็นฉบับ urinary ที่องค์กรลงรายการ ณ วันที่ตรวจ; ปี 2019 ไม่ใช่ guideline ปี 2026"
+    },
+    "zeniquin_us": {
+      "title": "Zoetis · Zeniquin US product label",
+      "url": "https://www.zoetisus.com/content/_assets/docs/vmips/package-inserts/zeniquin-product-information.pdf",
+      "locator": "PDF page 2 · Contraindications; Dosage and Administration; 1.25–2.5 mg/lb/day",
+      "reviewedAt": "2026-10-11",
+      "evidenceType": "label",
+      "publicationYear": null,
+      "updatedAt": null,
+      "region": "US",
+      "reviewNote": "ไฟล์ฉลากที่ผู้ผลิตเผยแพร่; ไม่ยืนยันวันที่แก้ไขฉลากจากวันที่ค้นพบหรือดาวน์โหลด"
+    },
+    "baytril_us": {
+      "title": "Elanco · Baytril tablets US label",
+      "url": "https://my.elanco.com/us/baytril",
+      "locator": "Product information · dosing for dogs versus cats",
+      "reviewedAt": "2026-10-11",
+      "evidenceType": "label",
+      "publicationYear": null,
+      "updatedAt": null,
+      "region": "US"
+    },
+    "merck_cardiac2025": {
+      "title": "Merck · Cardiac therapy (updated May 2025)",
+      "url": "https://www.merckvetmanual.com/circulatory-system/cardiovascular-system-introduction/principles-of-therapy-of-cardiovascular-disease-in-animals",
+      "locator": "Cardiac Medications of Dogs and Cats table; therapeutic agent paragraphs",
+      "reviewedAt": "2026-10-11",
+      "evidenceType": "manual",
+      "publicationYear": null,
+      "updatedAt": "2025-05"
+    },
+    "merck_ulcer2025": {
+      "title": "Merck · GI ulcers (updated August 2025)",
+      "url": "https://www.merckvetmanual.com/digestive-system/diseases-of-the-stomach-in-small-animals/gastrointestinal-ulcers-in-small-animals",
+      "locator": "Treatment and Control · omeprazole, pantoprazole and famotidine paragraphs",
+      "reviewedAt": "2026-10-11",
+      "evidenceType": "manual",
+      "publicationYear": null,
+      "updatedAt": "2025-08"
+    },
+    "merck_triage2026": {
+      "title": "Merck · Emergency triage (updated April 2026)",
+      "url": "https://www.merckvetmanual.com/emergency-medicine-and-critical-care/evaluation-and-initial-treatment-of-small-animal-emergency-patients/initial-triage-and-resuscitation-of-small-animal-emergency-patients",
+      "locator": "Seizures; pain management paragraphs",
+      "reviewedAt": "2026-10-11",
+      "evidenceType": "manual",
+      "publicationYear": null,
+      "updatedAt": "2026-04"
+    },
+    "aaha_allergy2023": {
+      "title": "AAHA 2023 · Allergic skin disease",
+      "url": "https://meridian.allenpress.com/jaaha/article/59/6/255/496488/2023-AAHA-Management-of-Allergic-Skin-Diseases-in",
+      "locator": "Feline Step Three; Treating Flares · oral glucocorticoids",
+      "reviewedAt": "2026-10-11",
+      "evidenceType": "guideline",
+      "publicationYear": 2023,
+      "updatedAt": null
+    },
+    "aaha_antihist_dog": {
+      "title": "AAHA 2023 · Oral antihistamines, dogs",
+      "url": "https://www.aaha.org/resources/2023-aaha-management-of-allergic-skin-diseases-in-dogs-and-cats-guidelines/table-3-oral-antihistamine-doses-for-dogs/",
+      "locator": "Table 3 · chlorpheniramine and diphenhydramine rows",
+      "reviewedAt": "2026-10-11",
+      "evidenceType": "guideline",
+      "publicationYear": 2023,
+      "updatedAt": null
+    },
+    "aaha_antihist_cat": {
+      "title": "AAHA 2023 · Oral antihistamines, cats",
+      "url": "https://www.aaha.org/resources/2023-aaha-management-of-allergic-skin-diseases-in-dogs-and-cats-guidelines/table-8-oral-antihistamine-doses-for-cats/",
+      "locator": "Table 8 · chlorpheniramine mg/cat (NOT mg/kg); diphenhydramine",
+      "reviewedAt": "2026-10-11",
+      "evidenceType": "guideline",
+      "publicationYear": 2023,
+      "updatedAt": null
+    },
+    "aaha_opioids2020": {
+      "title": "AAHA 2020 · Opioid chart",
+      "url": "https://www.aaha.org/wp-content/uploads/globalassets/02-guidelines/2020-anesthesia/aahaanesthesiaguidelines_opioids.pdf",
+      "locator": "PDF page 1 · fentanyl Dose column (0.001–0.005 mg/kg IV)",
+      "reviewedAt": "2026-10-11",
+      "evidenceType": "guideline",
+      "publicationYear": 2020,
+      "updatedAt": null
+    },
+    "banfield2022": {
+      "title": "Banfield · Anesthesia & Analgesia, Book 2 (2022)",
+      "url": "https://www.banfieldexchange.com/-/media/Project/Banfield/Main/en/Exchange/Anesthesia-overview/PDF/Anesthesia-and-Analgesia-Book-2.pdf?hash=7EE31EA3DDA804BB6FF0148532F41BE7&rev=25b145a45c3f405d91685295364712a7",
+      "locator": "Table 2.2 p.22 (PDF p.29); ephedrine p.134 (PDF p.141)",
+      "reviewedAt": "2026-10-11",
+      "evidenceType": "textbook",
+      "publicationYear": 2022,
+      "updatedAt": null
+    },
+    "vmd_dorbene2025": {
+      "title": "VMD · Dorbene vet leaflet (November 2025)",
+      "url": "https://vmd.defra.gov.uk/productinformationdatabase/files/QRD_Documents/QRD-Auth_407763.PDF",
+      "locator": "§8 · PDF pp.8–10; medetomidine hydrochloride basis; dog BSA table; cat IM/SC",
+      "reviewedAt": "2026-10-11",
+      "evidenceType": "label",
+      "publicationYear": null,
+      "updatedAt": "2025-11",
+      "region": "UK"
+    },
+    "onsior_elanco": {
+      "title": "Elanco · Onsior UK dosing chart (2020)",
+      "url": "https://assets.elanco.com/0cec44ed-3eaa-0009-2029-666567e7e4de/6c68f5b4-c665-4286-b32c-791f1c3033cb/onsior-dosing-chart.pdf",
+      "locator": "PDF pp.1–2 · OA versus surgery; dog versus cat; SC versus PO",
+      "reviewedAt": "2026-10-11",
+      "evidenceType": "label",
+      "publicationYear": 2020,
+      "updatedAt": null,
+      "region": "UK",
+      "reviewNote": "เอกสารระบุ 12/10/2020; ตรวจเทียบ dog oral dose กับ VMD assessment 2025 แยกต่างหาก"
+    },
+    "vmd_roben2025": {
+      "title": "VMD · Ruboxim assessment (February 2025)",
+      "url": "https://www.vmd.defra.gov.uk/productinformationdatabase/files/UKPAR_Documents/UKPAR_2767213.PDF",
+      "locator": "Module 3 · p.4/9 · Scientific Overview; dogs oral OA versus soft tissue surgery",
+      "reviewedAt": "2026-10-11",
+      "evidenceType": "regulatory-report",
+      "publicationYear": 2025,
+      "updatedAt": null,
+      "region": "UK"
+    }
+  },
+  "perDose": [
+    {
+      "id": "propofol-1",
+      "drug": "propofol",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "นำสลบทาง IV",
+      "routes": [
+        "IV"
+      ],
+      "min": 2,
+      "max": 6,
+      "unit": "mg",
+      "source": "aaha_induction",
+      "note": "ปรับช้า ๆ ตามผล (titrate to effect) ยาที่ให้ก่อนหน้าหรือโรคร่วมอาจทำให้ต้องใช้ต่ำกว่าช่วงนี้ ผล mL ไม่ใช่คำสั่งให้ทั้งหมดในครั้งเดียว",
+      "schedule": "",
+      "kind": "single",
+      "text": "",
+      "reviewedAt": "2026-10-11",
+      "priority": 20,
+      "evidenceType": "guideline",
+      "sourceYear": "2020",
+      "locator": "IV Induction Protocols, single-page chart, drug row and footnote"
+    },
+    {
+      "id": "etomidate-2",
+      "drug": "etomidate",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "นำสลบทาง IV",
+      "routes": [
+        "IV"
+      ],
+      "min": 1,
+      "max": 3,
+      "unit": "mg",
+      "source": "aaha_induction",
+      "note": "ปรับช้า ๆ ตามผล (titrate to effect) ยาที่ให้ก่อนหน้าหรือโรคร่วมอาจทำให้ต้องใช้ต่ำกว่าช่วงนี้ ผล mL ไม่ใช่คำสั่งให้ทั้งหมดในครั้งเดียว · Etomidate: พิจารณาภาวะต่อมหมวกไตและสูตรผลิตภัณฑ์",
+      "schedule": "",
+      "kind": "single",
+      "text": "",
+      "reviewedAt": "2026-10-11",
+      "priority": 20,
+      "evidenceType": "guideline",
+      "sourceYear": "2020",
+      "locator": "IV Induction Protocols, single-page chart, drug row and footnote"
+    },
+    {
+      "id": "alfaxalone-3",
+      "drug": "alfaxalone",
+      "species": [
+        "dog"
+      ],
+      "purpose": "นำสลบทาง IV",
+      "routes": [
+        "IV"
+      ],
+      "min": 1,
+      "max": 3,
+      "unit": "mg",
+      "source": "aaha_induction",
+      "note": "ปรับช้า ๆ ตามผล (titrate to effect) ยาที่ให้ก่อนหน้าหรือโรคร่วมอาจทำให้ต้องใช้ต่ำกว่าช่วงนี้ ผล mL ไม่ใช่คำสั่งให้ทั้งหมดในครั้งเดียว",
+      "schedule": "",
+      "kind": "single",
+      "text": "",
+      "reviewedAt": "2026-10-11",
+      "priority": 20,
+      "evidenceType": "guideline",
+      "sourceYear": "2020",
+      "locator": "IV Induction Protocols, single-page chart, drug row and footnote"
+    },
+    {
+      "id": "alfaxalone-4",
+      "drug": "alfaxalone",
+      "species": [
+        "cat"
+      ],
+      "purpose": "นำสลบทาง IV",
+      "routes": [
+        "IV"
+      ],
+      "min": 2,
+      "max": 5,
+      "unit": "mg",
+      "source": "aaha_induction",
+      "note": "ปรับช้า ๆ ตามผล (titrate to effect) ยาที่ให้ก่อนหน้าหรือโรคร่วมอาจทำให้ต้องใช้ต่ำกว่าช่วงนี้ ผล mL ไม่ใช่คำสั่งให้ทั้งหมดในครั้งเดียว",
+      "schedule": "",
+      "kind": "single",
+      "text": "",
+      "reviewedAt": "2026-10-11",
+      "priority": 20,
+      "evidenceType": "guideline",
+      "sourceYear": "2020",
+      "locator": "IV Induction Protocols, single-page chart, drug row and footnote"
+    },
+    {
+      "id": "ketamine-5",
+      "drug": "ketamine",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "นำสลบร่วมกับ midazolam หรือ diazepam",
+      "routes": [
+        "IV"
+      ],
+      "min": 2,
+      "max": 5,
+      "unit": "mg",
+      "source": "aaha_induction",
+      "note": "ปรับช้า ๆ ตามผล (titrate to effect) ยาที่ให้ก่อนหน้าหรือโรคร่วมอาจทำให้ต้องใช้ต่ำกว่าช่วงนี้ ผล mL ไม่ใช่คำสั่งให้ทั้งหมดในครั้งเดียว · ไม่ใช่สูตร ketamine เดี่ยวหรือขนาดรวมของยาผสม",
+      "schedule": "",
+      "kind": "single",
+      "text": "",
+      "reviewedAt": "2026-10-11",
+      "priority": 20,
+      "evidenceType": "guideline",
+      "sourceYear": "2020",
+      "locator": "IV Induction Protocols, single-page chart, drug row and footnote"
+    },
+    {
+      "id": "midazolam-6",
+      "drug": "midazolam",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "ร่วม induction กับ ketamine",
+      "routes": [
+        "IV"
+      ],
+      "min": 0.1,
+      "max": 0.4,
+      "unit": "mg",
+      "source": "aaha_induction",
+      "note": "เป็นขนาดของ benzodiazepine ในสูตรร่วม ไม่ใช่ขนาดรวมยาผสม",
+      "schedule": "",
+      "kind": "single",
+      "text": "",
+      "reviewedAt": "2026-10-11",
+      "priority": 20,
+      "evidenceType": "guideline",
+      "sourceYear": "2020",
+      "locator": "IV Induction Protocols, single-page chart, drug row and footnote"
+    },
+    {
+      "id": "diazepam-7",
+      "drug": "diazepam",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "ร่วม induction กับ ketamine",
+      "routes": [
+        "IV"
+      ],
+      "min": 0.1,
+      "max": 0.4,
+      "unit": "mg",
+      "source": "aaha_induction",
+      "note": "เป็นขนาดของ benzodiazepine ในสูตรร่วม ไม่ใช่ขนาดรวมยาผสม",
+      "schedule": "",
+      "kind": "single",
+      "text": "",
+      "reviewedAt": "2026-10-11",
+      "priority": 20,
+      "evidenceType": "guideline",
+      "sourceYear": "2020",
+      "locator": "IV Induction Protocols, single-page chart, drug row and footnote"
+    },
+    {
+      "id": "midazolam-8",
+      "drug": "midazolam",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "ยาร่วมในสูตร sedation",
+      "routes": [
+        "IV",
+        "IM"
+      ],
+      "min": 0.2,
+      "max": 0.2,
+      "unit": "mg",
+      "source": "aaha_sedation",
+      "note": "พิจารณายาร่วมและสุขภาพผู้ป่วยตามตารางต้นทาง",
+      "schedule": "",
+      "kind": "single",
+      "text": "",
+      "reviewedAt": "2026-10-11",
+      "priority": 20,
+      "evidenceType": "guideline",
+      "sourceYear": "2020",
+      "locator": "Anxiolytic, Sedation, and Premedication Drug Combinations, p.1"
+    },
+    {
+      "id": "dexmedetomidine-9",
+      "drug": "dexmedetomidine",
+      "species": [
+        "dog"
+      ],
+      "purpose": "ร่วมสูตร sedation ระดับปานกลาง",
+      "routes": [
+        "IM"
+      ],
+      "min": 3,
+      "max": 7,
+      "unit": "mcg",
+      "source": "aaha_sedation",
+      "note": "เลือกตามผู้ป่วยและยาร่วม ไม่ใช่ใช้ช่วงนี้กับทุกการให้ alpha-2",
+      "schedule": "",
+      "kind": "single",
+      "text": "",
+      "reviewedAt": "2026-10-11",
+      "priority": 20,
+      "evidenceType": "guideline",
+      "sourceYear": "2020",
+      "locator": "Anxiolytic, Sedation, and Premedication Drug Combinations, p.1"
+    },
+    {
+      "id": "dexmedetomidine-10",
+      "drug": "dexmedetomidine",
+      "species": [
+        "cat"
+      ],
+      "purpose": "ร่วมสูตร sedation ระดับปานกลาง",
+      "routes": [
+        "IM"
+      ],
+      "min": 3,
+      "max": 10,
+      "unit": "mcg",
+      "source": "aaha_sedation",
+      "note": "เลือกตามผู้ป่วยและยาร่วม ไม่ใช่ใช้ช่วงนี้กับทุกการให้ alpha-2",
+      "schedule": "",
+      "kind": "single",
+      "text": "",
+      "reviewedAt": "2026-10-11",
+      "priority": 20,
+      "evidenceType": "guideline",
+      "sourceYear": "2020",
+      "locator": "Anxiolytic, Sedation, and Premedication Drug Combinations, p.1"
+    },
+    {
+      "id": "dexmedetomidine-11",
+      "drug": "dexmedetomidine",
+      "species": [
+        "dog"
+      ],
+      "purpose": "ร่วมสูตร sedation ระดับลึก",
+      "routes": [
+        "IM"
+      ],
+      "min": 7,
+      "max": 15,
+      "unit": "mcg",
+      "source": "aaha_sedation",
+      "note": "ต้องประเมินผลต่อหัวใจและการไหลเวียน รวมถึงยาร่วม",
+      "schedule": "",
+      "kind": "single",
+      "text": "",
+      "reviewedAt": "2026-10-11",
+      "priority": 20,
+      "evidenceType": "guideline",
+      "sourceYear": "2020",
+      "locator": "Anxiolytic, Sedation, and Premedication Drug Combinations, p.1"
+    },
+    {
+      "id": "dexmedetomidine-12",
+      "drug": "dexmedetomidine",
+      "species": [
+        "cat"
+      ],
+      "purpose": "ร่วมสูตร sedation ระดับลึก",
+      "routes": [
+        "IM"
+      ],
+      "min": 10,
+      "max": 20,
+      "unit": "mcg",
+      "source": "aaha_sedation",
+      "note": "ต้องประเมินผลต่อหัวใจและการไหลเวียน รวมถึงยาร่วม",
+      "schedule": "",
+      "kind": "single",
+      "text": "",
+      "reviewedAt": "2026-10-11",
+      "priority": 20,
+      "evidenceType": "guideline",
+      "sourceYear": "2020",
+      "locator": "Anxiolytic, Sedation, and Premedication Drug Combinations, p.1"
+    },
+    {
+      "id": "acepromazine-13",
+      "drug": "acepromazine",
+      "species": [
+        "dog"
+      ],
+      "purpose": "ร่วมสูตร sedation ระดับปานกลาง",
+      "routes": [
+        "IM"
+      ],
+      "min": 0.01,
+      "max": 0.03,
+      "unit": "mg",
+      "source": "aaha_sedation",
+      "note": "ต้นทางระบุเพดานตัวยารวม 2–3 mg; อ่านประกอบและกำหนดขนาดเอง",
+      "schedule": "",
+      "kind": "read",
+      "text": "",
+      "reviewedAt": "2026-10-11",
+      "priority": 20,
+      "evidenceType": "guideline",
+      "sourceYear": "2020",
+      "locator": "Anxiolytic, Sedation, and Premedication Drug Combinations, p.1"
+    },
+    {
+      "id": "acepromazine-14",
+      "drug": "acepromazine",
+      "species": [
+        "cat"
+      ],
+      "purpose": "ร่วมสูตร sedation ระดับปานกลาง",
+      "routes": [
+        "IM"
+      ],
+      "min": 0.025,
+      "max": 0.1,
+      "unit": "mg",
+      "source": "aaha_sedation",
+      "note": "ต้นทางระบุเพดานตัวยารวม 1 mg; อ่านประกอบและกำหนดขนาดเอง",
+      "schedule": "",
+      "kind": "read",
+      "text": "",
+      "reviewedAt": "2026-10-11",
+      "priority": 20,
+      "evidenceType": "guideline",
+      "sourceYear": "2020",
+      "locator": "Anxiolytic, Sedation, and Premedication Drug Combinations, p.1"
+    },
+    {
+      "id": "gabapentin-15",
+      "drug": "gabapentin",
+      "species": [
+        "dog"
+      ],
+      "purpose": "ลด fear / anxiety / stress ก่อนมาโรงพยาบาล",
+      "routes": [
+        "PO"
+      ],
+      "min": 20,
+      "max": 40,
+      "unit": "mg",
+      "source": "aaha_sedation",
+      "note": "ก่อนมา 2–3 ชั่วโมง · ใช้เฉพาะยาน้ำที่ทราบความเข้มข้น ไม่คำนวณจำนวนแคปซูล",
+      "schedule": "",
+      "kind": "single",
+      "text": "",
+      "reviewedAt": "2026-10-11",
+      "priority": 20,
+      "evidenceType": "guideline",
+      "sourceYear": "2020",
+      "locator": "Anxiolytic, Sedation, and Premedication Drug Combinations, p.1"
+    },
+    {
+      "id": "gabapentin-16",
+      "drug": "gabapentin",
+      "species": [
+        "cat"
+      ],
+      "purpose": "ลด fear / anxiety / stress ก่อนมาโรงพยาบาล",
+      "routes": [
+        "PO"
+      ],
+      "min": null,
+      "max": null,
+      "unit": "mg",
+      "source": "aaha_sedation",
+      "note": "ต้นทางเป็น mg/ตัว จึงไม่แปลงเป็น mg/kg อัตโนมัติ",
+      "schedule": "",
+      "kind": "read",
+      "text": "50–150 mg/แมว · ก่อนมา 2–3 ชั่วโมง",
+      "reviewedAt": "2026-10-11",
+      "priority": 20,
+      "evidenceType": "guideline",
+      "sourceYear": "2020",
+      "locator": "Anxiolytic, Sedation, and Premedication Drug Combinations, p.1"
+    },
+    {
+      "id": "buprenorphine-17",
+      "drug": "buprenorphine",
+      "species": [
+        "dog"
+      ],
+      "purpose": "แก้ปวดเฉียบพลัน · สูตรฉีดมาตรฐาน",
+      "routes": [
+        "IV",
+        "IM"
+      ],
+      "min": 0.005,
+      "max": 0.03,
+      "unit": "mg",
+      "source": "merck_pain",
+      "note": "ใช้กับสูตรมาตรฐาน 0.3 mg/mL ในต้นทาง ไม่ใช่สูตรออกฤทธิ์ยาวหรือสูตรเข้มข้นเฉพาะแมว",
+      "schedule": "ทุก 4–6 ชั่วโมง",
+      "kind": "single",
+      "text": "",
+      "reviewedAt": "2026-10-11",
+      "priority": 20,
+      "evidenceType": "manual",
+      "sourceYear": "2024-09",
+      "locator": "Selected Analgesics for Use in Dogs / Cats; intermittent dosage column"
+    },
+    {
+      "id": "buprenorphine-18",
+      "drug": "buprenorphine",
+      "species": [
+        "cat"
+      ],
+      "purpose": "แก้ปวดเฉียบพลัน · สูตรฉีดมาตรฐาน",
+      "routes": [
+        "IV",
+        "IM",
+        "OTM"
+      ],
+      "min": 0.01,
+      "max": 0.03,
+      "unit": "mg",
+      "source": "merck_pain",
+      "note": "ไม่ใช้ช่วงนี้กับสูตรออกฤทธิ์ยาวหรือผลิตภัณฑ์เข้มข้นเฉพาะแมว",
+      "schedule": "ทุก 4–8 ชั่วโมง",
+      "kind": "single",
+      "text": "",
+      "reviewedAt": "2026-10-11",
+      "priority": 20,
+      "evidenceType": "manual",
+      "sourceYear": "2024-09",
+      "locator": "Selected Analgesics for Use in Dogs / Cats; intermittent dosage column"
+    },
+    {
+      "id": "butorphanol-19",
+      "drug": "butorphanol",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "แก้ปวดเฉียบพลัน",
+      "routes": [
+        "IV",
+        "IM",
+        "SC"
+      ],
+      "min": 0.2,
+      "max": 0.4,
+      "unit": "mg",
+      "source": "merck_pain",
+      "note": "",
+      "schedule": "ทุก 1–2 ชั่วโมง",
+      "kind": "single",
+      "text": "",
+      "reviewedAt": "2026-10-11",
+      "priority": 20,
+      "evidenceType": "manual",
+      "sourceYear": "2024-09",
+      "locator": "Selected Analgesics for Use in Dogs / Cats; intermittent dosage column"
+    },
+    {
+      "id": "methadone-20",
+      "drug": "methadone",
+      "species": [
+        "dog"
+      ],
+      "purpose": "แก้ปวดเฉียบพลัน",
+      "routes": [
+        "IV",
+        "IM",
+        "SC"
+      ],
+      "min": 0.1,
+      "max": 1,
+      "unit": "mg",
+      "source": "merck_pain",
+      "note": "",
+      "schedule": "ทุก 4–8 ชั่วโมง",
+      "kind": "single",
+      "text": "",
+      "reviewedAt": "2026-10-11",
+      "priority": 20,
+      "evidenceType": "manual",
+      "sourceYear": "2024-09",
+      "locator": "Selected Analgesics for Use in Dogs / Cats; intermittent dosage column"
+    },
+    {
+      "id": "methadone-21",
+      "drug": "methadone",
+      "species": [
+        "cat"
+      ],
+      "purpose": "แก้ปวดเฉียบพลัน",
+      "routes": [
+        "IV",
+        "IM",
+        "SC"
+      ],
+      "min": 0.05,
+      "max": 0.5,
+      "unit": "mg",
+      "source": "merck_pain",
+      "note": "",
+      "schedule": "ทุก 4–6 ชั่วโมง",
+      "kind": "single",
+      "text": "",
+      "reviewedAt": "2026-10-11",
+      "priority": 20,
+      "evidenceType": "manual",
+      "sourceYear": "2024-09",
+      "locator": "Selected Analgesics for Use in Dogs / Cats; intermittent dosage column"
+    },
+    {
+      "id": "morphine-22",
+      "drug": "morphine",
+      "species": [
+        "dog"
+      ],
+      "purpose": "แก้ปวดเฉียบพลัน",
+      "routes": [
+        "IV",
+        "IM",
+        "SC"
+      ],
+      "min": 0.5,
+      "max": 1,
+      "unit": "mg",
+      "source": "merck_pain",
+      "note": "IV ต้องให้ช้า ไม่ใช่ขนาด epidural",
+      "schedule": "",
+      "kind": "single",
+      "text": "",
+      "reviewedAt": "2026-10-11",
+      "priority": 20,
+      "evidenceType": "manual",
+      "sourceYear": "2024-09",
+      "locator": "Selected Analgesics for Use in Dogs / Cats; intermittent dosage column"
+    },
+    {
+      "id": "morphine-23",
+      "drug": "morphine",
+      "species": [
+        "cat"
+      ],
+      "purpose": "แก้ปวดเฉียบพลัน",
+      "routes": [
+        "IV",
+        "IM",
+        "SC"
+      ],
+      "min": 0.1,
+      "max": 0.25,
+      "unit": "mg",
+      "source": "merck_pain",
+      "note": "IV ต้องให้ช้า ติดตามอุณหภูมิ",
+      "schedule": "ทุก 2–4 ชั่วโมง",
+      "kind": "single",
+      "text": "",
+      "reviewedAt": "2026-10-11",
+      "priority": 20,
+      "evidenceType": "manual",
+      "sourceYear": "2024-09",
+      "locator": "Selected Analgesics for Use in Dogs / Cats; intermittent dosage column"
+    },
+    {
+      "id": "carprofen-24",
+      "drug": "carprofen",
+      "species": [
+        "dog"
+      ],
+      "purpose": "ขนาดรวมต่อวัน",
+      "routes": [
+        "PO",
+        "SC",
+        "IV"
+      ],
+      "min": null,
+      "max": null,
+      "unit": "mg",
+      "source": "merck_pain",
+      "note": "ขนาดต่อวันอาจแบ่งให้ จึงไม่เติมเป็นขนาดต่อครั้ง",
+      "schedule": "",
+      "kind": "read",
+      "text": "4.4 mg/kg/วัน",
+      "reviewedAt": "2026-10-11",
+      "priority": 20,
+      "evidenceType": "manual",
+      "sourceYear": "2024-09",
+      "locator": "Selected Analgesics for Use in Dogs / Cats; intermittent dosage column"
+    },
+    {
+      "id": "carprofen-25",
+      "drug": "carprofen",
+      "species": [
+        "cat"
+      ],
+      "purpose": "แก้ปวด · เพียงหนึ่งครั้ง",
+      "routes": [
+        "SC",
+        "IV"
+      ],
+      "min": 4,
+      "max": 4,
+      "unit": "mg",
+      "source": "merck_pain",
+      "note": "เพียงหนึ่งครั้ง ตรวจฉลาก/การอนุญาตในประเทศก่อนใช้ ห้ามนำไปให้ซ้ำ",
+      "schedule": "",
+      "kind": "single",
+      "text": "",
+      "reviewedAt": "2026-10-11",
+      "priority": 20,
+      "evidenceType": "manual",
+      "sourceYear": "2024-09",
+      "locator": "Selected Analgesics for Use in Dogs / Cats; intermittent dosage column"
+    },
+    {
+      "id": "meloxicam-26",
+      "drug": "meloxicam",
+      "species": [
+        "dog"
+      ],
+      "purpose": "ขนาดเริ่มต้น",
+      "routes": [
+        "PO",
+        "IV",
+        "SC"
+      ],
+      "min": 0.2,
+      "max": 0.2,
+      "unit": "mg",
+      "source": "merck_pain",
+      "note": "ตรวจภาวะไต การไหลเวียน ยาร่วม และฉลากในประเทศ",
+      "schedule": "",
+      "kind": "single",
+      "text": "",
+      "reviewedAt": "2026-10-11",
+      "priority": 20,
+      "evidenceType": "manual",
+      "sourceYear": "2024-09",
+      "locator": "Selected Analgesics for Use in Dogs / Cats; intermittent dosage column"
+    },
+    {
+      "id": "meloxicam-27",
+      "drug": "meloxicam",
+      "species": [
+        "dog"
+      ],
+      "purpose": "ขนาดต่อเนื่อง",
+      "routes": [
+        "PO"
+      ],
+      "min": 0.1,
+      "max": 0.1,
+      "unit": "mg",
+      "source": "merck_pain",
+      "note": "ใช้ตามแผนที่กำหนด ไม่ใช่ขนาดเริ่มต้น",
+      "schedule": "ทุก 24 ชั่วโมง",
+      "kind": "single",
+      "text": "",
+      "reviewedAt": "2026-10-11",
+      "priority": 20,
+      "evidenceType": "manual",
+      "sourceYear": "2024-09",
+      "locator": "Selected Analgesics for Use in Dogs / Cats; intermittent dosage column"
+    },
+    {
+      "id": "meloxicam-28",
+      "drug": "meloxicam",
+      "species": [
+        "cat"
+      ],
+      "purpose": "ฉีดครั้งเดียว",
+      "routes": [
+        "SC"
+      ],
+      "min": 0.3,
+      "max": 0.3,
+      "unit": "mg",
+      "source": "merck_pain",
+      "note": "ตรวจฉลากในประเทศ · ผลิตภัณฑ์สหรัฐฯ เตือนการใช้ซ้ำสัมพันธ์กับไตวายและเสียชีวิต",
+      "schedule": "",
+      "kind": "single",
+      "text": "",
+      "reviewedAt": "2026-10-11",
+      "priority": 20,
+      "evidenceType": "manual",
+      "sourceYear": "2024-09",
+      "locator": "Selected Analgesics for Use in Dogs / Cats; intermittent dosage column"
+    },
+    {
+      "id": "bupivacaine-29",
+      "drug": "bupivacaine",
+      "species": [
+        "dog"
+      ],
+      "purpose": "ฉีดเฉพาะที่ · สูตรธรรมดา",
+      "routes": [
+        "LOCAL"
+      ],
+      "min": 1,
+      "max": 2,
+      "unit": "mg",
+      "source": "merck_pain",
+      "note": "ห้าม IV; ต้องรวมยาชาทุกจุดและตรวจเพดานที่เหมาะกับผู้ป่วย ไม่ใช่ขนาดต่อจุดหรือสูตร liposomal",
+      "schedule": "",
+      "kind": "read",
+      "text": "",
+      "reviewedAt": "2026-10-11",
+      "priority": 20,
+      "evidenceType": "manual",
+      "sourceYear": "2024-09",
+      "locator": "Selected Analgesics for Use in Dogs / Cats; intermittent dosage column"
+    },
+    {
+      "id": "bupivacaine-30",
+      "drug": "bupivacaine",
+      "species": [
+        "cat"
+      ],
+      "purpose": "ฉีดเฉพาะที่ · สูตรธรรมดา",
+      "routes": [
+        "LOCAL"
+      ],
+      "min": 1.1,
+      "max": 1.1,
+      "unit": "mg",
+      "source": "merck_pain",
+      "note": "ห้าม IV; รวมยาชาทุกจุดและกำหนดขนาดเอง ไม่ใช่ขนาดต่อจุด",
+      "schedule": "",
+      "kind": "read",
+      "text": "",
+      "reviewedAt": "2026-10-11",
+      "priority": 20,
+      "evidenceType": "manual",
+      "sourceYear": "2024-09",
+      "locator": "Selected Analgesics for Use in Dogs / Cats; intermittent dosage column"
+    },
+    {
+      "id": "epinephrine-31",
+      "drug": "epinephrine",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "CPR · vasoconstriction",
+      "routes": [
+        "IV",
+        "IO"
+      ],
+      "min": 0.01,
+      "max": 0.01,
+      "unit": "mg",
+      "source": "recover",
+      "note": "ใช้บริบทหัวใจหยุดเต้น ไม่ใช่โดสรักษาแพ้หรือความดันต่ำทั่วไป · RECOVER 2024 ไม่แนะนำ high-dose epinephrine ระหว่าง CPR",
+      "schedule": "",
+      "kind": "single",
+      "text": "",
+      "reviewedAt": "2026-10-11",
+      "priority": 20,
+      "evidenceType": "guideline",
+      "sourceYear": "2024",
+      "locator": "Table 2, CPR dosing chart and ALS drug recommendations"
+    },
+    {
+      "id": "atropine-32",
+      "drug": "atropine",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "CPR · vagolytic",
+      "routes": [
+        "IV",
+        "IO"
+      ],
+      "min": 0.04,
+      "max": 0.054,
+      "unit": "mg",
+      "source": "recover",
+      "note": "ใช้บริบท CPR ตามข้อบ่งใช้ ไม่ใช่ premedication หรือ bradycardia ทั่วไป · หากเลือกใช้ ให้ครั้งเดียวช่วงต้นของเหตุการณ์ CPR ไม่ให้ซ้ำ",
+      "schedule": "",
+      "kind": "single",
+      "text": "",
+      "reviewedAt": "2026-10-11",
+      "priority": 20,
+      "evidenceType": "guideline",
+      "sourceYear": "2024",
+      "locator": "Table 2, CPR dosing chart and ALS drug recommendations"
+    },
+    {
+      "id": "naloxone-33",
+      "drug": "naloxone",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "CPR · ต้าน opioid",
+      "routes": [
+        "IV",
+        "IO"
+      ],
+      "min": 0.04,
+      "max": 0.04,
+      "unit": "mg",
+      "source": "recover",
+      "note": "ใช้เมื่อเกี่ยวข้องกับ opioid ในภาวะหัวใจหยุดเต้น ไม่ใช่การ reverse ระหว่างฟื้นทั่วไป",
+      "schedule": "",
+      "kind": "single",
+      "text": "",
+      "reviewedAt": "2026-10-11",
+      "priority": 20,
+      "evidenceType": "guideline",
+      "sourceYear": "2024",
+      "locator": "Table 2, CPR dosing chart and ALS drug recommendations"
+    },
+    {
+      "id": "atipamezole-34",
+      "drug": "atipamezole",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "CPR · ต้าน alpha-2",
+      "routes": [
+        "IV",
+        "IO"
+      ],
+      "min": 100,
+      "max": 100,
+      "unit": "mcg",
+      "source": "recover",
+      "note": "ใช้บริบท CPR ไม่ใช่สูตร reverse IM ตามปริมาณ dexmedetomidine ที่ให้",
+      "schedule": "",
+      "kind": "single",
+      "text": "",
+      "reviewedAt": "2026-10-11",
+      "priority": 20,
+      "evidenceType": "guideline",
+      "sourceYear": "2024",
+      "locator": "Table 2, CPR dosing chart and ALS drug recommendations"
+    },
+    {
+      "id": "flumazenil-35",
+      "drug": "flumazenil",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "CPR · ต้าน benzodiazepine",
+      "routes": [
+        "IV",
+        "IO"
+      ],
+      "min": 0.01,
+      "max": 0.01,
+      "unit": "mg",
+      "source": "recover",
+      "note": "ใช้บริบท CPR ไม่ใช่การ reverse ระหว่างฟื้นทั่วไป",
+      "schedule": "",
+      "kind": "single",
+      "text": "",
+      "reviewedAt": "2026-10-11",
+      "priority": 20,
+      "evidenceType": "guideline",
+      "sourceYear": "2024",
+      "locator": "Table 2, CPR dosing chart and ALS drug recommendations"
+    },
+    {
+      "id": "cefazolin-36",
+      "drug": "cefazolin",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "ป้องกันการติดเชื้อรอบผ่าตัดเมื่อมีข้อบ่งใช้",
+      "routes": [
+        "IV"
+      ],
+      "min": 22,
+      "max": 25,
+      "unit": "mg",
+      "source": "enovat",
+      "note": "ใช้เมื่อมีข้อบ่งใช้ prophylaxis ตามชนิดผ่าตัดและแนวทางโรงพยาบาล ไม่ใช่โดสรักษาการติดเชื้อทั่วไป",
+      "schedule": "ช่วง redosing ในตาราง: 2 ชั่วโมง",
+      "kind": "single",
+      "text": "",
+      "reviewedAt": "2026-10-11",
+      "priority": 20,
+      "evidenceType": "guideline",
+      "sourceYear": "2026",
+      "locator": "Table 5, IV peri-operative surgical antimicrobial prophylaxis"
+    },
+    {
+      "id": "amoxicillin-clavulanate-37",
+      "drug": "amoxicillin-clavulanate",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "ป้องกันการติดเชื้อรอบผ่าตัดเมื่อมีข้อบ่งใช้",
+      "routes": [
+        "IV"
+      ],
+      "min": 20,
+      "max": 20,
+      "unit": "mg",
+      "source": "enovat",
+      "note": "ใช้เมื่อมีข้อบ่งใช้ prophylaxis · ตารางระบุผลิตภัณฑ์ผสม 20 mg/kg แต่ไม่แยกฐาน amoxicillin กับตัวยารวมในแถวนี้ ต้องยืนยันฐานความแรงกับฉลากและแนวทางโรงพยาบาลก่อนกำหนดขนาดต่อครั้ง",
+      "schedule": "ช่วง redosing ในตาราง: 1.5 ชั่วโมง",
+      "kind": "read",
+      "text": "",
+      "reviewedAt": "2026-10-11",
+      "priority": 20,
+      "evidenceType": "guideline",
+      "sourceYear": "2026",
+      "locator": "Table 5, IV peri-operative surgical antimicrobial prophylaxis"
+    },
+    {
+      "id": "ampicillin-38",
+      "drug": "ampicillin",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "ป้องกันการติดเชื้อรอบผ่าตัดเมื่อมีข้อบ่งใช้",
+      "routes": [
+        "IV"
+      ],
+      "min": 20,
+      "max": 20,
+      "unit": "mg",
+      "source": "enovat",
+      "note": "ใช้เมื่อมีข้อบ่งใช้ prophylaxis ตามชนิดผ่าตัดและแนวทางโรงพยาบาล ไม่ใช่โดสรักษาการติดเชื้อทั่วไป",
+      "schedule": "ช่วง redosing ในตาราง: 1.5 ชั่วโมง",
+      "kind": "single",
+      "text": "",
+      "reviewedAt": "2026-10-11",
+      "priority": 20,
+      "evidenceType": "guideline",
+      "sourceYear": "2026",
+      "locator": "Table 5, IV peri-operative surgical antimicrobial prophylaxis"
+    },
+    {
+      "id": "metronidazole-39",
+      "drug": "metronidazole",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "ป้องกันการติดเชื้อรอบผ่าตัดเมื่อมีข้อบ่งใช้",
+      "routes": [
+        "IV"
+      ],
+      "min": 15,
+      "max": 15,
+      "unit": "mg",
+      "source": "enovat",
+      "note": "ใช้เมื่อมีข้อบ่งใช้ prophylaxis ตามชนิดผ่าตัดและแนวทางโรงพยาบาล ไม่ใช่โดสรักษาการติดเชื้อทั่วไป · ใช้เสริมยาหลักเฉพาะการผ่าตัดที่เข้าลำไส้ใหญ่",
+      "schedule": "ช่วง redosing ในตาราง: 8 ชั่วโมง",
+      "kind": "single",
+      "text": "",
+      "reviewedAt": "2026-10-11",
+      "priority": 20,
+      "evidenceType": "guideline",
+      "sourceYear": "2026",
+      "locator": "Table 5, IV peri-operative surgical antimicrobial prophylaxis"
+    },
+    {
+      "id": "maropitant-40",
+      "drug": "maropitant",
+      "species": [
+        "dog"
+      ],
+      "purpose": "อาเจียนเฉียบพลัน · สูตรฉีด",
+      "routes": [
+        "SC"
+      ],
+      "min": 1,
+      "max": 1,
+      "unit": "mg",
+      "source": "merck_gi",
+      "note": "ต้นทาง: สุนัขอายุ ≥8 สัปดาห์ ตรวจฉลากผลิตภัณฑ์",
+      "schedule": "ทุก 24 ชั่วโมง",
+      "kind": "single",
+      "text": "",
+      "reviewedAt": "2026-10-11",
+      "priority": 20,
+      "evidenceType": "manual",
+      "sourceYear": "2025-06",
+      "locator": "Antiemetic Drugs table and drug-specific paragraphs"
+    },
+    {
+      "id": "maropitant-41",
+      "drug": "maropitant",
+      "species": [
+        "cat"
+      ],
+      "purpose": "อาเจียน · สูตรฉีด",
+      "routes": [
+        "SC"
+      ],
+      "min": 1,
+      "max": 1,
+      "unit": "mg",
+      "source": "merck_gi",
+      "note": "ต้นทาง: แมวอายุ ≥16 สัปดาห์ ตรวจฉลากผลิตภัณฑ์",
+      "schedule": "ทุก 24 ชั่วโมง",
+      "kind": "single",
+      "text": "",
+      "reviewedAt": "2026-10-11",
+      "priority": 20,
+      "evidenceType": "manual",
+      "sourceYear": "2025-06",
+      "locator": "Antiemetic Drugs table and drug-specific paragraphs"
+    },
+    {
+      "id": "ondansetron-42",
+      "drug": "ondansetron",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "ลดอาเจียน · ฉีด IV",
+      "routes": [
+        "IV"
+      ],
+      "min": 0.1,
+      "max": 0.15,
+      "unit": "mg",
+      "source": "merck_gi",
+      "note": "",
+      "schedule": "ทุก 8–12 ชั่วโมง",
+      "kind": "single",
+      "text": "",
+      "reviewedAt": "2026-10-11",
+      "priority": 20,
+      "evidenceType": "manual",
+      "sourceYear": "2025-06",
+      "locator": "Antiemetic Drugs table and drug-specific paragraphs"
+    },
+    {
+      "id": "ondansetron-43",
+      "drug": "ondansetron",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "ลดอาเจียน · รับประทาน",
+      "routes": [
+        "PO"
+      ],
+      "min": 0.1,
+      "max": 0.2,
+      "unit": "mg",
+      "source": "merck_gi",
+      "note": "คำนวณเฉพาะยาน้ำ ไม่ใช่จำนวนเม็ด",
+      "schedule": "ทุก 12–24 ชั่วโมง",
+      "kind": "single",
+      "text": "",
+      "reviewedAt": "2026-10-11",
+      "priority": 20,
+      "evidenceType": "manual",
+      "sourceYear": "2025-06",
+      "locator": "Antiemetic Drugs table and drug-specific paragraphs"
+    },
+    {
+      "id": "metoclopramide-44",
+      "drug": "metoclopramide",
+      "species": [
+        "dog"
+      ],
+      "purpose": "ลดอาเจียน / prokinetic",
+      "routes": [
+        "IM",
+        "SC",
+        "PO"
+      ],
+      "min": 0.1,
+      "max": 0.5,
+      "unit": "mg",
+      "source": "merck_gi",
+      "note": "ห้ามเมื่อสงสัยทางเดินอาหารอุดตันหรือทะลุ ไม่ใช่อัตรา CRI",
+      "schedule": "ทุก 6–8 ชั่วโมง",
+      "kind": "single",
+      "text": "",
+      "reviewedAt": "2026-10-11",
+      "priority": 20,
+      "evidenceType": "manual",
+      "sourceYear": "2025-06",
+      "locator": "Antiemetic Drugs table and drug-specific paragraphs"
+    },
+    {
+      "id": "diphenhydramine-45",
+      "drug": "diphenhydramine",
+      "species": [
+        "dog"
+      ],
+      "purpose": "ลดอาเจียนจาก motion sickness",
+      "routes": [
+        "PO"
+      ],
+      "min": 2,
+      "max": 4,
+      "unit": "mg",
+      "source": "merck_gi",
+      "note": "บริบทนี้ไม่ใช่โดสฉีดหรือการรักษา anaphylaxis",
+      "schedule": "ทุก 6–8 ชั่วโมง",
+      "kind": "single",
+      "text": "",
+      "reviewedAt": "2026-10-11",
+      "priority": 20,
+      "evidenceType": "manual",
+      "sourceYear": "2025-06",
+      "locator": "Antiemetic Drugs table and drug-specific paragraphs"
+    },
+    {
+      "id": "furosemide-46",
+      "drug": "furosemide",
+      "species": [
+        "dog"
+      ],
+      "purpose": "ภาวะ cardiogenic pulmonary edema รุนแรง",
+      "routes": [
+        "IV",
+        "IM",
+        "SC"
+      ],
+      "min": 2,
+      "max": 4,
+      "unit": "mg",
+      "source": "merck_diuretic",
+      "note": "ต้องติดตามการตอบสนอง ไตและอิเล็กโทรไลต์ ไม่ใช้กับภาวะขาดน้ำทั่วไป",
+      "schedule": "ช่วงในต้นทาง: 1–6 ชั่วโมง; ปรับตามผล",
+      "kind": "single",
+      "text": "",
+      "reviewedAt": "2026-10-11",
+      "priority": 20,
+      "evidenceType": "manual",
+      "sourceYear": "ไม่ระบุปีแก้ไข",
+      "locator": "Clinical Use of Furosemide in Animals"
+    },
+    {
+      "id": "furosemide-47",
+      "drug": "furosemide",
+      "species": [
+        "cat"
+      ],
+      "purpose": "ภาวะ cardiogenic pulmonary edema รุนแรง",
+      "routes": [
+        "IV",
+        "IM",
+        "SC"
+      ],
+      "min": 0.5,
+      "max": 2,
+      "unit": "mg",
+      "source": "merck_diuretic",
+      "note": "ต้องติดตามการตอบสนอง ไตและอิเล็กโทรไลต์ ไม่ใช้กับภาวะขาดน้ำทั่วไป",
+      "schedule": "ช่วงในต้นทาง: 1–8 ชั่วโมง; ปรับตามผล",
+      "kind": "single",
+      "text": "",
+      "reviewedAt": "2026-10-11",
+      "priority": 20,
+      "evidenceType": "manual",
+      "sourceYear": "ไม่ระบุปีแก้ไข",
+      "locator": "Clinical Use of Furosemide in Animals"
+    },
+    {
+      "id": "phenobarbital-48",
+      "drug": "phenobarbital",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "ควบคุมชักต่อเนื่อง",
+      "routes": [
+        "PO"
+      ],
+      "min": 2,
+      "max": 5,
+      "unit": "mg",
+      "source": "merck_seizure",
+      "note": "ต้องติดตามระดับยาและตับ ไม่ใช่ loading dose สำหรับชักฉุกเฉิน · ตรวจเทียบ Merck epilepsy updated October 2025 และแยก maintenance จาก loading dose",
+      "schedule": "ทุก 12 ชั่วโมง",
+      "kind": "single",
+      "text": "",
+      "reviewedAt": "2026-10-11",
+      "priority": 20,
+      "evidenceType": "manual",
+      "sourceYear": "2025-10",
+      "locator": "Specific Antiseizure Medications: Phenobarbital / Levetiracetam"
+    },
+    {
+      "id": "levetiracetam-49",
+      "drug": "levetiracetam",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "ควบคุมชักต่อเนื่อง · immediate release",
+      "routes": [
+        "PO"
+      ],
+      "min": 20,
+      "max": 60,
+      "unit": "mg",
+      "source": "merck_seizure",
+      "note": "ไม่ใช้ช่วงนี้กับ extended release; คำนวณเฉพาะยาน้ำ · ตรวจเทียบ Merck epilepsy updated October 2025 และแยก maintenance จาก loading dose",
+      "schedule": "ทุก 8 ชั่วโมง",
+      "kind": "single",
+      "text": "",
+      "reviewedAt": "2026-10-11",
+      "priority": 20,
+      "evidenceType": "manual",
+      "sourceYear": "2025-10",
+      "locator": "Specific Antiseizure Medications: Phenobarbital / Levetiracetam"
+    },
+    {
+      "id": "levetiracetam-50",
+      "drug": "levetiracetam",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "status epilepticus / cluster seizures · IV",
+      "routes": [
+        "IV"
+      ],
+      "min": 30,
+      "max": 60,
+      "unit": "mg",
+      "source": "merck_seizure",
+      "note": "ให้ IV ช่วง 5–15 นาทีตามต้นทาง พร้อมติดตามผู้ป่วย · ตรวจเทียบ Merck epilepsy updated October 2025 และแยก maintenance จาก loading dose",
+      "schedule": "",
+      "kind": "single",
+      "text": "",
+      "reviewedAt": "2026-10-11",
+      "priority": 20,
+      "evidenceType": "manual",
+      "sourceYear": "2025-10",
+      "locator": "Specific Antiseizure Medications: Phenobarbital / Levetiracetam"
+    },
+    {
+      "id": "medetomidine-expanded-1",
+      "drug": "medetomidine",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "สงบประสาทในผู้ป่วยสุขภาพดี · IM",
+      "routes": [
+        "IM"
+      ],
+      "min": 5,
+      "max": 20,
+      "unit": "mcg",
+      "source": "bsava2020",
+      "note": "จาก Appendix II หน้า 472; มักใช้ร่วม opioid ใช้เฉพาะผู้ป่วยสุขภาพดี ติดตามหัวใจ/การหายใจ ไม่ใช่ตาราง BSA บนฉลาก",
+      "schedule": "",
+      "kind": "single",
+      "text": "",
+      "locator": "Appendix II · หน้าไฟล์ PDF 488 · หน้าพิมพ์ 472",
+      "reviewedAt": "2026-10-11",
+      "reviewLabel": "ตำรา 2020 · บริบทเดิม",
+      "priority": 80,
+      "evidenceType": "textbook",
+      "sourceYear": "2020"
+    },
+    {
+      "id": "medetomidine-expanded-2",
+      "drug": "medetomidine",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "สงบประสาทในผู้ป่วยสุขภาพดี · IV",
+      "routes": [
+        "IV"
+      ],
+      "min": 1,
+      "max": 10,
+      "unit": "mcg",
+      "source": "bsava2020",
+      "note": "ขนาด IV ต่ำกว่า IM; ติดตาม bradyarrhythmia และลดขนาดยานำ/คงสลบตามผล",
+      "schedule": "",
+      "kind": "single",
+      "text": "",
+      "locator": "Appendix II · หน้าไฟล์ PDF 488 · หน้าพิมพ์ 472",
+      "reviewedAt": "2026-10-11",
+      "reviewLabel": "ตำรา 2020 · บริบทเดิม",
+      "priority": 80,
+      "evidenceType": "textbook",
+      "sourceYear": "2020"
+    },
+    {
+      "id": "fentanyl-expanded-3",
+      "drug": "fentanyl",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "แก้ปวดระหว่างผ่าตัด · bolus IV",
+      "routes": [
+        "IV"
+      ],
+      "min": 5,
+      "max": 5,
+      "unit": "mcg",
+      "source": "bsava2020",
+      "note": "เป็น bolus ระหว่างผ่าตัด ไม่ใช่อัตรา CRI หรือ transdermal patch · ให้ IV ช้า ติดตามการหายใจ/หัวใจและเตรียมช่วยหายใจ",
+      "schedule": "อาจซ้ำทุก 20 นาทีตามการประเมิน",
+      "kind": "single",
+      "text": "",
+      "locator": "DOSES · หน้าไฟล์ PDF 178 · หน้าพิมพ์ 162",
+      "reviewedAt": "2026-10-11",
+      "reviewLabel": "ตำรา 2020 · บริบทเดิม",
+      "priority": 80,
+      "evidenceType": "textbook",
+      "sourceYear": "2020"
+    },
+    {
+      "id": "tramadol-expanded-4",
+      "drug": "tramadol",
+      "species": [
+        "dog"
+      ],
+      "purpose": "แก้ปวด · IV จากตำรา",
+      "routes": [
+        "IV"
+      ],
+      "min": 2,
+      "max": 2,
+      "unit": "mg",
+      "source": "bsava2020",
+      "note": "หลักฐานประสิทธิผลมีข้อจำกัด; AAHA 2022 ระบุการขาดประสิทธิผลของ oral tramadol ในสุนัข ไม่ควรอาศัยเป็นยาแก้ปวดเดี่ยว ตรวจยาที่เพิ่ม serotonin",
+      "schedule": "",
+      "kind": "single",
+      "text": "",
+      "locator": "DOSES · หน้าไฟล์ PDF 427 · หน้าพิมพ์ 411",
+      "relatedSource": "aaha_pain2022",
+      "reviewedAt": "2026-10-11",
+      "reviewLabel": "ตำรา 2020 · บริบทเดิม",
+      "priority": 80,
+      "evidenceType": "textbook",
+      "sourceYear": "2020"
+    },
+    {
+      "id": "tramadol-expanded-5",
+      "drug": "tramadol",
+      "species": [
+        "cat"
+      ],
+      "purpose": "แก้ปวด · ฉีดจากตำรา",
+      "routes": [
+        "IV",
+        "SC"
+      ],
+      "min": 1,
+      "max": 2,
+      "unit": "mg",
+      "source": "bsava2020",
+      "note": "ติดตาม dysphoria คลื่นไส้และ serotonin syndrome; หลักฐานและการอนุญาตผลิตภัณฑ์แตกต่างกัน",
+      "schedule": "",
+      "kind": "single",
+      "text": "",
+      "locator": "DOSES · หน้าไฟล์ PDF 427 · หน้าพิมพ์ 411",
+      "relatedSource": "aaha_pain2022",
+      "reviewedAt": "2026-10-11",
+      "reviewLabel": "ตำรา 2020 · บริบทเดิม",
+      "priority": 80,
+      "evidenceType": "textbook",
+      "sourceYear": "2020"
+    },
+    {
+      "id": "tramadol-expanded-6",
+      "drug": "tramadol",
+      "species": [
+        "cat"
+      ],
+      "purpose": "แก้ปวด · รับประทานจากตำรา",
+      "routes": [
+        "PO"
+      ],
+      "min": 2,
+      "max": 4,
+      "unit": "mg",
+      "source": "bsava2020",
+      "note": "คำนวณปริมาตรได้เฉพาะยาน้ำที่ทราบความเข้มข้นจริง ไม่คำนวณจำนวนเม็ด รสขมและ dysphoria อาจทำให้ใช้ยาลำบาก; ตรวจยาที่เพิ่ม serotonin",
+      "schedule": "ทุก 8 ชั่วโมง",
+      "kind": "single",
+      "text": "",
+      "locator": "DOSES · หน้าไฟล์ PDF 427 · หน้าพิมพ์ 411",
+      "relatedSource": "aaha_pain2022",
+      "reviewedAt": "2026-10-11",
+      "reviewLabel": "ตำรา 2020 · บริบทเดิม",
+      "priority": 80,
+      "evidenceType": "textbook",
+      "sourceYear": "2020"
+    },
+    {
+      "id": "tramadol-expanded-7",
+      "drug": "tramadol",
+      "species": [
+        "dog"
+      ],
+      "purpose": "ขนาดรับประทานจากตำรา · หลักฐานจำกัด",
+      "routes": [
+        "PO"
+      ],
+      "min": 2,
+      "max": 5,
+      "unit": "mg",
+      "source": "bsava2020",
+      "note": "AAHA 2022 ระบุการขาดประสิทธิผลในสุนัข จึงแสดงข้อมูลตำราเพื่อทบทวนและไม่เติมขนาดให้เครื่องคำนวณ",
+      "schedule": "ทุก 8 ชั่วโมง",
+      "kind": "read",
+      "text": "",
+      "locator": "DOSES · หน้าไฟล์ PDF 427 · หน้าพิมพ์ 411",
+      "relatedSource": "aaha_pain2022",
+      "reviewedAt": "2026-10-11",
+      "reviewLabel": "ตำรา 2020 · บริบทเดิม",
+      "priority": 80,
+      "evidenceType": "textbook",
+      "sourceYear": "2020"
+    },
+    {
+      "id": "lidocaine-expanded-8",
+      "drug": "lidocaine",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "ยาชาเฉพาะที่ · ตรวจตัวยารวมทุกจุด",
+      "routes": [
+        "LOCAL"
+      ],
+      "min": 4,
+      "max": 4,
+      "unit": "mg",
+      "source": "bsava2020",
+      "note": "ต้นทางระบุปริมาณรวม 4 mg/kg ไม่ใช่ขนาดต่อจุด; กำหนดขนาดและเพดานเฉพาะผู้ป่วยแยกกัน ไม่ใช้ค่าเฉพาะที่เป็น IV",
+      "schedule": "",
+      "kind": "read",
+      "text": "",
+      "locator": "DOSES · หน้าไฟล์ PDF 245 · หน้าพิมพ์ 229",
+      "reviewedAt": "2026-10-11",
+      "reviewLabel": "ตำรา 2020 · บริบทเดิม",
+      "priority": 80,
+      "evidenceType": "textbook",
+      "sourceYear": "2020"
+    },
+    {
+      "id": "lidocaine-expanded-9",
+      "drug": "lidocaine",
+      "species": [
+        "dog"
+      ],
+      "purpose": "ventricular arrhythmia · bolus IV ทีละส่วน",
+      "routes": [
+        "IV"
+      ],
+      "min": 2,
+      "max": 2,
+      "unit": "mg",
+      "source": "bsava2020",
+      "note": "ตำราให้ทีละ 2 mg/kg และช่วงรวม 2–8 mg/kg ตามผล; ค่านี้คำนวณหนึ่ง bolus ไม่คำนวณเพดานสะสม",
+      "schedule": "",
+      "kind": "single",
+      "text": "",
+      "locator": "DOSES · หน้าไฟล์ PDF 246 · หน้าพิมพ์ 230",
+      "reviewedAt": "2026-10-11",
+      "reviewLabel": "ตำรา 2020 · บริบทเดิม",
+      "priority": 80,
+      "evidenceType": "textbook",
+      "sourceYear": "2020"
+    },
+    {
+      "id": "lidocaine-expanded-10",
+      "drug": "lidocaine",
+      "species": [
+        "cat"
+      ],
+      "purpose": "ventricular arrhythmia · bolus IV ช้า",
+      "routes": [
+        "IV"
+      ],
+      "min": 0.25,
+      "max": 0.5,
+      "unit": "mg",
+      "source": "bsava2020",
+      "note": "ช่วงรวมในตำรา 0.25–2 mg/kg; ใช้ทีละ bolus ช้าและตรวจ ECG/ความเป็นพิษ ไม่ใช้ systemic lidocaine เพื่อ analgesia ในแมว",
+      "schedule": "",
+      "kind": "single",
+      "text": "",
+      "locator": "DOSES · หน้าไฟล์ PDF 246 · หน้าพิมพ์ 230",
+      "reviewedAt": "2026-10-11",
+      "reviewLabel": "ตำรา 2020 · บริบทเดิม",
+      "priority": 80,
+      "evidenceType": "textbook",
+      "sourceYear": "2020"
+    },
+    {
+      "id": "glycopyrrolate-expanded-11",
+      "drug": "glycopyrrolate",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "vagally mediated bradyarrhythmia",
+      "routes": [
+        "IV",
+        "IM"
+      ],
+      "min": 2,
+      "max": 10,
+      "unit": "mcg",
+      "source": "bsava2020",
+      "note": "Glycopyrronium = glycopyrrolate; ประเมินเหตุ bradycardia ไม่ใช้แก้ alpha-2 bradycardia อัตโนมัติ",
+      "schedule": "",
+      "kind": "single",
+      "text": "",
+      "locator": "DOSES · หน้าไฟล์ PDF 204 · หน้าพิมพ์ 188",
+      "reviewedAt": "2026-10-11",
+      "reviewLabel": "ตำรา 2020 · บริบทเดิม",
+      "priority": 80,
+      "evidenceType": "textbook",
+      "sourceYear": "2020"
+    },
+    {
+      "id": "ephedrine-expanded-12",
+      "drug": "ephedrine",
+      "species": [
+        "dog"
+      ],
+      "purpose": "ความดันต่ำ · IV",
+      "routes": [
+        "IV"
+      ],
+      "min": 0.05,
+      "max": 0.2,
+      "unit": "mg",
+      "source": "bsava2020",
+      "note": "ผลช่วงสั้น 5–15 นาที อาจลดลงหลังให้ 2–3 ครั้ง; ประเมินสาเหตุและการตอบสนอง ไม่ตั้งให้ซ้ำอัตโนมัติ",
+      "schedule": "",
+      "kind": "single",
+      "text": "",
+      "locator": "DOSES · หน้าไฟล์ PDF 165 · หน้าพิมพ์ 149",
+      "reviewedAt": "2026-10-11",
+      "reviewLabel": "ตำรา 2020 · บริบทเดิม",
+      "priority": 80,
+      "evidenceType": "textbook",
+      "sourceYear": "2020"
+    },
+    {
+      "id": "ephedrine-expanded-13",
+      "drug": "ephedrine",
+      "species": [
+        "cat"
+      ],
+      "purpose": "ความดันต่ำ · IV",
+      "routes": [
+        "IV"
+      ],
+      "min": 0.05,
+      "max": 0.1,
+      "unit": "mg",
+      "source": "bsava2020",
+      "note": "ติดตาม ECG และความดัน ผลอาจลดลงหลังซ้ำ 2–3 ครั้ง",
+      "schedule": "",
+      "kind": "single",
+      "text": "",
+      "locator": "DOSES · หน้าไฟล์ PDF 165 · หน้าพิมพ์ 149",
+      "reviewedAt": "2026-10-11",
+      "reviewLabel": "ตำรา 2020 · บริบทเดิม",
+      "priority": 80,
+      "evidenceType": "textbook",
+      "sourceYear": "2020"
+    },
+    {
+      "id": "gabapentin-expanded-14",
+      "drug": "gabapentin",
+      "species": [
+        "dog"
+      ],
+      "purpose": "ขนาดเริ่มต้น · neuropathic pain / adjunct",
+      "routes": [
+        "PO"
+      ],
+      "min": 10,
+      "max": 20,
+      "unit": "mg",
+      "source": "bsava2020",
+      "note": "คำนวณปริมาตรได้เฉพาะยาน้ำที่ทราบความเข้มข้นจริง ไม่คำนวณจำนวนเม็ด ปรับตามผลและการทำงานของไต ไม่ใช่ขนาดลดความกลัวก่อนพบสัตวแพทย์",
+      "schedule": "ทุก 6–8 ชั่วโมง",
+      "kind": "single",
+      "text": "",
+      "locator": "DOSES · หน้าไฟล์ PDF 196 · หน้าพิมพ์ 180",
+      "reviewedAt": "2026-10-11",
+      "reviewLabel": "ตำรา 2020 · บริบทเดิม",
+      "priority": 80,
+      "evidenceType": "textbook",
+      "sourceYear": "2020"
+    },
+    {
+      "id": "gabapentin-expanded-15",
+      "drug": "gabapentin",
+      "species": [
+        "cat"
+      ],
+      "purpose": "ขนาดเริ่มต้น · neuropathic pain / adjunct",
+      "routes": [
+        "PO"
+      ],
+      "min": 5,
+      "max": 10,
+      "unit": "mg",
+      "source": "bsava2020",
+      "note": "คำนวณปริมาตรได้เฉพาะยาน้ำที่ทราบความเข้มข้นจริง ไม่คำนวณจำนวนเม็ด ปรับตามผลและการทำงานของไต ไม่ใช่ขนาด mg/แมวก่อนพบสัตวแพทย์",
+      "schedule": "ทุก 8–12 ชั่วโมง",
+      "kind": "single",
+      "text": "",
+      "locator": "DOSES · หน้าไฟล์ PDF 196 · หน้าพิมพ์ 180",
+      "reviewedAt": "2026-10-11",
+      "reviewLabel": "ตำรา 2020 · บริบทเดิม",
+      "priority": 80,
+      "evidenceType": "textbook",
+      "sourceYear": "2020"
+    },
+    {
+      "id": "robenacoxib-expanded-16",
+      "drug": "robenacoxib",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "ยาแก้ปวด/ลดอักเสบ · รับประทานจากตำรา",
+      "routes": [
+        "PO"
+      ],
+      "min": 1,
+      "max": 2,
+      "unit": "mg",
+      "source": "bsava2020",
+      "note": "คำนวณปริมาตรได้เฉพาะยาน้ำที่ทราบความเข้มข้นจริง ไม่คำนวณจำนวนเม็ด ตรวจไต ตับ การไหลเวียน และภาวะขาดน้ำ; ไม่ใช้ร่วม NSAID อื่นหรือสเตียรอยด์ ตรวจฉลากและระยะเวลาใช้ในประเทศ ช่วงนี้จาก BSAVA 2020; ฉลากแต่ละประเทศ/ข้อบ่งใช้อาจต่างกัน ไม่อนุมานเป็นใช้ระยะยาว · ไม่เติมขนาดจากรายการเก่านี้; เลือกบริบทที่ตรวจใหม่ให้ตรงโรค/รูปแบบยา",
+      "schedule": "ทุก 24 ชั่วโมง",
+      "kind": "read",
+      "text": "1–2 mg/kg · ตำรา 2020 · อ่านเปรียบเทียบ",
+      "locator": "DOSES · หน้าไฟล์ PDF 377 · หน้าพิมพ์ 361",
+      "reviewedAt": "2026-10-11",
+      "reviewLabel": "ตำรา 2020 · บริบทเดิม",
+      "priority": 80,
+      "evidenceType": "textbook",
+      "sourceYear": "2020"
+    },
+    {
+      "id": "robenacoxib-expanded-17",
+      "drug": "robenacoxib",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "ยาแก้ปวดรอบผ่าตัด · SC จากตำรา",
+      "routes": [
+        "SC"
+      ],
+      "min": 2,
+      "max": 2,
+      "unit": "mg",
+      "source": "bsava2020",
+      "note": "ตรวจไต ตับ การไหลเวียน และภาวะขาดน้ำ; ไม่ใช้ร่วม NSAID อื่นหรือสเตียรอยด์ ตรวจฉลากและระยะเวลาใช้ในประเทศ ตัวเลขและจำนวนครั้งนี้เป็นบริบท BSAVA 2020 ไม่ใช้แทนฉลากรุ่นปัจจุบัน · ไม่เติมขนาดจากรายการเก่านี้; เลือกบริบทที่ตรวจใหม่ให้ตรงโรค/รูปแบบยา",
+      "schedule": "ทุก 24 ชั่วโมง · ตำราจำกัดไม่เกิน 2 ครั้ง",
+      "kind": "read",
+      "text": "2–2 mg/kg · ตำรา 2020 · อ่านเปรียบเทียบ",
+      "locator": "DOSES · หน้าไฟล์ PDF 377 · หน้าพิมพ์ 361",
+      "reviewedAt": "2026-10-11",
+      "reviewLabel": "ตำรา 2020 · บริบทเดิม",
+      "priority": 80,
+      "evidenceType": "textbook",
+      "sourceYear": "2020"
+    },
+    {
+      "id": "firocoxib-expanded-18",
+      "drug": "firocoxib",
+      "species": [
+        "dog"
+      ],
+      "purpose": "ยาแก้ปวด/ลดอักเสบ",
+      "routes": [
+        "PO"
+      ],
+      "min": 5,
+      "max": 5,
+      "unit": "mg",
+      "source": "bsava2020",
+      "note": "คำนวณปริมาตรได้เฉพาะยาน้ำที่ทราบความเข้มข้นจริง ไม่คำนวณจำนวนเม็ด ตรวจไต ตับ การไหลเวียน และภาวะขาดน้ำ; ไม่ใช้ร่วม NSAID อื่นหรือสเตียรอยด์ ตรวจฉลากและระยะเวลาใช้ในประเทศ ",
+      "schedule": "ทุก 24 ชั่วโมง",
+      "kind": "single",
+      "text": "",
+      "locator": "DOSES · หน้าไฟล์ PDF 182 · หน้าพิมพ์ 166",
+      "reviewedAt": "2026-10-11",
+      "reviewLabel": "ตำรา 2020 · บริบทเดิม",
+      "priority": 80,
+      "evidenceType": "textbook",
+      "sourceYear": "2020"
+    },
+    {
+      "id": "firocoxib-expanded-19",
+      "drug": "firocoxib",
+      "species": [
+        "cat"
+      ],
+      "purpose": "ข้อจำกัดชนิดสัตว์",
+      "routes": [
+        "PO"
+      ],
+      "min": null,
+      "max": null,
+      "unit": "mg",
+      "source": "bsava2020",
+      "note": "BSAVA ระบุไม่ให้ใช้ในแมว ไม่ยืมขนาดสุนัขมาใช้",
+      "schedule": "",
+      "kind": "read",
+      "text": "ไม่ให้ขนาดยาในแมว · ต้นทางระบุ Do not use",
+      "locator": "DOSES · หน้าไฟล์ PDF 182 · หน้าพิมพ์ 166",
+      "reviewedAt": "2026-10-11",
+      "reviewLabel": "ตำรา 2020 · บริบทเดิม",
+      "priority": 80,
+      "evidenceType": "textbook",
+      "sourceYear": "2020"
+    },
+    {
+      "id": "amoxicillin-expanded-20",
+      "drug": "amoxicillin",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "ติดเชื้อที่ไวต่อยา · รับประทาน",
+      "routes": [
+        "PO"
+      ],
+      "min": 10,
+      "max": 10,
+      "unit": "mg",
+      "source": "bsava2020",
+      "note": "ใช้เมื่อมีข้อบ่งใช้ติดเชื้อและเลือกตามผลเพาะเชื้อ/ความไวเมื่อเหมาะสม ไม่ใช้เป็นค่าเริ่มต้นสำหรับทุกเคส คำนวณปริมาตรได้เฉพาะยาน้ำที่ทราบความเข้มข้นจริง ไม่คำนวณจำนวนเม็ด ",
+      "schedule": "ทุก 8–12 ชั่วโมง",
+      "kind": "single",
+      "text": "",
+      "locator": "DOSES · หน้าไฟล์ PDF 41 · หน้าพิมพ์ 25",
+      "reviewedAt": "2026-10-11",
+      "reviewLabel": "ตำรา 2020 · บริบทเดิม",
+      "priority": 80,
+      "evidenceType": "textbook",
+      "sourceYear": "2020"
+    },
+    {
+      "id": "amoxicillin-expanded-21",
+      "drug": "amoxicillin",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "bacterial cystitis · รับประทาน",
+      "routes": [
+        "PO"
+      ],
+      "min": 11,
+      "max": 15,
+      "unit": "mg",
+      "source": "bsava2020",
+      "note": "ใช้เมื่อมีข้อบ่งใช้ติดเชื้อและเลือกตามผลเพาะเชื้อ/ความไวเมื่อเหมาะสม ไม่ใช้เป็นค่าเริ่มต้นสำหรับทุกเคส ไม่ใช่ amoxicillin/clavulanate",
+      "schedule": "ทุก 8 ชั่วโมง",
+      "kind": "single",
+      "text": "",
+      "locator": "DOSES · หน้าไฟล์ PDF 41 · หน้าพิมพ์ 25",
+      "reviewedAt": "2026-10-11",
+      "reviewLabel": "ตำรา 2020 · บริบทเดิม",
+      "priority": 80,
+      "evidenceType": "textbook",
+      "sourceYear": "2020"
+    },
+    {
+      "id": "amoxicillin-expanded-22",
+      "drug": "amoxicillin",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "สูตรฉีด IM ปกติ",
+      "routes": [
+        "IM"
+      ],
+      "min": 7,
+      "max": 7,
+      "unit": "mg",
+      "source": "bsava2020",
+      "note": "ใช้เมื่อมีข้อบ่งใช้ติดเชื้อและเลือกตามผลเพาะเชื้อ/ความไวเมื่อเหมาะสม ไม่ใช้เป็นค่าเริ่มต้นสำหรับทุกเคส เฉพาะสูตรฉีดที่ตรงกับต้นทาง ไม่ใช้เป็น IV",
+      "schedule": "ทุก 24 ชั่วโมง",
+      "kind": "single",
+      "text": "",
+      "locator": "DOSES · หน้าไฟล์ PDF 41 · หน้าพิมพ์ 25",
+      "reviewedAt": "2026-10-11",
+      "reviewLabel": "ตำรา 2020 · บริบทเดิม",
+      "priority": 80,
+      "evidenceType": "textbook",
+      "sourceYear": "2020"
+    },
+    {
+      "id": "amoxicillin-expanded-23",
+      "drug": "amoxicillin",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "สูตรฉีด depot IM",
+      "routes": [
+        "IM"
+      ],
+      "min": 15,
+      "max": 15,
+      "unit": "mg",
+      "source": "bsava2020",
+      "note": "ใช้เมื่อมีข้อบ่งใช้ติดเชื้อและเลือกตามผลเพาะเชื้อ/ความไวเมื่อเหมาะสม ไม่ใช้เป็นค่าเริ่มต้นสำหรับทุกเคส เฉพาะ depot preparation ไม่สลับกับสูตรฉีดปกติ",
+      "schedule": "ทุก 48 ชั่วโมง",
+      "kind": "single",
+      "text": "",
+      "locator": "DOSES · หน้าไฟล์ PDF 41 · หน้าพิมพ์ 25",
+      "reviewedAt": "2026-10-11",
+      "reviewLabel": "ตำรา 2020 · บริบทเดิม",
+      "priority": 80,
+      "evidenceType": "textbook",
+      "sourceYear": "2020"
+    },
+    {
+      "id": "amoxicillin-clavulanate-expanded-24",
+      "drug": "amoxicillin-clavulanate",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "รักษาการติดเชื้อ · รับประทาน ฐานยารวม",
+      "routes": [
+        "PO"
+      ],
+      "min": 12.5,
+      "max": 25,
+      "unit": "mg",
+      "source": "bsava2020",
+      "note": "ใช้เมื่อมีข้อบ่งใช้ติดเชื้อและเลือกตามผลเพาะเชื้อ/ความไวเมื่อเหมาะสม ไม่ใช้เป็นค่าเริ่มต้นสำหรับทุกเคส คำนวณปริมาตรได้เฉพาะยาน้ำที่ทราบความเข้มข้นจริง ไม่คำนวณจำนวนเม็ด ขนาดและความเข้มข้นต้องเป็นผลรวม amoxicillin + clavulanate ในสูตรเดียวกัน ไม่ใช้ฐาน amoxicillin อย่างเดียว",
+      "schedule": "ทุก 8–12 ชั่วโมง",
+      "kind": "single",
+      "text": "",
+      "locator": "DOSES · หน้าไฟล์ PDF 115 · หน้าพิมพ์ 99",
+      "basis": "combined",
+      "reviewedAt": "2026-10-11",
+      "reviewLabel": "ตำรา 2020 · บริบทเดิม",
+      "priority": 80,
+      "evidenceType": "textbook",
+      "sourceYear": "2020"
+    },
+    {
+      "id": "ampicillin-expanded-25",
+      "drug": "ampicillin",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "รักษาการติดเชื้อทั่วไป · ไม่ใช่ SAP",
+      "routes": [
+        "IV",
+        "IM",
+        "SC",
+        "PO"
+      ],
+      "min": 10,
+      "max": 20,
+      "unit": "mg",
+      "source": "bsava2020",
+      "note": "ใช้เมื่อมีข้อบ่งใช้ติดเชื้อและเลือกตามผลเพาะเชื้อ/ความไวเมื่อเหมาะสม ไม่ใช้เป็นค่าเริ่มต้นสำหรับทุกเคส ใช้สูตรผลิตภัณฑ์ให้ตรง route; ไม่เทียบกับ amoxicillin หรือสูตรผสม sulbactam · ไม่เติมขนาดจากรายการเก่านี้; เลือกบริบทที่ตรวจใหม่ให้ตรงโรค/รูปแบบยา",
+      "schedule": "ทุก 6–8 ชั่วโมง",
+      "kind": "read",
+      "text": "10–20 mg/kg · ตำรา 2020 · อ่านเปรียบเทียบ",
+      "locator": "DOSES · หน้าไฟล์ PDF 44 · หน้าพิมพ์ 28",
+      "reviewedAt": "2026-10-11",
+      "reviewLabel": "ตำรา 2020 · บริบทเดิม",
+      "priority": 80,
+      "evidenceType": "textbook",
+      "sourceYear": "2020"
+    },
+    {
+      "id": "cephalexin-expanded-26",
+      "drug": "cephalexin",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "การติดเชื้อที่ไวต่อยา · รับประทาน",
+      "routes": [
+        "PO"
+      ],
+      "min": 15,
+      "max": 15,
+      "unit": "mg",
+      "source": "bsava2020",
+      "note": "ใช้เมื่อมีข้อบ่งใช้ติดเชื้อและเลือกตามผลเพาะเชื้อ/ความไวเมื่อเหมาะสม ไม่ใช้เป็นค่าเริ่มต้นสำหรับทุกเคส คำนวณปริมาตรได้เฉพาะยาน้ำที่ทราบความเข้มข้นจริง ไม่คำนวณจำนวนเม็ด Cefalexin = cephalexin",
+      "schedule": "ทุก 8–12 ชั่วโมง",
+      "kind": "single",
+      "text": "",
+      "locator": "DOSES · หน้าไฟล์ PDF 84 · หน้าพิมพ์ 68",
+      "reviewedAt": "2026-10-11",
+      "reviewLabel": "ตำรา 2020 · บริบทเดิม",
+      "priority": 80,
+      "evidenceType": "textbook",
+      "sourceYear": "2020"
+    },
+    {
+      "id": "cephalexin-expanded-27",
+      "drug": "cephalexin",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "superficial pyoderma / ติดเชื้อรุนแรงจากตำรา",
+      "routes": [
+        "PO"
+      ],
+      "min": 20,
+      "max": 30,
+      "unit": "mg",
+      "source": "bsava2020",
+      "note": "ใช้เมื่อมีข้อบ่งใช้ติดเชื้อและเลือกตามผลเพาะเชื้อ/ความไวเมื่อเหมาะสม ไม่ใช้เป็นค่าเริ่มต้นสำหรับทุกเคส เลือกตามข้อบ่งใช้และแนวทางโรคผิวหนังปัจจุบัน · ไม่เติมขนาดจากรายการเก่านี้; เลือกบริบทที่ตรวจใหม่ให้ตรงโรค/รูปแบบยา",
+      "schedule": "ทุก 8–12 ชั่วโมง",
+      "kind": "read",
+      "text": "20–30 mg/kg · ตำรา 2020 · อ่านเปรียบเทียบ",
+      "locator": "DOSES · หน้าไฟล์ PDF 84 · หน้าพิมพ์ 68",
+      "reviewedAt": "2026-10-11",
+      "reviewLabel": "ตำรา 2020 · บริบทเดิม",
+      "priority": 80,
+      "evidenceType": "textbook",
+      "sourceYear": "2020"
+    },
+    {
+      "id": "cefovecin-expanded-28",
+      "drug": "cefovecin",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "การติดเชื้อที่ตรงฉลาก · ฉีดออกฤทธิ์ยาว",
+      "routes": [
+        "SC"
+      ],
+      "min": 8,
+      "max": 8,
+      "unit": "mg",
+      "source": "bsava2020",
+      "note": "ใช้เมื่อมีข้อบ่งใช้ติดเชื้อและเลือกตามผลเพาะเชื้อ/ความไวเมื่อเหมาะสม ไม่ใช้เป็นค่าเริ่มต้นสำหรับทุกเคส ออกฤทธิ์ยาว ถอนยาออกไม่ได้หลังฉีด ไม่ใช้ prophylaxis ทั่วไปหรือให้ซ้ำรายวัน",
+      "schedule": "หนึ่งเข็ม · พิจารณาซ้ำหลัง 14 วันตามข้อบ่งใช้/ฉลาก",
+      "kind": "single",
+      "text": "",
+      "locator": "DOSES · หน้าไฟล์ PDF 86 · หน้าพิมพ์ 70",
+      "reviewedAt": "2026-10-11",
+      "reviewLabel": "ตำรา 2020 · บริบทเดิม",
+      "priority": 80,
+      "evidenceType": "textbook",
+      "sourceYear": "2020"
+    },
+    {
+      "id": "doxycycline-expanded-29",
+      "drug": "doxycycline",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "การติดเชื้อที่ไวต่อยา · รับประทาน",
+      "routes": [
+        "PO"
+      ],
+      "min": 10,
+      "max": 10,
+      "unit": "mg",
+      "source": "bsava2020",
+      "note": "ใช้เมื่อมีข้อบ่งใช้ติดเชื้อและเลือกตามผลเพาะเชื้อ/ความไวเมื่อเหมาะสม ไม่ใช้เป็นค่าเริ่มต้นสำหรับทุกเคส คำนวณปริมาตรได้เฉพาะยาน้ำที่ทราบความเข้มข้นจริง ไม่คำนวณจำนวนเม็ด ในแมวให้ตามด้วยอาหาร/น้ำเพื่อลด esophagitis ไม่ให้เม็ดแห้งค้างหลอดอาหาร",
+      "schedule": "ทุก 24 ชั่วโมงพร้อมอาหาร",
+      "kind": "single",
+      "text": "",
+      "locator": "DOSES · หน้าไฟล์ PDF 157 · หน้าพิมพ์ 141",
+      "reviewedAt": "2026-10-11",
+      "reviewLabel": "ตำรา 2020 · บริบทเดิม",
+      "priority": 80,
+      "evidenceType": "textbook",
+      "sourceYear": "2020"
+    },
+    {
+      "id": "enrofloxacin-expanded-30",
+      "drug": "enrofloxacin",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "fluoroquinolone · SC จากตำรา",
+      "routes": [
+        "SC"
+      ],
+      "min": 5,
+      "max": 5,
+      "unit": "mg",
+      "source": "bsava2020",
+      "note": "ใช้เมื่อมีข้อบ่งใช้ติดเชื้อและเลือกตามผลเพาะเชื้อ/ความไวเมื่อเหมาะสม ไม่ใช้เป็นค่าเริ่มต้นสำหรับทุกเคส ไม่ใช้ IV จากบริบทนี้; แมวไม่เกิน 5 mg/kg/วัน เสี่ยง retinal toxicity ตรวจฉลาก/อายุ",
+      "schedule": "ทุก 24 ชั่วโมง",
+      "kind": "single",
+      "text": "",
+      "locator": "DOSES · หน้าไฟล์ PDF 164 · หน้าพิมพ์ 148",
+      "reviewedAt": "2026-10-11",
+      "reviewLabel": "ตำรา 2020 · บริบทเดิม",
+      "priority": 80,
+      "evidenceType": "textbook",
+      "sourceYear": "2020"
+    },
+    {
+      "id": "enrofloxacin-expanded-31",
+      "drug": "enrofloxacin",
+      "species": [
+        "cat"
+      ],
+      "purpose": "fluoroquinolone · รับประทานวันละครั้ง",
+      "routes": [
+        "PO"
+      ],
+      "min": 5,
+      "max": 5,
+      "unit": "mg",
+      "source": "bsava2020",
+      "note": "ใช้เมื่อมีข้อบ่งใช้ติดเชื้อและเลือกตามผลเพาะเชื้อ/ความไวเมื่อเหมาะสม ไม่ใช้เป็นค่าเริ่มต้นสำหรับทุกเคส คำนวณปริมาตรได้เฉพาะยาน้ำที่ทราบความเข้มข้นจริง ไม่คำนวณจำนวนเม็ด แมวไม่เกิน 5 mg/kg/วัน เสี่ยงจอตาและตาบอด",
+      "schedule": "ทุก 24 ชั่วโมง",
+      "kind": "single",
+      "text": "",
+      "locator": "DOSES · หน้าไฟล์ PDF 164 · หน้าพิมพ์ 148",
+      "reviewedAt": "2026-10-11",
+      "reviewLabel": "ตำรา 2020 · บริบทเดิม",
+      "priority": 80,
+      "evidenceType": "textbook",
+      "sourceYear": "2020"
+    },
+    {
+      "id": "enrofloxacin-expanded-32",
+      "drug": "enrofloxacin",
+      "species": [
+        "cat"
+      ],
+      "purpose": "fluoroquinolone · รับประทานแบ่งสองครั้ง",
+      "routes": [
+        "PO"
+      ],
+      "min": 2.5,
+      "max": 2.5,
+      "unit": "mg",
+      "source": "bsava2020",
+      "note": "ใช้เมื่อมีข้อบ่งใช้ติดเชื้อและเลือกตามผลเพาะเชื้อ/ความไวเมื่อเหมาะสม ไม่ใช้เป็นค่าเริ่มต้นสำหรับทุกเคส ขนาดนี้ต่อครั้ง รวม 5 mg/kg/วัน ไม่ใช้ขนาดวันละครั้งซ้ำทุก 12 ชั่วโมง",
+      "schedule": "ทุก 12 ชั่วโมง",
+      "kind": "single",
+      "text": "",
+      "locator": "DOSES · หน้าไฟล์ PDF 164 · หน้าพิมพ์ 148",
+      "reviewedAt": "2026-10-11",
+      "reviewLabel": "ตำรา 2020 · บริบทเดิม",
+      "priority": 80,
+      "evidenceType": "textbook",
+      "sourceYear": "2020"
+    },
+    {
+      "id": "marbofloxacin-expanded-33",
+      "drug": "marbofloxacin",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "Marfloquin UK · ขนาดเฉพาะฉลาก 2 mg/kg",
+      "routes": [
+        "PO"
+      ],
+      "min": 2,
+      "max": 2,
+      "unit": "mg",
+      "source": "vmd_marbo",
+      "note": "ใช้เมื่อมีข้อบ่งใช้ติดเชื้อและเลือกตามผลเพาะเชื้อ/ความไวเมื่อเหมาะสม ไม่ใช้เป็นค่าเริ่มต้นสำหรับทุกเคส คำนวณปริมาตรได้เฉพาะยาน้ำที่ทราบความเข้มข้นจริง ไม่คำนวณจำนวนเม็ด SPC นี้เป็นผลิตภัณฑ์ oral ของ UK; ไม่ใช้ในสุนัข <12 เดือน (พันธุ์ยักษ์ <18 เดือน) หรือแมว <16 สัปดาห์; ไม่เหมาะกับ anaerobes · เป็นฉลาก UK เฉพาะผลิตภัณฑ์ ไม่ใช่โดสหลักทุกโรค; canine Staphylococcus pyoderma ดู ISCAID 2025 ที่แนะนำ 5.5 mg/kg",
+      "schedule": "ทุก 24 ชั่วโมง",
+      "kind": "single",
+      "text": "",
+      "locator": "§3.2–3.5, 3.9 · PDF หน้า 1–4 · oral product",
+      "reviewedAt": "2026-10-11",
+      "priority": 50,
+      "evidenceType": "label",
+      "sourceYear": "2025-10"
+    },
+    {
+      "id": "marbofloxacin-expanded-34",
+      "drug": "marbofloxacin",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "การติดเชื้อที่ไวต่อยา · ฉีดตามตำรา",
+      "routes": [
+        "IV",
+        "SC"
+      ],
+      "min": 2,
+      "max": 2,
+      "unit": "mg",
+      "source": "bsava2020",
+      "note": "ใช้เมื่อมีข้อบ่งใช้ติดเชื้อและเลือกตามผลเพาะเชื้อ/ความไวเมื่อเหมาะสม ไม่ใช้เป็นค่าเริ่มต้นสำหรับทุกเคส BSAVA 2020 สูตรฉีดสำหรับสุนัข/แมว ต้องตรวจผลิตภัณฑ์ route และฉลากในประเทศ ไม่ใช้สูตรโค/สุกรหรือยาหยอดหูแทน · ไม่เติมขนาดจากรายการเก่านี้; เลือกบริบทที่ตรวจใหม่ให้ตรงโรค/รูปแบบยา",
+      "schedule": "ทุก 24 ชั่วโมง",
+      "kind": "read",
+      "text": "2–2 mg/kg · ตำรา 2020 · อ่านเปรียบเทียบ",
+      "locator": "DOSES · หน้าไฟล์ PDF 259 · หน้าพิมพ์ 243",
+      "reviewedAt": "2026-10-11",
+      "reviewLabel": "ตำรา 2020 · บริบทเดิม",
+      "priority": 80,
+      "evidenceType": "textbook",
+      "sourceYear": "2020"
+    },
+    {
+      "id": "clindamycin-expanded-35",
+      "drug": "clindamycin",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "การติดเชื้อที่ไวต่อยา · สองครั้งต่อวัน",
+      "routes": [
+        "PO"
+      ],
+      "min": 5.5,
+      "max": 5.5,
+      "unit": "mg",
+      "source": "bsava2020",
+      "note": "ใช้เมื่อมีข้อบ่งใช้ติดเชื้อและเลือกตามผลเพาะเชื้อ/ความไวเมื่อเหมาะสม ไม่ใช้เป็นค่าเริ่มต้นสำหรับทุกเคส คำนวณปริมาตรได้เฉพาะยาน้ำที่ทราบความเข้มข้นจริง ไม่คำนวณจำนวนเม็ด ในแมวตามด้วยน้ำ/อาหาร ลดความเสี่ยงหลอดอาหาร · ไม่ใช้เป็นโดส canine pyoderma ISCAID 2025 ซึ่งระบุ 11 mg/kg ทุก 12 ชั่วโมง",
+      "schedule": "ทุก 12 ชั่วโมง",
+      "kind": "single",
+      "text": "",
+      "locator": "DOSES · หน้าไฟล์ PDF 108 · หน้าพิมพ์ 92",
+      "reviewedAt": "2026-10-11",
+      "reviewLabel": "ตำรา 2020 · บริบทเดิม",
+      "priority": 80,
+      "evidenceType": "textbook",
+      "sourceYear": "2020"
+    },
+    {
+      "id": "clindamycin-expanded-36",
+      "drug": "clindamycin",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "การติดเชื้อที่ไวต่อยา · วันละครั้ง",
+      "routes": [
+        "PO"
+      ],
+      "min": 11,
+      "max": 11,
+      "unit": "mg",
+      "source": "bsava2020",
+      "note": "ใช้เมื่อมีข้อบ่งใช้ติดเชื้อและเลือกตามผลเพาะเชื้อ/ความไวเมื่อเหมาะสม ไม่ใช้เป็นค่าเริ่มต้นสำหรับทุกเคส ไม่ใช่ขนาดสำหรับ toxoplasmosis/CNS · ไม่ใช้เป็นโดส canine pyoderma ISCAID 2025 ซึ่งระบุ 11 mg/kg ทุก 12 ชั่วโมง",
+      "schedule": "ทุก 24 ชั่วโมง",
+      "kind": "single",
+      "text": "",
+      "locator": "DOSES · หน้าไฟล์ PDF 108 · หน้าพิมพ์ 92",
+      "reviewedAt": "2026-10-11",
+      "reviewLabel": "ตำรา 2020 · บริบทเดิม",
+      "priority": 80,
+      "evidenceType": "textbook",
+      "sourceYear": "2020"
+    },
+    {
+      "id": "metronidazole-expanded-37",
+      "drug": "metronidazole",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "การติดเชื้อ anaerobic · รับประทาน",
+      "routes": [
+        "PO"
+      ],
+      "min": 10,
+      "max": 15,
+      "unit": "mg",
+      "source": "bsava2020",
+      "note": "ใช้เมื่อมีข้อบ่งใช้ติดเชื้อและเลือกตามผลเพาะเชื้อ/ความไวเมื่อเหมาะสม ไม่ใช้เป็นค่าเริ่มต้นสำหรับทุกเคส คำนวณปริมาตรได้เฉพาะยาน้ำที่ทราบความเข้มข้นจริง ไม่คำนวณจำนวนเม็ด เป็นช่วง standard dose ในตำรา ไม่ใช่รักษาท้องเสียทุกเคส; ติดตาม neurotoxicity และโรคตับ",
+      "schedule": "ทุก 12 ชั่วโมง",
+      "kind": "single",
+      "text": "",
+      "locator": "DOSES · หน้าไฟล์ PDF 279 · หน้าพิมพ์ 263",
+      "reviewedAt": "2026-10-11",
+      "reviewLabel": "ตำรา 2020 · บริบทเดิม",
+      "priority": 80,
+      "evidenceType": "textbook",
+      "sourceYear": "2020"
+    },
+    {
+      "id": "metronidazole-expanded-38",
+      "drug": "metronidazole",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "การติดเชื้อ anaerobic · IV infusion ช้า",
+      "routes": [
+        "IV"
+      ],
+      "min": 10,
+      "max": 15,
+      "unit": "mg",
+      "source": "bsava2020",
+      "note": "ใช้เมื่อมีข้อบ่งใช้ติดเชื้อและเลือกตามผลเพาะเชื้อ/ความไวเมื่อเหมาะสม ไม่ใช้เป็นค่าเริ่มต้นสำหรับทุกเคส ให้เป็น infusion ช้า ไม่ใช่ bolus เร็ว; สูตรผสม spiramycin ใช้ฐานและตารางต่างกัน",
+      "schedule": "ทุก 12 ชั่วโมง",
+      "kind": "single",
+      "text": "",
+      "locator": "DOSES · หน้าไฟล์ PDF 279 · หน้าพิมพ์ 263",
+      "reviewedAt": "2026-10-11",
+      "reviewLabel": "ตำรา 2020 · บริบทเดิม",
+      "priority": 80,
+      "evidenceType": "textbook",
+      "sourceYear": "2020"
+    },
+    {
+      "id": "trimethoprim-sulfamethoxazole-expanded-39",
+      "drug": "trimethoprim-sulfamethoxazole",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "การติดเชื้อที่ไวต่อยา · รับประทาน ฐานยารวม",
+      "routes": [
+        "PO"
+      ],
+      "min": 15,
+      "max": 30,
+      "unit": "mg",
+      "source": "bsava2020",
+      "note": "ใช้เมื่อมีข้อบ่งใช้ติดเชื้อและเลือกตามผลเพาะเชื้อ/ความไวเมื่อเหมาะสม ไม่ใช้เป็นค่าเริ่มต้นสำหรับทุกเคส คำนวณปริมาตรได้เฉพาะยาน้ำที่ทราบความเข้มข้นจริง ไม่คำนวณจำนวนเม็ด ใช้ผลรวม trimethoprim + sulfonamide ทั้ง dose และ concentration; ติดตามตาแห้ง ตับ เลือด และปฏิกิริยาแพ้",
+      "schedule": "ทุก 12 ชั่วโมง",
+      "kind": "single",
+      "text": "",
+      "locator": "DOSES · หน้าไฟล์ PDF 435 · หน้าพิมพ์ 419",
+      "basis": "combined",
+      "reviewedAt": "2026-10-11",
+      "reviewLabel": "ตำรา 2020 · บริบทเดิม",
+      "priority": 80,
+      "evidenceType": "textbook",
+      "sourceYear": "2020"
+    },
+    {
+      "id": "metoclopramide-expanded-40",
+      "drug": "metoclopramide",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "ลดอาเจียน / prokinetic · ทุก 12 ชั่วโมง",
+      "routes": [
+        "IV",
+        "IM",
+        "SC",
+        "PO"
+      ],
+      "min": 0.25,
+      "max": 0.5,
+      "unit": "mg",
+      "source": "bsava2020",
+      "note": "ไม่ใช้เมื่อสงสัยอุดตัน/ทะลุทางเดินอาหาร; แยกจาก CRI และบริบททุก 8 ชั่วโมง",
+      "schedule": "ทุก 12 ชั่วโมง",
+      "kind": "single",
+      "text": "",
+      "locator": "DOSES · หน้าไฟล์ PDF 278 · หน้าพิมพ์ 262",
+      "reviewedAt": "2026-10-11",
+      "reviewLabel": "ตำรา 2020 · บริบทเดิม",
+      "priority": 80,
+      "evidenceType": "textbook",
+      "sourceYear": "2020"
+    },
+    {
+      "id": "metoclopramide-expanded-41",
+      "drug": "metoclopramide",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "ลดอาเจียน / prokinetic · ทุก 8 ชั่วโมง",
+      "routes": [
+        "IV",
+        "IM",
+        "SC",
+        "PO"
+      ],
+      "min": 0.17,
+      "max": 0.33,
+      "unit": "mg",
+      "source": "bsava2020",
+      "note": "ไม่ใช้เมื่อสงสัยอุดตัน/ทะลุทางเดินอาหาร; ไม่ใช้ขนาด q12h กับตารางนี้",
+      "schedule": "ทุก 8 ชั่วโมง",
+      "kind": "single",
+      "text": "",
+      "locator": "DOSES · หน้าไฟล์ PDF 278 · หน้าพิมพ์ 262",
+      "reviewedAt": "2026-10-11",
+      "reviewLabel": "ตำรา 2020 · บริบทเดิม",
+      "priority": 80,
+      "evidenceType": "textbook",
+      "sourceYear": "2020"
+    },
+    {
+      "id": "omeprazole-expanded-42",
+      "drug": "omeprazole",
+      "species": [
+        "dog"
+      ],
+      "purpose": "ลดกรดในกระเพาะ",
+      "routes": [
+        "IV",
+        "PO"
+      ],
+      "min": 0.5,
+      "max": 1.5,
+      "unit": "mg",
+      "source": "bsava2020",
+      "note": "จากตำรา ไม่ใช่ยาลดอาเจียน; กำหนดความถี่/ระยะเวลาและสูตรให้เหมาะกับโรค",
+      "schedule": "ทุก 12–24 ชั่วโมง",
+      "kind": "single",
+      "text": "",
+      "locator": "DOSES · หน้าไฟล์ PDF 308 · หน้าพิมพ์ 292",
+      "reviewedAt": "2026-10-11",
+      "reviewLabel": "ตำรา 2020 · บริบทเดิม",
+      "priority": 80,
+      "evidenceType": "textbook",
+      "sourceYear": "2020"
+    },
+    {
+      "id": "omeprazole-expanded-43",
+      "drug": "omeprazole",
+      "species": [
+        "cat"
+      ],
+      "purpose": "ลดกรดในกระเพาะ",
+      "routes": [
+        "PO"
+      ],
+      "min": 0.75,
+      "max": 1,
+      "unit": "mg",
+      "source": "bsava2020",
+      "note": "คำนวณปริมาตรได้เฉพาะยาน้ำที่ทราบความเข้มข้นจริง ไม่คำนวณจำนวนเม็ด จากตำรา ไม่ใช่ IV ในแมวหรือยาลดอาเจียน",
+      "schedule": "ทุก 24 ชั่วโมง",
+      "kind": "single",
+      "text": "",
+      "locator": "DOSES · หน้าไฟล์ PDF 308 · หน้าพิมพ์ 292",
+      "reviewedAt": "2026-10-11",
+      "reviewLabel": "ตำรา 2020 · บริบทเดิม",
+      "priority": 80,
+      "evidenceType": "textbook",
+      "sourceYear": "2020"
+    },
+    {
+      "id": "famotidine-expanded-44",
+      "drug": "famotidine",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "ลดกรดในกระเพาะ · รับประทาน",
+      "routes": [
+        "PO"
+      ],
+      "min": 0.5,
+      "max": 1,
+      "unit": "mg",
+      "source": "bsava2020",
+      "note": "คำนวณปริมาตรได้เฉพาะยาน้ำที่ทราบความเข้มข้นจริง ไม่คำนวณจำนวนเม็ด ไม่ใช่ยาลดอาเจียน; ประเมินไตและลดประสิทธิผลเมื่อใช้ต่อเนื่อง",
+      "schedule": "ทุก 12–24 ชั่วโมง",
+      "kind": "single",
+      "text": "",
+      "locator": "DOSES · หน้าไฟล์ PDF 174 · หน้าพิมพ์ 158",
+      "reviewedAt": "2026-10-11",
+      "reviewLabel": "ตำรา 2020 · บริบทเดิม",
+      "priority": 80,
+      "evidenceType": "textbook",
+      "sourceYear": "2020"
+    },
+    {
+      "id": "pantoprazole-expanded-45",
+      "drug": "pantoprazole",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "ลดกรดในกระเพาะ · IV ช้า",
+      "routes": [
+        "IV"
+      ],
+      "min": 0.7,
+      "max": 1,
+      "unit": "mg",
+      "source": "bsava2020",
+      "note": "ไม่ใช้เป็น bolus เร็ว; ไม่ใส่ขนาด PO เพราะต้นทางระบุยังไม่กำหนดในสุนัข/แมว",
+      "schedule": "ให้ใน 15 นาที ทุก 24 ชั่วโมง",
+      "kind": "single",
+      "text": "",
+      "locator": "DOSES · หน้าไฟล์ PDF 318 · หน้าพิมพ์ 302",
+      "reviewedAt": "2026-10-11",
+      "reviewLabel": "ตำรา 2020 · บริบทเดิม",
+      "priority": 80,
+      "evidenceType": "textbook",
+      "sourceYear": "2020"
+    },
+    {
+      "id": "prednisolone-expanded-46",
+      "drug": "prednisolone",
+      "species": [
+        "dog"
+      ],
+      "purpose": "ต้านการอักเสบ · ขนาดเริ่มต้น",
+      "routes": [
+        "PO"
+      ],
+      "min": 0.5,
+      "max": 0.5,
+      "unit": "mg",
+      "source": "bsava2020",
+      "note": "คำนวณปริมาตรได้เฉพาะยาน้ำที่ทราบความเข้มข้นจริง ไม่คำนวณจำนวนเม็ด ไม่ใช่ immunosuppression; ปรับลดตามผล หลีกเลี่ยงร่วม NSAID ไม่หยุดทันทีเมื่อใช้ต่อเนื่อง",
+      "schedule": "ทุก 12–24 ชั่วโมง",
+      "kind": "single",
+      "text": "",
+      "locator": "DOSES · หน้าไฟล์ PDF 356 · หน้าพิมพ์ 340",
+      "reviewedAt": "2026-10-11",
+      "reviewLabel": "ตำรา 2020 · บริบทเดิม",
+      "priority": 80,
+      "evidenceType": "textbook",
+      "sourceYear": "2020"
+    },
+    {
+      "id": "prednisolone-expanded-47",
+      "drug": "prednisolone",
+      "species": [
+        "cat"
+      ],
+      "purpose": "ต้านการอักเสบ · ขนาดเริ่มต้น",
+      "routes": [
+        "PO"
+      ],
+      "min": 0.5,
+      "max": 1,
+      "unit": "mg",
+      "source": "bsava2020",
+      "note": "คำนวณปริมาตรได้เฉพาะยาน้ำที่ทราบความเข้มข้นจริง ไม่คำนวณจำนวนเม็ด ไม่ใช่ immunosuppression; ปรับลดตามผล หลีกเลี่ยงร่วม NSAID",
+      "schedule": "ทุก 12–24 ชั่วโมง",
+      "kind": "single",
+      "text": "",
+      "locator": "DOSES · หน้าไฟล์ PDF 357 · หน้าพิมพ์ 341",
+      "reviewedAt": "2026-10-11",
+      "reviewLabel": "ตำรา 2020 · บริบทเดิม",
+      "priority": 80,
+      "evidenceType": "textbook",
+      "sourceYear": "2020"
+    },
+    {
+      "id": "prednisolone-expanded-48",
+      "drug": "prednisolone",
+      "species": [
+        "dog"
+      ],
+      "purpose": "กดภูมิคุ้มกัน · ขนาดเริ่มต้น",
+      "routes": [
+        "PO"
+      ],
+      "min": 1,
+      "max": 2,
+      "unit": "mg",
+      "source": "bsava2020",
+      "note": "ใช้เมื่อมีข้อบ่งใช้โรค immune-mediated และแผนติดตาม/ปรับลด ไม่ใช่ขนาดต้านอักเสบทั่วไป",
+      "schedule": "ทุก 24 ชั่วโมง",
+      "kind": "single",
+      "text": "",
+      "locator": "DOSES · หน้าไฟล์ PDF 356 · หน้าพิมพ์ 340",
+      "reviewedAt": "2026-10-11",
+      "reviewLabel": "ตำรา 2020 · บริบทเดิม",
+      "priority": 80,
+      "evidenceType": "textbook",
+      "sourceYear": "2020"
+    },
+    {
+      "id": "prednisolone-expanded-49",
+      "drug": "prednisolone",
+      "species": [
+        "cat"
+      ],
+      "purpose": "กดภูมิคุ้มกัน · ขนาดเริ่มต้น",
+      "routes": [
+        "PO"
+      ],
+      "min": 1,
+      "max": 2,
+      "unit": "mg",
+      "source": "bsava2020",
+      "note": "เลือกความถี่และการลดขนาดแยกกันตามโรค; ไม่ใช้ร่วม NSAID",
+      "schedule": "ทุก 12–24 ชั่วโมง",
+      "kind": "single",
+      "text": "",
+      "locator": "DOSES · หน้าไฟล์ PDF 357 · หน้าพิมพ์ 341",
+      "reviewedAt": "2026-10-11",
+      "reviewLabel": "ตำรา 2020 · บริบทเดิม",
+      "priority": 80,
+      "evidenceType": "textbook",
+      "sourceYear": "2020"
+    },
+    {
+      "id": "dexamethasone-expanded-50",
+      "drug": "dexamethasone",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "ต้านการอักเสบระยะสั้น",
+      "routes": [
+        "IM",
+        "SC",
+        "PO"
+      ],
+      "min": 0.01,
+      "max": 0.16,
+      "unit": "mg",
+      "source": "bsava2020",
+      "note": "ใช้สูตรให้ตรง route/ฉลาก ไม่ใช่ suppression test หรือ shock dose; ไม่ร่วม NSAID",
+      "schedule": "ทุก 24 ชั่วโมง · ตำราจำกัด 3–5 วัน",
+      "kind": "single",
+      "text": "",
+      "locator": "DOSES · หน้าไฟล์ PDF 131 · หน้าพิมพ์ 115",
+      "reviewedAt": "2026-10-11",
+      "reviewLabel": "ตำรา 2020 · บริบทเดิม",
+      "priority": 80,
+      "evidenceType": "textbook",
+      "sourceYear": "2020"
+    },
+    {
+      "id": "methylprednisolone-expanded-51",
+      "drug": "methylprednisolone",
+      "species": [
+        "dog"
+      ],
+      "purpose": "ต้านการอักเสบ · รับประทาน",
+      "routes": [
+        "PO"
+      ],
+      "min": 0.2,
+      "max": 0.5,
+      "unit": "mg",
+      "source": "bsava2020",
+      "note": "คำนวณปริมาตรได้เฉพาะยาน้ำที่ทราบความเข้มข้นจริง ไม่คำนวณจำนวนเม็ด ไม่ใช่ acetate depot หรือ sodium succinate IV; ไม่ใช้ร่วม NSAID",
+      "schedule": "ทุก 12 ชั่วโมง",
+      "kind": "single",
+      "text": "",
+      "locator": "DOSES · หน้าไฟล์ PDF 276 · หน้าพิมพ์ 260",
+      "reviewedAt": "2026-10-11",
+      "reviewLabel": "ตำรา 2020 · บริบทเดิม",
+      "priority": 80,
+      "evidenceType": "textbook",
+      "sourceYear": "2020"
+    },
+    {
+      "id": "methylprednisolone-expanded-52",
+      "drug": "methylprednisolone",
+      "species": [
+        "cat"
+      ],
+      "purpose": "ต้านการอักเสบ · รับประทานเริ่มต้น",
+      "routes": [
+        "PO"
+      ],
+      "min": 1,
+      "max": 1,
+      "unit": "mg",
+      "source": "bsava2020",
+      "note": "คำนวณปริมาตรได้เฉพาะยาน้ำที่ทราบความเข้มข้นจริง ไม่คำนวณจำนวนเม็ด การลดขนาดต่อเนื่องในตำราเป็น mg/แมว จึงไม่เติมแผนลดอัตโนมัติ ไม่ใช้ร่วม NSAID",
+      "schedule": "ทุก 24 ชั่วโมง",
+      "kind": "single",
+      "text": "",
+      "locator": "DOSES · หน้าไฟล์ PDF 276 · หน้าพิมพ์ 260",
+      "reviewedAt": "2026-10-11",
+      "reviewLabel": "ตำรา 2020 · บริบทเดิม",
+      "priority": 80,
+      "evidenceType": "textbook",
+      "sourceYear": "2020"
+    },
+    {
+      "id": "methylprednisolone-expanded-53",
+      "drug": "methylprednisolone",
+      "species": [
+        "dog"
+      ],
+      "purpose": "ต้านอักเสบ · acetate depot IM",
+      "routes": [
+        "IM"
+      ],
+      "min": 1.1,
+      "max": 1.1,
+      "unit": "mg",
+      "source": "bsava2020",
+      "note": "เฉพาะ methylprednisolone acetate depot ไม่ใช้กับ succinate; ออกฤทธิ์นานและปรับลด/หยุดหลังฉีดไม่ได้",
+      "schedule": "ทุก 1–3 สัปดาห์ตามแผน",
+      "kind": "single",
+      "text": "",
+      "locator": "DOSES · หน้าไฟล์ PDF 276 · หน้าพิมพ์ 260",
+      "reviewedAt": "2026-10-11",
+      "reviewLabel": "ตำรา 2020 · บริบทเดิม",
+      "priority": 80,
+      "evidenceType": "textbook",
+      "sourceYear": "2020"
+    },
+    {
+      "id": "methylprednisolone-expanded-54",
+      "drug": "methylprednisolone",
+      "species": [
+        "cat"
+      ],
+      "purpose": "asthma · acetate depot IM จากตำรา",
+      "routes": [
+        "IM"
+      ],
+      "min": 1,
+      "max": 2,
+      "unit": "mg",
+      "source": "bsava2020",
+      "note": "เฉพาะ acetate depot; ประเมินทางเลือกที่ปรับขนาดได้และความเสี่ยงเบาหวาน ไม่ใช้กับ succinate",
+      "schedule": "ทุก 1–3 สัปดาห์ตามแผน",
+      "kind": "single",
+      "text": "",
+      "locator": "DOSES · หน้าไฟล์ PDF 276 · หน้าพิมพ์ 260",
+      "reviewedAt": "2026-10-11",
+      "reviewLabel": "ตำรา 2020 · บริบทเดิม",
+      "priority": 80,
+      "evidenceType": "textbook",
+      "sourceYear": "2020"
+    },
+    {
+      "id": "diphenhydramine-expanded-55",
+      "drug": "diphenhydramine",
+      "species": [
+        "cat"
+      ],
+      "purpose": "antihistamine · ฉีด",
+      "routes": [
+        "IV",
+        "IM"
+      ],
+      "min": 1,
+      "max": 1,
+      "unit": "mg",
+      "source": "bsava2020",
+      "note": "ติดตามความง่วง/ตื่นเต้น; ไม่ใช้แทน epinephrine ใน anaphylaxis",
+      "schedule": "ทุก 8 ชั่วโมง",
+      "kind": "single",
+      "text": "",
+      "locator": "DOSES · หน้าไฟล์ PDF 146 · หน้าพิมพ์ 130",
+      "reviewedAt": "2026-10-11",
+      "reviewLabel": "ตำรา 2020 · บริบทเดิม",
+      "priority": 80,
+      "evidenceType": "textbook",
+      "sourceYear": "2020"
+    },
+    {
+      "id": "chlorpheniramine-expanded-56",
+      "drug": "chlorpheniramine",
+      "species": [
+        "dog"
+      ],
+      "purpose": "antihistamine · PO ขนาดต่อสุนัข",
+      "routes": [
+        "PO"
+      ],
+      "min": null,
+      "max": null,
+      "unit": "mg",
+      "source": "bsava2020",
+      "note": "ต้นทางเป็นขนาดต่อสัตว์ ต้องกำหนดขนาดเอง ไม่แปลงเป็น mg/kg",
+      "schedule": "ทุก 8 ชั่วโมง",
+      "kind": "read",
+      "text": "4–8 mg/สุนัข ต่อครั้ง",
+      "locator": "DOSES · หน้าไฟล์ PDF 96 · หน้าพิมพ์ 80",
+      "reviewedAt": "2026-10-11",
+      "reviewLabel": "ตำรา 2020 · บริบทเดิม",
+      "priority": 80,
+      "evidenceType": "textbook",
+      "sourceYear": "2020"
+    },
+    {
+      "id": "chlorpheniramine-expanded-57",
+      "drug": "chlorpheniramine",
+      "species": [
+        "cat"
+      ],
+      "purpose": "antihistamine · PO ขนาดต่อแมว",
+      "routes": [
+        "PO"
+      ],
+      "min": null,
+      "max": null,
+      "unit": "mg",
+      "source": "bsava2020",
+      "note": "ต้นทางเป็นขนาดต่อสัตว์ ต้องกำหนดขนาดเอง ไม่แปลงเป็น mg/kg",
+      "schedule": "ทุก 8–12 ชั่วโมง",
+      "kind": "read",
+      "text": "2–4 mg/แมว ต่อครั้ง",
+      "locator": "DOSES · หน้าไฟล์ PDF 96 · หน้าพิมพ์ 80",
+      "reviewedAt": "2026-10-11",
+      "reviewLabel": "ตำรา 2020 · บริบทเดิม",
+      "priority": 80,
+      "evidenceType": "textbook",
+      "sourceYear": "2020"
+    },
+    {
+      "id": "pimobendan-expanded-58",
+      "drug": "pimobendan",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "หัวใจ · รับประทาน",
+      "routes": [
+        "PO"
+      ],
+      "min": 0.1,
+      "max": 0.3,
+      "unit": "mg",
+      "source": "bsava2020",
+      "note": "คำนวณปริมาตรได้เฉพาะยาน้ำที่ทราบความเข้มข้นจริง ไม่คำนวณจำนวนเม็ด แมวใช้ตามการประเมินและการอนุญาตผลิตภัณฑ์; ไม่ใช้ใน obstructive cardiomyopathy/aortic stenosis",
+      "schedule": "ทุก 12 ชั่วโมง · ก่อนอาหาร 1 ชั่วโมง",
+      "kind": "single",
+      "text": "",
+      "locator": "DOSES · หน้าไฟล์ PDF 343 · หน้าพิมพ์ 327",
+      "reviewedAt": "2026-10-11",
+      "reviewLabel": "ตำรา 2020 · บริบทเดิม",
+      "priority": 80,
+      "evidenceType": "textbook",
+      "sourceYear": "2020"
+    },
+    {
+      "id": "pimobendan-expanded-59",
+      "drug": "pimobendan",
+      "species": [
+        "dog"
+      ],
+      "purpose": "หัวใจ · IV ครั้งเดียว",
+      "routes": [
+        "IV"
+      ],
+      "min": 0.15,
+      "max": 0.15,
+      "unit": "mg",
+      "source": "bsava2020",
+      "note": "เฉพาะสูตร IV ที่อนุญาต ไม่ใช่ละลายยาเม็ดมาฉีด",
+      "schedule": "ครั้งเดียว; oral เริ่มต่อ 12 ชั่วโมงหลังฉีดตามแผน",
+      "kind": "single",
+      "text": "",
+      "locator": "DOSES · หน้าไฟล์ PDF 343 · หน้าพิมพ์ 327",
+      "reviewedAt": "2026-10-11",
+      "reviewLabel": "ตำรา 2020 · บริบทเดิม",
+      "priority": 80,
+      "evidenceType": "textbook",
+      "sourceYear": "2020"
+    },
+    {
+      "id": "enalapril-expanded-60",
+      "drug": "enalapril",
+      "species": [
+        "dog"
+      ],
+      "purpose": "โรคหัวใจ · รับประทานเริ่มต้น",
+      "routes": [
+        "PO"
+      ],
+      "min": 0.5,
+      "max": 0.5,
+      "unit": "mg",
+      "source": "bsava2020",
+      "note": "ติดตามไต โพแทสเซียมและความดัน; ปรับความถี่ตามผลโดยผู้ดูแล",
+      "schedule": "ทุก 24 ชั่วโมง",
+      "kind": "single",
+      "text": "",
+      "locator": "DOSES · หน้าไฟล์ PDF 162 · หน้าพิมพ์ 146",
+      "reviewedAt": "2026-10-11",
+      "reviewLabel": "ตำรา 2020 · บริบทเดิม",
+      "priority": 80,
+      "evidenceType": "textbook",
+      "sourceYear": "2020"
+    },
+    {
+      "id": "enalapril-expanded-61",
+      "drug": "enalapril",
+      "species": [
+        "cat"
+      ],
+      "purpose": "โรคหัวใจ / protein-losing nephropathy",
+      "routes": [
+        "PO"
+      ],
+      "min": 0.25,
+      "max": 0.5,
+      "unit": "mg",
+      "source": "bsava2020",
+      "note": "ติดตามไต โพแทสเซียมและความดัน ไม่ใช้กับผู้ป่วยขาดน้ำ/ไหลเวียนไม่พอโดยไม่ประเมิน",
+      "schedule": "ทุก 12–24 ชั่วโมง",
+      "kind": "single",
+      "text": "",
+      "locator": "DOSES · หน้าไฟล์ PDF 162 · หน้าพิมพ์ 146",
+      "reviewedAt": "2026-10-11",
+      "reviewLabel": "ตำรา 2020 · บริบทเดิม",
+      "priority": 80,
+      "evidenceType": "textbook",
+      "sourceYear": "2020"
+    },
+    {
+      "id": "benazepril-expanded-62",
+      "drug": "benazepril",
+      "species": [
+        "dog"
+      ],
+      "purpose": "หัวใจล้มเหลว",
+      "routes": [
+        "PO"
+      ],
+      "min": 0.25,
+      "max": 0.5,
+      "unit": "mg",
+      "source": "bsava2020",
+      "note": "ติดตามไต โพแทสเซียมและความดัน",
+      "schedule": "ทุก 24 ชั่วโมง",
+      "kind": "single",
+      "text": "",
+      "locator": "DOSES · หน้าไฟล์ PDF 59 · หน้าพิมพ์ 43",
+      "reviewedAt": "2026-10-11",
+      "reviewLabel": "ตำรา 2020 · บริบทเดิม",
+      "priority": 80,
+      "evidenceType": "textbook",
+      "sourceYear": "2020"
+    },
+    {
+      "id": "benazepril-expanded-63",
+      "drug": "benazepril",
+      "species": [
+        "cat"
+      ],
+      "purpose": "proteinuria ในโรคไตเรื้อรัง",
+      "routes": [
+        "PO"
+      ],
+      "min": 0.5,
+      "max": 1,
+      "unit": "mg",
+      "source": "bsava2020",
+      "note": "ประเมิน proteinuria ไต โพแทสเซียม ความดัน และภาวะขาดน้ำ ไม่ใช่ขนาดหัวใจล้มเหลว",
+      "schedule": "ทุก 24 ชั่วโมง",
+      "kind": "single",
+      "text": "",
+      "locator": "DOSES · หน้าไฟล์ PDF 59 · หน้าพิมพ์ 43",
+      "reviewedAt": "2026-10-11",
+      "reviewLabel": "ตำรา 2020 · บริบทเดิม",
+      "priority": 80,
+      "evidenceType": "textbook",
+      "sourceYear": "2020"
+    },
+    {
+      "id": "benazepril-expanded-64",
+      "drug": "benazepril",
+      "species": [
+        "cat"
+      ],
+      "purpose": "ยาเสริมในหัวใจล้มเหลว",
+      "routes": [
+        "PO"
+      ],
+      "min": 0.25,
+      "max": 0.5,
+      "unit": "mg",
+      "source": "bsava2020",
+      "note": "ติดตามไต โพแทสเซียมและความดัน",
+      "schedule": "ทุก 24 ชั่วโมง",
+      "kind": "single",
+      "text": "",
+      "locator": "DOSES · หน้าไฟล์ PDF 59 · หน้าพิมพ์ 43",
+      "reviewedAt": "2026-10-11",
+      "reviewLabel": "ตำรา 2020 · บริบทเดิม",
+      "priority": 80,
+      "evidenceType": "textbook",
+      "sourceYear": "2020"
+    },
+    {
+      "id": "amlodipine-expanded-65",
+      "drug": "amlodipine",
+      "species": [
+        "dog"
+      ],
+      "purpose": "ความดันสูง · ขนาดเริ่มต้น",
+      "routes": [
+        "PO"
+      ],
+      "min": 0.05,
+      "max": 0.1,
+      "unit": "mg",
+      "source": "bsava2020",
+      "note": "ตรวจความดันและปรับตามผล ขนาดนี้เริ่มต้น ไม่ใช่เพดานขนาด; ประเมินตับ/ยาลดความดันร่วม",
+      "schedule": "ทุก 12–24 ชั่วโมง",
+      "kind": "single",
+      "text": "",
+      "locator": "DOSES · หน้าไฟล์ PDF 40 · หน้าพิมพ์ 24",
+      "reviewedAt": "2026-10-11",
+      "reviewLabel": "ตำรา 2020 · บริบทเดิม",
+      "priority": 80,
+      "evidenceType": "textbook",
+      "sourceYear": "2020"
+    },
+    {
+      "id": "amlodipine-expanded-66",
+      "drug": "amlodipine",
+      "species": [
+        "cat"
+      ],
+      "purpose": "ความดันสูง · เริ่มต้นตาม SPC",
+      "routes": [
+        "PO"
+      ],
+      "min": 0.125,
+      "max": 0.25,
+      "unit": "mg",
+      "source": "vmd_amodip",
+      "note": "คำนวณปริมาตรได้เฉพาะยาน้ำที่ทราบความเข้มข้นจริง ไม่คำนวณจำนวนเม็ด SPC นี้สำหรับแมว ≥2.5 kg; ยืนยันความดันสูงและติดตาม ไม่เพิ่มขนาดอัตโนมัติ ห้ามใช้ cardiogenic shock/severe aortic stenosis/severe hepatic failure",
+      "schedule": "ทุก 24 ชั่วโมง",
+      "kind": "single",
+      "text": "",
+      "locator": "§3.3, 3.5, 3.9 · PDF หน้า 1–4",
+      "minWeight": 2.5,
+      "reviewedAt": "2026-10-11",
+      "priority": 20,
+      "evidenceType": "label",
+      "sourceYear": "2025-09"
+    },
+    {
+      "id": "spironolactone-expanded-67",
+      "drug": "spironolactone",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "ยาเสริมในหัวใจล้มเหลว",
+      "routes": [
+        "PO"
+      ],
+      "min": 2,
+      "max": 4,
+      "unit": "mg",
+      "source": "bsava2020",
+      "note": "ติดตามโพแทสเซียม ไต ความดันและ ACE inhibitor ที่ใช้ร่วม ไม่ใช้แทน loop diuretic ในภาวะฉุกเฉิน",
+      "schedule": "ทุก 24 ชั่วโมง",
+      "kind": "single",
+      "text": "",
+      "locator": "DOSES · หน้าไฟล์ PDF 402 · หน้าพิมพ์ 386",
+      "reviewedAt": "2026-10-11",
+      "reviewLabel": "ตำรา 2020 · บริบทเดิม",
+      "priority": 80,
+      "evidenceType": "textbook",
+      "sourceYear": "2020"
+    },
+    {
+      "id": "metoclopramide-expanded-68",
+      "drug": "metoclopramide",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "อัตราหยดตามตำรา · ขนาดรวม 24 ชั่วโมง",
+      "routes": [
+        "IV"
+      ],
+      "min": null,
+      "max": null,
+      "unit": "mg",
+      "source": "bsava2020",
+      "note": "ต้องแปลงเป็นหน่วยต่อชั่วโมงในแท็บ CRI โดยผู้ดูแล; ไม่เติม 1–2 เป็น mg/kg/h · มีบริบท CRI อัตราต่อชั่วโมง Merck 2025 ให้เลือกแยกในแท็บ CRI; ห้ามรวมช่วงต่างแหล่ง",
+      "schedule": "",
+      "kind": "read",
+      "text": "1–2 mg/kg รวมใน 24 ชั่วโมง · IV CRI",
+      "locator": "DOSES · หน้าไฟล์ PDF 278 · หน้าพิมพ์ 262",
+      "reviewedAt": "2026-10-11",
+      "reviewLabel": "ตำรา 2020 · บริบทเดิม",
+      "priority": 80,
+      "evidenceType": "textbook",
+      "sourceYear": "2020"
+    },
+    {
+      "id": "dobutamine-expanded-69",
+      "drug": "dobutamine",
+      "species": [
+        "dog"
+      ],
+      "purpose": "พยุงการบีบตัวหัวใจ · ช่วงเริ่มต้น · ดูแท็บ CRI",
+      "routes": [
+        "IV"
+      ],
+      "min": null,
+      "max": null,
+      "unit": "mg",
+      "source": "bsava2020",
+      "note": "ปรับช้า ๆ ตามผล ECG/ความดัน; ตำรามีช่วงสูงกว่า แต่ไม่ตั้งไว้เป็นค่าเริ่มต้น · ให้โดยปั๊มและติดตามผู้ป่วยตามข้อบ่งใช้ แผน loading dose แยกต่างหาก · เลือกอ้างอิงในแท็บ CRI ไม่เติมเป็นโดสต่อครั้ง",
+      "schedule": "",
+      "kind": "read",
+      "text": "2.5–5 mcg/kg/min · IV CRI",
+      "locator": "DOSES · หน้าไฟล์ PDF 148 · หน้าพิมพ์ 132",
+      "reviewedAt": "2026-10-11",
+      "reviewLabel": "ตำรา 2020 · บริบทเดิม",
+      "priority": 80,
+      "evidenceType": "textbook",
+      "sourceYear": "2020"
+    },
+    {
+      "id": "dobutamine-expanded-70",
+      "drug": "dobutamine",
+      "species": [
+        "cat"
+      ],
+      "purpose": "พยุงการบีบตัวหัวใจ · ดูแท็บ CRI",
+      "routes": [
+        "IV"
+      ],
+      "min": null,
+      "max": null,
+      "unit": "mg",
+      "source": "bsava2020",
+      "note": "แมวพบ adverse effects มากขึ้นเมื่อ >2.5 mcg/kg/min; ช่วงนี้ไม่ยืนยันว่าทุกค่าเหมาะกับผู้ป่วย · ให้โดยปั๊มและติดตามผู้ป่วยตามข้อบ่งใช้ แผน loading dose แยกต่างหาก · เลือกอ้างอิงในแท็บ CRI ไม่เติมเป็นโดสต่อครั้ง",
+      "schedule": "",
+      "kind": "read",
+      "text": "1–5 mcg/kg/min · IV CRI",
+      "locator": "DOSES · หน้าไฟล์ PDF 148 · หน้าพิมพ์ 132",
+      "reviewedAt": "2026-10-11",
+      "reviewLabel": "ตำรา 2020 · บริบทเดิม",
+      "priority": 80,
+      "evidenceType": "textbook",
+      "sourceYear": "2020"
+    },
+    {
+      "id": "norepinephrine-expanded-71",
+      "drug": "norepinephrine",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "vasopressor หลังประเมิน volume และหัวใจ · ดูแท็บ CRI",
+      "routes": [
+        "IV"
+      ],
+      "min": null,
+      "max": null,
+      "unit": "mg",
+      "source": "merck_critical",
+      "note": "ปรับตามความดันและ perfusion; ไม่ใช่ bolus/CPR และไม่ใช้แทนการประเมิน volume · ให้โดยปั๊มและติดตามผู้ป่วยตามข้อบ่งใช้ แผน loading dose แยกต่างหาก · เลือกอ้างอิงในแท็บ CRI ไม่เติมเป็นโดสต่อครั้ง",
+      "schedule": "",
+      "kind": "read",
+      "text": "0.05–2 mcg/kg/min · IV CRI",
+      "locator": "Blood pressure / vasopressor IV CRI paragraph",
+      "reviewedAt": "2026-10-11",
+      "priority": 20,
+      "evidenceType": "manual",
+      "sourceYear": "2026-02"
+    },
+    {
+      "id": "marbofloxacin-review21-1",
+      "drug": "marbofloxacin",
+      "species": [
+        "dog"
+      ],
+      "purpose": "Pyoderma · Staphylococcus · ISCAID 2025",
+      "routes": [
+        "PO"
+      ],
+      "min": 5.5,
+      "max": 5.5,
+      "unit": "mg",
+      "source": "iscaid_skin2025",
+      "locator": "Tables 14–15 · pp.266–268 · PDF pages 33–35; Table 15 fluoroquinolone comments",
+      "schedule": "ทุก 24 ชั่วโมง",
+      "note": "เฉพาะ canine pyoderma เมื่อมีข้อบ่งใช้ systemic antibiotic; ประเมิน cytology และผลเพาะเชื้อ/ความไว ไม่ใช้กับแมวหรือโรคอื่นโดยยืมขนาดนี้ ยาทางเลือกอันดับสอง: ใช้เมื่อผลเพาะเชื้อยืนยันไวต่อยาและยาทางเลือกแรกไม่เหมาะสม Table 15 แสดงช่วง 2.75–5.5 แต่คำอธิบายแนะนำขั้นต่ำ 5.5 mg/kg สำหรับ Staphylococcus; บริบทนี้จึงไม่ให้เลือก 2–5 mg/kg และไม่อนุมานโดสสูงกว่า 5.5",
+      "kind": "single",
+      "text": "",
+      "reviewedAt": "2026-10-11",
+      "priority": 10,
+      "evidenceType": "guideline",
+      "sourceYear": "2025"
+    },
+    {
+      "id": "marbofloxacin-review21-2",
+      "drug": "marbofloxacin",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "ติดเชื้อที่ตรงฉลาก · ช่วงขนาด Zeniquin US",
+      "routes": [
+        "PO"
+      ],
+      "min": 2.75,
+      "max": 5.5,
+      "unit": "mg",
+      "source": "zeniquin_us",
+      "locator": "PDF page 2 · Contraindications; Dosage and Administration; 1.25–2.5 mg/lb/day",
+      "schedule": "ทุก 24 ชั่วโมง",
+      "note": "ฉลากระบุ 1.25–2.5 mg/lb เทียบตามฉลากเป็น 2.75–5.5 mg/kg; แยกจาก pyoderma guideline 2025 · ห้ามใช้ในแมวอายุน้อยกว่า 12 เดือน; สุนัขเล็ก/กลาง <8 เดือน ใหญ่ <12 เดือน ยักษ์ <18 เดือน · ยาชนิดเม็ดต้องตรวจความแรงและจำนวนเม็ดเอง ไม่สมมติความเข้มข้น mg/mL",
+      "kind": "single",
+      "text": "",
+      "reviewedAt": "2026-10-11",
+      "priority": 15,
+      "evidenceType": "label",
+      "sourceYear": "ไม่ระบุปีแก้ไข"
+    },
+    {
+      "id": "enrofloxacin-review21-3",
+      "drug": "enrofloxacin",
+      "species": [
+        "dog"
+      ],
+      "purpose": "Pyoderma · Staphylococcus · ISCAID 2025",
+      "routes": [
+        "PO"
+      ],
+      "min": 10,
+      "max": 20,
+      "unit": "mg",
+      "source": "iscaid_skin2025",
+      "locator": "Tables 14–15 · pp.266–268 · PDF pages 33–35; Table 15 fluoroquinolone comments",
+      "schedule": "ทุก 24 ชั่วโมง",
+      "note": "เฉพาะ canine pyoderma เมื่อมีข้อบ่งใช้ systemic antibiotic; ประเมิน cytology และผลเพาะเชื้อ/ความไว ไม่ใช้กับแมวหรือโรคอื่นโดยยืมขนาดนี้ ยาทางเลือกอันดับสอง: ใช้เมื่อผลเพาะเชื้อยืนยันไวต่อยาและยาทางเลือกแรกไม่เหมาะสม ช่วงตามฉลาก 5–20 แต่ guideline แนะนำขั้นต่ำ 10 mg/kg สำหรับ Staphylococcus; ไม่ยืมช่วงนี้ให้แมว",
+      "kind": "single",
+      "text": "",
+      "reviewedAt": "2026-10-11",
+      "priority": 10,
+      "evidenceType": "guideline",
+      "sourceYear": "2025"
+    },
+    {
+      "id": "enrofloxacin-review21-4",
+      "drug": "enrofloxacin",
+      "species": [
+        "dog"
+      ],
+      "purpose": "Pyoderma · P. aeruginosa · ISCAID 2025",
+      "routes": [
+        "PO"
+      ],
+      "min": 20,
+      "max": 20,
+      "unit": "mg",
+      "source": "iscaid_skin2025",
+      "locator": "Tables 14–15 · pp.266–268 · PDF pages 33–35; Table 15 fluoroquinolone comments",
+      "schedule": "ทุก 24 ชั่วโมง",
+      "note": "เฉพาะ canine pyoderma เมื่อมีข้อบ่งใช้ systemic antibiotic; ประเมิน cytology และผลเพาะเชื้อ/ความไว ไม่ใช้กับแมวหรือโรคอื่นโดยยืมขนาดนี้ ยาทางเลือกอันดับสอง: ใช้เมื่อผลเพาะเชื้อยืนยันไวต่อยาและยาทางเลือกแรกไม่เหมาะสม ใช้เมื่อเชื้อและผลความไวเหมาะสม; ไม่ใช้เป็นโดสทั่วไปสำหรับทุกเชื้อ",
+      "kind": "single",
+      "text": "",
+      "reviewedAt": "2026-10-11",
+      "priority": 10,
+      "evidenceType": "guideline",
+      "sourceYear": "2025"
+    },
+    {
+      "id": "enrofloxacin-review21-5",
+      "drug": "enrofloxacin",
+      "species": [
+        "dog"
+      ],
+      "purpose": "ติดเชื้อที่ตรงฉลาก · Baytril US",
+      "routes": [
+        "PO"
+      ],
+      "min": 5,
+      "max": 20,
+      "unit": "mg",
+      "source": "baytril_us",
+      "locator": "Product information · dosing for dogs versus cats",
+      "schedule": "ทุก 24 ชั่วโมง",
+      "note": "ช่วงขนาดสุนัข; เลือกตามเชื้อ/ความรุนแรงและผลความไว ไม่ใช่ช่วงขนาดแมว",
+      "kind": "single",
+      "text": "",
+      "reviewedAt": "2026-10-11",
+      "priority": 15,
+      "evidenceType": "label",
+      "sourceYear": "ไม่ระบุปีแก้ไข"
+    },
+    {
+      "id": "enrofloxacin-review21-6",
+      "drug": "enrofloxacin",
+      "species": [
+        "cat"
+      ],
+      "purpose": "ติดเชื้อที่ตรงฉลาก · Baytril US · แมว",
+      "routes": [
+        "PO"
+      ],
+      "min": 5,
+      "max": 5,
+      "unit": "mg",
+      "source": "baytril_us",
+      "locator": "Product information · dosing for dogs versus cats",
+      "schedule": "ทุก 24 ชั่วโมง",
+      "note": "ขนาดรวมต่อวัน 5 mg/kg; ห้ามยืมช่วงสุนัข 5–20 mg/kg มาใช้ในแมว เฝ้าระวังพิษต่อจอตา",
+      "kind": "single",
+      "text": "",
+      "reviewedAt": "2026-10-11",
+      "priority": 15,
+      "evidenceType": "label",
+      "sourceYear": "ไม่ระบุปีแก้ไข"
+    },
+    {
+      "id": "cephalexin-review21-7",
+      "drug": "cephalexin",
+      "species": [
+        "dog"
+      ],
+      "purpose": "Pyoderma · ISCAID 2025",
+      "routes": [
+        "PO"
+      ],
+      "min": 22,
+      "max": 25,
+      "unit": "mg",
+      "source": "iscaid_skin2025",
+      "locator": "Tables 14–15 · pp.266–268 · PDF pages 33–35; Table 15 fluoroquinolone comments",
+      "schedule": "ทุก 12 ชั่วโมง",
+      "note": "เฉพาะ canine pyoderma เมื่อมีข้อบ่งใช้ systemic antibiotic; ประเมิน cytology และผลเพาะเชื้อ/ความไว ไม่ใช้กับแมวหรือโรคอื่นโดยยืมขนาดนี้ เป็น first-choice เมื่อเชื้อและผู้ป่วยเหมาะสม ไม่รวมช่วงตำราอื่นเป็น 15–30",
+      "kind": "single",
+      "text": "",
+      "reviewedAt": "2026-10-11",
+      "priority": 10,
+      "evidenceType": "guideline",
+      "sourceYear": "2025"
+    },
+    {
+      "id": "clindamycin-review21-8",
+      "drug": "clindamycin",
+      "species": [
+        "dog"
+      ],
+      "purpose": "Pyoderma · ISCAID 2025",
+      "routes": [
+        "PO"
+      ],
+      "min": 11,
+      "max": 11,
+      "unit": "mg",
+      "source": "iscaid_skin2025",
+      "locator": "Tables 14–15 · pp.266–268 · PDF pages 33–35; Table 15 fluoroquinolone comments",
+      "schedule": "ทุก 12 ชั่วโมง",
+      "note": "เฉพาะ canine pyoderma เมื่อมีข้อบ่งใช้ systemic antibiotic; ประเมิน cytology และผลเพาะเชื้อ/ความไว ไม่ใช้กับแมวหรือโรคอื่นโดยยืมขนาดนี้ แนวทางเลือก 11 mg/kg ทุก 12 ชั่วโมง แม้มีรายงานผลที่ 5.5; ตรวจ inducible resistance เมื่อเกี่ยวข้อง",
+      "kind": "single",
+      "text": "",
+      "reviewedAt": "2026-10-11",
+      "priority": 10,
+      "evidenceType": "guideline",
+      "sourceYear": "2025"
+    },
+    {
+      "id": "amoxicillin-clavulanate-review21-9",
+      "drug": "amoxicillin-clavulanate",
+      "species": [
+        "dog"
+      ],
+      "purpose": "Pyoderma · ISCAID 2025 · ฐานยารวม",
+      "routes": [
+        "PO"
+      ],
+      "min": 12.5,
+      "max": 12.5,
+      "unit": "mg",
+      "source": "iscaid_skin2025",
+      "locator": "Tables 14–15 · pp.266–268 · PDF pages 33–35; Table 15 fluoroquinolone comments",
+      "schedule": "ทุก 12 ชั่วโมง",
+      "note": "เฉพาะ canine pyoderma เมื่อมีข้อบ่งใช้ systemic antibiotic; ประเมิน cytology และผลเพาะเชื้อ/ความไว ไม่ใช้กับแมวหรือโรคอื่นโดยยืมขนาดนี้ ใช้ฐานตัวยารวม: ผลรวม amoxicillin + clavulanate; ความเข้มข้นที่กรอกต้องเป็นฐานรวมเดียวกัน ",
+      "kind": "single",
+      "text": "",
+      "reviewedAt": "2026-10-11",
+      "basis": "combined",
+      "priority": 10,
+      "evidenceType": "guideline",
+      "sourceYear": "2025"
+    },
+    {
+      "id": "cefovecin-review21-10",
+      "drug": "cefovecin",
+      "species": [
+        "dog"
+      ],
+      "purpose": "Pyoderma · ISCAID 2025 · long acting",
+      "routes": [
+        "SC"
+      ],
+      "min": 8,
+      "max": 8,
+      "unit": "mg",
+      "source": "iscaid_skin2025",
+      "locator": "Tables 14–15 · pp.266–268 · PDF pages 33–35; Table 15 fluoroquinolone comments",
+      "schedule": "ครั้งเดียว; ประเมินผลก่อนพิจารณาซ้ำหลัง 14 วัน",
+      "note": "เฉพาะ canine pyoderma เมื่อมีข้อบ่งใช้ systemic antibiotic; ประเมิน cytology และผลเพาะเชื้อ/ความไว ไม่ใช้กับแมวหรือโรคอื่นโดยยืมขนาดนี้ ยาทางเลือกอันดับสอง: ใช้เมื่อผลเพาะเชื้อยืนยันไวต่อยาและยาทางเลือกแรกไม่เหมาะสม ไม่ตั้งฉีดซ้ำอัตโนมัติ",
+      "kind": "single",
+      "text": "",
+      "reviewedAt": "2026-10-11",
+      "priority": 10,
+      "evidenceType": "guideline",
+      "sourceYear": "2025"
+    },
+    {
+      "id": "doxycycline-review21-11",
+      "drug": "doxycycline",
+      "species": [
+        "dog"
+      ],
+      "purpose": "Pyoderma · ISCAID 2025 · แบ่งสองครั้ง",
+      "routes": [
+        "PO"
+      ],
+      "min": 5,
+      "max": 5,
+      "unit": "mg",
+      "source": "iscaid_skin2025",
+      "locator": "Tables 14–15 · pp.266–268 · PDF pages 33–35; Table 15 fluoroquinolone comments",
+      "schedule": "ทุก 12 ชั่วโมง",
+      "note": "เฉพาะ canine pyoderma เมื่อมีข้อบ่งใช้ systemic antibiotic; ประเมิน cytology และผลเพาะเชื้อ/ความไว ไม่ใช้กับแมวหรือโรคอื่นโดยยืมขนาดนี้ ยาทางเลือกอันดับสอง: ใช้เมื่อผลเพาะเชื้อยืนยันไวต่อยาและยาทางเลือกแรกไม่เหมาะสม ",
+      "kind": "single",
+      "text": "",
+      "reviewedAt": "2026-10-11",
+      "priority": 10,
+      "evidenceType": "guideline",
+      "sourceYear": "2025"
+    },
+    {
+      "id": "doxycycline-review21-12",
+      "drug": "doxycycline",
+      "species": [
+        "dog"
+      ],
+      "purpose": "Pyoderma · ISCAID 2025 · วันละครั้ง",
+      "routes": [
+        "PO"
+      ],
+      "min": 10,
+      "max": 10,
+      "unit": "mg",
+      "source": "iscaid_skin2025",
+      "locator": "Tables 14–15 · pp.266–268 · PDF pages 33–35; Table 15 fluoroquinolone comments",
+      "schedule": "ทุก 24 ชั่วโมง",
+      "note": "เฉพาะ canine pyoderma เมื่อมีข้อบ่งใช้ systemic antibiotic; ประเมิน cytology และผลเพาะเชื้อ/ความไว ไม่ใช้กับแมวหรือโรคอื่นโดยยืมขนาดนี้ ยาทางเลือกอันดับสอง: ใช้เมื่อผลเพาะเชื้อยืนยันไวต่อยาและยาทางเลือกแรกไม่เหมาะสม ",
+      "kind": "single",
+      "text": "",
+      "reviewedAt": "2026-10-11",
+      "priority": 10,
+      "evidenceType": "guideline",
+      "sourceYear": "2025"
+    },
+    {
+      "id": "trimethoprim-sulfamethoxazole-review21-13",
+      "drug": "trimethoprim-sulfamethoxazole",
+      "species": [
+        "dog"
+      ],
+      "purpose": "Pyoderma · ISCAID 2025 · แบ่งสองครั้ง",
+      "routes": [
+        "PO"
+      ],
+      "min": 15,
+      "max": 15,
+      "unit": "mg",
+      "source": "iscaid_skin2025",
+      "locator": "Tables 14–15 · pp.266–268 · PDF pages 33–35; Table 15 fluoroquinolone comments",
+      "schedule": "ทุก 12 ชั่วโมง",
+      "note": "เฉพาะ canine pyoderma เมื่อมีข้อบ่งใช้ systemic antibiotic; ประเมิน cytology และผลเพาะเชื้อ/ความไว ไม่ใช้กับแมวหรือโรคอื่นโดยยืมขนาดนี้ ยาทางเลือกอันดับสอง: ใช้เมื่อผลเพาะเชื้อยืนยันไวต่อยาและยาทางเลือกแรกไม่เหมาะสม ฐานยารวม trimethoprim + sulfamethoxazole; ความเข้มข้นต้องเป็นผลรวมตรงกัน ระวัง KCS และปฏิกิริยาไม่พึงประสงค์ ",
+      "kind": "single",
+      "text": "",
+      "reviewedAt": "2026-10-11",
+      "basis": "combined",
+      "priority": 10,
+      "evidenceType": "guideline",
+      "sourceYear": "2025"
+    },
+    {
+      "id": "trimethoprim-sulfamethoxazole-review21-14",
+      "drug": "trimethoprim-sulfamethoxazole",
+      "species": [
+        "dog"
+      ],
+      "purpose": "Pyoderma · ISCAID 2025 · วันละครั้ง",
+      "routes": [
+        "PO"
+      ],
+      "min": 30,
+      "max": 30,
+      "unit": "mg",
+      "source": "iscaid_skin2025",
+      "locator": "Tables 14–15 · pp.266–268 · PDF pages 33–35; Table 15 fluoroquinolone comments",
+      "schedule": "ทุก 24 ชั่วโมง",
+      "note": "เฉพาะ canine pyoderma เมื่อมีข้อบ่งใช้ systemic antibiotic; ประเมิน cytology และผลเพาะเชื้อ/ความไว ไม่ใช้กับแมวหรือโรคอื่นโดยยืมขนาดนี้ ยาทางเลือกอันดับสอง: ใช้เมื่อผลเพาะเชื้อยืนยันไวต่อยาและยาทางเลือกแรกไม่เหมาะสม ฐานยารวม trimethoprim + sulfamethoxazole; ความเข้มข้นต้องเป็นผลรวมตรงกัน ระวัง KCS และปฏิกิริยาไม่พึงประสงค์ ",
+      "kind": "single",
+      "text": "",
+      "reviewedAt": "2026-10-11",
+      "basis": "combined",
+      "priority": 10,
+      "evidenceType": "guideline",
+      "sourceYear": "2025"
+    },
+    {
+      "id": "amoxicillin-review21-15",
+      "drug": "amoxicillin",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "Sporadic bacterial cystitis · ISCAID 2019",
+      "routes": [
+        "PO"
+      ],
+      "min": 11,
+      "max": 15,
+      "unit": "mg",
+      "source": "iscaid_uti2019",
+      "locator": "Table 3 · pp.11–12 · PDF pages 5–6",
+      "schedule": "ทุก 8–12 ชั่วโมง",
+      "note": "บริบท urinary infection จาก ISCAID 2019 ซึ่งยังลงรายการที่เว็บไซต์องค์กร ณ วันที่ตรวจ; เลือกยาตามโรค/ผลเพาะเชื้อและกำหนดระยะเวลาแยก ไม่ใช้ขนาดนี้เป็น pyelonephritis หรือ prostatitis",
+      "kind": "single",
+      "text": "",
+      "reviewedAt": "2026-10-11",
+      "priority": 15,
+      "evidenceType": "guideline",
+      "sourceYear": "2019"
+    },
+    {
+      "id": "amoxicillin-clavulanate-review21-16",
+      "drug": "amoxicillin-clavulanate",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "Bacterial cystitis · ISCAID 2019 · ฐานยารวม",
+      "routes": [
+        "PO"
+      ],
+      "min": 12.5,
+      "max": 25,
+      "unit": "mg",
+      "source": "iscaid_uti2019",
+      "locator": "Table 3 · pp.11–12 · PDF pages 5–6",
+      "schedule": "ทุก 12 ชั่วโมง",
+      "note": "บริบท urinary infection จาก ISCAID 2019 ซึ่งยังลงรายการที่เว็บไซต์องค์กร ณ วันที่ตรวจ; เลือกยาตามโรค/ผลเพาะเชื้อและกำหนดระยะเวลาแยก ใช้ฐานตัวยารวม: ผลรวม amoxicillin + clavulanate; ความเข้มข้นที่กรอกต้องเป็นฐานรวมเดียวกัน ไม่ใช้เป็น pyelonephritis/prostatitis",
+      "kind": "single",
+      "text": "",
+      "reviewedAt": "2026-10-11",
+      "basis": "combined",
+      "priority": 15,
+      "evidenceType": "guideline",
+      "sourceYear": "2019"
+    },
+    {
+      "id": "cephalexin-review21-17",
+      "drug": "cephalexin",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "Urinary infection · ISCAID 2019",
+      "routes": [
+        "PO"
+      ],
+      "min": 12,
+      "max": 25,
+      "unit": "mg",
+      "source": "iscaid_uti2019",
+      "locator": "Table 3 · pp.11–12 · PDF pages 5–6",
+      "schedule": "ทุก 12 ชั่วโมง",
+      "note": "บริบท urinary infection จาก ISCAID 2019 ซึ่งยังลงรายการที่เว็บไซต์องค์กร ณ วันที่ตรวจ; เลือกยาตามโรค/ผลเพาะเชื้อและกำหนดระยะเวลาแยก ตรวจความไว ไม่ใช้กับ Enterococcus",
+      "kind": "single",
+      "text": "",
+      "reviewedAt": "2026-10-11",
+      "priority": 15,
+      "evidenceType": "guideline",
+      "sourceYear": "2019"
+    },
+    {
+      "id": "cefovecin-review21-18",
+      "drug": "cefovecin",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "Urinary infection · oral therapy ทำไม่ได้",
+      "routes": [
+        "SC"
+      ],
+      "min": 8,
+      "max": 8,
+      "unit": "mg",
+      "source": "iscaid_uti2019",
+      "locator": "Table 3 · pp.11–12 · PDF pages 5–6",
+      "schedule": "ฉีดครั้งเดียว; การซ้ำต้องพิจารณารายเคส",
+      "note": "บริบท urinary infection จาก ISCAID 2019 ซึ่งยังลงรายการที่เว็บไซต์องค์กร ณ วันที่ตรวจ; เลือกยาตามโรค/ผลเพาะเชื้อและกำหนดระยะเวลาแยก ไม่แนะนำใช้เป็น routine cystitis เพราะออกฤทธิ์นานเกินช่วงรักษาปกติ",
+      "kind": "single",
+      "text": "",
+      "reviewedAt": "2026-10-11",
+      "priority": 15,
+      "evidenceType": "guideline",
+      "sourceYear": "2019"
+    },
+    {
+      "id": "doxycycline-review21-19",
+      "drug": "doxycycline",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "Urinary infection · ISCAID 2019",
+      "routes": [
+        "PO"
+      ],
+      "min": 5,
+      "max": 5,
+      "unit": "mg",
+      "source": "iscaid_uti2019",
+      "locator": "Table 3 · pp.11–12 · PDF pages 5–6",
+      "schedule": "ทุก 12 ชั่วโมง",
+      "note": "บริบท urinary infection จาก ISCAID 2019 ซึ่งยังลงรายการที่เว็บไซต์องค์กร ณ วันที่ตรวจ; เลือกยาตามโรค/ผลเพาะเชื้อและกำหนดระยะเวลาแยก เลือกเมื่อความไวและบริบทเหมาะสม; ไม่ใช่ first choice สำหรับ pyelonephritis/prostatitis · ในแมวตามด้วยน้ำ/อาหาร ลดเสี่ยงหลอดอาหาร",
+      "kind": "single",
+      "text": "",
+      "reviewedAt": "2026-10-11",
+      "priority": 15,
+      "evidenceType": "guideline",
+      "sourceYear": "2019"
+    },
+    {
+      "id": "trimethoprim-sulfamethoxazole-review21-20",
+      "drug": "trimethoprim-sulfamethoxazole",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "Urinary infection · ISCAID 2019 · ฐานยารวม",
+      "routes": [
+        "PO"
+      ],
+      "min": 15,
+      "max": 30,
+      "unit": "mg",
+      "source": "iscaid_uti2019",
+      "locator": "Table 3 · pp.11–12 · PDF pages 5–6",
+      "schedule": "ทุก 12 ชั่วโมง",
+      "note": "บริบท urinary infection จาก ISCAID 2019 ซึ่งยังลงรายการที่เว็บไซต์องค์กร ณ วันที่ตรวจ; เลือกยาตามโรค/ผลเพาะเชื้อและกำหนดระยะเวลาแยก ฐานยารวม trimethoprim + sulfamethoxazole; ความเข้มข้นต้องเป็นผลรวมตรงกัน ระวัง KCS และปฏิกิริยาไม่พึงประสงค์ ",
+      "kind": "single",
+      "text": "",
+      "reviewedAt": "2026-10-11",
+      "basis": "combined",
+      "priority": 15,
+      "evidenceType": "guideline",
+      "sourceYear": "2019"
+    },
+    {
+      "id": "gabapentin-review21-21",
+      "drug": "gabapentin",
+      "species": [
+        "dog"
+      ],
+      "purpose": "Chronic pain adjunct · Merck 2024",
+      "routes": [
+        "PO"
+      ],
+      "min": 10,
+      "max": 15,
+      "unit": "mg",
+      "source": "merck_pain",
+      "locator": "Selected Analgesics for Use in Dogs / Cats; intermittent dosage column",
+      "schedule": "ทุก 8 ชั่วโมง",
+      "note": "เป็น pain adjunct; แยกจาก anxiolysis ปรับตามไตและอาการง่วง",
+      "kind": "single",
+      "text": "",
+      "reviewedAt": "2026-10-11",
+      "priority": 15,
+      "evidenceType": "manual",
+      "sourceYear": "2024-09"
+    },
+    {
+      "id": "gabapentin-review21-22",
+      "drug": "gabapentin",
+      "species": [
+        "cat"
+      ],
+      "purpose": "Chronic pain adjunct · Merck 2024",
+      "routes": [
+        "PO"
+      ],
+      "min": 3,
+      "max": 10,
+      "unit": "mg",
+      "source": "merck_pain",
+      "locator": "Selected Analgesics for Use in Dogs / Cats; intermittent dosage column",
+      "schedule": "ทุก 8–12 ชั่วโมง",
+      "note": "เป็น pain adjunct; แยกจาก mg/ตัวสำหรับก่อนมาโรงพยาบาล ปรับตามไต",
+      "kind": "single",
+      "text": "",
+      "reviewedAt": "2026-10-11",
+      "priority": 15,
+      "evidenceType": "manual",
+      "sourceYear": "2024-09"
+    },
+    {
+      "id": "tramadol-review21-23",
+      "drug": "tramadol",
+      "species": [
+        "cat"
+      ],
+      "purpose": "แก้ปวด · PO · Merck 2024",
+      "routes": [
+        "PO"
+      ],
+      "min": 1,
+      "max": 2,
+      "unit": "mg",
+      "source": "merck_pain",
+      "locator": "Selected Analgesics for Use in Dogs / Cats; intermittent dosage column",
+      "schedule": "ทุก 12 ชั่วโมง",
+      "note": "หลักฐานจำกัด; ใช้ตามการประเมินความปวด/ยาร่วม ระวัง serotonin และรสขม; ช่วงนี้แยกจาก BSAVA 2020 2–4 mg/kg ทุก 8 ชั่วโมง",
+      "kind": "single",
+      "text": "",
+      "reviewedAt": "2026-10-11",
+      "priority": 15,
+      "evidenceType": "manual",
+      "sourceYear": "2024-09"
+    },
+    {
+      "id": "firocoxib-review21-24",
+      "drug": "firocoxib",
+      "species": [
+        "dog"
+      ],
+      "purpose": "แก้ปวด/ลดอักเสบ · Merck 2024",
+      "routes": [
+        "PO"
+      ],
+      "min": 5,
+      "max": 5,
+      "unit": "mg",
+      "source": "merck_pain",
+      "locator": "Selected Analgesics for Use in Dogs / Cats; intermittent dosage column",
+      "schedule": "ทุก 24 ชั่วโมง",
+      "note": "สุนัขเท่านั้น; ตรวจไต/ตับ/การไหลเวียน ไม่ใช้ร่วม NSAID หรือ steroid",
+      "kind": "single",
+      "text": "",
+      "reviewedAt": "2026-10-11",
+      "priority": 15,
+      "evidenceType": "manual",
+      "sourceYear": "2024-09"
+    },
+    {
+      "id": "fentanyl-review21-25",
+      "drug": "fentanyl",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "Bolus แก้ปวดระหว่างผ่าตัด · AAHA",
+      "routes": [
+        "IV"
+      ],
+      "min": 1,
+      "max": 5,
+      "unit": "mcg",
+      "source": "aaha_opioids2020",
+      "locator": "PDF page 1 · fentanyl Dose column (0.001–0.005 mg/kg IV)",
+      "schedule": "ให้ตามการประเมิน ไม่ใช่อัตรา CRI",
+      "note": "แปลง 0.001–0.005 mg/kg เป็น 1–5 mcg/kg; ใช้ช้าและติดตามการหายใจ/ชีพจร ไม่ใช้ค่าความเข้มข้นจากตัวอย่างแทนผลิตภัณฑ์จริง",
+      "kind": "single",
+      "text": "",
+      "reviewedAt": "2026-10-11",
+      "priority": 15,
+      "evidenceType": "guideline",
+      "sourceYear": "2020"
+    },
+    {
+      "id": "atropine-review21-26",
+      "drug": "atropine",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "Vagal bradycardia รอบวางยา · ไม่ใช่ CPR",
+      "routes": [
+        "IV",
+        "IM"
+      ],
+      "min": 0.02,
+      "max": 0.04,
+      "unit": "mg",
+      "source": "banfield2022",
+      "locator": "Table 2.2 p.22 (PDF p.29); ephedrine p.134 (PDF p.141)",
+      "schedule": "",
+      "note": "PDF p.29 · ประเมินการไหลเวียนและสาเหตุก่อนรักษา ระวัง tachycardia; แยกจาก RECOVER CPR",
+      "kind": "single",
+      "text": "",
+      "reviewedAt": "2026-10-11",
+      "priority": 15,
+      "evidenceType": "textbook",
+      "sourceYear": "2022"
+    },
+    {
+      "id": "glycopyrrolate-review21-27",
+      "drug": "glycopyrrolate",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "Vagal bradycardia รอบวางยา · Banfield",
+      "routes": [
+        "IV",
+        "IM"
+      ],
+      "min": 5,
+      "max": 10,
+      "unit": "mcg",
+      "source": "banfield2022",
+      "locator": "Table 2.2 p.22 (PDF p.29); ephedrine p.134 (PDF p.141)",
+      "schedule": "",
+      "note": "PDF p.29 · แปลง 0.005–0.01 mg/kg เป็น 5–10 mcg/kg; ไม่ใช้แก้ alpha-2 bradycardia อัตโนมัติ",
+      "kind": "single",
+      "text": "",
+      "reviewedAt": "2026-10-11",
+      "priority": 15,
+      "evidenceType": "textbook",
+      "sourceYear": "2022"
+    },
+    {
+      "id": "ephedrine-review21-28",
+      "drug": "ephedrine",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "Anesthetic hypotension · IV bolus",
+      "routes": [
+        "IV"
+      ],
+      "min": 0.05,
+      "max": 0.1,
+      "unit": "mg",
+      "source": "banfield2022",
+      "locator": "Table 2.2 p.22 (PDF p.29); ephedrine p.134 (PDF p.141)",
+      "schedule": "ประเมินผลก่อนพิจารณาซ้ำใน 15–20 นาที",
+      "note": "PDF p.141 · ประเมิน volume ความลึกสลบและการไหลเวียน; เฝ้าระวัง ECG/ความดัน ไม่มีการตั้งซ้ำอัตโนมัติ",
+      "kind": "single",
+      "text": "",
+      "reviewedAt": "2026-10-11",
+      "priority": 15,
+      "evidenceType": "textbook",
+      "sourceYear": "2022"
+    },
+    {
+      "id": "medetomidine-review21-29",
+      "drug": "medetomidine",
+      "species": [
+        "dog"
+      ],
+      "purpose": "Dorbene UK 2025 · ตาราง BSA / premedication",
+      "routes": [
+        "IV",
+        "IM"
+      ],
+      "min": null,
+      "max": null,
+      "unit": "mg",
+      "source": "vmd_dorbene2025",
+      "locator": "§8 · PDF pp.8–10; medetomidine hydrochloride basis; dog BSA table; cat IM/SC",
+      "schedule": "",
+      "note": "ขนาดบนฉลากใช้ฐาน medetomidine hydrochloride และ dog sedation ต้องเลือกจากตาราง BSA; ไม่แปลงช่วงรวมเป็นโดส mg/kg อิสระ ไม่ใช้ช่วงนี้แทน low-dose opioid combinations จากตำรา",
+      "kind": "read",
+      "text": "Premedication 10–40 mcg/kg (hydrochloride); sedation ใช้ตาราง BSA บนฉลาก",
+      "reviewedAt": "2026-10-11",
+      "priority": 15,
+      "evidenceType": "label",
+      "sourceYear": "2025-11"
+    },
+    {
+      "id": "medetomidine-review21-30",
+      "drug": "medetomidine",
+      "species": [
+        "cat"
+      ],
+      "purpose": "Dorbene UK 2025 · sedation/ restraint",
+      "routes": [
+        "IM",
+        "SC"
+      ],
+      "min": null,
+      "max": null,
+      "unit": "mg",
+      "source": "vmd_dorbene2025",
+      "locator": "§8 · PDF pp.8–10; medetomidine hydrochloride basis; dog BSA table; cat IM/SC",
+      "schedule": "",
+      "note": "เฉพาะสูตรและฐาน hydrochloride บนฉลาก; ไม่ใช่ low-dose opioid combination และฉลากนี้ไม่มี route IV สำหรับแมว; ตรวจความเข้มข้นฐานเกลือและผู้ป่วยก่อนใช้",
+      "kind": "read",
+      "text": "50–150 mcg/kg (medetomidine hydrochloride) · ฉลาก IM/SC",
+      "reviewedAt": "2026-10-11",
+      "priority": 15,
+      "evidenceType": "label",
+      "sourceYear": "2025-11"
+    },
+    {
+      "id": "robenacoxib-review21-31",
+      "drug": "robenacoxib",
+      "species": [
+        "dog"
+      ],
+      "purpose": "Osteoarthritis · PO · VMD 2025",
+      "routes": [
+        "PO"
+      ],
+      "min": 1,
+      "max": 2,
+      "unit": "mg",
+      "source": "vmd_roben2025",
+      "locator": "Module 3 · p.4/9 · Scientific Overview; dogs oral OA versus soft tissue surgery",
+      "schedule": "ทุก 24 ชั่วโมง",
+      "note": "ตรวจไต/ตับ/การไหลเวียน ไม่ใช้ร่วม NSAID อื่นหรือ steroid; ตรวจฉลากประเทศและรูปแบบผลิตภัณฑ์ เป็น dose range ตามรายงาน regulatory; จำนวนเม็ดต้องตรวจฉลากเอง",
+      "kind": "single",
+      "text": "",
+      "reviewedAt": "2026-10-11",
+      "priority": 15,
+      "evidenceType": "regulatory-report",
+      "sourceYear": "2025"
+    },
+    {
+      "id": "robenacoxib-review21-32",
+      "drug": "robenacoxib",
+      "species": [
+        "dog"
+      ],
+      "purpose": "Soft tissue surgery · PO · VMD 2025",
+      "routes": [
+        "PO"
+      ],
+      "min": 2,
+      "max": 4,
+      "unit": "mg",
+      "source": "vmd_roben2025",
+      "locator": "Module 3 · p.4/9 · Scientific Overview; dogs oral OA versus soft tissue surgery",
+      "schedule": "ครั้งก่อนผ่าตัด; หลังผ่าตัดวันละครั้งได้อีกไม่เกิน 2 วัน",
+      "note": "ตรวจไต/ตับ/การไหลเวียน ไม่ใช้ร่วม NSAID อื่นหรือ steroid; ตรวจฉลากประเทศและรูปแบบผลิตภัณฑ์ แยกจาก OA dose 1–2 mg/kg และ SC 2 mg/kg",
+      "kind": "single",
+      "text": "",
+      "reviewedAt": "2026-10-11",
+      "priority": 15,
+      "evidenceType": "regulatory-report",
+      "sourceYear": "2025"
+    },
+    {
+      "id": "robenacoxib-review21-33",
+      "drug": "robenacoxib",
+      "species": [
+        "cat"
+      ],
+      "purpose": "Musculoskeletal / orthopaedic surgery · UK label",
+      "routes": [
+        "PO"
+      ],
+      "min": 1,
+      "max": 2.4,
+      "unit": "mg",
+      "source": "onsior_elanco",
+      "locator": "PDF pp.1–2 · OA versus surgery; dog versus cat; SC versus PO",
+      "schedule": "ทุก 24 ชั่วโมงตามข้อบ่งใช้/ฉลาก",
+      "note": "ตรวจไต/ตับ/การไหลเวียน ไม่ใช้ร่วม NSAID อื่นหรือ steroid; ตรวจฉลากประเทศและรูปแบบผลิตภัณฑ์ UK chart จากปี 2020 ไม่ใช่ฉลากแก้ไขปี 2026; น้ำหนักตั้งแต่ 2.5 kg; ไม่คำนวณจำนวนเม็ด",
+      "kind": "single",
+      "text": "",
+      "reviewedAt": "2026-10-11",
+      "minWeight": 2.5,
+      "priority": 15,
+      "evidenceType": "label",
+      "sourceYear": "2020"
+    },
+    {
+      "id": "robenacoxib-review21-34",
+      "drug": "robenacoxib",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "Perioperative analgesia · SC · Merck 2024",
+      "routes": [
+        "SC"
+      ],
+      "min": 2,
+      "max": 2,
+      "unit": "mg",
+      "source": "merck_pain",
+      "locator": "Selected Analgesics for Use in Dogs / Cats; intermittent dosage column",
+      "schedule": "ทุก 24 ชั่วโมง ไม่เกิน 3 วัน",
+      "note": "ตรวจไต/ตับ/การไหลเวียน ไม่ใช้ร่วม NSAID อื่นหรือ steroid; ตรวจฉลากประเทศและรูปแบบผลิตภัณฑ์ แยกขนาดและเวลาใช้จาก PO",
+      "kind": "single",
+      "text": "",
+      "reviewedAt": "2026-10-11",
+      "priority": 15,
+      "evidenceType": "manual",
+      "sourceYear": "2024-09"
+    },
+    {
+      "id": "omeprazole-review21-35",
+      "drug": "omeprazole",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "GI ulceration · Merck 2025",
+      "routes": [
+        "PO"
+      ],
+      "min": 0.5,
+      "max": 1.5,
+      "unit": "mg",
+      "source": "merck_ulcer2025",
+      "locator": "Treatment and Control · omeprazole, pantoprazole and famotidine paragraphs",
+      "schedule": "ทุก 12 ชั่วโมง",
+      "note": "ใช้เมื่อมีข้อบ่งใช้ ulcer/acid injury ไม่ใช้เป็น routine prophylaxis ทุกเคส; ไม่ใช้ร่วม H2 blocker โดยอัตโนมัติ",
+      "kind": "single",
+      "text": "",
+      "reviewedAt": "2026-10-11",
+      "priority": 15,
+      "evidenceType": "manual",
+      "sourceYear": "2025-08"
+    },
+    {
+      "id": "pantoprazole-review21-36",
+      "drug": "pantoprazole",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "GI ulceration · Merck 2025",
+      "routes": [
+        "IV"
+      ],
+      "min": 1,
+      "max": 1,
+      "unit": "mg",
+      "source": "merck_ulcer2025",
+      "locator": "Treatment and Control · omeprazole, pantoprazole and famotidine paragraphs",
+      "schedule": "ทุก 12 ชั่วโมง",
+      "note": "ใช้เมื่อมีข้อบ่งใช้; ตรวจสูตรฉีดและให้ช้า ไม่ผสมช่วง/ความถี่จาก ICU table หรือตำราเป็นรายการเดียว",
+      "kind": "single",
+      "text": "",
+      "reviewedAt": "2026-10-11",
+      "priority": 15,
+      "evidenceType": "manual",
+      "sourceYear": "2025-08"
+    },
+    {
+      "id": "famotidine-review21-37",
+      "drug": "famotidine",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "GI ulceration · Merck 2025",
+      "routes": [
+        "PO",
+        "SC",
+        "IV"
+      ],
+      "min": 0.5,
+      "max": 1,
+      "unit": "mg",
+      "source": "merck_ulcer2025",
+      "locator": "Treatment and Control · omeprazole, pantoprazole and famotidine paragraphs",
+      "schedule": "ทุก 12–24 ชั่วโมง",
+      "note": "มีโอกาส tachyphylaxis และกดกรดด้อยกว่า PPI; ไม่จับคู่กับ PPI เป็น routine; ขนาดปรับตามไต/ผู้ป่วย",
+      "kind": "single",
+      "text": "",
+      "reviewedAt": "2026-10-11",
+      "priority": 15,
+      "evidenceType": "manual",
+      "sourceYear": "2025-08"
+    },
+    {
+      "id": "prednisolone-review21-38",
+      "drug": "prednisolone",
+      "species": [
+        "dog"
+      ],
+      "purpose": "Chronic inflammatory pain adjunct · Merck 2024",
+      "routes": [
+        "PO"
+      ],
+      "min": 0.5,
+      "max": 1,
+      "unit": "mg",
+      "source": "merck_pain",
+      "locator": "Selected Analgesics for Use in Dogs / Cats; intermittent dosage column",
+      "schedule": "ทุก 24 ชั่วโมง",
+      "note": "ไม่ใช่ immunosuppression dose; ประเมินโรคพื้นฐานและวางแผน taper ไม่ใช้ร่วม NSAID",
+      "kind": "single",
+      "text": "",
+      "reviewedAt": "2026-10-11",
+      "priority": 15,
+      "evidenceType": "manual",
+      "sourceYear": "2024-09"
+    },
+    {
+      "id": "prednisolone-review21-39",
+      "drug": "prednisolone",
+      "species": [
+        "cat"
+      ],
+      "purpose": "Chronic inflammatory pain adjunct · Merck 2024",
+      "routes": [
+        "PO"
+      ],
+      "min": 1,
+      "max": 2,
+      "unit": "mg",
+      "source": "merck_pain",
+      "locator": "Selected Analgesics for Use in Dogs / Cats; intermittent dosage column",
+      "schedule": "ทุก 24 ชั่วโมง",
+      "note": "ไม่ใช้ร่วม NSAID; แยกจากแผน allergic flare และ immunosuppression",
+      "kind": "single",
+      "text": "",
+      "reviewedAt": "2026-10-11",
+      "priority": 15,
+      "evidenceType": "manual",
+      "sourceYear": "2024-09"
+    },
+    {
+      "id": "prednisolone-review21-40",
+      "drug": "prednisolone",
+      "species": [
+        "cat"
+      ],
+      "purpose": "Allergic skin flare · AAHA 2023",
+      "routes": [
+        "PO"
+      ],
+      "min": 2,
+      "max": 2,
+      "unit": "mg",
+      "source": "aaha_allergy2023",
+      "locator": "Feline Step Three; Treating Flares · oral glucocorticoids",
+      "schedule": "ทุก 24 ชั่วโมง; วางแผนลดขนาดใน 3 สัปดาห์",
+      "note": "เป็นคอร์สตามการประเมิน ไม่ใช่ long-term maintenance; oral preferred over depot เมื่อจำเป็นต้องหยุดยาเร็ว",
+      "kind": "single",
+      "text": "",
+      "reviewedAt": "2026-10-11",
+      "priority": 15,
+      "evidenceType": "guideline",
+      "sourceYear": "2023"
+    },
+    {
+      "id": "methylprednisolone-review21-41",
+      "drug": "methylprednisolone",
+      "species": [
+        "cat"
+      ],
+      "purpose": "Allergic skin flare · oral · AAHA 2023",
+      "routes": [
+        "PO"
+      ],
+      "min": 0.8,
+      "max": 1.5,
+      "unit": "mg",
+      "source": "aaha_allergy2023",
+      "locator": "Feline Step Three; Treating Flares · oral glucocorticoids",
+      "schedule": "ทุก 24 ชั่วโมง; วางแผนลดขนาดใน 3 สัปดาห์",
+      "note": "เฉพาะ oral ไม่ใช้ขนาดนี้เป็น acetate depot; ตรวจเบาหวาน/หัวใจและผล steroid",
+      "kind": "single",
+      "text": "",
+      "reviewedAt": "2026-10-11",
+      "priority": 15,
+      "evidenceType": "guideline",
+      "sourceYear": "2023"
+    },
+    {
+      "id": "dexamethasone-review21-42",
+      "drug": "dexamethasone",
+      "species": [
+        "cat"
+      ],
+      "purpose": "Allergic skin flare · oral · AAHA 2023",
+      "routes": [
+        "PO"
+      ],
+      "min": 0.2,
+      "max": 0.2,
+      "unit": "mg",
+      "source": "aaha_allergy2023",
+      "locator": "Feline Step Three; Treating Flares · oral glucocorticoids",
+      "schedule": "ทุก 24 ชั่วโมง; วางแผนลดขนาดใน 3 สัปดาห์",
+      "note": "เฉพาะ oral ตามโรค ไม่ใช้เป็น shock dose หรือขนาดฉีดทุกเคส; ไม่ใช้ร่วม NSAID",
+      "kind": "single",
+      "text": "",
+      "reviewedAt": "2026-10-11",
+      "priority": 15,
+      "evidenceType": "guideline",
+      "sourceYear": "2023"
+    },
+    {
+      "id": "chlorpheniramine-review21-43",
+      "drug": "chlorpheniramine",
+      "species": [
+        "dog"
+      ],
+      "purpose": "Allergic skin adjunct · AAHA 2023",
+      "routes": [
+        "PO"
+      ],
+      "min": 0.4,
+      "max": 0.4,
+      "unit": "mg",
+      "source": "aaha_antihist_dog",
+      "locator": "Table 3 · chlorpheniramine and diphenhydramine rows",
+      "schedule": "ทุก 12 ชั่วโมง",
+      "note": "เป็นขนาดต่อ kg สำหรับสุนัขตาม Table 3 แยกจากตำราที่ใช้ mg/ตัว; ประสิทธิผลต่างกันรายตัว",
+      "kind": "single",
+      "text": "",
+      "reviewedAt": "2026-10-11",
+      "priority": 15,
+      "evidenceType": "guideline",
+      "sourceYear": "2023"
+    },
+    {
+      "id": "chlorpheniramine-review21-44",
+      "drug": "chlorpheniramine",
+      "species": [
+        "cat"
+      ],
+      "purpose": "Allergic skin adjunct · AAHA 2023 · mg/แมว",
+      "routes": [
+        "PO"
+      ],
+      "min": null,
+      "max": null,
+      "unit": "mg",
+      "source": "aaha_antihist_cat",
+      "locator": "Table 8 · chlorpheniramine mg/cat (NOT mg/kg); diphenhydramine",
+      "schedule": "ทุก 12 ชั่วโมง",
+      "note": "Table 8 ระบุ NOT mg/kg; ไม่หารด้วยน้ำหนักหรือยืมขนาดสุนัข",
+      "kind": "read",
+      "text": "2–4 mg ต่อแมวต่อครั้ง (ไม่ใช่ mg/kg)",
+      "reviewedAt": "2026-10-11",
+      "priority": 15,
+      "evidenceType": "guideline",
+      "sourceYear": "2023"
+    },
+    {
+      "id": "diphenhydramine-review21-45",
+      "drug": "diphenhydramine",
+      "species": [
+        "dog"
+      ],
+      "purpose": "Allergic skin adjunct · AAHA 2023",
+      "routes": [
+        "PO"
+      ],
+      "min": 2,
+      "max": 3,
+      "unit": "mg",
+      "source": "aaha_antihist_dog",
+      "locator": "Table 3 · chlorpheniramine and diphenhydramine rows",
+      "schedule": "ทุก 12 ชั่วโมง",
+      "note": "Table 3 ระบุหลักฐานประสิทธิผลทาง oral ยังไม่แน่นอน; แยกจาก motion sickness หรือขนาดฉีด",
+      "kind": "single",
+      "text": "",
+      "reviewedAt": "2026-10-11",
+      "priority": 15,
+      "evidenceType": "guideline",
+      "sourceYear": "2023"
+    },
+    {
+      "id": "diphenhydramine-review21-46",
+      "drug": "diphenhydramine",
+      "species": [
+        "cat"
+      ],
+      "purpose": "Allergic skin adjunct · AAHA 2023",
+      "routes": [
+        "PO"
+      ],
+      "min": 2,
+      "max": 3,
+      "unit": "mg",
+      "source": "aaha_antihist_cat",
+      "locator": "Table 8 · chlorpheniramine mg/cat (NOT mg/kg); diphenhydramine",
+      "schedule": "ทุก 12 ชั่วโมง",
+      "note": "เฉพาะ oral adjunct; ไม่ใช่ขนาดฉีดหรือทดแทนการรักษา anaphylaxis",
+      "kind": "single",
+      "text": "",
+      "reviewedAt": "2026-10-11",
+      "priority": 15,
+      "evidenceType": "guideline",
+      "sourceYear": "2023"
+    },
+    {
+      "id": "pimobendan-review21-47",
+      "drug": "pimobendan",
+      "species": [
+        "dog"
+      ],
+      "purpose": "CHF support · Merck 2025",
+      "routes": [
+        "PO"
+      ],
+      "min": 0.25,
+      "max": 0.3,
+      "unit": "mg",
+      "source": "merck_cardiac2025",
+      "locator": "Cardiac Medications of Dogs and Cats table; therapeutic agent paragraphs",
+      "schedule": "ทุก 8–12 ชั่วโมงตามแผน",
+      "note": "ติดตามความดัน ไตและอิเล็กโทรไลต์ ปรับตามระยะโรคและผล ไม่ใช้ทุกโรคหัวใจ ขนาดและความถี่แยกจาก cat และ IV; ตรวจ stage/การประเมินหัวใจ",
+      "kind": "single",
+      "text": "",
+      "reviewedAt": "2026-10-11",
+      "priority": 15,
+      "evidenceType": "manual",
+      "sourceYear": "2025-05"
+    },
+    {
+      "id": "pimobendan-review21-48",
+      "drug": "pimobendan",
+      "species": [
+        "cat"
+      ],
+      "purpose": "CHF support · extralabel · Merck 2025",
+      "routes": [
+        "PO"
+      ],
+      "min": 0.25,
+      "max": 0.25,
+      "unit": "mg",
+      "source": "merck_cardiac2025",
+      "locator": "Cardiac Medications of Dogs and Cats table; therapeutic agent paragraphs",
+      "schedule": "ทุก 12 ชั่วโมง",
+      "note": "ติดตามความดัน ไตและอิเล็กโทรไลต์ ปรับตามระยะโรคและผล ไม่ใช้ทุกโรคหัวใจ extralabel ในแมว; ประเมิน left ventricular outflow obstruction ก่อนเลือกใช้",
+      "kind": "single",
+      "text": "",
+      "reviewedAt": "2026-10-11",
+      "priority": 15,
+      "evidenceType": "manual",
+      "sourceYear": "2025-05"
+    },
+    {
+      "id": "enalapril-review21-49",
+      "drug": "enalapril",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "Cardiac therapy · Merck 2025",
+      "routes": [
+        "PO"
+      ],
+      "min": 0.25,
+      "max": 0.5,
+      "unit": "mg",
+      "source": "merck_cardiac2025",
+      "locator": "Cardiac Medications of Dogs and Cats table; therapeutic agent paragraphs",
+      "schedule": "ทุก 12–24 ชั่วโมง",
+      "note": "ติดตามความดัน ไตและอิเล็กโทรไลต์ ปรับตามระยะโรคและผล ไม่ใช้ทุกโรคหัวใจ ",
+      "kind": "single",
+      "text": "",
+      "reviewedAt": "2026-10-11",
+      "priority": 15,
+      "evidenceType": "manual",
+      "sourceYear": "2025-05"
+    },
+    {
+      "id": "benazepril-review21-50",
+      "drug": "benazepril",
+      "species": [
+        "dog"
+      ],
+      "purpose": "Cardiac therapy · Merck 2025",
+      "routes": [
+        "PO"
+      ],
+      "min": 0.25,
+      "max": 0.5,
+      "unit": "mg",
+      "source": "merck_cardiac2025",
+      "locator": "Cardiac Medications of Dogs and Cats table; therapeutic agent paragraphs",
+      "schedule": "ทุก 12–24 ชั่วโมง",
+      "note": "ติดตามความดัน ไตและอิเล็กโทรไลต์ ปรับตามระยะโรคและผล ไม่ใช้ทุกโรคหัวใจ ไม่สับสนกับขนาด combined tablet",
+      "kind": "single",
+      "text": "",
+      "reviewedAt": "2026-10-11",
+      "priority": 15,
+      "evidenceType": "manual",
+      "sourceYear": "2025-05"
+    },
+    {
+      "id": "benazepril-review21-51",
+      "drug": "benazepril",
+      "species": [
+        "cat"
+      ],
+      "purpose": "Cardiac therapy · สองครั้งต่อวัน · Merck 2025",
+      "routes": [
+        "PO"
+      ],
+      "min": 0.25,
+      "max": 0.5,
+      "unit": "mg",
+      "source": "merck_cardiac2025",
+      "locator": "Cardiac Medications of Dogs and Cats table; therapeutic agent paragraphs",
+      "schedule": "ทุก 12 ชั่วโมง",
+      "note": "ติดตามความดัน ไตและอิเล็กโทรไลต์ ปรับตามระยะโรคและผล ไม่ใช้ทุกโรคหัวใจ แยกจาก proteinuria/CKD และความถี่วันละครั้ง",
+      "kind": "single",
+      "text": "",
+      "reviewedAt": "2026-10-11",
+      "priority": 15,
+      "evidenceType": "manual",
+      "sourceYear": "2025-05"
+    },
+    {
+      "id": "benazepril-review21-52",
+      "drug": "benazepril",
+      "species": [
+        "cat"
+      ],
+      "purpose": "Cardiac therapy · วันละครั้ง · Merck 2025",
+      "routes": [
+        "PO"
+      ],
+      "min": 0.5,
+      "max": 0.5,
+      "unit": "mg",
+      "source": "merck_cardiac2025",
+      "locator": "Cardiac Medications of Dogs and Cats table; therapeutic agent paragraphs",
+      "schedule": "ทุก 24 ชั่วโมง",
+      "note": "ติดตามความดัน ไตและอิเล็กโทรไลต์ ปรับตามระยะโรคและผล ไม่ใช้ทุกโรคหัวใจ ",
+      "kind": "single",
+      "text": "",
+      "reviewedAt": "2026-10-11",
+      "priority": 15,
+      "evidenceType": "manual",
+      "sourceYear": "2025-05"
+    },
+    {
+      "id": "spironolactone-review21-53",
+      "drug": "spironolactone",
+      "species": [
+        "dog"
+      ],
+      "purpose": "CHF adjunct · วันละครั้ง · Merck 2025",
+      "routes": [
+        "PO"
+      ],
+      "min": 2,
+      "max": 4,
+      "unit": "mg",
+      "source": "merck_cardiac2025",
+      "locator": "Cardiac Medications of Dogs and Cats table; therapeutic agent paragraphs",
+      "schedule": "ทุก 24 ชั่วโมง",
+      "note": "ติดตามความดัน ไตและอิเล็กโทรไลต์ ปรับตามระยะโรคและผล ไม่ใช้ทุกโรคหัวใจ ",
+      "kind": "single",
+      "text": "",
+      "reviewedAt": "2026-10-11",
+      "priority": 15,
+      "evidenceType": "manual",
+      "sourceYear": "2025-05"
+    },
+    {
+      "id": "spironolactone-review21-54",
+      "drug": "spironolactone",
+      "species": [
+        "dog"
+      ],
+      "purpose": "CHF adjunct · แบ่งสองครั้ง · Merck 2025",
+      "routes": [
+        "PO"
+      ],
+      "min": 1,
+      "max": 2,
+      "unit": "mg",
+      "source": "merck_cardiac2025",
+      "locator": "Cardiac Medications of Dogs and Cats table; therapeutic agent paragraphs",
+      "schedule": "ทุก 12 ชั่วโมง",
+      "note": "ติดตามความดัน ไตและอิเล็กโทรไลต์ ปรับตามระยะโรคและผล ไม่ใช้ทุกโรคหัวใจ ไม่ใช้ช่วง 2–4 ทุก 12 ชั่วโมงจากรายการวันละครั้ง",
+      "kind": "single",
+      "text": "",
+      "reviewedAt": "2026-10-11",
+      "priority": 15,
+      "evidenceType": "manual",
+      "sourceYear": "2025-05"
+    },
+    {
+      "id": "spironolactone-review21-55",
+      "drug": "spironolactone",
+      "species": [
+        "cat"
+      ],
+      "purpose": "Chronic stage D CHF · Merck / ACVIM",
+      "routes": [
+        "PO"
+      ],
+      "min": null,
+      "max": null,
+      "unit": "mg",
+      "source": "merck_cardiac2025",
+      "locator": "Cardiac Medications of Dogs and Cats table; therapeutic agent paragraphs",
+      "schedule": "กำหนดตามแผนหัวใจรายตัว",
+      "note": "ติดตามความดัน ไตและอิเล็กโทรไลต์ ปรับตามระยะโรคและผล ไม่ใช้ทุกโรคหัวใจ Merck กล่าวถึงช่วง 1–2 mg/kg ทุก 12–14 ชั่วโมงและเสี่ยง facial excoriation/ulcerative dermatitis; ทบทวน consensus ต้นทางและแผนก่อนกำหนดความถี่",
+      "kind": "read",
+      "text": "ทบทวน 1–2 mg/kg · stage D CHF เท่านั้น · อ่านประกอบ",
+      "reviewedAt": "2026-10-11",
+      "priority": 15,
+      "evidenceType": "manual",
+      "sourceYear": "2025-05"
+    }
+  ],
+  "cri": [
+    {
+      "id": "dobutamine-cri-1",
+      "drug": "dobutamine",
+      "species": [
+        "dog"
+      ],
+      "purpose": "พยุงการบีบตัวหัวใจ · ช่วงเริ่มต้น",
+      "routes": [
+        "IV"
+      ],
+      "min": 2.5,
+      "max": 5,
+      "unit": "mcg/kg/min",
+      "source": "bsava2020",
+      "locator": "DOSES · หน้าไฟล์ PDF 148 · หน้าพิมพ์ 132",
+      "note": "ปรับช้า ๆ ตามผล ECG/ความดัน; ตำรามีช่วงสูงกว่า แต่ไม่ตั้งไว้เป็นค่าเริ่มต้น · ให้โดยปั๊มและติดตามผู้ป่วยตามข้อบ่งใช้ แผน loading dose แยกต่างหาก",
+      "schedule": "IV CRI",
+      "kind": "cri",
+      "reviewedAt": "2026-10-11",
+      "reviewLabel": "ตำรา 2020 · บริบทเดิม",
+      "priority": 80,
+      "evidenceType": "textbook",
+      "sourceYear": "2020"
+    },
+    {
+      "id": "dobutamine-cri-2",
+      "drug": "dobutamine",
+      "species": [
+        "cat"
+      ],
+      "purpose": "พยุงการบีบตัวหัวใจ",
+      "routes": [
+        "IV"
+      ],
+      "min": 1,
+      "max": 5,
+      "unit": "mcg/kg/min",
+      "source": "bsava2020",
+      "locator": "DOSES · หน้าไฟล์ PDF 148 · หน้าพิมพ์ 132",
+      "note": "แมวพบ adverse effects มากขึ้นเมื่อ >2.5 mcg/kg/min; ช่วงนี้ไม่ยืนยันว่าทุกค่าเหมาะกับผู้ป่วย · ให้โดยปั๊มและติดตามผู้ป่วยตามข้อบ่งใช้ แผน loading dose แยกต่างหาก",
+      "schedule": "IV CRI",
+      "kind": "cri",
+      "reviewedAt": "2026-10-11",
+      "reviewLabel": "ตำรา 2020 · บริบทเดิม",
+      "priority": 80,
+      "evidenceType": "textbook",
+      "sourceYear": "2020"
+    },
+    {
+      "id": "norepinephrine-cri-3",
+      "drug": "norepinephrine",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "vasopressor หลังประเมิน volume และหัวใจ",
+      "routes": [
+        "IV"
+      ],
+      "min": 0.05,
+      "max": 2,
+      "unit": "mcg/kg/min",
+      "source": "merck_critical",
+      "locator": "Blood pressure / vasopressor IV CRI paragraph",
+      "note": "ปรับตามความดันและ perfusion; ไม่ใช่ bolus/CPR และไม่ใช้แทนการประเมิน volume · ให้โดยปั๊มและติดตามผู้ป่วยตามข้อบ่งใช้ แผน loading dose แยกต่างหาก",
+      "schedule": "IV CRI",
+      "kind": "cri",
+      "reviewedAt": "2026-10-11",
+      "priority": 20,
+      "evidenceType": "manual",
+      "sourceYear": "2026-02"
+    },
+    {
+      "id": "epinephrine-cri-4",
+      "drug": "epinephrine",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "vasopressor ในผู้ป่วยวิกฤต · ไม่ใช่ CPR bolus",
+      "routes": [
+        "IV"
+      ],
+      "min": 0.02,
+      "max": 0.2,
+      "unit": "mcg/kg/min",
+      "source": "merck_critical",
+      "locator": "Blood pressure / vasopressor IV CRI paragraph",
+      "note": "ประเมิน volume และ cardiac function ก่อน; เลือกบริบทนี้แยกจาก 0.01 mg/kg CPR · ให้โดยปั๊มและติดตามผู้ป่วยตามข้อบ่งใช้ แผน loading dose แยกต่างหาก",
+      "schedule": "IV CRI",
+      "kind": "cri",
+      "reviewedAt": "2026-10-11",
+      "priority": 20,
+      "evidenceType": "manual",
+      "sourceYear": "2026-02"
+    },
+    {
+      "id": "fentanyl-cri-5",
+      "drug": "fentanyl",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "analgesia ระหว่างวางยาสลบ",
+      "routes": [
+        "IV"
+      ],
+      "min": 2.5,
+      "max": 10,
+      "unit": "mcg/kg/h",
+      "source": "bsava2020",
+      "locator": "DOSES · หน้าไฟล์ PDF 178 · หน้าพิมพ์ 162",
+      "note": "ต่างจาก bolus 5 mcg/kg และ patch; ใช้แผน loading dose แยก · ให้โดยปั๊มและติดตามผู้ป่วยตามข้อบ่งใช้ แผน loading dose แยกต่างหาก",
+      "schedule": "IV CRI",
+      "kind": "cri",
+      "reviewedAt": "2026-10-11",
+      "reviewLabel": "ตำรา 2020 · บริบทเดิม",
+      "priority": 80,
+      "evidenceType": "textbook",
+      "sourceYear": "2020"
+    },
+    {
+      "id": "fentanyl-cri-6",
+      "drug": "fentanyl",
+      "species": [
+        "dog"
+      ],
+      "purpose": "analgesia หลังผ่าตัด",
+      "routes": [
+        "IV"
+      ],
+      "min": 1,
+      "max": 5,
+      "unit": "mcg/kg/h",
+      "source": "bsava2020",
+      "locator": "DOSES · หน้าไฟล์ PDF 178 · หน้าพิมพ์ 162",
+      "note": "ปรับตาม pain assessment และการหายใจ ไม่ใช้ช่วง intraoperative แทนโดยอัตโนมัติ · ให้โดยปั๊มและติดตามผู้ป่วยตามข้อบ่งใช้ แผน loading dose แยกต่างหาก",
+      "schedule": "IV CRI",
+      "kind": "cri",
+      "reviewedAt": "2026-10-11",
+      "reviewLabel": "ตำรา 2020 · บริบทเดิม",
+      "priority": 80,
+      "evidenceType": "textbook",
+      "sourceYear": "2020"
+    },
+    {
+      "id": "propofol-cri-7",
+      "drug": "propofol",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "คงสลบ / sedation ตามบริบท",
+      "routes": [
+        "IV"
+      ],
+      "min": 0.1,
+      "max": 0.4,
+      "unit": "mg/kg/min",
+      "source": "bsava2020",
+      "locator": "DOSES · หน้าไฟล์ PDF 363–364 · หน้าพิมพ์ 347–348",
+      "note": "ปรับตามผลและยาร่วม; แมวเสี่ยงฟื้นช้าเมื่อ infusion โดยเฉพาะนาน หน้าแมวต่อที่ PDF 364 · ให้โดยปั๊มและติดตามผู้ป่วยตามข้อบ่งใช้ แผน loading dose แยกต่างหาก",
+      "schedule": "IV CRI",
+      "kind": "cri",
+      "reviewedAt": "2026-10-11",
+      "reviewLabel": "ตำรา 2020 · บริบทเดิม",
+      "priority": 80,
+      "evidenceType": "textbook",
+      "sourceYear": "2020"
+    },
+    {
+      "id": "ketamine-cri-8",
+      "drug": "ketamine",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "analgesia ระหว่างผ่าตัด",
+      "routes": [
+        "IV"
+      ],
+      "min": 10,
+      "max": 10,
+      "unit": "mcg/kg/min",
+      "source": "bsava2020",
+      "locator": "DOSES · หน้าไฟล์ PDF 234 · หน้าพิมพ์ 218",
+      "note": "ใช้เป็น adjunct; ตำราระบุความไม่แน่นอนของประสิทธิผลต่อเนื่องในอัตรานี้ · ให้โดยปั๊มและติดตามผู้ป่วยตามข้อบ่งใช้ แผน loading dose แยกต่างหาก",
+      "schedule": "IV CRI",
+      "kind": "cri",
+      "reviewedAt": "2026-10-11",
+      "reviewLabel": "ตำรา 2020 · บริบทเดิม",
+      "priority": 80,
+      "evidenceType": "textbook",
+      "sourceYear": "2020"
+    },
+    {
+      "id": "ketamine-cri-9",
+      "drug": "ketamine",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "analgesia หลังผ่าตัด",
+      "routes": [
+        "IV"
+      ],
+      "min": 2,
+      "max": 5,
+      "unit": "mcg/kg/min",
+      "source": "bsava2020",
+      "locator": "DOSES · หน้าไฟล์ PDF 234 · หน้าพิมพ์ 218",
+      "note": "ไม่ใช่ขนาด induction; ใช้ร่วมแผน analgesia และ loading dose ที่กำหนด · ให้โดยปั๊มและติดตามผู้ป่วยตามข้อบ่งใช้ แผน loading dose แยกต่างหาก",
+      "schedule": "IV CRI",
+      "kind": "cri",
+      "reviewedAt": "2026-10-11",
+      "reviewLabel": "ตำรา 2020 · บริบทเดิม",
+      "priority": 80,
+      "evidenceType": "textbook",
+      "sourceYear": "2020"
+    },
+    {
+      "id": "dexmedetomidine-cri-10",
+      "drug": "dexmedetomidine",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "analgesia ร่วม / rousable sedation รอบผ่าตัด",
+      "routes": [
+        "IV"
+      ],
+      "min": 1,
+      "max": 2,
+      "unit": "mcg/kg/h",
+      "source": "bsava2020",
+      "locator": "DOSES · หน้าไฟล์ PDF 133 · หน้าพิมพ์ 117",
+      "note": "พิจารณา opioid ร่วมและติดตาม bradycardia/ความดัน ไม่ใช้กับ unstable patient โดยไม่ประเมิน · ให้โดยปั๊มและติดตามผู้ป่วยตามข้อบ่งใช้ แผน loading dose แยกต่างหาก",
+      "schedule": "IV CRI",
+      "kind": "cri",
+      "reviewedAt": "2026-10-11",
+      "reviewLabel": "ตำรา 2020 · บริบทเดิม",
+      "priority": 80,
+      "evidenceType": "textbook",
+      "sourceYear": "2020"
+    },
+    {
+      "id": "lidocaine-cri-11",
+      "drug": "lidocaine",
+      "species": [
+        "dog"
+      ],
+      "purpose": "systemic analgesia ระหว่างผ่าตัด",
+      "routes": [
+        "IV"
+      ],
+      "min": 20,
+      "max": 50,
+      "unit": "mcg/kg/min",
+      "source": "merck_pain",
+      "locator": "Selected Analgesics for Use in Dogs · Lidocaine · CRI dosage column",
+      "note": "สุนัขเท่านั้น ไม่ให้รายการนี้กับแมว; ติดตามความเป็นพิษ/การสะสม · ให้โดยปั๊มและติดตามผู้ป่วยตามข้อบ่งใช้ แผน loading dose แยกต่างหาก",
+      "schedule": "IV CRI",
+      "kind": "cri",
+      "reviewedAt": "2026-10-11",
+      "reviewLabel": "คู่มือออนไลน์ · 2024-09",
+      "priority": 20,
+      "evidenceType": "manual",
+      "sourceYear": "2024-09"
+    },
+    {
+      "id": "lidocaine-cri-12",
+      "drug": "lidocaine",
+      "species": [
+        "dog"
+      ],
+      "purpose": "ventricular arrhythmia · หลัง bolus",
+      "routes": [
+        "IV"
+      ],
+      "min": 0.025,
+      "max": 0.1,
+      "unit": "mg/kg/min",
+      "source": "bsava2020",
+      "locator": "DOSES · หน้าไฟล์ PDF 246 · หน้าพิมพ์ 230",
+      "note": "แยกจาก analgesia และ local anaesthesia; ติดตาม ECG/ความเป็นพิษ · ให้โดยปั๊มและติดตามผู้ป่วยตามข้อบ่งใช้ แผน loading dose แยกต่างหาก",
+      "schedule": "IV CRI",
+      "kind": "cri",
+      "reviewedAt": "2026-10-11",
+      "reviewLabel": "ตำรา 2020 · บริบทเดิม",
+      "priority": 80,
+      "evidenceType": "textbook",
+      "sourceYear": "2020"
+    },
+    {
+      "id": "lidocaine-cri-13",
+      "drug": "lidocaine",
+      "species": [
+        "cat"
+      ],
+      "purpose": "ventricular arrhythmia · หลัง bolus",
+      "routes": [
+        "IV"
+      ],
+      "min": 0.01,
+      "max": 0.04,
+      "unit": "mg/kg/min",
+      "source": "bsava2020",
+      "locator": "DOSES · หน้าไฟล์ PDF 246 · หน้าพิมพ์ 230",
+      "note": "เฉพาะ antiarrhythmic ไม่ใช่ systemic analgesia; ติดตาม ECG/ความเป็นพิษอย่างใกล้ชิด · ให้โดยปั๊มและติดตามผู้ป่วยตามข้อบ่งใช้ แผน loading dose แยกต่างหาก",
+      "schedule": "IV CRI",
+      "kind": "cri",
+      "reviewedAt": "2026-10-11",
+      "reviewLabel": "ตำรา 2020 · บริบทเดิม",
+      "priority": 80,
+      "evidenceType": "textbook",
+      "sourceYear": "2020"
+    },
+    {
+      "id": "midazolam-cri-14",
+      "drug": "midazolam",
+      "species": [
+        "dog"
+      ],
+      "purpose": "คงการควบคุมชักหลังหยุดชักแล้ว",
+      "routes": [
+        "IV"
+      ],
+      "min": 0.3,
+      "max": 0.3,
+      "unit": "mg/kg/h",
+      "source": "bsava2020",
+      "locator": "DOSES · หน้าไฟล์ PDF 283 · หน้าพิมพ์ 267",
+      "note": "อ้างอิงสุนัขเท่านั้น; ไม่เติมให้แมวจากบริบทนี้ · ให้โดยปั๊มและติดตามผู้ป่วยตามข้อบ่งใช้ แผน loading dose แยกต่างหาก",
+      "schedule": "IV CRI",
+      "kind": "cri",
+      "reviewedAt": "2026-10-11",
+      "reviewLabel": "ตำรา 2020 · บริบทเดิม",
+      "priority": 80,
+      "evidenceType": "textbook",
+      "sourceYear": "2020"
+    },
+    {
+      "id": "morphine-cri-15",
+      "drug": "morphine",
+      "species": [
+        "dog"
+      ],
+      "purpose": "analgesia แบบ infusion",
+      "routes": [
+        "IV"
+      ],
+      "min": 0.15,
+      "max": 0.2,
+      "unit": "mg/kg/h",
+      "source": "bsava2020",
+      "locator": "DOSES · หน้าไฟล์ PDF 291 · หน้าพิมพ์ 275",
+      "note": "CRI ในแมวยังประเมินจำกัด จึงไม่ใส่ขนาดแมวจากรายการนี้ · ให้โดยปั๊มและติดตามผู้ป่วยตามข้อบ่งใช้ แผน loading dose แยกต่างหาก",
+      "schedule": "IV CRI",
+      "kind": "cri",
+      "reviewedAt": "2026-10-11",
+      "reviewLabel": "ตำรา 2020 · บริบทเดิม",
+      "priority": 80,
+      "evidenceType": "textbook",
+      "sourceYear": "2020"
+    },
+    {
+      "id": "naloxone-cri-16",
+      "drug": "naloxone",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "ต้านฤทธิ์ opioid ที่ต้องการผลนาน",
+      "routes": [
+        "IV"
+      ],
+      "min": 0.02,
+      "max": 0.02,
+      "unit": "mg/kg/h",
+      "source": "bsava2020",
+      "locator": "DOSES · หน้าไฟล์ PDF 296 · หน้าพิมพ์ 280",
+      "note": "เฝ้าระวังกลับมาซึมและสูญเสีย analgesia; ไม่ใช่ bolus CPR · ให้โดยปั๊มและติดตามผู้ป่วยตามข้อบ่งใช้ แผน loading dose แยกต่างหาก",
+      "schedule": "IV CRI",
+      "kind": "cri",
+      "reviewedAt": "2026-10-11",
+      "reviewLabel": "ตำรา 2020 · บริบทเดิม",
+      "priority": 80,
+      "evidenceType": "textbook",
+      "sourceYear": "2020"
+    },
+    {
+      "id": "dobutamine-cri-review21-1",
+      "drug": "dobutamine",
+      "species": [
+        "dog"
+      ],
+      "purpose": "Inotropic support · Merck 2025",
+      "routes": [
+        "IV"
+      ],
+      "min": 1,
+      "max": 15,
+      "unit": "mcg/kg/min",
+      "source": "merck_cardiac2025",
+      "locator": "Cardiac Medications of Dogs and Cats table; therapeutic agent paragraphs",
+      "schedule": "IV CRI",
+      "note": "แยกจากช่วงเริ่มต้น BSAVA 2.5–5; ปรับตาม perfusion และ ECG · เลือกอัตราตามผู้ป่วย ใช้ปั๊มและติดตามผล; loading dose ต้องกำหนดแยก",
+      "kind": "cri",
+      "reviewedAt": "2026-10-11",
+      "priority": 15,
+      "evidenceType": "manual",
+      "sourceYear": "2025-05"
+    },
+    {
+      "id": "dobutamine-cri-review21-2",
+      "drug": "dobutamine",
+      "species": [
+        "cat"
+      ],
+      "purpose": "Inotropic support · Merck 2025",
+      "routes": [
+        "IV"
+      ],
+      "min": 0.5,
+      "max": 5,
+      "unit": "mcg/kg/min",
+      "source": "merck_cardiac2025",
+      "locator": "Cardiac Medications of Dogs and Cats table; therapeutic agent paragraphs",
+      "schedule": "IV CRI",
+      "note": "ขนาดแมวเฉพาะ ไม่ยืม upper range สุนัข · เลือกอัตราตามผู้ป่วย ใช้ปั๊มและติดตามผล; loading dose ต้องกำหนดแยก",
+      "kind": "cri",
+      "reviewedAt": "2026-10-11",
+      "priority": 15,
+      "evidenceType": "manual",
+      "sourceYear": "2025-05"
+    },
+    {
+      "id": "fentanyl-cri-review21-3",
+      "drug": "fentanyl",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "Critical patient pain · Merck 2026",
+      "routes": [
+        "IV"
+      ],
+      "min": 3,
+      "max": 10,
+      "unit": "mcg/kg/h",
+      "source": "merck_triage2026",
+      "locator": "Seizures; pain management paragraphs",
+      "schedule": "IV CRI",
+      "note": "แยกจาก bolus และอัตราระหว่างผ่าตัด; การ loading 5–10 mcg/kg ในต้นทางต้องสั่งแยก · เลือกอัตราตามผู้ป่วย ใช้ปั๊มและติดตามผล; loading dose ต้องกำหนดแยก",
+      "kind": "cri",
+      "reviewedAt": "2026-10-11",
+      "priority": 15,
+      "evidenceType": "manual",
+      "sourceYear": "2026-04"
+    },
+    {
+      "id": "ketamine-cri-review21-4",
+      "drug": "ketamine",
+      "species": [
+        "dog"
+      ],
+      "purpose": "Analgesic adjunct · Merck 2024",
+      "routes": [
+        "IV"
+      ],
+      "min": 0.12,
+      "max": 0.6,
+      "unit": "mg/kg/h",
+      "source": "merck_pain",
+      "locator": "Selected Analgesics for Use in Dogs / Cats; intermittent dosage column",
+      "schedule": "IV CRI",
+      "note": "หน่วยเป็นต่อชั่วโมง ไม่ใช่ induction dose หรือ mcg/kg/min · เลือกอัตราตามผู้ป่วย ใช้ปั๊มและติดตามผล; loading dose ต้องกำหนดแยก",
+      "kind": "cri",
+      "reviewedAt": "2026-10-11",
+      "priority": 15,
+      "evidenceType": "manual",
+      "sourceYear": "2024-09"
+    },
+    {
+      "id": "ketamine-cri-review21-5",
+      "drug": "ketamine",
+      "species": [
+        "cat"
+      ],
+      "purpose": "Analgesic adjunct · Merck 2024",
+      "routes": [
+        "IV"
+      ],
+      "min": 0.1,
+      "max": 0.6,
+      "unit": "mg/kg/h",
+      "source": "merck_pain",
+      "locator": "Selected Analgesics for Use in Dogs / Cats; intermittent dosage column",
+      "schedule": "IV CRI",
+      "note": "หน่วยเป็นต่อชั่วโมง; ประเมินการหายใจ/ผลยาร่วม · เลือกอัตราตามผู้ป่วย ใช้ปั๊มและติดตามผล; loading dose ต้องกำหนดแยก",
+      "kind": "cri",
+      "reviewedAt": "2026-10-11",
+      "priority": 15,
+      "evidenceType": "manual",
+      "sourceYear": "2024-09"
+    },
+    {
+      "id": "dexmedetomidine-cri-review21-6",
+      "drug": "dexmedetomidine",
+      "species": [
+        "dog"
+      ],
+      "purpose": "Analgesic adjunct · Merck 2024",
+      "routes": [
+        "IV"
+      ],
+      "min": 0.7,
+      "max": 1,
+      "unit": "mcg/kg/h",
+      "source": "merck_pain",
+      "locator": "Selected Analgesics for Use in Dogs / Cats; intermittent dosage column",
+      "schedule": "IV CRI",
+      "note": "แปลง 0.0007–0.001 mg/kg/h เป็น mcg/kg/h; source row เป็นสุนัขเท่านั้น · เลือกอัตราตามผู้ป่วย ใช้ปั๊มและติดตามผล; loading dose ต้องกำหนดแยก",
+      "kind": "cri",
+      "reviewedAt": "2026-10-11",
+      "priority": 15,
+      "evidenceType": "manual",
+      "sourceYear": "2024-09"
+    },
+    {
+      "id": "metoclopramide-cri-review21-7",
+      "drug": "metoclopramide",
+      "species": [
+        "dog"
+      ],
+      "purpose": "Antiemetic / prokinetic · Merck 2025",
+      "routes": [
+        "IV"
+      ],
+      "min": 0.01,
+      "max": 0.02,
+      "unit": "mg/kg/h",
+      "source": "merck_gi",
+      "locator": "Antiemetic Drugs table and drug-specific paragraphs",
+      "schedule": "IV CRI",
+      "note": "เป็นอัตรา IV infusion; ไม่ใช่ 1–2 mg/kg/24 h จากตำรา และไม่เฉลี่ยสองแหล่ง หลีกเลี่ยง suspected obstruction/perforation · เลือกอัตราตามผู้ป่วย ใช้ปั๊มและติดตามผล; loading dose ต้องกำหนดแยก",
+      "kind": "cri",
+      "reviewedAt": "2026-10-11",
+      "priority": 15,
+      "evidenceType": "manual",
+      "sourceYear": "2025-06"
+    },
+    {
+      "id": "epinephrine-cri-review21-8",
+      "drug": "epinephrine",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "purpose": "Vasopressor after volume assessment · Merck 2026",
+      "routes": [
+        "IV"
+      ],
+      "min": 0.02,
+      "max": 0.2,
+      "unit": "mcg/kg/min",
+      "source": "merck_critical",
+      "locator": "Blood pressure / vasopressor IV CRI paragraph",
+      "schedule": "IV CRI",
+      "note": "ประเมิน volume และ cardiac function ก่อน; เป็น IV CRI ไม่ใช่ bolus CPR · เลือกอัตราตามผู้ป่วย ใช้ปั๊มและติดตามผล; loading dose ต้องกำหนดแยก",
+      "kind": "cri",
+      "reviewedAt": "2026-10-11",
+      "priority": 15,
+      "evidenceType": "manual",
+      "sourceYear": "2026-02"
+    }
+  ],
+  "metadata": {
+    "version": "2026-10-11.3",
+    "drugCount": 62,
+    "perDoseContexts": 176,
+    "criContexts": 24,
+    "sourceCount": 28,
+    "reviewStatus": "source comparison completed; publication dates preserved; independent clinical signoff pending",
+    "textbook": {
+      "filename": "BSAVA Small Animal Formulary, Part A, Canine and Feline, 10th Edition (VetBooks.ir).pdf",
+      "sha256": "8353d05edeca67d4de6dcc73532d67fa618db17775fcc06e88ddfa2fdfedd896",
+      "edition": 10,
+      "year": 2020
+    },
+    "release": "17.14.21",
+    "reviewedDrugCount": 62
+  },
+  "review": [
+    {
+      "drug": "acepromazine",
+      "checkedAt": "2026-10-11",
+      "sources": [
+        "aaha_sedation"
+      ],
+      "oldTextbookContexts": 0,
+      "status": "source-comparison-completed",
+      "scope": "รายการบริบทที่มีในเครื่องคำนวณ; ไม่ใช่ทุกโรค ทุกสูตร หรือการรับรองทางคลินิก",
+      "note": "เก็บปีของ guideline/ฉลาก/คู่มือแยกจากวันตรวจ; การมีแหล่งใหม่ของยานี้ไม่ได้ทำให้บริบทตำราเดิมเป็นข้อมูลฉบับใหม่"
+    },
+    {
+      "drug": "alfaxalone",
+      "checkedAt": "2026-10-11",
+      "sources": [
+        "aaha_induction"
+      ],
+      "oldTextbookContexts": 0,
+      "status": "source-comparison-completed",
+      "scope": "รายการบริบทที่มีในเครื่องคำนวณ; ไม่ใช่ทุกโรค ทุกสูตร หรือการรับรองทางคลินิก",
+      "note": "เก็บปีของ guideline/ฉลาก/คู่มือแยกจากวันตรวจ; การมีแหล่งใหม่ของยานี้ไม่ได้ทำให้บริบทตำราเดิมเป็นข้อมูลฉบับใหม่"
+    },
+    {
+      "drug": "amlodipine",
+      "checkedAt": "2026-10-11",
+      "sources": [
+        "vmd_amodip"
+      ],
+      "oldTextbookContexts": 1,
+      "status": "source-comparison-completed",
+      "scope": "รายการบริบทที่มีในเครื่องคำนวณ; ไม่ใช่ทุกโรค ทุกสูตร หรือการรับรองทางคลินิก",
+      "note": "เก็บปีของ guideline/ฉลาก/คู่มือแยกจากวันตรวจ; การมีแหล่งใหม่ของยานี้ไม่ได้ทำให้บริบทตำราเดิมเป็นข้อมูลฉบับใหม่"
+    },
+    {
+      "drug": "amoxicillin",
+      "checkedAt": "2026-10-11",
+      "sources": [
+        "iscaid_uti2019"
+      ],
+      "oldTextbookContexts": 4,
+      "status": "source-comparison-completed",
+      "scope": "รายการบริบทที่มีในเครื่องคำนวณ; ไม่ใช่ทุกโรค ทุกสูตร หรือการรับรองทางคลินิก",
+      "note": "เก็บปีของ guideline/ฉลาก/คู่มือแยกจากวันตรวจ; การมีแหล่งใหม่ของยานี้ไม่ได้ทำให้บริบทตำราเดิมเป็นข้อมูลฉบับใหม่"
+    },
+    {
+      "drug": "amoxicillin-clavulanate",
+      "checkedAt": "2026-10-11",
+      "sources": [
+        "enovat",
+        "iscaid_skin2025",
+        "iscaid_uti2019"
+      ],
+      "oldTextbookContexts": 1,
+      "status": "source-comparison-completed",
+      "scope": "รายการบริบทที่มีในเครื่องคำนวณ; ไม่ใช่ทุกโรค ทุกสูตร หรือการรับรองทางคลินิก",
+      "note": "เก็บปีของ guideline/ฉลาก/คู่มือแยกจากวันตรวจ; การมีแหล่งใหม่ของยานี้ไม่ได้ทำให้บริบทตำราเดิมเป็นข้อมูลฉบับใหม่"
+    },
+    {
+      "drug": "ampicillin",
+      "checkedAt": "2026-10-11",
+      "sources": [
+        "enovat"
+      ],
+      "oldTextbookContexts": 1,
+      "status": "source-comparison-completed",
+      "scope": "รายการบริบทที่มีในเครื่องคำนวณ; ไม่ใช่ทุกโรค ทุกสูตร หรือการรับรองทางคลินิก",
+      "note": "เก็บปีของ guideline/ฉลาก/คู่มือแยกจากวันตรวจ; การมีแหล่งใหม่ของยานี้ไม่ได้ทำให้บริบทตำราเดิมเป็นข้อมูลฉบับใหม่"
+    },
+    {
+      "drug": "atipamezole",
+      "checkedAt": "2026-10-11",
+      "sources": [
+        "recover"
+      ],
+      "oldTextbookContexts": 0,
+      "status": "source-comparison-completed",
+      "scope": "รายการบริบทที่มีในเครื่องคำนวณ; ไม่ใช่ทุกโรค ทุกสูตร หรือการรับรองทางคลินิก",
+      "note": "เก็บปีของ guideline/ฉลาก/คู่มือแยกจากวันตรวจ; การมีแหล่งใหม่ของยานี้ไม่ได้ทำให้บริบทตำราเดิมเป็นข้อมูลฉบับใหม่"
+    },
+    {
+      "drug": "atropine",
+      "checkedAt": "2026-10-11",
+      "sources": [
+        "banfield2022",
+        "recover"
+      ],
+      "oldTextbookContexts": 0,
+      "status": "source-comparison-completed",
+      "scope": "รายการบริบทที่มีในเครื่องคำนวณ; ไม่ใช่ทุกโรค ทุกสูตร หรือการรับรองทางคลินิก",
+      "note": "เก็บปีของ guideline/ฉลาก/คู่มือแยกจากวันตรวจ; การมีแหล่งใหม่ของยานี้ไม่ได้ทำให้บริบทตำราเดิมเป็นข้อมูลฉบับใหม่"
+    },
+    {
+      "drug": "benazepril",
+      "checkedAt": "2026-10-11",
+      "sources": [
+        "merck_cardiac2025"
+      ],
+      "oldTextbookContexts": 3,
+      "status": "source-comparison-completed",
+      "scope": "รายการบริบทที่มีในเครื่องคำนวณ; ไม่ใช่ทุกโรค ทุกสูตร หรือการรับรองทางคลินิก",
+      "note": "เก็บปีของ guideline/ฉลาก/คู่มือแยกจากวันตรวจ; การมีแหล่งใหม่ของยานี้ไม่ได้ทำให้บริบทตำราเดิมเป็นข้อมูลฉบับใหม่"
+    },
+    {
+      "drug": "bupivacaine",
+      "checkedAt": "2026-10-11",
+      "sources": [
+        "merck_pain"
+      ],
+      "oldTextbookContexts": 0,
+      "status": "source-comparison-completed",
+      "scope": "รายการบริบทที่มีในเครื่องคำนวณ; ไม่ใช่ทุกโรค ทุกสูตร หรือการรับรองทางคลินิก",
+      "note": "เก็บปีของ guideline/ฉลาก/คู่มือแยกจากวันตรวจ; การมีแหล่งใหม่ของยานี้ไม่ได้ทำให้บริบทตำราเดิมเป็นข้อมูลฉบับใหม่"
+    },
+    {
+      "drug": "buprenorphine",
+      "checkedAt": "2026-10-11",
+      "sources": [
+        "merck_pain"
+      ],
+      "oldTextbookContexts": 0,
+      "status": "source-comparison-completed",
+      "scope": "รายการบริบทที่มีในเครื่องคำนวณ; ไม่ใช่ทุกโรค ทุกสูตร หรือการรับรองทางคลินิก",
+      "note": "เก็บปีของ guideline/ฉลาก/คู่มือแยกจากวันตรวจ; การมีแหล่งใหม่ของยานี้ไม่ได้ทำให้บริบทตำราเดิมเป็นข้อมูลฉบับใหม่"
+    },
+    {
+      "drug": "butorphanol",
+      "checkedAt": "2026-10-11",
+      "sources": [
+        "merck_pain"
+      ],
+      "oldTextbookContexts": 0,
+      "status": "source-comparison-completed",
+      "scope": "รายการบริบทที่มีในเครื่องคำนวณ; ไม่ใช่ทุกโรค ทุกสูตร หรือการรับรองทางคลินิก",
+      "note": "เก็บปีของ guideline/ฉลาก/คู่มือแยกจากวันตรวจ; การมีแหล่งใหม่ของยานี้ไม่ได้ทำให้บริบทตำราเดิมเป็นข้อมูลฉบับใหม่"
+    },
+    {
+      "drug": "carprofen",
+      "checkedAt": "2026-10-11",
+      "sources": [
+        "merck_pain"
+      ],
+      "oldTextbookContexts": 0,
+      "status": "source-comparison-completed",
+      "scope": "รายการบริบทที่มีในเครื่องคำนวณ; ไม่ใช่ทุกโรค ทุกสูตร หรือการรับรองทางคลินิก",
+      "note": "เก็บปีของ guideline/ฉลาก/คู่มือแยกจากวันตรวจ; การมีแหล่งใหม่ของยานี้ไม่ได้ทำให้บริบทตำราเดิมเป็นข้อมูลฉบับใหม่"
+    },
+    {
+      "drug": "cefazolin",
+      "checkedAt": "2026-10-11",
+      "sources": [
+        "enovat"
+      ],
+      "oldTextbookContexts": 0,
+      "status": "source-comparison-completed",
+      "scope": "รายการบริบทที่มีในเครื่องคำนวณ; ไม่ใช่ทุกโรค ทุกสูตร หรือการรับรองทางคลินิก",
+      "note": "เก็บปีของ guideline/ฉลาก/คู่มือแยกจากวันตรวจ; การมีแหล่งใหม่ของยานี้ไม่ได้ทำให้บริบทตำราเดิมเป็นข้อมูลฉบับใหม่"
+    },
+    {
+      "drug": "cefovecin",
+      "checkedAt": "2026-10-11",
+      "sources": [
+        "iscaid_skin2025",
+        "iscaid_uti2019"
+      ],
+      "oldTextbookContexts": 1,
+      "status": "source-comparison-completed",
+      "scope": "รายการบริบทที่มีในเครื่องคำนวณ; ไม่ใช่ทุกโรค ทุกสูตร หรือการรับรองทางคลินิก",
+      "note": "เก็บปีของ guideline/ฉลาก/คู่มือแยกจากวันตรวจ; การมีแหล่งใหม่ของยานี้ไม่ได้ทำให้บริบทตำราเดิมเป็นข้อมูลฉบับใหม่"
+    },
+    {
+      "drug": "cephalexin",
+      "checkedAt": "2026-10-11",
+      "sources": [
+        "iscaid_skin2025",
+        "iscaid_uti2019"
+      ],
+      "oldTextbookContexts": 2,
+      "status": "source-comparison-completed",
+      "scope": "รายการบริบทที่มีในเครื่องคำนวณ; ไม่ใช่ทุกโรค ทุกสูตร หรือการรับรองทางคลินิก",
+      "note": "เก็บปีของ guideline/ฉลาก/คู่มือแยกจากวันตรวจ; การมีแหล่งใหม่ของยานี้ไม่ได้ทำให้บริบทตำราเดิมเป็นข้อมูลฉบับใหม่"
+    },
+    {
+      "drug": "chlorpheniramine",
+      "checkedAt": "2026-10-11",
+      "sources": [
+        "aaha_antihist_cat",
+        "aaha_antihist_dog"
+      ],
+      "oldTextbookContexts": 2,
+      "status": "source-comparison-completed",
+      "scope": "รายการบริบทที่มีในเครื่องคำนวณ; ไม่ใช่ทุกโรค ทุกสูตร หรือการรับรองทางคลินิก",
+      "note": "เก็บปีของ guideline/ฉลาก/คู่มือแยกจากวันตรวจ; การมีแหล่งใหม่ของยานี้ไม่ได้ทำให้บริบทตำราเดิมเป็นข้อมูลฉบับใหม่"
+    },
+    {
+      "drug": "clindamycin",
+      "checkedAt": "2026-10-11",
+      "sources": [
+        "iscaid_skin2025"
+      ],
+      "oldTextbookContexts": 2,
+      "status": "source-comparison-completed",
+      "scope": "รายการบริบทที่มีในเครื่องคำนวณ; ไม่ใช่ทุกโรค ทุกสูตร หรือการรับรองทางคลินิก",
+      "note": "เก็บปีของ guideline/ฉลาก/คู่มือแยกจากวันตรวจ; การมีแหล่งใหม่ของยานี้ไม่ได้ทำให้บริบทตำราเดิมเป็นข้อมูลฉบับใหม่"
+    },
+    {
+      "drug": "dexamethasone",
+      "checkedAt": "2026-10-11",
+      "sources": [
+        "aaha_allergy2023"
+      ],
+      "oldTextbookContexts": 1,
+      "status": "source-comparison-completed",
+      "scope": "รายการบริบทที่มีในเครื่องคำนวณ; ไม่ใช่ทุกโรค ทุกสูตร หรือการรับรองทางคลินิก",
+      "note": "เก็บปีของ guideline/ฉลาก/คู่มือแยกจากวันตรวจ; การมีแหล่งใหม่ของยานี้ไม่ได้ทำให้บริบทตำราเดิมเป็นข้อมูลฉบับใหม่"
+    },
+    {
+      "drug": "dexmedetomidine",
+      "checkedAt": "2026-10-11",
+      "sources": [
+        "aaha_sedation",
+        "merck_pain"
+      ],
+      "oldTextbookContexts": 1,
+      "status": "source-comparison-completed",
+      "scope": "รายการบริบทที่มีในเครื่องคำนวณ; ไม่ใช่ทุกโรค ทุกสูตร หรือการรับรองทางคลินิก",
+      "note": "เก็บปีของ guideline/ฉลาก/คู่มือแยกจากวันตรวจ; การมีแหล่งใหม่ของยานี้ไม่ได้ทำให้บริบทตำราเดิมเป็นข้อมูลฉบับใหม่"
+    },
+    {
+      "drug": "diazepam",
+      "checkedAt": "2026-10-11",
+      "sources": [
+        "aaha_induction"
+      ],
+      "oldTextbookContexts": 0,
+      "status": "source-comparison-completed",
+      "scope": "รายการบริบทที่มีในเครื่องคำนวณ; ไม่ใช่ทุกโรค ทุกสูตร หรือการรับรองทางคลินิก",
+      "note": "เก็บปีของ guideline/ฉลาก/คู่มือแยกจากวันตรวจ; การมีแหล่งใหม่ของยานี้ไม่ได้ทำให้บริบทตำราเดิมเป็นข้อมูลฉบับใหม่"
+    },
+    {
+      "drug": "diphenhydramine",
+      "checkedAt": "2026-10-11",
+      "sources": [
+        "aaha_antihist_cat",
+        "aaha_antihist_dog",
+        "merck_gi"
+      ],
+      "oldTextbookContexts": 1,
+      "status": "source-comparison-completed",
+      "scope": "รายการบริบทที่มีในเครื่องคำนวณ; ไม่ใช่ทุกโรค ทุกสูตร หรือการรับรองทางคลินิก",
+      "note": "เก็บปีของ guideline/ฉลาก/คู่มือแยกจากวันตรวจ; การมีแหล่งใหม่ของยานี้ไม่ได้ทำให้บริบทตำราเดิมเป็นข้อมูลฉบับใหม่"
+    },
+    {
+      "drug": "dobutamine",
+      "checkedAt": "2026-10-11",
+      "sources": [
+        "merck_cardiac2025"
+      ],
+      "oldTextbookContexts": 4,
+      "status": "source-comparison-completed",
+      "scope": "รายการบริบทที่มีในเครื่องคำนวณ; ไม่ใช่ทุกโรค ทุกสูตร หรือการรับรองทางคลินิก",
+      "note": "เก็บปีของ guideline/ฉลาก/คู่มือแยกจากวันตรวจ; การมีแหล่งใหม่ของยานี้ไม่ได้ทำให้บริบทตำราเดิมเป็นข้อมูลฉบับใหม่"
+    },
+    {
+      "drug": "doxycycline",
+      "checkedAt": "2026-10-11",
+      "sources": [
+        "iscaid_skin2025",
+        "iscaid_uti2019"
+      ],
+      "oldTextbookContexts": 1,
+      "status": "source-comparison-completed",
+      "scope": "รายการบริบทที่มีในเครื่องคำนวณ; ไม่ใช่ทุกโรค ทุกสูตร หรือการรับรองทางคลินิก",
+      "note": "เก็บปีของ guideline/ฉลาก/คู่มือแยกจากวันตรวจ; การมีแหล่งใหม่ของยานี้ไม่ได้ทำให้บริบทตำราเดิมเป็นข้อมูลฉบับใหม่"
+    },
+    {
+      "drug": "enalapril",
+      "checkedAt": "2026-10-11",
+      "sources": [
+        "merck_cardiac2025"
+      ],
+      "oldTextbookContexts": 2,
+      "status": "source-comparison-completed",
+      "scope": "รายการบริบทที่มีในเครื่องคำนวณ; ไม่ใช่ทุกโรค ทุกสูตร หรือการรับรองทางคลินิก",
+      "note": "เก็บปีของ guideline/ฉลาก/คู่มือแยกจากวันตรวจ; การมีแหล่งใหม่ของยานี้ไม่ได้ทำให้บริบทตำราเดิมเป็นข้อมูลฉบับใหม่"
+    },
+    {
+      "drug": "enrofloxacin",
+      "checkedAt": "2026-10-11",
+      "sources": [
+        "baytril_us",
+        "iscaid_skin2025"
+      ],
+      "oldTextbookContexts": 3,
+      "status": "source-comparison-completed",
+      "scope": "รายการบริบทที่มีในเครื่องคำนวณ; ไม่ใช่ทุกโรค ทุกสูตร หรือการรับรองทางคลินิก",
+      "note": "เก็บปีของ guideline/ฉลาก/คู่มือแยกจากวันตรวจ; การมีแหล่งใหม่ของยานี้ไม่ได้ทำให้บริบทตำราเดิมเป็นข้อมูลฉบับใหม่"
+    },
+    {
+      "drug": "ephedrine",
+      "checkedAt": "2026-10-11",
+      "sources": [
+        "banfield2022"
+      ],
+      "oldTextbookContexts": 2,
+      "status": "source-comparison-completed",
+      "scope": "รายการบริบทที่มีในเครื่องคำนวณ; ไม่ใช่ทุกโรค ทุกสูตร หรือการรับรองทางคลินิก",
+      "note": "เก็บปีของ guideline/ฉลาก/คู่มือแยกจากวันตรวจ; การมีแหล่งใหม่ของยานี้ไม่ได้ทำให้บริบทตำราเดิมเป็นข้อมูลฉบับใหม่"
+    },
+    {
+      "drug": "epinephrine",
+      "checkedAt": "2026-10-11",
+      "sources": [
+        "merck_critical",
+        "recover"
+      ],
+      "oldTextbookContexts": 0,
+      "status": "source-comparison-completed",
+      "scope": "รายการบริบทที่มีในเครื่องคำนวณ; ไม่ใช่ทุกโรค ทุกสูตร หรือการรับรองทางคลินิก",
+      "note": "เก็บปีของ guideline/ฉลาก/คู่มือแยกจากวันตรวจ; การมีแหล่งใหม่ของยานี้ไม่ได้ทำให้บริบทตำราเดิมเป็นข้อมูลฉบับใหม่"
+    },
+    {
+      "drug": "etomidate",
+      "checkedAt": "2026-10-11",
+      "sources": [
+        "aaha_induction"
+      ],
+      "oldTextbookContexts": 0,
+      "status": "source-comparison-completed",
+      "scope": "รายการบริบทที่มีในเครื่องคำนวณ; ไม่ใช่ทุกโรค ทุกสูตร หรือการรับรองทางคลินิก",
+      "note": "เก็บปีของ guideline/ฉลาก/คู่มือแยกจากวันตรวจ; การมีแหล่งใหม่ของยานี้ไม่ได้ทำให้บริบทตำราเดิมเป็นข้อมูลฉบับใหม่"
+    },
+    {
+      "drug": "famotidine",
+      "checkedAt": "2026-10-11",
+      "sources": [
+        "merck_ulcer2025"
+      ],
+      "oldTextbookContexts": 1,
+      "status": "source-comparison-completed",
+      "scope": "รายการบริบทที่มีในเครื่องคำนวณ; ไม่ใช่ทุกโรค ทุกสูตร หรือการรับรองทางคลินิก",
+      "note": "เก็บปีของ guideline/ฉลาก/คู่มือแยกจากวันตรวจ; การมีแหล่งใหม่ของยานี้ไม่ได้ทำให้บริบทตำราเดิมเป็นข้อมูลฉบับใหม่"
+    },
+    {
+      "drug": "fentanyl",
+      "checkedAt": "2026-10-11",
+      "sources": [
+        "aaha_opioids2020",
+        "merck_triage2026"
+      ],
+      "oldTextbookContexts": 3,
+      "status": "source-comparison-completed",
+      "scope": "รายการบริบทที่มีในเครื่องคำนวณ; ไม่ใช่ทุกโรค ทุกสูตร หรือการรับรองทางคลินิก",
+      "note": "เก็บปีของ guideline/ฉลาก/คู่มือแยกจากวันตรวจ; การมีแหล่งใหม่ของยานี้ไม่ได้ทำให้บริบทตำราเดิมเป็นข้อมูลฉบับใหม่"
+    },
+    {
+      "drug": "firocoxib",
+      "checkedAt": "2026-10-11",
+      "sources": [
+        "merck_pain"
+      ],
+      "oldTextbookContexts": 2,
+      "status": "source-comparison-completed",
+      "scope": "รายการบริบทที่มีในเครื่องคำนวณ; ไม่ใช่ทุกโรค ทุกสูตร หรือการรับรองทางคลินิก",
+      "note": "เก็บปีของ guideline/ฉลาก/คู่มือแยกจากวันตรวจ; การมีแหล่งใหม่ของยานี้ไม่ได้ทำให้บริบทตำราเดิมเป็นข้อมูลฉบับใหม่"
+    },
+    {
+      "drug": "flumazenil",
+      "checkedAt": "2026-10-11",
+      "sources": [
+        "recover"
+      ],
+      "oldTextbookContexts": 0,
+      "status": "source-comparison-completed",
+      "scope": "รายการบริบทที่มีในเครื่องคำนวณ; ไม่ใช่ทุกโรค ทุกสูตร หรือการรับรองทางคลินิก",
+      "note": "เก็บปีของ guideline/ฉลาก/คู่มือแยกจากวันตรวจ; การมีแหล่งใหม่ของยานี้ไม่ได้ทำให้บริบทตำราเดิมเป็นข้อมูลฉบับใหม่"
+    },
+    {
+      "drug": "furosemide",
+      "checkedAt": "2026-10-11",
+      "sources": [
+        "merck_diuretic"
+      ],
+      "oldTextbookContexts": 0,
+      "status": "source-comparison-completed",
+      "scope": "รายการบริบทที่มีในเครื่องคำนวณ; ไม่ใช่ทุกโรค ทุกสูตร หรือการรับรองทางคลินิก",
+      "note": "เก็บปีของ guideline/ฉลาก/คู่มือแยกจากวันตรวจ; การมีแหล่งใหม่ของยานี้ไม่ได้ทำให้บริบทตำราเดิมเป็นข้อมูลฉบับใหม่"
+    },
+    {
+      "drug": "gabapentin",
+      "checkedAt": "2026-10-11",
+      "sources": [
+        "aaha_sedation",
+        "merck_pain"
+      ],
+      "oldTextbookContexts": 2,
+      "status": "source-comparison-completed",
+      "scope": "รายการบริบทที่มีในเครื่องคำนวณ; ไม่ใช่ทุกโรค ทุกสูตร หรือการรับรองทางคลินิก",
+      "note": "เก็บปีของ guideline/ฉลาก/คู่มือแยกจากวันตรวจ; การมีแหล่งใหม่ของยานี้ไม่ได้ทำให้บริบทตำราเดิมเป็นข้อมูลฉบับใหม่"
+    },
+    {
+      "drug": "glycopyrrolate",
+      "checkedAt": "2026-10-11",
+      "sources": [
+        "banfield2022"
+      ],
+      "oldTextbookContexts": 1,
+      "status": "source-comparison-completed",
+      "scope": "รายการบริบทที่มีในเครื่องคำนวณ; ไม่ใช่ทุกโรค ทุกสูตร หรือการรับรองทางคลินิก",
+      "note": "เก็บปีของ guideline/ฉลาก/คู่มือแยกจากวันตรวจ; การมีแหล่งใหม่ของยานี้ไม่ได้ทำให้บริบทตำราเดิมเป็นข้อมูลฉบับใหม่"
+    },
+    {
+      "drug": "ketamine",
+      "checkedAt": "2026-10-11",
+      "sources": [
+        "aaha_induction",
+        "merck_pain"
+      ],
+      "oldTextbookContexts": 2,
+      "status": "source-comparison-completed",
+      "scope": "รายการบริบทที่มีในเครื่องคำนวณ; ไม่ใช่ทุกโรค ทุกสูตร หรือการรับรองทางคลินิก",
+      "note": "เก็บปีของ guideline/ฉลาก/คู่มือแยกจากวันตรวจ; การมีแหล่งใหม่ของยานี้ไม่ได้ทำให้บริบทตำราเดิมเป็นข้อมูลฉบับใหม่"
+    },
+    {
+      "drug": "levetiracetam",
+      "checkedAt": "2026-10-11",
+      "sources": [
+        "merck_seizure"
+      ],
+      "oldTextbookContexts": 0,
+      "status": "source-comparison-completed",
+      "scope": "รายการบริบทที่มีในเครื่องคำนวณ; ไม่ใช่ทุกโรค ทุกสูตร หรือการรับรองทางคลินิก",
+      "note": "เก็บปีของ guideline/ฉลาก/คู่มือแยกจากวันตรวจ; การมีแหล่งใหม่ของยานี้ไม่ได้ทำให้บริบทตำราเดิมเป็นข้อมูลฉบับใหม่"
+    },
+    {
+      "drug": "lidocaine",
+      "checkedAt": "2026-10-11",
+      "sources": [
+        "merck_pain"
+      ],
+      "oldTextbookContexts": 5,
+      "status": "source-comparison-completed",
+      "scope": "รายการบริบทที่มีในเครื่องคำนวณ; ไม่ใช่ทุกโรค ทุกสูตร หรือการรับรองทางคลินิก",
+      "note": "เก็บปีของ guideline/ฉลาก/คู่มือแยกจากวันตรวจ; การมีแหล่งใหม่ของยานี้ไม่ได้ทำให้บริบทตำราเดิมเป็นข้อมูลฉบับใหม่"
+    },
+    {
+      "drug": "marbofloxacin",
+      "checkedAt": "2026-10-11",
+      "sources": [
+        "iscaid_skin2025",
+        "vmd_marbo",
+        "zeniquin_us"
+      ],
+      "oldTextbookContexts": 1,
+      "status": "source-comparison-completed",
+      "scope": "รายการบริบทที่มีในเครื่องคำนวณ; ไม่ใช่ทุกโรค ทุกสูตร หรือการรับรองทางคลินิก",
+      "note": "เก็บปีของ guideline/ฉลาก/คู่มือแยกจากวันตรวจ; การมีแหล่งใหม่ของยานี้ไม่ได้ทำให้บริบทตำราเดิมเป็นข้อมูลฉบับใหม่"
+    },
+    {
+      "drug": "maropitant",
+      "checkedAt": "2026-10-11",
+      "sources": [
+        "merck_gi"
+      ],
+      "oldTextbookContexts": 0,
+      "status": "source-comparison-completed",
+      "scope": "รายการบริบทที่มีในเครื่องคำนวณ; ไม่ใช่ทุกโรค ทุกสูตร หรือการรับรองทางคลินิก",
+      "note": "เก็บปีของ guideline/ฉลาก/คู่มือแยกจากวันตรวจ; การมีแหล่งใหม่ของยานี้ไม่ได้ทำให้บริบทตำราเดิมเป็นข้อมูลฉบับใหม่"
+    },
+    {
+      "drug": "medetomidine",
+      "checkedAt": "2026-10-11",
+      "sources": [
+        "vmd_dorbene2025"
+      ],
+      "oldTextbookContexts": 2,
+      "status": "source-comparison-completed",
+      "scope": "รายการบริบทที่มีในเครื่องคำนวณ; ไม่ใช่ทุกโรค ทุกสูตร หรือการรับรองทางคลินิก",
+      "note": "เก็บปีของ guideline/ฉลาก/คู่มือแยกจากวันตรวจ; การมีแหล่งใหม่ของยานี้ไม่ได้ทำให้บริบทตำราเดิมเป็นข้อมูลฉบับใหม่"
+    },
+    {
+      "drug": "meloxicam",
+      "checkedAt": "2026-10-11",
+      "sources": [
+        "merck_pain"
+      ],
+      "oldTextbookContexts": 0,
+      "status": "source-comparison-completed",
+      "scope": "รายการบริบทที่มีในเครื่องคำนวณ; ไม่ใช่ทุกโรค ทุกสูตร หรือการรับรองทางคลินิก",
+      "note": "เก็บปีของ guideline/ฉลาก/คู่มือแยกจากวันตรวจ; การมีแหล่งใหม่ของยานี้ไม่ได้ทำให้บริบทตำราเดิมเป็นข้อมูลฉบับใหม่"
+    },
+    {
+      "drug": "methadone",
+      "checkedAt": "2026-10-11",
+      "sources": [
+        "merck_pain"
+      ],
+      "oldTextbookContexts": 0,
+      "status": "source-comparison-completed",
+      "scope": "รายการบริบทที่มีในเครื่องคำนวณ; ไม่ใช่ทุกโรค ทุกสูตร หรือการรับรองทางคลินิก",
+      "note": "เก็บปีของ guideline/ฉลาก/คู่มือแยกจากวันตรวจ; การมีแหล่งใหม่ของยานี้ไม่ได้ทำให้บริบทตำราเดิมเป็นข้อมูลฉบับใหม่"
+    },
+    {
+      "drug": "methylprednisolone",
+      "checkedAt": "2026-10-11",
+      "sources": [
+        "aaha_allergy2023"
+      ],
+      "oldTextbookContexts": 4,
+      "status": "source-comparison-completed",
+      "scope": "รายการบริบทที่มีในเครื่องคำนวณ; ไม่ใช่ทุกโรค ทุกสูตร หรือการรับรองทางคลินิก",
+      "note": "เก็บปีของ guideline/ฉลาก/คู่มือแยกจากวันตรวจ; การมีแหล่งใหม่ของยานี้ไม่ได้ทำให้บริบทตำราเดิมเป็นข้อมูลฉบับใหม่"
+    },
+    {
+      "drug": "metoclopramide",
+      "checkedAt": "2026-10-11",
+      "sources": [
+        "merck_gi"
+      ],
+      "oldTextbookContexts": 3,
+      "status": "source-comparison-completed",
+      "scope": "รายการบริบทที่มีในเครื่องคำนวณ; ไม่ใช่ทุกโรค ทุกสูตร หรือการรับรองทางคลินิก",
+      "note": "เก็บปีของ guideline/ฉลาก/คู่มือแยกจากวันตรวจ; การมีแหล่งใหม่ของยานี้ไม่ได้ทำให้บริบทตำราเดิมเป็นข้อมูลฉบับใหม่"
+    },
+    {
+      "drug": "metronidazole",
+      "checkedAt": "2026-10-11",
+      "sources": [
+        "enovat"
+      ],
+      "oldTextbookContexts": 2,
+      "status": "source-comparison-completed",
+      "scope": "รายการบริบทที่มีในเครื่องคำนวณ; ไม่ใช่ทุกโรค ทุกสูตร หรือการรับรองทางคลินิก",
+      "note": "เก็บปีของ guideline/ฉลาก/คู่มือแยกจากวันตรวจ; การมีแหล่งใหม่ของยานี้ไม่ได้ทำให้บริบทตำราเดิมเป็นข้อมูลฉบับใหม่"
+    },
+    {
+      "drug": "midazolam",
+      "checkedAt": "2026-10-11",
+      "sources": [
+        "aaha_induction",
+        "aaha_sedation"
+      ],
+      "oldTextbookContexts": 1,
+      "status": "source-comparison-completed",
+      "scope": "รายการบริบทที่มีในเครื่องคำนวณ; ไม่ใช่ทุกโรค ทุกสูตร หรือการรับรองทางคลินิก",
+      "note": "เก็บปีของ guideline/ฉลาก/คู่มือแยกจากวันตรวจ; การมีแหล่งใหม่ของยานี้ไม่ได้ทำให้บริบทตำราเดิมเป็นข้อมูลฉบับใหม่"
+    },
+    {
+      "drug": "morphine",
+      "checkedAt": "2026-10-11",
+      "sources": [
+        "merck_pain"
+      ],
+      "oldTextbookContexts": 1,
+      "status": "source-comparison-completed",
+      "scope": "รายการบริบทที่มีในเครื่องคำนวณ; ไม่ใช่ทุกโรค ทุกสูตร หรือการรับรองทางคลินิก",
+      "note": "เก็บปีของ guideline/ฉลาก/คู่มือแยกจากวันตรวจ; การมีแหล่งใหม่ของยานี้ไม่ได้ทำให้บริบทตำราเดิมเป็นข้อมูลฉบับใหม่"
+    },
+    {
+      "drug": "naloxone",
+      "checkedAt": "2026-10-11",
+      "sources": [
+        "recover"
+      ],
+      "oldTextbookContexts": 1,
+      "status": "source-comparison-completed",
+      "scope": "รายการบริบทที่มีในเครื่องคำนวณ; ไม่ใช่ทุกโรค ทุกสูตร หรือการรับรองทางคลินิก",
+      "note": "เก็บปีของ guideline/ฉลาก/คู่มือแยกจากวันตรวจ; การมีแหล่งใหม่ของยานี้ไม่ได้ทำให้บริบทตำราเดิมเป็นข้อมูลฉบับใหม่"
+    },
+    {
+      "drug": "norepinephrine",
+      "checkedAt": "2026-10-11",
+      "sources": [
+        "merck_critical"
+      ],
+      "oldTextbookContexts": 0,
+      "status": "source-comparison-completed",
+      "scope": "รายการบริบทที่มีในเครื่องคำนวณ; ไม่ใช่ทุกโรค ทุกสูตร หรือการรับรองทางคลินิก",
+      "note": "เก็บปีของ guideline/ฉลาก/คู่มือแยกจากวันตรวจ; การมีแหล่งใหม่ของยานี้ไม่ได้ทำให้บริบทตำราเดิมเป็นข้อมูลฉบับใหม่"
+    },
+    {
+      "drug": "omeprazole",
+      "checkedAt": "2026-10-11",
+      "sources": [
+        "merck_ulcer2025"
+      ],
+      "oldTextbookContexts": 2,
+      "status": "source-comparison-completed",
+      "scope": "รายการบริบทที่มีในเครื่องคำนวณ; ไม่ใช่ทุกโรค ทุกสูตร หรือการรับรองทางคลินิก",
+      "note": "เก็บปีของ guideline/ฉลาก/คู่มือแยกจากวันตรวจ; การมีแหล่งใหม่ของยานี้ไม่ได้ทำให้บริบทตำราเดิมเป็นข้อมูลฉบับใหม่"
+    },
+    {
+      "drug": "ondansetron",
+      "checkedAt": "2026-10-11",
+      "sources": [
+        "merck_gi"
+      ],
+      "oldTextbookContexts": 0,
+      "status": "source-comparison-completed",
+      "scope": "รายการบริบทที่มีในเครื่องคำนวณ; ไม่ใช่ทุกโรค ทุกสูตร หรือการรับรองทางคลินิก",
+      "note": "เก็บปีของ guideline/ฉลาก/คู่มือแยกจากวันตรวจ; การมีแหล่งใหม่ของยานี้ไม่ได้ทำให้บริบทตำราเดิมเป็นข้อมูลฉบับใหม่"
+    },
+    {
+      "drug": "pantoprazole",
+      "checkedAt": "2026-10-11",
+      "sources": [
+        "merck_ulcer2025"
+      ],
+      "oldTextbookContexts": 1,
+      "status": "source-comparison-completed",
+      "scope": "รายการบริบทที่มีในเครื่องคำนวณ; ไม่ใช่ทุกโรค ทุกสูตร หรือการรับรองทางคลินิก",
+      "note": "เก็บปีของ guideline/ฉลาก/คู่มือแยกจากวันตรวจ; การมีแหล่งใหม่ของยานี้ไม่ได้ทำให้บริบทตำราเดิมเป็นข้อมูลฉบับใหม่"
+    },
+    {
+      "drug": "phenobarbital",
+      "checkedAt": "2026-10-11",
+      "sources": [
+        "merck_seizure"
+      ],
+      "oldTextbookContexts": 0,
+      "status": "source-comparison-completed",
+      "scope": "รายการบริบทที่มีในเครื่องคำนวณ; ไม่ใช่ทุกโรค ทุกสูตร หรือการรับรองทางคลินิก",
+      "note": "เก็บปีของ guideline/ฉลาก/คู่มือแยกจากวันตรวจ; การมีแหล่งใหม่ของยานี้ไม่ได้ทำให้บริบทตำราเดิมเป็นข้อมูลฉบับใหม่"
+    },
+    {
+      "drug": "pimobendan",
+      "checkedAt": "2026-10-11",
+      "sources": [
+        "merck_cardiac2025"
+      ],
+      "oldTextbookContexts": 2,
+      "status": "source-comparison-completed",
+      "scope": "รายการบริบทที่มีในเครื่องคำนวณ; ไม่ใช่ทุกโรค ทุกสูตร หรือการรับรองทางคลินิก",
+      "note": "เก็บปีของ guideline/ฉลาก/คู่มือแยกจากวันตรวจ; การมีแหล่งใหม่ของยานี้ไม่ได้ทำให้บริบทตำราเดิมเป็นข้อมูลฉบับใหม่"
+    },
+    {
+      "drug": "prednisolone",
+      "checkedAt": "2026-10-11",
+      "sources": [
+        "aaha_allergy2023",
+        "merck_pain"
+      ],
+      "oldTextbookContexts": 4,
+      "status": "source-comparison-completed",
+      "scope": "รายการบริบทที่มีในเครื่องคำนวณ; ไม่ใช่ทุกโรค ทุกสูตร หรือการรับรองทางคลินิก",
+      "note": "เก็บปีของ guideline/ฉลาก/คู่มือแยกจากวันตรวจ; การมีแหล่งใหม่ของยานี้ไม่ได้ทำให้บริบทตำราเดิมเป็นข้อมูลฉบับใหม่"
+    },
+    {
+      "drug": "propofol",
+      "checkedAt": "2026-10-11",
+      "sources": [
+        "aaha_induction"
+      ],
+      "oldTextbookContexts": 1,
+      "status": "source-comparison-completed",
+      "scope": "รายการบริบทที่มีในเครื่องคำนวณ; ไม่ใช่ทุกโรค ทุกสูตร หรือการรับรองทางคลินิก",
+      "note": "เก็บปีของ guideline/ฉลาก/คู่มือแยกจากวันตรวจ; การมีแหล่งใหม่ของยานี้ไม่ได้ทำให้บริบทตำราเดิมเป็นข้อมูลฉบับใหม่"
+    },
+    {
+      "drug": "robenacoxib",
+      "checkedAt": "2026-10-11",
+      "sources": [
+        "merck_pain",
+        "onsior_elanco",
+        "vmd_roben2025"
+      ],
+      "oldTextbookContexts": 2,
+      "status": "source-comparison-completed",
+      "scope": "รายการบริบทที่มีในเครื่องคำนวณ; ไม่ใช่ทุกโรค ทุกสูตร หรือการรับรองทางคลินิก",
+      "note": "เก็บปีของ guideline/ฉลาก/คู่มือแยกจากวันตรวจ; การมีแหล่งใหม่ของยานี้ไม่ได้ทำให้บริบทตำราเดิมเป็นข้อมูลฉบับใหม่"
+    },
+    {
+      "drug": "spironolactone",
+      "checkedAt": "2026-10-11",
+      "sources": [
+        "merck_cardiac2025"
+      ],
+      "oldTextbookContexts": 1,
+      "status": "source-comparison-completed",
+      "scope": "รายการบริบทที่มีในเครื่องคำนวณ; ไม่ใช่ทุกโรค ทุกสูตร หรือการรับรองทางคลินิก",
+      "note": "เก็บปีของ guideline/ฉลาก/คู่มือแยกจากวันตรวจ; การมีแหล่งใหม่ของยานี้ไม่ได้ทำให้บริบทตำราเดิมเป็นข้อมูลฉบับใหม่"
+    },
+    {
+      "drug": "tramadol",
+      "checkedAt": "2026-10-11",
+      "sources": [
+        "merck_pain"
+      ],
+      "oldTextbookContexts": 4,
+      "status": "source-comparison-completed",
+      "scope": "รายการบริบทที่มีในเครื่องคำนวณ; ไม่ใช่ทุกโรค ทุกสูตร หรือการรับรองทางคลินิก",
+      "note": "เก็บปีของ guideline/ฉลาก/คู่มือแยกจากวันตรวจ; การมีแหล่งใหม่ของยานี้ไม่ได้ทำให้บริบทตำราเดิมเป็นข้อมูลฉบับใหม่"
+    },
+    {
+      "drug": "trimethoprim-sulfamethoxazole",
+      "checkedAt": "2026-10-11",
+      "sources": [
+        "iscaid_skin2025",
+        "iscaid_uti2019"
+      ],
+      "oldTextbookContexts": 1,
+      "status": "source-comparison-completed",
+      "scope": "รายการบริบทที่มีในเครื่องคำนวณ; ไม่ใช่ทุกโรค ทุกสูตร หรือการรับรองทางคลินิก",
+      "note": "เก็บปีของ guideline/ฉลาก/คู่มือแยกจากวันตรวจ; การมีแหล่งใหม่ของยานี้ไม่ได้ทำให้บริบทตำราเดิมเป็นข้อมูลฉบับใหม่"
+    }
+  ]
+}
